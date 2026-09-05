@@ -53,7 +53,7 @@ export class TransactionIngestionService {
       });
       const existingHashes = new Set(
         existingHashRows
-          .map((r) => r.deduplicationHash)
+          .map((r: { deduplicationHash: string | null }) => r.deduplicationHash)
           .filter(Boolean) as string[]
       );
 
