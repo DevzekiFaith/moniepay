@@ -1,0 +1,294 @@
+// Monie Lite — Prisma Schema
+// Stage 1 uses SQLite for zero-setup local dev.
+// To switch to PostgreSQL: change provider to "postgresql" in prisma.config.ts
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ─────────────────────────────────────────────
+// AUTH
+// ─────────────────────────────────────────────
+
+model User {
+  id            String   @id @default(cuid())
+  email         String   @unique
+  name          String?
+  passwordHash  String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  preferences   UserPreference?
+  accounts      FinancialAccount[]
+  transactions  Transaction[]
+  insights      Insight[]
+  connections   FinancialProviderConnection[]
+  imports       TransactionImport[]
+  categoryRules UserCategoryRule[]
+
+  @@index([email])
+}
+
+model UserPreference {
+  id            String  @id @default(cuid())
+  userId        String  @unique
+  currency      String  @default("NGN")
+  currencySymbol String  @default("₦")
+  timezone      String  @default("Africa/Lagos")
+  theme         String  @default("dark")
+
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// ─────────────────────────────────────────────
+// FINANCIAL INSTITUTIONS & ACCOUNTS
+// ─────────────────────────────────────────────
+
+model FinancialInstitution {
+  id          String    @id @default(cuid())
+  name        String
+  shortName   String?
+  logoUrl     String?
+  country     String    @default("NG")
+  createdAt   DateTime  @default(now())
+
+  accounts    FinancialAccount[]
+  connections FinancialProviderConnection[]
+}
+
+model FinancialAccount {
+  id                    String   @id @default(cuid())
+  userId                String
+  institutionId         String?
+  externalAccountId     String?
+  name                  String
+  accountType           String   // CHECKING, SAVINGS, WALLET, CREDIT, LOAN
+  currency              String   @default("NGN")
+  currentBalance        Float    @default(0)
+  availableBalance      Float?
+  mask                  String?  // e.g. "•••• 4821"
+  syncStatus            String   @default("SYNCED") // SYNCED | SYNCING | ERROR | ATTENTION_NEEDED
+  isActive              Boolean  @default(true)
+  isPrimary             Boolean  @default(false)
+  lastSyncedAt          DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution           FinancialInstitution? @relation(fields: [institutionId], references: [id])
+  transactions          Transaction[]
+  recurringTransactions RecurringTransaction[]
+
+  @@index([userId])
+  @@index([externalAccountId])
+}
+
+// ─────────────────────────────────────────────
+// CATEGORIES
+// ─────────────────────────────────────────────
+
+model Category {
+  id           String  @id @default(cuid())
+  name         String  @unique
+  slug         String  @unique
+  icon         String? // emoji or icon name
+  color        String? // hex color
+  parentId     String?
+  isSystem     Boolean @default(true)
+  isIncome     Boolean @default(false)
+  sortOrder    Int     @default(0)
+
+  parent       Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  children     Category[] @relation("CategoryHierarchy")
+  transactions Transaction[]
+  recurringTransactions RecurringTransaction[]
+  userRules             UserCategoryRule[]
+
+  @@index([slug])
+}
+
+// ─────────────────────────────────────────────
+// MERCHANTS
+// ─────────────────────────────────────────────
+
+model Merchant {
+  id                   String  @id @default(cuid())
+  name                 String  @unique // normalized name
+  displayName          String
+  categoryId           String?
+  logoUrl              String?
+  website              String?
+  isKnown              Boolean @default(false)
+  createdAt            DateTime @default(now())
+
+  transactions         Transaction[]
+}
+
+// ─────────────────────────────────────────────
+// TRANSACTIONS
+// ─────────────────────────────────────────────
+
+model Transaction {
+  id                      String    @id @default(cuid())
+  userId                  String
+  accountId               String
+  externalTransactionId   String?
+  deduplicationHash       String?   @unique
+
+  amount                  Float
+  currency                String    @default("NGN")
+  transactionDate         DateTime
+  postedDate              DateTime?
+  description             String
+  merchantName            String?
+  normalizedMerchantName  String?
+
+  transactionType         String    // INCOME | EXPENSE | TRANSFER | REFUND | UNKNOWN
+  status                  String    @default("POSTED") // PENDING | POSTED | REVERSED | FAILED
+  categoryId              String?
+  merchantId              String?
+
+  source                  String    @default("MANUAL") // MOCK | IMPORT | MANUAL | PROVIDER
+  isTransfer              Boolean   @default(false)
+  isRecurring             Boolean   @default(false)
+  transferPairId          String?   // links the two legs of an internal transfer
+  notes                   String?
+  metadata                String?   // JSON string (SQLite limitation)
+
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  account                 FinancialAccount @relation(fields: [accountId], references: [id])
+  category                Category?  @relation(fields: [categoryId], references: [id])
+  merchant                Merchant?  @relation(fields: [merchantId], references: [id])
+
+  @@index([userId])
+  @@index([accountId])
+  @@index([transactionDate])
+  @@index([externalTransactionId])
+  @@index([normalizedMerchantName])
+  @@index([categoryId])
+  @@index([transactionType])
+  @@index([isTransfer])
+}
+
+// ─────────────────────────────────────────────
+// RECURRING TRANSACTIONS
+// ─────────────────────────────────────────────
+
+model RecurringTransaction {
+  id              String    @id @default(cuid())
+  userId          String
+  accountId       String
+  categoryId      String?
+  name            String
+  merchantName    String?
+  amount          Float
+  currency        String    @default("NGN")
+  frequency       String    // DAILY | WEEKLY | BIWEEKLY | MONTHLY | QUARTERLY | ANNUAL
+  lastSeenDate    DateTime
+  nextExpectedDate DateTime?
+  isActive        Boolean   @default(true)
+  confidence      Float     @default(0.8)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  account         FinancialAccount @relation(fields: [accountId], references: [id])
+  category        Category? @relation(fields: [categoryId], references: [id])
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// INSIGHTS
+// ─────────────────────────────────────────────
+
+model Insight {
+  id          String    @id @default(cuid())
+  userId      String
+  type        String    // UNUSUAL_SPENDING | LARGE_TRANSACTION | SPENDING_INCREASE | etc.
+  title       String
+  body        String
+  data        String?   // JSON
+  isRead      Boolean   @default(false)
+  importance  String    @default("NORMAL") // LOW | NORMAL | HIGH | CRITICAL
+  createdAt   DateTime  @default(now())
+  expiresAt   DateTime?
+
+  user        User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([isRead])
+}
+
+// ─────────────────────────────────────────────
+// PROVIDER CONNECTIONS
+// ─────────────────────────────────────────────
+
+model FinancialProviderConnection {
+  id            String    @id @default(cuid())
+  userId        String
+  institutionId String?
+  provider      String    // MOCK | MONO | OKRA | PLAID | STITCH
+  status        String    @default("ACTIVE") // ACTIVE | INACTIVE | ERROR | REVOKED
+  accessToken   String?   // encrypted in production
+  refreshToken  String?
+  expiresAt     DateTime?
+  lastSyncedAt  DateTime?
+  metadata      String?   // JSON
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  institution   FinancialInstitution? @relation(fields: [institutionId], references: [id])
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// IMPORT BATCHES
+// ─────────────────────────────────────────────
+
+model TransactionImport {
+  id              String    @id @default(cuid())
+  userId          String
+  source          String    // MOCK | CSV | PROVIDER
+  status          String    @default("PROCESSING") // PROCESSING | COMPLETED | FAILED
+  totalRecords    Int       @default(0)
+  processedCount  Int       @default(0)
+  duplicateCount  Int       @default(0)
+  failedCount     Int       @default(0)
+  errorLog        String?
+  createdAt       DateTime  @default(now())
+  completedAt     DateTime?
+
+  user            User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// USER CATEGORIZATION RULES (Self-learning)
+// ─────────────────────────────────────────────
+
+model UserCategoryRule {
+  id           String   @id @default(cuid())
+  userId       String
+  merchantName String   // normalized merchant string
+  categoryId   String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category     Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, merchantName])
+  @@index([userId])
+}
+
