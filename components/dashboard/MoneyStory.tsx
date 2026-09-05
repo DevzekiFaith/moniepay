@@ -1,12 +1,13 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// AjoPay — Financial Audit Executive Summary
+// MoniePay — Financial Audit Executive Summary
 // Plain-English forensic audit narrative synthesizing ledger flow.
 // ─────────────────────────────────────────────────────────────────
 
 import { formatNaira } from "@/lib/utils";
 import { ShieldCheck, ArrowUpRight, ArrowDownLeft } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface MoneyStoryProps {
   topCategoryName?: string;
@@ -36,8 +37,10 @@ export function MoneyStory({
   if (!hasData) return null;
 
   return (
-    <div
-      className="card animate-fade-up"
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ type: "spring", stiffness: 350, damping: 22 }}
+      className="card"
       style={{
         borderLeft: "3.5px solid var(--accent)",
         padding: "1.25rem 1.5rem",
@@ -134,6 +137,6 @@ export function MoneyStory({
           ) : null}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

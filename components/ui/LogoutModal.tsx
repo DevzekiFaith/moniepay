@@ -1,13 +1,14 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// AjoPay — Luxury Glassmorphic Logout Confirmation Modal
+// MoniePay — Luxury Glassmorphic Logout Confirmation Modal
+// Tactile Framer Motion spring physics & unified brand palette (no variant colors)
 // ─────────────────────────────────────────────────────────────────
 
 import React from "react";
-import { LogOut, X, ShieldAlert } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { AjoPayEmblem } from "./AjoPayLogo";
+import { MoniePayEmblem } from "./MoniePayLogo";
 
 interface LogoutModalProps {
   isOpen: boolean;
@@ -31,8 +32,8 @@ export function LogoutModal({
           position: "fixed",
           inset: 0,
           background: "rgba(3, 7, 18, 0.78)",
-          backdropFilter: "blur(16px)",
-          WebkitBackdropFilter: "blur(16px)",
+          backdropFilter: "blur(18px)",
+          WebkitBackdropFilter: "blur(18px)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -42,26 +43,29 @@ export function LogoutModal({
         onClick={onClose}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.95, y: 10 }}
+          initial={{ opacity: 0, scale: 0.92, y: 18 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.95, y: 10 }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
+          exit={{ opacity: 0, scale: 0.92, y: 18 }}
+          transition={{ type: "spring", damping: 24, stiffness: 320 }}
           style={{
             width: "100%",
-            maxWidth: "400px",
-            background: "rgba(13, 21, 38, 0.88)",
+            maxWidth: "410px",
+            background: "rgba(13, 21, 38, 0.92)",
             backdropFilter: "blur(28px)",
             WebkitBackdropFilter: "blur(28px)",
-            border: "1px solid rgba(255, 255, 255, 0.12)",
-            borderRadius: "20px",
-            padding: "1.75rem",
-            boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.15)",
+            border: "1px solid rgba(79, 156, 249, 0.25)",
+            borderRadius: "22px",
+            padding: "1.85rem",
+            boxShadow:
+              "0 28px 60px -12px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.15)",
             position: "relative",
           }}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
-          <button
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
             type="button"
             onClick={onClose}
             style={{
@@ -81,12 +85,12 @@ export function LogoutModal({
             }}
           >
             <X size={15} />
-          </button>
+          </motion.button>
 
-          {/* Header with AjoPay Emblem & Logout Glyph */}
+          {/* Header with MoniePay Emblem & Logout Glyph */}
           <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", marginBottom: "1.25rem" }}>
             <div style={{ position: "relative" }}>
-              <AjoPayEmblem size={44} />
+              <MoniePayEmblem size={44} />
               <div
                 style={{
                   position: "absolute",
@@ -96,33 +100,35 @@ export function LogoutModal({
                   height: "18px",
                   borderRadius: "50%",
                   background: "var(--bg-surface)",
-                  border: "1px solid rgba(244, 63, 94, 0.4)",
+                  border: "1px solid rgba(79, 156, 249, 0.4)",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   boxShadow: "0 2px 5px rgba(0,0,0,0.5)",
                 }}
               >
-                <LogOut size={10} color="var(--negative)" />
+                <LogOut size={10} color="var(--accent)" />
               </div>
             </div>
             <div>
-              <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+              <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.01em", margin: 0 }}>
                 Log out of MoniePay?
               </h3>
-              <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "2px" }}>
+              <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "3px", margin: 0 }}>
                 Active session for <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{userName}</span>
               </p>
             </div>
           </div>
 
           <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.55, marginBottom: "1.5rem" }}>
-            Your Open Banking credentials remain securely encrypted. You will need to sign in again to access real-time financial intelligence.
+            Your Open Banking credentials remain securely encrypted. Logging out will close real-time ledger tunnels across your devices.
           </p>
 
           {/* Action Buttons */}
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.96 }}
               type="button"
               onClick={onClose}
               style={{
@@ -134,26 +140,21 @@ export function LogoutModal({
                 fontSize: "13px",
                 fontWeight: 600,
                 cursor: "pointer",
-                transition: "background 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.1)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(255, 255, 255, 0.05)";
               }}
             >
               Cancel
-            </button>
+            </motion.button>
 
-            <button
+            <motion.button
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.96 }}
               type="button"
               onClick={onConfirm}
               style={{
                 height: "42px",
                 borderRadius: "10px",
-                background: "linear-gradient(135deg, #4F46E5 0%, #2563EB 100%)",
-                border: "1px solid rgba(79, 156, 249, 0.4)",
+                background: "linear-gradient(135deg, #4F9CF9 0%, #2563EB 100%)",
+                border: "1px solid rgba(255, 255, 255, 0.25)",
                 color: "#FFFFFF",
                 fontSize: "13px",
                 fontWeight: 700,
@@ -162,21 +163,12 @@ export function LogoutModal({
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "6px",
-                boxShadow: "0 4px 14px rgba(79, 156, 249, 0.35)",
-                transition: "transform 0.15s ease, box-shadow 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-1px)";
-                e.currentTarget.style.boxShadow = "0 6px 20px rgba(79, 156, 249, 0.5)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 4px 14px rgba(79, 156, 249, 0.35)";
+                boxShadow: "0 4px 16px rgba(37, 99, 235, 0.45)",
               }}
             >
               <LogOut size={14} />
               <span>Log Out</span>
-            </button>
+            </motion.button>
           </div>
         </motion.div>
       </div>

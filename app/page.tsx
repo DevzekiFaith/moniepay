@@ -18,9 +18,11 @@ import { MoneyMap, type CategorySpend } from "@/components/dashboard/MoneyMap";
 import { MoneyActivity, type TransactionItem } from "@/components/dashboard/MoneyActivity";
 import { BillsDue } from "@/components/dashboard/BillsDue";
 import { InsightCards, type InsightItem } from "@/components/dashboard/InsightCards";
+import { MonieAiChat } from "@/components/ai/MonieAiChat";
 import { useRealtimeTransactions } from "@/hooks/useRealtimeTransactions";
 import { CreditCard, RefreshCw, Loader2, Bell, Sparkles } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 type Period = "today" | "this_week" | "this_month" | "last_3_months";
 
@@ -36,6 +38,30 @@ const PERIOD_LABELS: Record<Period, string> = {
   this_week:      "This Week",
   this_month:     "This Month",
   last_3_months:  "Last 3 Months",
+};
+
+const dashboardContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.04,
+    },
+  },
+};
+
+const dashboardItemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 320,
+      damping: 24,
+    },
+  },
 };
 
 export default function DashboardPage() {
@@ -214,35 +240,55 @@ export default function DashboardPage() {
           <div
             style={{
               display: "flex",
-              gap: "3px",
+              gap: "4px",
               background: "var(--bg-elevated)",
-              padding: "3px",
+              padding: "4px",
               borderRadius: "10px",
               border: "1px solid var(--border-base)",
               overflowX: "auto",
               maxWidth: "calc(100vw - 120px)",
+              position: "relative",
             }}
           >
-            {PERIODS.map((p) => (
-              <button
-                key={p.value}
-                onClick={() => setPeriod(p.value)}
-                style={{
-                  padding: "5px 14px",
-                  borderRadius: "7px",
-                  fontSize: "12.5px",
-                  fontWeight: period === p.value ? 600 : 500,
-                  color: period === p.value ? "var(--text-primary)" : "var(--text-secondary)",
-                  background: period === p.value ? "var(--bg-surface)" : "transparent",
-                  border: period === p.value ? "1px solid var(--border-strong)" : "1px solid transparent",
-                  cursor: "pointer",
-                  transition: "all 0.15s ease",
-                  boxShadow: period === p.value ? "0 2px 8px rgba(0,0,0,0.3)" : "none",
-                }}
-              >
-                {p.label}
-              </button>
-            ))}
+            {PERIODS.map((p) => {
+              const isSelected = period === p.value;
+              return (
+                <button
+                  key={p.value}
+                  onClick={() => setPeriod(p.value)}
+                  style={{
+                    position: "relative",
+                    padding: "5px 14px",
+                    borderRadius: "7px",
+                    fontSize: "12.5px",
+                    fontWeight: isSelected ? 700 : 500,
+                    color: isSelected ? "#FFFFFF" : "var(--text-secondary)",
+                    background: "transparent",
+                    border: "none",
+                    cursor: "pointer",
+                    zIndex: 2,
+                    transition: "color 0.15s ease",
+                  }}
+                >
+                  {isSelected && (
+                    <motion.div
+                      layoutId="activePeriodTab"
+                      transition={{ type: "spring", stiffness: 450, damping: 30 }}
+                      style={{
+                        position: "absolute",
+                        inset: 0,
+                        borderRadius: "7px",
+                        background: "var(--bg-surface)",
+                        border: "1px solid var(--border-strong)",
+                        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.35)",
+                        zIndex: -1,
+                      }}
+                    />
+                  )}
+                  <span>{p.label}</span>
+                </button>
+              );
+            })}
           </div>
 
           {/* Right Header Actions */}
@@ -291,7 +337,6 @@ export default function DashboardPage() {
                     height: "6px",
                     borderRadius: "50%",
                     background: "var(--accent)",
-                    boxShadow: "0 0 6px var(--accent)",
                   }}
                 />
               )}
@@ -337,9 +382,15 @@ export default function DashboardPage() {
               <p style={{ fontSize: "14px", fontWeight: 500 }}>Connecting to Open Banking ledger…</p>
             </div>
           ) : (
-            <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+            <motion.div
+              variants={dashboardContainerVariants}
+              initial="hidden"
+              animate="visible"
+              style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}
+            >
               {/* Header Greeting Row */}
-              <div
+              <motion.div
+                variants={dashboardItemVariants}
                 style={{
                   display: "flex",
                   justifyContent: "space-between",
@@ -347,7 +398,6 @@ export default function DashboardPage() {
                   flexWrap: "wrap",
                   gap: "1rem",
                 }}
-                className="animate-fade-up"
               >
                 <div>
                   <h1
@@ -384,42 +434,49 @@ export default function DashboardPage() {
                   <CreditCard size={14} color="var(--accent)" />
                   <span>Manage Accounts ({accountCount})</span>
                 </Link>
-              </div>
+              </motion.div>
 
               {/* Signature Hero: Physical Bank Card & Quick Actions Widget */}
-              <PhysicalCard
-                primaryAccountName={primaryAccount?.name ?? "GTBank Current Account"}
-                primaryBalance={primaryAccount?.currentBalance ?? metrics.totalBalance}
-                secondaryAccountName={secondaryAccount?.name ?? "GTBank Savings"}
-                secondaryBalance={secondaryAccount?.currentBalance ?? 350000}
-                userName="Alex Chen"
-                isSyncing={isRefreshing}
-                onSyncClick={() => loadDashboardData(true)}
-              />
+              <motion.div variants={dashboardItemVariants}>
+                <PhysicalCard
+                  primaryAccountName={primaryAccount?.name ?? "GTBank Current Account"}
+                  primaryBalance={primaryAccount?.currentBalance ?? metrics.totalBalance}
+                  secondaryAccountName={secondaryAccount?.name ?? "GTBank Savings"}
+                  secondaryBalance={secondaryAccount?.currentBalance ?? 350000}
+                  userName="Alex Chen"
+                  isSyncing={isRefreshing}
+                  onSyncClick={() => loadDashboardData(true)}
+                />
+              </motion.div>
 
               {/* North Star 3 Financial Questions */}
-              <MoneyNow
-                totalBalance={metrics.totalBalance}
-                totalIncome={metrics.totalIncome}
-                totalExpenses={metrics.totalExpenses}
-                netCashFlow={metrics.netCashFlow}
-                periodLabel={PERIOD_LABELS[period]}
-                accountCount={accountCount}
-              />
+              <motion.div variants={dashboardItemVariants}>
+                <MoneyNow
+                  totalBalance={metrics.totalBalance}
+                  totalIncome={metrics.totalIncome}
+                  totalExpenses={metrics.totalExpenses}
+                  netCashFlow={metrics.netCashFlow}
+                  periodLabel={PERIOD_LABELS[period]}
+                  accountCount={accountCount}
+                />
+              </motion.div>
 
               {/* Natural Language Narrative Commentary */}
-              <MoneyStory
-                topCategoryName={topCategory?.name}
-                topCategoryAmount={topCategory?.amount}
-                topMerchantName={topMerchant}
-                retentionRate={metrics.savingsRate}
-                totalIncome={metrics.totalIncome}
-                totalExpenses={metrics.totalExpenses}
-                netCashFlow={metrics.netCashFlow}
-              />
+              <motion.div variants={dashboardItemVariants}>
+                <MoneyStory
+                  topCategoryName={topCategory?.name}
+                  topCategoryAmount={topCategory?.amount}
+                  topMerchantName={topMerchant}
+                  retentionRate={metrics.savingsRate}
+                  totalIncome={metrics.totalIncome}
+                  totalExpenses={metrics.totalExpenses}
+                  netCashFlow={metrics.netCashFlow}
+                />
+              </motion.div>
 
               {/* Middle Row: Trend Curve Chart & Category Map */}
-              <div
+              <motion.div
+                variants={dashboardItemVariants}
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
@@ -435,10 +492,11 @@ export default function DashboardPage() {
                   categories={categories}
                   totalExpenses={metrics.totalExpenses}
                 />
-              </div>
+              </motion.div>
 
               {/* Bottom Row: Senders & Receivers Activity, Bills Due & Intelligence */}
-              <div
+              <motion.div
+                variants={dashboardItemVariants}
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))",
@@ -461,8 +519,8 @@ export default function DashboardPage() {
                     isGenerating={isEvaluatingInsights}
                   />
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
           )}
         </main>
       </div>
@@ -471,6 +529,9 @@ export default function DashboardPage() {
       <div className="mobile-only">
         <AppBottomBar />
       </div>
+
+      {/* Monie AI Conversational Assistant */}
+      <MonieAiChat />
     </div>
   );
 }

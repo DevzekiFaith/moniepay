@@ -328,18 +328,27 @@ button { font-family: inherit; }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 
 .btn-primary {
-  background: var(--accent);
-  color: #fff;
-  box-shadow: 0 0 20px rgba(79,156,249,0.25);
+  background: linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
-.btn-primary:hover:not(:disabled) { background: #6BABFA; box-shadow: 0 0 28px rgba(79,156,249,0.35); }
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
 
 .btn-secondary {
   background: var(--bg-elevated);
   color: var(--text-primary);
   border-color: var(--border-base);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
 }
-.btn-secondary:hover:not(:disabled) { background: var(--bg-border); border-color: var(--border-strong); }
+.btn-secondary:hover:not(:disabled) {
+  background: var(--bg-surface);
+  border-color: var(--border-strong);
+}
 
 .btn-ghost {
   background: transparent;

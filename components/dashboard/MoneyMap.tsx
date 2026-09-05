@@ -69,7 +69,10 @@ export function MoneyMap({ categories, totalExpenses }: MoneyMapProps) {
               const { Icon, bg, color } = getCategoryIconMeta(cat.categoryName);
 
               return (
-                <div key={cat.categoryId}>
+                <motion.div
+                  key={cat.categoryId}
+                  whileHover={{ x: 3, transition: { duration: 0.15 } }}
+                >
                   <div
                     style={{
                       display: "flex",
@@ -81,18 +84,19 @@ export function MoneyMap({ categories, totalExpenses }: MoneyMapProps) {
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
                       <div
                         style={{
-                          width: "22px",
-                          height: "22px",
-                          borderRadius: "6px",
-                          background: bg,
+                          width: "24px",
+                          height: "24px",
+                          borderRadius: "7px",
+                          background: "rgba(79, 156, 249, 0.12)",
+                          border: "1px solid rgba(79, 156, 249, 0.22)",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          color: color,
+                          color: "var(--accent)",
                           flexShrink: 0,
                         }}
                       >
-                        <Icon size={12} strokeWidth={2.4} />
+                        <Icon size={13} strokeWidth={2.4} />
                       </div>
                       <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
                         {cat.categoryName}
@@ -107,11 +111,11 @@ export function MoneyMap({ categories, totalExpenses }: MoneyMapProps) {
                       </span>
                     </div>
                   </div>
-                  {/* Proportional bar with Framer Motion */}
+                  {/* Proportional bar with Spring Motion */}
                   <div
                     style={{
                       height: "6px",
-                      background: "var(--bg-elevated)",
+                      background: "rgba(255, 255, 255, 0.06)",
                       borderRadius: "99px",
                       overflow: "hidden",
                     }}
@@ -119,16 +123,16 @@ export function MoneyMap({ categories, totalExpenses }: MoneyMapProps) {
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${barWidth}%` }}
-                      transition={{ duration: 0.65, delay: idx * 0.08, ease: "easeOut" }}
+                      transition={{ type: "spring", stiffness: 70, damping: 16, delay: idx * 0.07 }}
                       style={{
                         height: "100%",
-                        background: "var(--accent)",
+                        background: "linear-gradient(90deg, #2563EB 0%, #4F9CF9 100%)",
                         opacity,
                         borderRadius: "99px",
                       }}
                     />
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>

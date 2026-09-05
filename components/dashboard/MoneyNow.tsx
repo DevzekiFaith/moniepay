@@ -2,14 +2,15 @@
 
 // ─────────────────────────────────────────────────────────────────
 // MoneyNow — North Star Metric Panel
-// Three questions answered instantly:
+// Three questions answered instantly with tactile Framer Motion physics:
 //   1. How much do I have?
 //   2. How much came in?
 //   3. How much went out?
 // ─────────────────────────────────────────────────────────────────
 
 import { formatNaira } from "@/lib/utils";
-import { ArrowUpRight, ArrowDownLeft, Wallet, ShieldCheck } from "lucide-react";
+import { ArrowUpRight, ArrowDownLeft, Wallet } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface MoneyNowProps {
   totalBalance: number;
@@ -32,7 +33,6 @@ export function MoneyNow({
 
   return (
     <div
-      className="animate-fade-up"
       style={{
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
@@ -40,7 +40,12 @@ export function MoneyNow({
       }}
     >
       {/* ─ Card 1: Total Balance ─ */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        whileHover={{ y: -4, scale: 1.015 }}
+        whileTap={{ scale: 0.985 }}
+        transition={{ type: "spring", stiffness: 350, damping: 22, delay: 0.04 }}
         className="card"
         style={{
           position: "relative",
@@ -48,16 +53,15 @@ export function MoneyNow({
           background: "linear-gradient(180deg, rgba(26, 34, 54, 0.6) 0%, rgba(17, 24, 39, 0.95) 100%)",
         }}
       >
-        {/* Subtle accent top glow strip */}
+        {/* Crisp accent top indicator strip (no blurry glow) */}
         <div
           style={{
             position: "absolute",
             top: 0,
             left: 0,
             right: 0,
-            height: "3px",
+            height: "2px",
             background: "linear-gradient(90deg, #4F9CF9 0%, #2563eb 100%)",
-            boxShadow: "0 0 12px rgba(79, 156, 249, 0.5)",
           }}
         />
 
@@ -94,7 +98,6 @@ export function MoneyNow({
               height: "6px",
               borderRadius: "50%",
               background: "var(--positive)",
-              boxShadow: "0 0 8px rgba(52, 211, 153, 0.6)",
               flexShrink: 0,
             }}
             className="animate-pulse"
@@ -103,10 +106,15 @@ export function MoneyNow({
             {accountCount > 0 ? `${accountCount} connected accounts synced` : "Synced across accounts"}
           </span>
         </div>
-      </div>
+      </motion.div>
 
       {/* ─ Card 2: Income ─ */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        whileHover={{ y: -4, scale: 1.015 }}
+        whileTap={{ scale: 0.985 }}
+        transition={{ type: "spring", stiffness: 350, damping: 22, delay: 0.08 }}
         className="card"
         style={{
           background: "linear-gradient(180deg, rgba(26, 34, 54, 0.4) 0%, rgba(17, 24, 39, 0.9) 100%)",
@@ -132,10 +140,15 @@ export function MoneyNow({
         <p style={{ marginTop: "0.75rem", fontSize: "12px", color: "var(--text-secondary)" }}>
           Direct deposits, refunds &amp; incoming transfers
         </p>
-      </div>
+      </motion.div>
 
       {/* ─ Card 3: Expenses ─ */}
-      <div
+      <motion.div
+        initial={{ opacity: 0, y: 16, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        whileHover={{ y: -4, scale: 1.015 }}
+        whileTap={{ scale: 0.985 }}
+        transition={{ type: "spring", stiffness: 350, damping: 22, delay: 0.12 }}
         className="card"
         style={{
           background: "linear-gradient(180deg, rgba(26, 34, 54, 0.4) 0%, rgba(17, 24, 39, 0.9) 100%)",
@@ -164,7 +177,7 @@ export function MoneyNow({
         <p style={{ marginTop: "0.75rem", fontSize: "12px", color: "var(--text-secondary)" }}>
           Actual spend (internal transfers excluded)
         </p>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -27,7 +27,7 @@ export function MoniePayEmblem({ size = 36 }: { size?: number }) {
         height: `${size}px`,
         borderRadius: `${Math.round(size * 0.28)}px`,
         background: "linear-gradient(135deg, #4F9CF9 0%, #2563EB 100%)",
-        boxShadow: "0 0 18px rgba(79, 156, 249, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.35)",
+        boxShadow: "0 2px 8px rgba(0, 0, 0, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.35)",
         border: "1px solid rgba(255, 255, 255, 0.18)",
         display: "flex",
         alignItems: "center",

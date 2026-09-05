@@ -20,6 +20,7 @@ import {
   LogOut,
   ChevronRight,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -40,16 +41,19 @@ export function AnimatedHamburgerButton({
   onClick: () => void;
 }) {
   return (
-    <button
+    <motion.button
       type="button"
+      whileTap={{ scale: 0.9 }}
+      whileHover={{ scale: 1.04 }}
+      transition={{ type: "spring", stiffness: 400, damping: 20 }}
       onClick={onClick}
       aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
       style={{
         width: "42px",
         height: "42px",
         borderRadius: "12px",
-        background: isOpen ? "rgba(79, 156, 249, 0.16)" : "var(--bg-elevated)",
-        border: `1px solid ${isOpen ? "rgba(79, 156, 249, 0.4)" : "var(--border-base)"}`,
+        background: isOpen ? "rgba(79, 156, 249, 0.14)" : "var(--bg-elevated)",
+        border: `1px solid ${isOpen ? "rgba(79, 156, 249, 0.35)" : "var(--border-base)"}`,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
@@ -58,8 +62,8 @@ export function AnimatedHamburgerButton({
         cursor: "pointer",
         padding: 0,
         position: "relative",
-        transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-        boxShadow: isOpen ? "0 0 14px rgba(79, 156, 249, 0.3)" : "none",
+        transition: "background 0.2s ease, border-color 0.2s ease",
+        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
       }}
     >
       {/* Top line */}
@@ -98,7 +102,7 @@ export function AnimatedHamburgerButton({
           transform: isOpen ? "translateY(-7px) rotate(-45deg)" : "none",
         }}
       />
-    </button>
+    </motion.button>
   );
 }
 
@@ -215,7 +219,7 @@ export function AppMobileHeader() {
                 WebkitBackdropFilter: "blur(28px)",
                 border: "1px solid rgba(255, 255, 255, 0.12)",
                 borderRadius: "20px",
-                boxShadow: "0 20px 50px rgba(0, 0, 0, 0.8), 0 0 24px rgba(79, 156, 249, 0.15)",
+                boxShadow: "0 20px 50px rgba(0, 0, 0, 0.85)",
                 zIndex: 60,
                 padding: "1.25rem",
                 display: "flex",
@@ -229,107 +233,117 @@ export function AppMobileHeader() {
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "space-between",
-                  padding: "0.75rem 1rem",
-                  borderRadius: "14px",
-                  background: "var(--bg-elevated)",
-                  border: "1px solid var(--border-base)",
+                  paddingBottom: "1rem",
+                  borderBottom: "1px solid var(--border-base)",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                   <div
                     style={{
-                      width: "38px",
-                      height: "38px",
+                      width: "40px",
+                      height: "40px",
                       borderRadius: "50%",
-                      background: "linear-gradient(135deg, #4F46E5 0%, #2563EB 100%)",
+                      background: "linear-gradient(135deg, #38bdf8 0%, #1e40af 100%)",
+                      border: "1.5px solid rgba(255, 255, 255, 0.2)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      color: "#FFFFFF",
-                      fontWeight: 700,
                       fontSize: "14px",
+                      fontWeight: 700,
+                      color: "#FFFFFF",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
                     }}
                   >
                     {user?.name ? user.name[0].toUpperCase() : "A"}
                   </div>
                   <div>
-                    <p style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>
+                    <p style={{ fontSize: "14.5px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
                       {user?.name || "Alex Chen"}
                     </p>
-                    <div style={{ display: "flex", alignItems: "center", gap: "5px", marginTop: "2px" }}>
-                      <span
-                        style={{
-                          width: "5px",
-                          height: "5px",
-                          borderRadius: "50%",
-                          background: "var(--positive)",
-                          boxShadow: "0 0 6px var(--positive)",
-                        }}
-                      />
-                      <span style={{ fontSize: "10.5px", color: "var(--text-tertiary)" }}>
-                        Supabase Live Sync
-                      </span>
-                    </div>
+                    <p style={{ fontSize: "11.5px", color: "var(--text-tertiary)" }}>
+                      {user?.email || "alex.chen@moniepay.app"}
+                    </p>
                   </div>
                 </div>
 
                 <span
                   style={{
-                    fontSize: "10.5px",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: "4px",
                     padding: "3px 8px",
-                    borderRadius: "6px",
+                    borderRadius: "99px",
                     background: "rgba(52, 211, 153, 0.12)",
+                    border: "1px solid rgba(52, 211, 153, 0.25)",
+                    fontSize: "10.5px",
                     color: "var(--positive)",
                     fontWeight: 600,
                   }}
                 >
-                  Verified
+                  <span
+                    style={{
+                      width: "5px",
+                      height: "5px",
+                      borderRadius: "50%",
+                      background: "var(--positive)",
+                    }}
+                  />
+                  Live Sync
                 </span>
               </div>
 
-              {/* Navigation Links */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              {/* Navigation Items List */}
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
                 {NAV_ITEMS.map((item) => {
                   const isActive = pathname === item.href;
                   const Icon = item.icon;
                   return (
-                    <Link
+                    <motion.div
                       key={item.href}
-                      href={item.href}
-                      onClick={() => setIsOpen(false)}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        padding: "0.75rem 1rem",
-                        borderRadius: "12px",
-                        fontSize: "14px",
-                        fontWeight: isActive ? 700 : 500,
-                        color: isActive ? "#FFFFFF" : "var(--text-secondary)",
-                        background: isActive ? "rgba(79, 156, 249, 0.15)" : "transparent",
-                        border: isActive ? "1px solid rgba(79, 156, 249, 0.3)" : "1px solid transparent",
-                        textDecoration: "none",
-                        transition: "all 0.15s ease",
-                      }}
+                      whileTap={{ scale: 0.97 }}
+                      whileHover={{ x: 2 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
                     >
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-                        <Icon
-                          size={18}
-                          color={isActive ? "var(--accent)" : "var(--text-secondary)"}
-                          strokeWidth={isActive ? 2.3 : 1.8}
-                        />
-                        <span>{item.label}</span>
-                      </div>
-                      <ChevronRight size={15} color="var(--text-tertiary)" />
-                    </Link>
+                      <Link
+                        href={item.href}
+                        onClick={() => setIsOpen(false)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          padding: "0.75rem 1rem",
+                          borderRadius: "12px",
+                          fontSize: "14px",
+                          fontWeight: isActive ? 700 : 500,
+                          color: isActive ? "#FFFFFF" : "var(--text-secondary)",
+                          background: isActive ? "rgba(79, 156, 249, 0.15)" : "transparent",
+                          border: isActive ? "1px solid rgba(79, 156, 249, 0.3)" : "1px solid transparent",
+                          textDecoration: "none",
+                          transition: "all 0.15s ease",
+                        }}
+                      >
+                        <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
+                          <Icon
+                            size={18}
+                            color={isActive ? "var(--accent)" : "var(--text-secondary)"}
+                            strokeWidth={isActive ? 2.3 : 1.8}
+                          />
+                          <span>{item.label}</span>
+                        </div>
+                        <ChevronRight size={15} color="var(--text-tertiary)" />
+                      </Link>
+                    </motion.div>
                   );
                 })}
               </div>
 
               {/* Drawer Bottom Actions: Sign Out */}
               <div style={{ borderTop: "1px solid var(--border-base)", paddingTop: "0.875rem" }}>
-                <button
+                <motion.button
                   type="button"
+                  whileTap={{ scale: 0.96 }}
+                  whileHover={{ scale: 1.01 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 22 }}
                   onClick={() => {
                     setIsOpen(false);
                     setIsLogoutOpen(true);
@@ -342,9 +356,9 @@ export function AppMobileHeader() {
                     gap: "0.5rem",
                     padding: "0.75rem",
                     borderRadius: "12px",
-                    background: "rgba(244, 63, 94, 0.12)",
-                    border: "1px solid rgba(244, 63, 94, 0.3)",
-                    color: "var(--negative)",
+                    background: "rgba(37, 99, 235, 0.12)",
+                    border: "1px solid rgba(79, 156, 249, 0.25)",
+                    color: "var(--accent)",
                     fontSize: "13.5px",
                     fontWeight: 600,
                     cursor: "pointer",
@@ -352,7 +366,7 @@ export function AppMobileHeader() {
                 >
                   <LogOut size={16} />
                   <span>Sign Out of MoniePay</span>
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           </>
@@ -471,6 +485,42 @@ export function AppSidebar() {
               );
             })}
           </nav>
+
+          {/* Monie AI Assistant Banner */}
+          <div
+            style={{
+              marginTop: "1.25rem",
+              padding: "0.875rem",
+              borderRadius: "14px",
+              background: "linear-gradient(135deg, rgba(124, 58, 237, 0.14) 0%, rgba(37, 99, 235, 0.08) 100%)",
+              border: "1px solid rgba(124, 58, 237, 0.28)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                <Sparkles size={13} color="#A78BFA" />
+                <span style={{ fontSize: "12px", fontWeight: 700, color: "#EDE9FE" }}>
+                  Monie AI Copilot
+                </span>
+              </div>
+              <span
+                style={{
+                  fontSize: "9px",
+                  fontWeight: 700,
+                  padding: "1px 5px",
+                  borderRadius: "4px",
+                  background: "rgba(52, 211, 153, 0.15)",
+                  color: "var(--positive)",
+                  border: "1px solid rgba(52, 211, 153, 0.3)",
+                }}
+              >
+                LIVE
+              </span>
+            </div>
+            <p style={{ fontSize: "11px", color: "var(--text-tertiary)", margin: 0, lineHeight: 1.45 }}>
+              Ask anything about your money, food spending, or bills.
+            </p>
+          </div>
         </div>
 
         {/* Refined Minimalist Footer: User Identity & Quick Logout */}

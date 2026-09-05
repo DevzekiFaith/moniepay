@@ -52,7 +52,9 @@ export function PhysicalCard({
     >
       {/* ── Virtual / Physical Card ── */}
       <motion.div
-        whileHover={{ y: -3, transition: { duration: 0.2 } }}
+        whileHover={{ y: -4, scale: 1.01 }}
+        whileTap={{ scale: 0.985 }}
+        transition={{ type: "spring", stiffness: 350, damping: 22 }}
         style={{
           position: "relative",
           borderRadius: "20px",
@@ -297,7 +299,8 @@ export function PhysicalCard({
               color: "#FFFFFF",
               fontSize: "13px",
               fontWeight: 600,
-              boxShadow: "0 4px 16px rgba(79, 156, 249, 0.3)",
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.3)",
+              border: "1px solid rgba(255, 255, 255, 0.15)",
               textDecoration: "none",
               transition: "all 0.15s ease",
             }}

@@ -346,17 +346,17 @@ export default function LoginPage() {
               justifyContent: "center",
               gap: "8px",
               cursor: isSubmitting ? "not-allowed" : "pointer",
-              boxShadow: "0 4px 20px rgba(79, 156, 249, 0.4)",
+              boxShadow: "0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)",
               transition: "transform 0.15s ease, box-shadow 0.15s ease",
               marginTop: "4px",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-1px)";
-              e.currentTarget.style.boxShadow = "0 6px 24px rgba(79, 156, 249, 0.55)";
+              e.currentTarget.style.boxShadow = "0 4px 12px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 20px rgba(79, 156, 249, 0.4)";
+              e.currentTarget.style.boxShadow = "0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.15)";
             }}
           >
             {isSubmitting ? (
