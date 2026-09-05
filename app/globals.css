@@ -584,6 +584,10 @@ html, body {
   }
 }
 
+.mobile-only {
+  display: none !important;
+}
+
 @media (max-width: 768px) {
   .desktop-only { display: none !important; }
   .mobile-only  { display: flex !important; }

@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import { useState, useEffect } from "react";
-import { AppSidebar, AppBottomBar } from "@/components/layout/AppNavigation";
+import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
 import { formatNaira } from "@/lib/utils";
 import { RecordActivityModal } from "@/components/dashboard/RecordActivityModal";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
@@ -260,8 +260,11 @@ export default function AccountsPage() {
 
       {/* Main Container */}
       <div className="page-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        {/* Top Header */}
-        <header className="page-header">
+        {/* Mobile Animated Header with Hamburger Menu */}
+        <AppMobileHeader />
+
+        {/* Top Header (Desktop Only) */}
+        <header className="page-header desktop-only">
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
             <h1 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
               Accounts

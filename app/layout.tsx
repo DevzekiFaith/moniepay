@@ -12,13 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "AjoPay — Save Small, Grow Big | Money Intelligence",
-  description: "Save Small, Grow Big. Real-time personal money intelligence, Open Banking integration and proactive wealth tracking.",
-  keywords: ["AjoPay", "save small grow big", "personal finance", "money intelligence", "open banking", "nigeria"],
-  icons: {
-    icon: "/ajopay-logo-square.png",
-    apple: "/ajopay-logo-square.png",
-  },
+  title: "MoniePay — Personal Money Intelligence & Real-Time Finance",
+  description: "MoniePay. Real-time personal money intelligence, Open Banking ledger synchronization, and proactive cashflow tracking.",
+  keywords: ["MoniePay", "money intelligence", "open banking", "financial audit", "fintech", "nigeria"],
 };
 
 export default function RootLayout({

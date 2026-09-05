@@ -1,7 +1,7 @@
 "use client";
 
 // ─────────────────────────────────────────────
-// AjoPay — Live Realtime Synchronization Hook
+// MoniePay — Live Realtime Synchronization Hook
 // Subscribes to Supabase Realtime, Window Event Bus,
 // and automatic background ledger polling (12s cadence).
 // ─────────────────────────────────────────────
@@ -23,8 +23,26 @@ interface UseRealtimeTransactionsOptions {
  */
 export function dispatchRealtimeUpdate(type: "transaction" | "account" = "transaction") {
   if (typeof window !== "undefined") {
-    const eventName = type === "transaction" ? "ajopay:transaction-sync" : "ajopay:account-sync";
+    const eventName = type === "transaction" ? "moniepay:transaction-sync" : "moniepay:account-sync";
     window.dispatchEvent(new CustomEvent(eventName, { detail: { timestamp: Date.now(), type } }));
+    // Also dispatch legacy event for compatibility
+    window.dispatchEvent(new CustomEvent(type === "transaction" ? "ajopay:transaction-sync" : "ajopay:account-sync"));
+  }
+}
+
+/**
+ * Dispatch a live push notification across the application and to native desktop/mobile.
+ */
+export function dispatchLiveNotification(notification: {
+  title: string;
+  message?: string;
+  type?: "success" | "error" | "info" | "warning" | "push";
+  sendPush?: boolean;
+}) {
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(
+      new CustomEvent("moniepay:live-notification", { detail: notification })
+    );
   }
 }
 
@@ -92,10 +110,14 @@ export function useRealtimeTransactions({
     const handleTxEvent = () => onTxRef.current?.({ source: "event-bus" });
     const handleAcctEvent = () => onAcctRef.current?.({ source: "event-bus" });
 
+    window.addEventListener("moniepay:transaction-sync", handleTxEvent);
+    window.addEventListener("moniepay:account-sync", handleAcctEvent);
     window.addEventListener("ajopay:transaction-sync", handleTxEvent);
     window.addEventListener("ajopay:account-sync", handleAcctEvent);
 
     return () => {
+      window.removeEventListener("moniepay:transaction-sync", handleTxEvent);
+      window.removeEventListener("moniepay:account-sync", handleAcctEvent);
       window.removeEventListener("ajopay:transaction-sync", handleTxEvent);
       window.removeEventListener("ajopay:account-sync", handleAcctEvent);
     };

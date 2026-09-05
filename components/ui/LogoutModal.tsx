@@ -108,7 +108,7 @@ export function LogoutModal({
             </div>
             <div>
               <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-                Log out of AjoPay?
+                Log out of MoniePay?
               </h3>
               <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "2px" }}>
                 Active session for <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{userName}</span>
@@ -152,8 +152,8 @@ export function LogoutModal({
               style={{
                 height: "42px",
                 borderRadius: "10px",
-                background: "linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)",
-                border: "1px solid rgba(239, 68, 68, 0.4)",
+                background: "linear-gradient(135deg, #4F46E5 0%, #2563EB 100%)",
+                border: "1px solid rgba(79, 156, 249, 0.4)",
                 color: "#FFFFFF",
                 fontSize: "13px",
                 fontWeight: 700,
@@ -162,14 +162,16 @@ export function LogoutModal({
                 alignItems: "center",
                 justifyContent: "center",
                 gap: "6px",
-                boxShadow: "0 4px 14px rgba(220, 38, 38, 0.4)",
-                transition: "transform 0.15s ease",
+                boxShadow: "0 4px 14px rgba(79, 156, 249, 0.35)",
+                transition: "transform 0.15s ease, box-shadow 0.15s ease",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.transform = "translateY(-1px)";
+                e.currentTarget.style.boxShadow = "0 6px 20px rgba(79, 156, 249, 0.5)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
+                e.currentTarget.style.boxShadow = "0 4px 14px rgba(79, 156, 249, 0.35)";
               }}
             >
               <LogOut size={14} />

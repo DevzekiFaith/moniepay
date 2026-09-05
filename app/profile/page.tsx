@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import { useState } from "react";
-import { AppSidebar, AppBottomBar } from "@/components/layout/AppNavigation";
+import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
 import { useNotification } from "@/context/NotificationContext";
 import { useAuth } from "@/context/AuthContext";
 import { LogoutModal } from "@/components/ui/LogoutModal";
@@ -27,7 +27,6 @@ import {
   Sparkles,
   Volume2,
   AlertTriangle,
-  Send,
   LogOut,
 } from "lucide-react";
 import Link from "next/link";
@@ -93,22 +92,6 @@ export default function ProfilePage() {
     }
   };
 
-  const handleTestPush = () => {
-    if (pushPermission === "granted") {
-      notify(
-        "🔔 Monie Lite Live Alert",
-        "₦250,000 received from Techcorp Ltd • Stanbic IBTC",
-        { type: "push", sendPush: true }
-      );
-    } else {
-      notify(
-        "🔔 Monie Lite In-App Alert",
-        "Enable browser push notifications above to receive native alerts on your desktop.",
-        { type: "info", sendPush: false }
-      );
-    }
-  };
-
   return (
     <div className="app-shell" style={{ display: "flex", minHeight: "100dvh", background: "var(--bg-base)" }}>
       {/* Desktop Sidebar */}
@@ -118,8 +101,12 @@ export default function ProfilePage() {
 
       {/* Main Container */}
       <div className="page-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        {/* Top Header */}
+        {/* Mobile Animated Header with Hamburger Menu */}
+        <AppMobileHeader />
+
+        {/* Top Sticky Header (Desktop Only) */}
         <header
+          className="page-header desktop-only"
           style={{
             height: "64px",
             borderBottom: "1px solid var(--border-base)",
@@ -178,7 +165,6 @@ export default function ProfilePage() {
           className="page-body"
           style={{
             flex: 1,
-            padding: "2rem 2.25rem 7rem",
             maxWidth: "1140px",
             width: "100%",
             margin: "0 auto",
@@ -238,7 +224,7 @@ export default function ProfilePage() {
                   </span>
                 </div>
                 <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "2px" }}>
-                  {user?.email || "alex.chen@ajopay.app"} • AjoPay Member
+                  {user?.email || "alex.chen@moniepay.app"} • MoniePay Member
                 </p>
               </div>
             </div>
@@ -559,29 +545,63 @@ export default function ProfilePage() {
                 </div>
               </div>
 
-              {/* Test Alert Button */}
-              <div style={{ marginTop: "1.25rem", borderTop: "1px solid var(--border-subtle)", paddingTop: "1rem" }}>
-                <button
-                  type="button"
-                  onClick={handleTestPush}
-                  className="neo-tactile-btn"
+              {/* Live Real-Time Push Status */}
+              <div
+                style={{
+                  marginTop: "1.25rem",
+                  borderTop: "1px solid var(--border-subtle)",
+                  paddingTop: "1rem",
+                }}
+              >
+                <div
                   style={{
-                    width: "100%",
-                    height: "38px",
-                    borderRadius: "10px",
-                    fontSize: "12.5px",
-                    fontWeight: 600,
-                    color: "var(--text-secondary)",
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center",
-                    gap: "6px",
-                    cursor: "pointer",
+                    justifyContent: "space-between",
+                    padding: "0.875rem 1rem",
+                    borderRadius: "12px",
+                    background: "rgba(16, 185, 129, 0.07)",
+                    border: "1px solid rgba(16, 185, 129, 0.22)",
                   }}
                 >
-                  <Send size={13} color="var(--accent)" />
-                  <span>Send Test Push Notification</span>
-                </button>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span
+                      style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        background: "var(--positive)",
+                        boxShadow: "0 0 10px rgba(52, 211, 153, 0.8)",
+                        display: "inline-block",
+                        flexShrink: 0,
+                      }}
+                      className="animate-pulse"
+                    />
+                    <div>
+                      <p style={{ fontSize: "12.5px", fontWeight: 600, color: "var(--text-primary)", margin: 0 }}>
+                        Live Push Alerts Active
+                      </p>
+                      <p style={{ fontSize: "11px", color: "var(--text-secondary)", margin: "2px 0 0 0" }}>
+                        Real-time transactions and alerts stream live via Supabase.
+                      </p>
+                    </div>
+                  </div>
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      fontWeight: 700,
+                      color: "var(--positive)",
+                      padding: "3px 8px",
+                      borderRadius: "6px",
+                      background: "rgba(16, 185, 129, 0.14)",
+                      border: "1px solid rgba(16, 185, 129, 0.3)",
+                      textTransform: "uppercase",
+                      letterSpacing: "0.05em",
+                    }}
+                  >
+                    LIVE
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -844,7 +864,7 @@ export default function ProfilePage() {
                 }}
               >
                 <LogOut size={15} />
-                <span>Log Out of AjoPay</span>
+                <span>Log Out of MoniePay</span>
               </button>
             </div>
           </div>

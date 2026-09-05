@@ -1,14 +1,15 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// AjoPay — Logout Transition Screen
+// MoniePay — Logout Transition Screen
+// Unified Brand Blue/Purple Aesthetics — Clean Session Termination
 // ─────────────────────────────────────────────────────────────────
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { AjoPayLogo } from "@/components/ui/AjoPayLogo";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { MoniePayLogo } from "@/components/ui/MoniePayLogo";
+import { Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LogoutPage() {
@@ -35,7 +36,7 @@ export default function LogoutPage() {
         padding: "1.5rem",
       }}
     >
-      {/* Ambient background glow */}
+      {/* Ambient background glow — Unified brand blue/purple */}
       <div
         style={{
           position: "absolute",
@@ -44,7 +45,7 @@ export default function LogoutPage() {
           width: "400px",
           height: "400px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(124, 58, 237, 0.22) 0%, rgba(124, 58, 237, 0) 70%)",
+          background: "radial-gradient(circle, rgba(79, 70, 229, 0.22) 0%, rgba(79, 70, 229, 0) 70%)",
           filter: "blur(60px)",
         }}
       />
@@ -59,30 +60,32 @@ export default function LogoutPage() {
           backdropFilter: "blur(28px)",
           WebkitBackdropFilter: "blur(28px)",
           border: "1px solid rgba(255, 255, 255, 0.12)",
-          borderRadius: "20px",
-          padding: "2.25rem 2rem",
-          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.8)",
+          borderRadius: "24px",
+          padding: "2.5rem 2rem",
+          boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.7)",
           textAlign: "center",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           gap: "1.25rem",
-          position: "relative",
-          zIndex: 10,
         }}
       >
-        <AjoPayLogo variant="stacked" size={44} useImage={true} />
+        <MoniePayLogo size={42} variant="icon" />
 
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "0.5rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px", color: "var(--text-secondary)" }}>
-            <Loader2 size={16} className="animate-spin" color="var(--accent)" />
-            <span style={{ fontSize: "14px", fontWeight: 600, color: "var(--text-primary)" }}>
-              Signing out securely…
-            </span>
-          </div>
-          <p style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>
-            Clearing active session keys and closing encrypted tunnel.
+        <div>
+          <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
+            Signing Out of MoniePay…
+          </h2>
+          <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "4px" }}>
+            Securing Open Banking vaults &amp; closing active session.
           </p>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "0.5rem" }}>
+          <Loader2 size={18} className="animate-spin" color="var(--accent)" />
+          <span style={{ fontSize: "12px", color: "var(--text-tertiary)", fontWeight: 500 }}>
+            Redirecting to security vault…
+          </span>
         </div>
       </motion.div>
     </div>

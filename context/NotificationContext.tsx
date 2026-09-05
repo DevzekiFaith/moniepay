@@ -16,6 +16,8 @@ import {
   ShieldAlert,
   ArrowRight,
 } from "lucide-react";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { formatNaira } from "@/lib/utils";
 
 export type ToastType = "success" | "error" | "info" | "warning" | "push";
 
@@ -187,6 +189,113 @@ function playNotificationChime(type: ToastType = "info") {
     },
     [showToast, isPushSupported]
   );
+
+  // ── Global Supabase Realtime Live Inflow/Debit & Notification Pipeline ──
+  useEffect(() => {
+    // 1. Listen to window event bus
+    const handleWindowEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{
+        title: string;
+        message?: string;
+        type?: ToastType;
+        sendPush?: boolean;
+      }>;
+      if (customEvent.detail?.title) {
+        notify(
+          customEvent.detail.title,
+          customEvent.detail.message,
+          { type: customEvent.detail.type || "push", sendPush: customEvent.detail.sendPush ?? true }
+        );
+      }
+    };
+    window.addEventListener("moniepay:live-notification", handleWindowEvent);
+
+    // 2. Supabase Realtime Subscriptions
+    const supabase = getSupabaseBrowserClient();
+    if (!supabase) {
+      return () => {
+        window.removeEventListener("moniepay:live-notification", handleWindowEvent);
+      };
+    }
+
+    try {
+      const channel = supabase
+        .channel("realtime:moniepay:global-alerts")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "Transaction" },
+          (payload: any) => {
+            const newTx = payload.new;
+            if (newTx) {
+              const isIncome = newTx.transactionType === "INCOME" || (newTx.amount && newTx.amount > 0 && !newTx.transactionType);
+              const isTransfer = newTx.transactionType === "TRANSFER" || newTx.isTransfer;
+              const absAmt = formatNaira(Math.abs(newTx.amount || 0));
+              const merchant = newTx.normalizedMerchantName || newTx.merchantName || newTx.description || "Transaction";
+
+              if (isTransfer) {
+                notify(
+                  "Internal Transfer Reconciled",
+                  `${absAmt} moved across verified accounts`,
+                  { type: "info", sendPush: true }
+                );
+              } else if (isIncome) {
+                notify(
+                  "Live Inflow Verified",
+                  `+${absAmt} received from ${merchant}`,
+                  { type: "success", sendPush: true }
+                );
+              } else {
+                notify(
+                  "Live Outflow Processed",
+                  `-${absAmt} paid at ${merchant}`,
+                  { type: "push", sendPush: true }
+                );
+              }
+
+              // Trigger app-wide ledger refresh
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("moniepay:transaction-sync"));
+              }
+            }
+          }
+        )
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "Insight" },
+          (payload: any) => {
+            const insight = payload.new;
+            if (insight) {
+              notify(
+                insight.title || "Proactive Money Intelligence",
+                insight.body || "New real-time financial insight computed",
+                { type: "push", sendPush: true }
+              );
+            }
+          }
+        )
+        .on(
+          "broadcast",
+          { event: "live-notification" },
+          (eventPayload: any) => {
+            const data = eventPayload.payload || {};
+            if (data.title) {
+              notify(data.title, data.message, { type: data.type || "push", sendPush: data.sendPush ?? true });
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        window.removeEventListener("moniepay:live-notification", handleWindowEvent);
+        supabase.removeChannel(channel);
+      };
+    } catch (err) {
+      console.warn("Global Supabase Realtime channel error:", err);
+      return () => {
+        window.removeEventListener("moniepay:live-notification", handleWindowEvent);
+      };
+    }
+  }, [notify]);
 
   return (
     <NotificationContext.Provider

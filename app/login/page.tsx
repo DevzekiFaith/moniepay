@@ -1,14 +1,14 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// AjoPay — Luxury Glassmorphic Sign In Portal
-// "Save Small, Grow Big" — Dark Neo-Tactile Glass Aesthetics
+// MoniePay — Luxury Glassmorphic Sign In Portal
+// Unified Brand Blue/Purple Aesthetics — No discordant color variants
 // ─────────────────────────────────────────────────────────────────
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
-import { AjoPayLogo } from "@/components/ui/AjoPayLogo";
+import { MoniePayLogo } from "@/components/ui/MoniePayLogo";
 import {
   Mail,
   Lock,
@@ -28,7 +28,7 @@ export default function LoginPage() {
   const router = useRouter();
   const { login, demoLogin, isLoading } = useAuth();
 
-  const [email, setEmail] = useState("alex.chen@ajopay.app");
+  const [email, setEmail] = useState("alex.chen@moniepay.app");
   const [password, setPassword] = useState("••••••••");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
@@ -75,44 +75,30 @@ export default function LoginPage() {
         padding: "1.5rem 1rem",
       }}
     >
-      {/* Ambient Glassmorphic Mesh Glow Orbs */}
+      {/* Ambient Unified Blue & Purple Glow Orbs */}
       <div
         style={{
           position: "absolute",
           top: "-15%",
-          left: "15%",
+          left: "20%",
           width: "500px",
           height: "500px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(124, 58, 237, 0.28) 0%, rgba(124, 58, 237, 0) 70%)",
+          background: "radial-gradient(circle, rgba(79, 70, 229, 0.25) 0%, rgba(79, 70, 229, 0) 70%)",
           filter: "blur(60px)",
           pointerEvents: "none",
-          animation: "floatSlow 8s ease-in-out infinite alternate",
         }}
       />
       <div
         style={{
           position: "absolute",
           bottom: "-10%",
-          right: "15%",
+          right: "20%",
           width: "480px",
           height: "480px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(16, 185, 129, 0) 70%)",
+          background: "radial-gradient(circle, rgba(37, 99, 235, 0.22) 0%, rgba(37, 99, 235, 0) 70%)",
           filter: "blur(65px)",
-          pointerEvents: "none",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: "40%",
-          right: "-5%",
-          width: "350px",
-          height: "350px",
-          borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(56, 189, 248, 0.16) 0%, rgba(56, 189, 248, 0) 70%)",
-          filter: "blur(55px)",
           pointerEvents: "none",
         }}
       />
@@ -125,7 +111,7 @@ export default function LoginPage() {
         style={{
           width: "100%",
           maxWidth: "440px",
-          background: "rgba(13, 21, 38, 0.76)",
+          background: "rgba(13, 21, 38, 0.78)",
           backdropFilter: "blur(28px)",
           WebkitBackdropFilter: "blur(28px)",
           border: "1px solid rgba(255, 255, 255, 0.12)",
@@ -136,9 +122,9 @@ export default function LoginPage() {
           zIndex: 10,
         }}
       >
-        {/* Header Branding */}
+        {/* Header Branding with Original Signature Logo */}
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1.75rem", textAlign: "center" }}>
-          <AjoPayLogo variant="stacked" size={46} useImage={true} showTagline={true} />
+          <MoniePayLogo variant="stacked" size={42} showTagline={true} taglineText="Money Intelligence" />
           <p
             style={{
               fontSize: "13px",
@@ -247,7 +233,7 @@ export default function LoginPage() {
               </label>
               <button
                 type="button"
-                onClick={() => alert("Demo Mode: Click 'Instant Demo Sign In' below to access without password.")}
+                onClick={() => alert("Demo Mode: Click 'Instant Demo Sign In' below to access instantly.")}
                 style={{
                   background: "none",
                   border: "none",
@@ -342,7 +328,7 @@ export default function LoginPage() {
             </label>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit Button — Unified Brand Purple/Blue */}
           <button
             type="submit"
             disabled={isSubmitting}
@@ -350,7 +336,7 @@ export default function LoginPage() {
               width: "100%",
               height: "46px",
               borderRadius: "12px",
-              background: "linear-gradient(135deg, #7C3AED 0%, #4F46E5 50%, #2563EB 100%)",
+              background: "linear-gradient(135deg, #4F46E5 0%, #2563EB 100%)",
               color: "#FFFFFF",
               fontSize: "14px",
               fontWeight: 700,
@@ -360,24 +346,24 @@ export default function LoginPage() {
               justifyContent: "center",
               gap: "8px",
               cursor: isSubmitting ? "not-allowed" : "pointer",
-              boxShadow: "0 4px 20px rgba(124, 58, 237, 0.4)",
+              boxShadow: "0 4px 20px rgba(79, 156, 249, 0.4)",
               transition: "transform 0.15s ease, box-shadow 0.15s ease",
               marginTop: "4px",
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.transform = "translateY(-1px)";
-              e.currentTarget.style.boxShadow = "0 6px 24px rgba(124, 58, 237, 0.55)";
+              e.currentTarget.style.boxShadow = "0 6px 24px rgba(79, 156, 249, 0.55)";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow = "0 4px 20px rgba(124, 58, 237, 0.4)";
+              e.currentTarget.style.boxShadow = "0 4px 20px rgba(79, 156, 249, 0.4)";
             }}
           >
             {isSubmitting ? (
               <Loader2 size={16} className="animate-spin" />
             ) : (
               <>
-                <span>Sign In to AjoPay</span>
+                <span>Sign In to MoniePay</span>
                 <ArrowRight size={15} />
               </>
             )}
@@ -402,7 +388,7 @@ export default function LoginPage() {
           <div style={{ flex: 1, height: "1px", background: "rgba(255, 255, 255, 0.08)" }} />
         </div>
 
-        {/* Instant Demo Access Button */}
+        {/* Instant Demo Access Button — Unified Brand Blue */}
         <button
           type="button"
           onClick={handleDemoAccess}
@@ -411,9 +397,9 @@ export default function LoginPage() {
             width: "100%",
             height: "44px",
             borderRadius: "12px",
-            background: "rgba(52, 211, 153, 0.12)",
-            border: "1px solid rgba(52, 211, 153, 0.3)",
-            color: "var(--positive)",
+            background: "rgba(79, 156, 249, 0.12)",
+            border: "1px solid rgba(79, 156, 249, 0.35)",
+            color: "#4F9CF9",
             fontSize: "13px",
             fontWeight: 700,
             display: "flex",
@@ -425,19 +411,19 @@ export default function LoginPage() {
             marginBottom: "0.75rem",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.background = "rgba(52, 211, 153, 0.2)";
+            e.currentTarget.style.background = "rgba(79, 156, 249, 0.22)";
             e.currentTarget.style.transform = "translateY(-1px)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.background = "rgba(52, 211, 153, 0.12)";
+            e.currentTarget.style.background = "rgba(79, 156, 249, 0.12)";
             e.currentTarget.style.transform = "translateY(0)";
           }}
         >
-          <Sparkles size={15} color="var(--positive)" />
+          <Sparkles size={15} color="#4F9CF9" />
           <span>Instant Demo Sign In (1-Click)</span>
         </button>
 
-        {/* Biometric Touch ID Button */}
+        {/* Biometric Touch ID Button — Unified Brand Blue Tint */}
         <button
           type="button"
           onClick={handleBiometricAuth}
@@ -445,9 +431,9 @@ export default function LoginPage() {
             width: "100%",
             height: "40px",
             borderRadius: "12px",
-            background: "rgba(255, 255, 255, 0.04)",
-            border: "1px solid rgba(255, 255, 255, 0.1)",
-            color: "var(--text-secondary)",
+            background: "rgba(79, 156, 249, 0.06)",
+            border: "1px solid rgba(79, 156, 249, 0.2)",
+            color: "#93C5FD",
             fontSize: "12.5px",
             fontWeight: 600,
             display: "flex",
@@ -458,50 +444,43 @@ export default function LoginPage() {
             transition: "all 0.15s ease",
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.25)";
-            e.currentTarget.style.color = "var(--text-primary)";
+            e.currentTarget.style.background = "rgba(79, 156, 249, 0.14)";
+            e.currentTarget.style.borderColor = "rgba(79, 156, 249, 0.4)";
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.borderColor = "rgba(255, 255, 255, 0.1)";
-            e.currentTarget.style.color = "var(--text-secondary)";
+            e.currentTarget.style.background = "rgba(79, 156, 249, 0.06)";
+            e.currentTarget.style.borderColor = "rgba(79, 156, 249, 0.2)";
           }}
         >
           {biometricSuccess ? (
             <>
               <CheckCircle2 size={16} color="var(--positive)" />
-              <span style={{ color: "var(--positive)" }}>Biometric Verified!</span>
+              <span>Biometric Verified</span>
             </>
           ) : (
             <>
-              <Fingerprint size={16} color="#A855F7" />
-              <span>Sign in with Biometrics / Face ID</span>
+              <Fingerprint size={16} color="#93C5FD" />
+              <span>Sign In with Face ID / Fingerprint</span>
             </>
           )}
         </button>
 
-        {/* Trust Badges Footer */}
+        {/* Bottom Trust Badge */}
         <div
           style={{
-            marginTop: "1.75rem",
+            marginTop: "1.5rem",
             paddingTop: "1rem",
-            borderTop: "1px solid rgba(255, 255, 255, 0.08)",
+            borderTop: "1px solid rgba(255, 255, 255, 0.06)",
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            gap: "1rem",
-            fontSize: "10.5px",
+            gap: "6px",
             color: "var(--text-tertiary)",
-            flexWrap: "wrap",
+            fontSize: "11px",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
-            <ShieldCheck size={13} color="var(--positive)" />
-            <span>CBN Open Banking</span>
-          </div>
-          <span>•</span>
-          <span>256-Bit SSL Encrypted</span>
-          <span>•</span>
-          <span>NDPR Certified</span>
+          <ShieldCheck size={13} color="var(--accent)" />
+          <span>256-bit TLS Bank-Grade Encryption</span>
         </div>
       </motion.div>
     </div>

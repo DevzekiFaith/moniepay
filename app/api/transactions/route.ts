@@ -9,6 +9,8 @@ import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { TransactionIngestionService } from "@/services/transaction/ingestion.service";
 import type { RawProviderTransaction } from "@/types/transaction.types";
+import { getSupabaseServerClient } from "@/lib/supabase/client";
+import { formatNaira } from "@/lib/utils";
 
 const querySchema = z.object({
   page: z.coerce.number().min(1).default(1),
@@ -143,6 +145,37 @@ export async function POST(request: NextRequest) {
       session.user.id,
       "MANUAL"
     );
+
+    // Broadcast live notification across Supabase Realtime channel
+    try {
+      const supabase = getSupabaseServerClient();
+      if (supabase) {
+        const isIncome = type === "INCOME";
+        const isTransfer = type === "TRANSFER";
+        const amtStr = formatNaira(amount);
+        const title = isTransfer
+          ? "Internal Transfer Reconciled"
+          : isIncome
+          ? "Live Inflow Verified"
+          : "Live Outflow Processed";
+        const message = isTransfer
+          ? `${amtStr} moved across verified accounts`
+          : `${isIncome ? "+" : "-"}${amtStr} • ${description}`;
+
+        await supabase.channel("realtime:moniepay:global-alerts").send({
+          type: "broadcast",
+          event: "live-notification",
+          payload: {
+            title,
+            message,
+            type: isIncome ? "success" : isTransfer ? "info" : "push",
+            sendPush: true,
+          },
+        });
+      }
+    } catch {
+      // Non-blocking real-time broadcast
+    }
 
     return NextResponse.json({
       success: true,

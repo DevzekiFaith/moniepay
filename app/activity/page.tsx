@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { AppSidebar, AppBottomBar } from "@/components/layout/AppNavigation";
+import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
 import { MoneyNow } from "@/components/dashboard/MoneyNow";
 import { formatNaira, formatTransactionDate } from "@/lib/utils";
 import {
@@ -295,8 +295,12 @@ export default function ActivityPage() {
 
       {/* Main Container */}
       <div className="page-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        {/* Sticky Top Header */}
+        {/* Mobile Animated Header with Hamburger Menu */}
+        <AppMobileHeader />
+
+        {/* Sticky Top Header (Desktop Only) */}
         <header
+          className="desktop-only"
           style={{
             height: "64px",
             borderBottom: "1px solid var(--border-base)",

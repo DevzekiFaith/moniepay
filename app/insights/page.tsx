@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useCallback } from "react";
-import { AppSidebar, AppBottomBar } from "@/components/layout/AppNavigation";
+import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
 import { MoneyNow } from "@/components/dashboard/MoneyNow";
 import { MoneyStory } from "@/components/dashboard/MoneyStory";
 import { SpendingTrend, type DailySpendItem } from "@/components/dashboard/SpendingTrend";
@@ -29,6 +29,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useRealtimeTransactions } from "@/hooks/useRealtimeTransactions";
 
 type Period = "today" | "this_week" | "this_month" | "last_3_months";
 
@@ -127,6 +128,10 @@ export default function InsightsPage() {
             data.dailySpend.map((d: any) => ({
               date: d.date,
               amount: d.totalOut ?? d.amount ?? 0,
+              totalIn: d.totalIn ?? 0,
+              totalOut: d.totalOut ?? d.amount ?? 0,
+              net: d.net ?? (d.totalIn ?? 0) - (d.totalOut ?? d.amount ?? 0),
+              transactionCount: d.transactionCount ?? 0,
               label: d.date.slice(5),
             }))
           );
@@ -173,6 +178,13 @@ export default function InsightsPage() {
 
   const { user } = useAuth();
 
+  // Real-time synchronization
+  useRealtimeTransactions({
+    userId: user?.id || "demo-user",
+    onTransactionChange: () => loadData(),
+    onAccountChange: () => loadData(),
+  });
+
   return (
     <div className="app-shell" style={{ display: "flex", minHeight: "100dvh", background: "var(--bg-base)" }}>
       {/* Desktop Sidebar */}
@@ -182,8 +194,11 @@ export default function InsightsPage() {
 
       {/* Main Container */}
       <div className="page-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        {/* Top Sticky Header */}
-        <header className="page-header">
+        {/* Mobile Animated Header with Hamburger Menu */}
+        <AppMobileHeader />
+
+        {/* Top Sticky Header (Desktop Only: Period Tabs) */}
+        <header className="page-header desktop-only">
           {/* Time Period Tabs */}
           <div
             style={{
@@ -346,7 +361,7 @@ export default function InsightsPage() {
                 topCategoryName={topCategory?.name}
                 topCategoryAmount={topCategory?.amount}
                 topMerchantName={topMerchant}
-                savingsRate={metrics.savingsRate}
+                retentionRate={metrics.savingsRate}
                 totalIncome={metrics.totalIncome}
                 totalExpenses={metrics.totalExpenses}
                 netCashFlow={metrics.netCashFlow}
@@ -363,6 +378,7 @@ export default function InsightsPage() {
                 <SpendingTrend
                   dailySpend={dailySpend}
                   averageDailySpend={averageDailySpend}
+                  periodLabel={PERIOD_LABELS[period]}
                 />
                 <MoneyMap
                   categories={categories}

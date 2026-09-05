@@ -9,7 +9,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import { useState, useEffect, useCallback } from "react";
-import { AppSidebar, AppBottomBar } from "@/components/layout/AppNavigation";
+import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
 import { PhysicalCard } from "@/components/dashboard/PhysicalCard";
 import { MoneyNow } from "@/components/dashboard/MoneyNow";
 import { MoneyStory } from "@/components/dashboard/MoneyStory";
@@ -127,6 +127,10 @@ export default function DashboardPage() {
             data.dailySpend.map((d: any) => ({
               date: d.date,
               amount: d.totalOut ?? d.amount ?? 0,
+              totalIn: d.totalIn ?? 0,
+              totalOut: d.totalOut ?? d.amount ?? 0,
+              net: d.net ?? (d.totalIn ?? 0) - (d.totalOut ?? d.amount ?? 0),
+              transactionCount: d.transactionCount ?? 0,
               label: d.date.slice(5),
             }))
           );
@@ -201,8 +205,11 @@ export default function DashboardPage() {
 
       {/* Main Content Area */}
       <div className="page-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        {/* Top Sticky Header */}
-        <header className="page-header">
+        {/* Mobile Animated Header with Hamburger Menu */}
+        <AppMobileHeader />
+
+        {/* Top Sticky Header (Desktop Only: Period Tabs) */}
+        <header className="page-header desktop-only">
           {/* Time Period Tabs */}
           <div
             style={{
@@ -405,7 +412,7 @@ export default function DashboardPage() {
                 topCategoryName={topCategory?.name}
                 topCategoryAmount={topCategory?.amount}
                 topMerchantName={topMerchant}
-                savingsRate={metrics.savingsRate}
+                retentionRate={metrics.savingsRate}
                 totalIncome={metrics.totalIncome}
                 totalExpenses={metrics.totalExpenses}
                 netCashFlow={metrics.netCashFlow}
@@ -422,6 +429,7 @@ export default function DashboardPage() {
                 <SpendingTrend
                   dailySpend={dailySpend}
                   averageDailySpend={averageDailySpend}
+                  periodLabel={PERIOD_LABELS[period]}
                 />
                 <MoneyMap
                   categories={categories}
