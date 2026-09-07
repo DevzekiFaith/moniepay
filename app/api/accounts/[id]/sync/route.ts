@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getFinancialProvider } from "@/providers/provider-registry";
 import { TransactionIngestionService } from "@/services/transaction/ingestion.service";
@@ -16,12 +16,12 @@ export async function POST(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
     const { id: accountId } = await context.params;
 
     const account = await prisma.financialAccount.findFirst({
