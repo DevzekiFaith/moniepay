@@ -26,7 +26,9 @@ import {
   AlertCircle,
   ExternalLink,
   X,
+  Zap,
 } from "lucide-react";
+import Script from "next/script";
 
 interface Account {
   id: string;
@@ -120,6 +122,73 @@ export default function AccountsPage() {
 
   // Calculate Net Worth from real accounts
   const totalBalance = accounts.reduce((acc, a) => acc + (a.currentBalance || 0), 0);
+
+  // Launch Official Mono Connect Widget
+  const handleOpenMonoWidget = () => {
+    const monoKey = process.env.NEXT_PUBLIC_MONO_PUBLIC_KEY;
+    if (!monoKey) {
+      setConnectError("Mono Public Key not configured. Please use Direct Link below.");
+      return;
+    }
+
+    if (typeof window === "undefined" || !(window as any).Connect) {
+      setConnectError("Mono Connect widget is loading. Please click again in 2 seconds.");
+      return;
+    }
+
+    setConnectError(null);
+    setIsConnecting(true);
+
+    try {
+      const monoInstance = new (window as any).Connect({
+        key: monoKey,
+        onSuccess: async ({ code }: { code: string }) => {
+          try {
+            const res = await fetch("/api/accounts", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                authCode: code,
+                institutionId: selectedInstId || "inst_opay",
+                importInitialHistory: true,
+              }),
+            });
+
+            const data = await res.json();
+            if (!res.ok) {
+              setConnectError(data.error || "Failed to complete Mono authorization exchange.");
+              setIsConnecting(false);
+              return;
+            }
+
+            notify(
+              "Account Connected via Mono",
+              `Successfully linked ${data.account?.name || "bank account"}. Synchronized ${data.ingestedCount || 0} transactions.`,
+              { type: "success" }
+            );
+
+            setIsConnectModalOpen(false);
+            dispatchRealtimeUpdate("account");
+            loadAccounts();
+          } catch {
+            setConnectError("Network error while completing Mono connection.");
+          } finally {
+            setIsConnecting(false);
+          }
+        },
+        onClose: () => {
+          setIsConnecting(false);
+        },
+      });
+
+      monoInstance.setup();
+      monoInstance.open();
+    } catch (err) {
+      console.error("Mono Connect launch error:", err);
+      setConnectError("Could not launch Mono Connect widget.");
+      setIsConnecting(false);
+    }
+  };
 
   // Handle Secure Account Connection
   const handleConnectAccount = async (e: React.FormEvent) => {
@@ -608,6 +677,64 @@ export default function AccountsPage() {
                 </div>
               )}
 
+              {/* Mono Connect Direct Launch Action */}
+              <div
+                style={{
+                  background: "linear-gradient(135deg, rgba(0, 85, 254, 0.12), rgba(20, 192, 134, 0.08))",
+                  border: "1px solid rgba(0, 85, 254, 0.3)",
+                  borderRadius: "12px",
+                  padding: "1rem",
+                  marginBottom: "1.25rem",
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "10px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                    <ShieldCheck size={16} color="#0055FE" />
+                    <span style={{ fontSize: "12.5px", fontWeight: 700, color: "#FFFFFF" }}>Live Open Banking (Mono)</span>
+                  </div>
+                  <span style={{ fontSize: "11px", padding: "2px 8px", borderRadius: "12px", background: "rgba(20, 192, 134, 0.15)", color: "#14C086", fontWeight: 600 }}>
+                    OPay • GTB • Kuda
+                  </span>
+                </div>
+                <p style={{ fontSize: "11.5px", color: "#A1A1AA", lineHeight: 1.4 }}>
+                  Connect instantly via Mono's official secure authorization popup. Select OPay, authorize with SMS OTP, and sync your live balance & transactions.
+                </p>
+                <button
+                  type="button"
+                  onClick={handleOpenMonoWidget}
+                  disabled={isConnecting}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    width: "100%",
+                    padding: "10px 14px",
+                    borderRadius: "8px",
+                    background: "#0055FE",
+                    color: "#FFFFFF",
+                    fontSize: "12.5px",
+                    fontWeight: 600,
+                    border: "none",
+                    cursor: isConnecting ? "not-allowed" : "pointer",
+                    boxShadow: "0 4px 12px rgba(0, 85, 254, 0.35)",
+                    transition: "all 0.15s ease",
+                  }}
+                >
+                  <Zap size={14} />
+                  {isConnecting ? "Connecting to Mono..." : "Launch Mono Connect (OPay, GTB, Kuda)"}
+                </button>
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1.25rem" }}>
+                <div style={{ flex: 1, height: "1px", background: "#1F1F1F" }} />
+                <span style={{ fontSize: "11px", color: "#71717A", textTransform: "uppercase", letterSpacing: "0.05em" }}>Or Direct Setup</span>
+                <div style={{ flex: 1, height: "1px", background: "#1F1F1F" }} />
+              </div>
+
               <form onSubmit={handleConnectAccount} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
                 <div>
                   <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#A1A1AA", marginBottom: "8px" }}>
@@ -897,6 +1024,7 @@ export default function AccountsPage() {
           </div>
         )}
       </AnimatePresence>
+      <Script src="https://connect.withmono.com/connect.js" strategy="lazyOnload" />
     </div>
   );
 }

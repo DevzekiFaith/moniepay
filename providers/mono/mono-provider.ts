@@ -200,7 +200,7 @@ export class MonoFinancialProvider implements FinancialProvider {
 
     // If live authCode is provided via Mono Connect Widget
     if (this.secretKey && authCode) {
-      const authRes = await fetch(`${this.baseUrl}/account/auth`, {
+      let authRes = await fetch(`${this.baseUrl}/v2/accounts/auth`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -209,35 +209,58 @@ export class MonoFinancialProvider implements FinancialProvider {
         body: JSON.stringify({ code: authCode }),
       });
 
+      if (!authRes.ok && authRes.status === 404) {
+        authRes = await fetch(`${this.baseUrl}/account/auth`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "mono-sec-key": this.secretKey,
+          },
+          body: JSON.stringify({ code: authCode }),
+        });
+      }
+
       if (!authRes.ok) {
         const err = await authRes.text();
         throw new Error(`Mono authorization exchange failed: ${err}`);
       }
 
       const authData = await authRes.json();
-      const accountId = authData.id;
+      const accountId = authData.id || authData.data?.id;
+
+      if (!accountId) {
+        throw new Error("No account ID returned from Mono authorization exchange");
+      }
 
       // Fetch live account metadata
-      const accountRes = await fetch(`${this.baseUrl}/accounts/${accountId}`, {
+      let accountRes = await fetch(`${this.baseUrl}/v2/accounts/${accountId}`, {
         headers: { "mono-sec-key": this.secretKey },
       });
 
-      if (!accountRes.ok) {
-        throw new Error("Failed to retrieve live account details from Mono");
+      if (!accountRes.ok && accountRes.status === 404) {
+        accountRes = await fetch(`${this.baseUrl}/accounts/${accountId}`, {
+          headers: { "mono-sec-key": this.secretKey },
+        });
       }
 
-      const accountData = await accountRes.json();
-      const account = accountData.account;
+      let account: any = {};
+      if (accountRes.ok) {
+        const accountData = await accountRes.json();
+        account = accountData.account || accountData.data?.account || accountData.data || {};
+      }
+
+      const instName = account.institution?.name || input.accountName || "Connected Bank";
+      const rawBalance = typeof account.balance === "number" ? account.balance / 100 : (input.initialBalance ?? 0);
 
       return {
         connectionId: `conn_mono_${accountId}`,
         account: {
           externalAccountId: accountId,
-          name: input.accountName || `${account.institution.name} ${account.type}`,
-          accountType: account.type?.toUpperCase() === "SAVINGS" ? "SAVINGS" : "CHECKING",
+          name: input.accountName || `${instName} ${account.type || "Account"}`,
+          accountType: account.type?.toUpperCase() === "SAVINGS" ? "SAVINGS" : (account.type?.toUpperCase() === "WALLET" ? "WALLET" : "CHECKING"),
           currency: account.currency || "NGN",
-          currentBalance: input.initialBalance !== undefined ? input.initialBalance : account.balance / 100,
-          availableBalance: input.initialBalance !== undefined ? input.initialBalance : account.balance / 100,
+          currentBalance: rawBalance,
+          availableBalance: rawBalance,
           mask: `•••• ${input.accountNumber ? input.accountNumber.slice(-4) : (account.accountNumber?.slice(-4) || "0000")}`,
         },
       };
@@ -279,9 +302,15 @@ export class MonoFinancialProvider implements FinancialProvider {
   ): Promise<RawProviderTransaction[]> {
     if (this.secretKey && !externalAccountId.startsWith("live_acc_")) {
       try {
-        const res = await fetch(`${this.baseUrl}/accounts/${externalAccountId}/transactions`, {
-          headers: { "mono-sec-key": this.secretKey },
+        let res = await fetch(`${this.baseUrl}/v2/accounts/${externalAccountId}/transactions?paginate=false`, {
+          headers: { "mono-sec-key": this.secretKey, "x-real-time": "true" },
         });
+
+        if (!res.ok && res.status === 404) {
+          res = await fetch(`${this.baseUrl}/accounts/${externalAccountId}/transactions`, {
+            headers: { "mono-sec-key": this.secretKey },
+          });
+        }
 
         if (res.ok) {
           const data = await res.json();
@@ -425,18 +454,19 @@ export class MonoFinancialProvider implements FinancialProvider {
     if (this.secretKey && !externalAccountId.startsWith("live_acc_")) {
       try {
         const [accRes, txRes] = await Promise.all([
-          fetch(`${this.baseUrl}/accounts/${externalAccountId}`, {
+          fetch(`${this.baseUrl}/v2/accounts/${externalAccountId}`, {
             headers: { "mono-sec-key": this.secretKey },
-          }),
-          fetch(`${this.baseUrl}/accounts/${externalAccountId}/transactions?limit=20`, {
-            headers: { "mono-sec-key": this.secretKey },
-          }),
+          }).then(r => r.ok ? r : fetch(`${this.baseUrl}/accounts/${externalAccountId}`, { headers: { "mono-sec-key": this.secretKey } })),
+          fetch(`${this.baseUrl}/v2/accounts/${externalAccountId}/transactions?limit=25`, {
+            headers: { "mono-sec-key": this.secretKey, "x-real-time": "true" },
+          }).then(r => r.ok ? r : fetch(`${this.baseUrl}/accounts/${externalAccountId}/transactions?limit=25`, { headers: { "mono-sec-key": this.secretKey } })),
         ]);
 
         let balance = 0;
         if (accRes.ok) {
           const accData = await accRes.json();
-          balance = (accData.account?.balance ?? 0) / 100;
+          const acc = accData.account || accData.data?.account || accData.data || {};
+          balance = (acc.balance ?? 0) / 100;
         }
 
         let transactions: RawProviderTransaction[] = [];
