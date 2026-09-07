@@ -5,7 +5,7 @@
 // ─────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 
@@ -19,12 +19,12 @@ export async function GET(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
     const { id } = await context.params;
 
     const transaction = await prisma.transaction.findFirst({
@@ -54,12 +54,12 @@ export async function PATCH(
   context: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
     const { id } = await context.params;
     const body = await request.json().catch(() => ({}));
     const parsed = updateSchema.safeParse(body);

@@ -5,7 +5,7 @@
 // ─────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { TransactionIngestionService } from "@/services/transaction/ingestion.service";
 import type { RawProviderTransaction } from "@/types/transaction.types";
@@ -23,13 +23,21 @@ const simulateSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  // Simulator is strictly isolated to development/testing environments
+  if (process.env.NODE_ENV === "production") {
+    return NextResponse.json(
+      { error: "Simulator is disabled in production." },
+      { status: 403 }
+    );
+  }
+
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
     const body = await request.json().catch(() => ({}));
     const parsed = simulateSchema.safeParse(body);
 

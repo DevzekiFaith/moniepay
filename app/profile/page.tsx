@@ -1,8 +1,9 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// Monie Lite — User Profile & Security Configuration
-// Manage personal money preferences, push notifications & Open Banking consent
+// AJO — Personal Money Intelligence
+// User Profile, Security Architecture & Intelligence Configuration
+// Minimalist, black, white, neutral. Zero rainbow gradients.
 // ─────────────────────────────────────────────────────────────────
 
 import { useState } from "react";
@@ -11,31 +12,26 @@ import { useNotification } from "@/context/NotificationContext";
 import { useAuth } from "@/context/AuthContext";
 import { LogoutModal } from "@/components/ui/LogoutModal";
 import {
-  User,
   ShieldCheck,
   Lock,
-  Key,
   Bell,
   BellRing,
   Sliders,
   CheckCircle2,
-  ExternalLink,
-  WalletCards,
   Building2,
-  Database,
-  Smartphone,
-  Sparkles,
-  Volume2,
-  AlertTriangle,
+  SlidersHorizontal,
   LogOut,
+  ArrowRight,
+  Sparkles,
+  Zap,
 } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function ProfilePage() {
   const {
     notify,
     warning,
-    success,
     requestPushPermission,
     pushPermission,
     isPushSupported,
@@ -44,23 +40,25 @@ export default function ProfilePage() {
   const { user, logout } = useAuth();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
+  // Intelligence Preferences
   const [currency, setCurrency] = useState("NGN (₦)");
   const [anomalyDetection, setAnomalyDetection] = useState(true);
   const [autoCategorization, setAutoCategorization] = useState(true);
+  const [excludeInternalTransfers, setExcludeInternalTransfers] = useState(true);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   // Notification Preferences
   const [notifyTransactions, setNotifyTransactions] = useState(true);
   const [notifySync, setNotifySync] = useState(true);
   const [notifyAnomaly, setNotifyAnomaly] = useState(true);
-  const [notifySound, setNotifySound] = useState(true);
+  const [notifySound, setNotifySound] = useState(false);
 
   const handleSave = () => {
     setSavedSuccess(true);
-    notify("Preferences Saved", "Your security and notification settings have been updated.", {
+    notify("Preferences Saved", "Your money intelligence and notification settings have been updated.", {
       type: "success",
     });
-    setTimeout(() => setSavedSuccess(false), 2500);
+    setTimeout(() => setSavedSuccess(false), 2200);
   };
 
   const handleTogglePush = async () => {
@@ -93,24 +91,32 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="app-shell" style={{ display: "flex", minHeight: "100dvh", background: "var(--bg-base)" }}>
-      {/* Desktop Sidebar */}
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100dvh",
+        background: "#050505",
+        color: "#EDEDED",
+        fontFamily: "var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
+      }}
+    >
+      {/* Desktop Sidebar Navigation */}
       <div className="desktop-only">
         <AppSidebar />
       </div>
 
       {/* Main Container */}
-      <div className="page-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        {/* Mobile Animated Header with Hamburger Menu */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
+        {/* Mobile Header */}
         <AppMobileHeader />
 
-        {/* Top Sticky Header (Desktop Only) */}
+        {/* Desktop Sticky Header */}
         <header
-          className="page-header desktop-only"
+          className="desktop-only"
           style={{
             height: "64px",
-            borderBottom: "1px solid var(--border-base)",
-            background: "rgba(17, 24, 39, 0.75)",
+            borderBottom: "1px solid #141414",
+            background: "rgba(5, 5, 5, 0.8)",
             backdropFilter: "blur(16px)",
             WebkitBackdropFilter: "blur(16px)",
             display: "flex",
@@ -123,35 +129,37 @@ export default function ProfilePage() {
           }}
         >
           <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <h1 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
+            <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", color: "#71717A", textTransform: "uppercase" }}>
+              AJO
+            </span>
+            <span style={{ color: "#27272A" }}>/</span>
+            <h1 style={{ fontSize: "15px", fontWeight: 600, color: "#FFFFFF", letterSpacing: "-0.01em" }}>
               Profile &amp; Settings
             </h1>
-            <span className="pill pill-positive" style={{ fontSize: "10px" }}>
-              <ShieldCheck size={11} /> Verified Account
-            </span>
           </div>
 
           <button
+            type="button"
             onClick={handleSave}
-            className="neo-tactile-btn"
             style={{
               height: "36px",
               padding: "0 14px",
-              borderRadius: "10px",
-              fontSize: "12px",
+              borderRadius: "8px",
+              fontSize: "12.5px",
               fontWeight: 600,
-              color: "#FFFFFF",
-              background: "var(--accent)",
+              color: savedSuccess ? "#10B981" : "#050505",
+              background: savedSuccess ? "rgba(16, 185, 129, 0.12)" : "#FFFFFF",
+              border: savedSuccess ? "1px solid rgba(16, 185, 129, 0.3)" : "none",
               display: "inline-flex",
               alignItems: "center",
               gap: "6px",
-              border: "none",
               cursor: "pointer",
+              transition: "all 0.15s ease",
             }}
           >
             {savedSuccess ? (
               <>
-                <CheckCircle2 size={13} />
+                <CheckCircle2 size={13} color="#10B981" />
                 <span>Saved!</span>
               </>
             ) : (
@@ -160,184 +168,397 @@ export default function ProfilePage() {
           </button>
         </header>
 
-        {/* Main Body */}
+        {/* Content Body */}
         <main
           className="page-body"
           style={{
-            flex: 1,
-            maxWidth: "1140px",
+            maxWidth: "1100px",
             width: "100%",
             margin: "0 auto",
           }}
         >
-          {/* User Identity Header Card */}
+          {/* Identity Header Card */}
           <div
-            className="card animate-fade-up"
             style={{
+              background: "#0D0D0D",
+              border: "1px solid #1F1F1F",
+              borderRadius: "14px",
               padding: "1.75rem",
-              marginBottom: "1.75rem",
-              background: "linear-gradient(135deg, #131d31 0%, #0d1527 100%)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
+              marginBottom: "2rem",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               flexWrap: "wrap",
-              gap: "1.25rem",
+              gap: "1.5rem",
             }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "1.25rem" }}>
+              {/* Minimalist Monochrome Avatar */}
               <div
                 style={{
-                  width: "64px",
-                  height: "64px",
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg, #7C3AED 0%, #2563EB 100%)",
-                  border: "2px solid rgba(255, 255, 255, 0.25)",
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "12px",
+                  background: "#141414",
+                  border: "1px solid #27272A",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: "22px",
-                  fontWeight: 800,
+                  fontSize: "20px",
+                  fontWeight: 700,
                   color: "#FFFFFF",
-                  boxShadow: "0 4px 20px rgba(0, 0, 0, 0.4)",
                   flexShrink: 0,
+                  letterSpacing: "-0.02em",
                 }}
               >
-                {user?.avatarLetter || "A"}
+                {user?.avatarLetter || (user?.name?.[0] || "M").toUpperCase()}
               </div>
+
               <div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <h2 style={{ fontSize: "18.5px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.02em" }}>
-                    {user?.name || "Alex Chen"}
+                  <h2 style={{ fontSize: "18px", fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
+                    {user?.name || "Verified Member"}
                   </h2>
                   <span
                     style={{
-                      fontSize: "10.5px",
+                      fontSize: "11px",
                       padding: "2px 8px",
-                      borderRadius: "99px",
-                      background: "rgba(52, 211, 153, 0.15)",
-                      color: "var(--positive)",
+                      borderRadius: "6px",
+                      background: "rgba(16, 185, 129, 0.12)",
+                      border: "1px solid rgba(16, 185, 129, 0.25)",
+                      color: "#34D399",
                       fontWeight: 600,
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px",
                     }}
                   >
-                    {user?.plan || "PRO TIER"}
+                    <ShieldCheck size={11} />
+                    Verified Identity
                   </span>
                 </div>
-                <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", marginTop: "2px" }}>
-                  {user?.email || "alex.chen@moniepay.app"} • MoniePay Member
+                <p style={{ fontSize: "12.5px", color: "#71717A", marginTop: "3px" }}>
+                  {user?.email || "Connected Identity"} • AJO Personal Money Intelligence
                 </p>
               </div>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "0.625rem", flexWrap: "wrap" }}>
+            {/* Header Action Buttons */}
+            <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+              {/* Mobile Save Button */}
+              <button
+                type="button"
+                onClick={handleSave}
+                className="mobile-only"
+                style={{
+                  height: "34px",
+                  padding: "0 12px",
+                  borderRadius: "8px",
+                  fontSize: "12px",
+                  fontWeight: 600,
+                  color: savedSuccess ? "#10B981" : "#050505",
+                  background: savedSuccess ? "rgba(16, 185, 129, 0.12)" : "#FFFFFF",
+                  border: savedSuccess ? "1px solid rgba(16, 185, 129, 0.3)" : "none",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "5px",
+                  cursor: "pointer",
+                }}
+              >
+                {savedSuccess ? <CheckCircle2 size={13} color="#10B981" /> : null}
+                <span>{savedSuccess ? "Saved!" : "Save"}</span>
+              </button>
+
               <Link
                 href="/accounts"
-                className="neo-tactile-btn"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "6px",
                   padding: "8px 14px",
-                  borderRadius: "10px",
-                  fontSize: "12px",
+                  borderRadius: "8px",
+                  fontSize: "12.5px",
                   fontWeight: 600,
-                  color: "var(--text-primary)",
+                  color: "#EDEDED",
+                  background: "#141414",
+                  border: "1px solid #27272A",
                   textDecoration: "none",
+                  transition: "all 0.15s ease",
                 }}
               >
-                <WalletCards size={14} color="var(--accent)" />
-                <span>Manage Connected Banks</span>
+                <Building2 size={13} color="#A1A1AA" />
+                <span>Connected Accounts</span>
               </Link>
 
               <button
                 type="button"
                 onClick={() => setIsLogoutOpen(true)}
-                className="neo-tactile-btn"
                 style={{
                   display: "inline-flex",
                   alignItems: "center",
                   gap: "6px",
                   padding: "8px 14px",
-                  borderRadius: "10px",
-                  fontSize: "12px",
+                  borderRadius: "8px",
+                  fontSize: "12.5px",
                   fontWeight: 600,
-                  color: "var(--negative)",
-                  background: "rgba(244, 63, 94, 0.08)",
-                  border: "1px solid rgba(244, 63, 94, 0.25)",
+                  color: "#F87171",
+                  background: "rgba(239, 68, 68, 0.08)",
+                  border: "1px solid rgba(239, 68, 68, 0.2)",
                   cursor: "pointer",
+                  transition: "all 0.15s ease",
                 }}
               >
                 <LogOut size={13} />
-                <span>Log Out</span>
+                <span>Sign Out</span>
               </button>
             </div>
           </div>
 
-          {/* Settings Grid */}
+          {/* 4-Section Settings Grid */}
           <div
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 320px), 1fr))",
               gap: "1.5rem",
               alignItems: "start",
             }}
           >
-            {/* Card 1: Real-Time Push Notifications & Device Alerts */}
-            <div className="card" style={{ padding: "1.5rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.75rem" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                  <div
+            {/* 1. Money Intelligence Preferences */}
+            <div
+              style={{
+                background: "#0D0D0D",
+                border: "1px solid #1F1F1F",
+                borderRadius: "14px",
+                padding: "1.5rem",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "0.5rem" }}>
+                <SlidersHorizontal size={15} color="#A1A1AA" />
+                <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "#71717A", textTransform: "uppercase" }}>
+                  Intelligence Controls
+                </span>
+              </div>
+
+              <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#FFFFFF", marginBottom: "0.5rem" }}>
+                Financial Behavioral Engine
+              </h3>
+              <p style={{ fontSize: "12.5px", color: "#71717A", lineHeight: 1.5, marginBottom: "1.25rem" }}>
+                Controls how AJO interprets your transactions, normalizes merchants, and detects patterns.
+              </p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                {/* Operating Currency */}
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", color: "#A1A1AA", marginBottom: "6px", fontWeight: 500 }}>
+                    Primary Currency
+                  </label>
+                  <select
+                    value={currency}
+                    onChange={(e) => setCurrency(e.target.value)}
                     style={{
-                      width: "36px",
-                      height: "36px",
-                      borderRadius: "10px",
-                      background: "rgba(168, 85, 247, 0.15)",
-                      color: "#C084FC",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      flexShrink: 0,
+                      width: "100%",
+                      height: "38px",
+                      padding: "0 0.75rem",
+                      borderRadius: "8px",
+                      background: "#141414",
+                      border: "1px solid #27272A",
+                      color: "#FFFFFF",
+                      fontSize: "13px",
+                      outline: "none",
                     }}
                   >
-                    <BellRing size={18} />
-                  </div>
+                    <option value="NGN (₦)">NGN (₦) — Nigerian Naira</option>
+                    <option value="USD ($)">USD ($) — US Dollar</option>
+                    <option value="GBP (£)">GBP (£) — British Pound</option>
+                    <option value="EUR (€)">EUR (€) — Euro</option>
+                  </select>
+                </div>
+
+                {/* Auto Categorization Toggle */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div>
-                    <h3 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)" }}>
-                      Push Notifications
-                    </h3>
-                    <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
-                      Real-time desktop &amp; mobile alerts
+                    <p style={{ fontSize: "13px", fontWeight: 600, color: "#EDEDED" }}>
+                      Merchant Cleaning &amp; Categorization
+                    </p>
+                    <p style={{ fontSize: "11.5px", color: "#71717A", marginTop: "2px" }}>
+                      Normalizes raw descriptions (e.g. UBER *TRIP &rarr; Uber)
                     </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setAutoCategorization(!autoCategorization)}
+                    style={{
+                      width: "40px",
+                      height: "22px",
+                      borderRadius: "99px",
+                      background: autoCategorization ? "#EDEDED" : "#1F1F1F",
+                      border: "1px solid #27272A",
+                      position: "relative",
+                      cursor: "pointer",
+                      transition: "background 0.2s ease",
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "2px",
+                        left: autoCategorization ? "20px" : "2px",
+                        width: "16px",
+                        height: "16px",
+                        borderRadius: "50%",
+                        background: autoCategorization ? "#050505" : "#71717A",
+                        transition: "left 0.2s ease",
+                      }}
+                    />
+                  </button>
+                </div>
+
+                {/* Anomaly Detection Toggle */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div>
+                    <p style={{ fontSize: "13px", fontWeight: 600, color: "#EDEDED" }}>
+                      Spending Spike &amp; Anomaly Alerts
+                    </p>
+                    <p style={{ fontSize: "11.5px", color: "#71717A", marginTop: "2px" }}>
+                      Highlights category increases exceeding 30%
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setAnomalyDetection(!anomalyDetection)}
+                    style={{
+                      width: "40px",
+                      height: "22px",
+                      borderRadius: "99px",
+                      background: anomalyDetection ? "#EDEDED" : "#1F1F1F",
+                      border: "1px solid #27272A",
+                      position: "relative",
+                      cursor: "pointer",
+                      transition: "background 0.2s ease",
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "2px",
+                        left: anomalyDetection ? "20px" : "2px",
+                        width: "16px",
+                        height: "16px",
+                        borderRadius: "50%",
+                        background: anomalyDetection ? "#050505" : "#71717A",
+                        transition: "left 0.2s ease",
+                      }}
+                    />
+                  </button>
+                </div>
+
+                {/* Transfer Exclusion Toggle */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <div>
+                    <p style={{ fontSize: "13px", fontWeight: 600, color: "#EDEDED" }}>
+                      Internal Transfer Reconciliation
+                    </p>
+                    <p style={{ fontSize: "11.5px", color: "#71717A", marginTop: "2px" }}>
+                      Excludes inter-account transfers from spending calculations
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setExcludeInternalTransfers(!excludeInternalTransfers)}
+                    style={{
+                      width: "40px",
+                      height: "22px",
+                      borderRadius: "99px",
+                      background: excludeInternalTransfers ? "#EDEDED" : "#1F1F1F",
+                      border: "1px solid #27272A",
+                      position: "relative",
+                      cursor: "pointer",
+                      transition: "background 0.2s ease",
+                    }}
+                  >
+                    <span
+                      style={{
+                        position: "absolute",
+                        top: "2px",
+                        left: excludeInternalTransfers ? "20px" : "2px",
+                        width: "16px",
+                        height: "16px",
+                        borderRadius: "50%",
+                        background: excludeInternalTransfers ? "#050505" : "#71717A",
+                        transition: "left 0.2s ease",
+                      }}
+                    />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Real-Time Push & Device Alerts */}
+            <div
+              style={{
+                background: "#0D0D0D",
+                border: "1px solid #1F1F1F",
+                borderRadius: "14px",
+                padding: "1.5rem",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "0.5rem" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                  <BellRing size={15} color="#A1A1AA" />
+                  <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "#71717A", textTransform: "uppercase" }}>
+                    Device Alerts
+                  </span>
                 </div>
 
                 {pushPermission === "granted" ? (
-                  <span className="pill pill-positive" style={{ fontSize: "10px" }}>
-                    <span className="pulse-dot" style={{ background: "var(--positive)", width: "5px", height: "5px", borderRadius: "50%" }} />
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      fontWeight: 600,
+                      padding: "2px 8px",
+                      borderRadius: "6px",
+                      background: "rgba(16, 185, 129, 0.12)",
+                      border: "1px solid rgba(16, 185, 129, 0.25)",
+                      color: "#34D399",
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: "4px",
+                    }}
+                  >
+                    <span style={{ width: "5px", height: "5px", borderRadius: "50%", background: "#10B981" }} />
                     Active
                   </span>
-                ) : pushPermission === "denied" ? (
-                  <span className="pill pill-negative" style={{ fontSize: "10px" }}>
-                    Blocked
-                  </span>
                 ) : (
-                  <span className="pill pill-neutral" style={{ fontSize: "10px" }}>
+                  <span
+                    style={{
+                      fontSize: "10.5px",
+                      fontWeight: 500,
+                      padding: "2px 8px",
+                      borderRadius: "6px",
+                      background: "#141414",
+                      border: "1px solid #27272A",
+                      color: "#71717A",
+                    }}
+                  >
                     Off
                   </span>
                 )}
               </div>
 
-              <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", lineHeight: 1.55, marginBottom: "1.25rem" }}>
-                Deliver instant system notifications when incoming funds arrive, cards charge, or bank accounts synchronize.
+              <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#FFFFFF", marginBottom: "0.5rem" }}>
+                Push Notifications
+              </h3>
+              <p style={{ fontSize: "12.5px", color: "#71717A", lineHeight: 1.5, marginBottom: "1.25rem" }}>
+                Real-time notifications whenever inflow arrives, transactions process, or accounts synchronize.
               </p>
 
               {/* Master Push Action Box */}
               <div
                 style={{
-                  padding: "1rem",
-                  borderRadius: "12px",
-                  background: "var(--bg-elevated)",
-                  border: "1px solid var(--border-base)",
+                  padding: "0.875rem 1rem",
+                  borderRadius: "10px",
+                  background: "#141414",
+                  border: "1px solid #27272A",
                   marginBottom: "1.25rem",
                   display: "flex",
                   alignItems: "center",
@@ -346,15 +567,13 @@ export default function ProfilePage() {
                 }}
               >
                 <div>
-                  <p style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)" }}>
-                    Browser Desktop Alerts
+                  <p style={{ fontSize: "12.5px", fontWeight: 600, color: "#FFFFFF" }}>
+                    Desktop &amp; Device Alerts
                   </p>
-                  <p style={{ fontSize: "11.5px", color: "var(--text-tertiary)", marginTop: "2px" }}>
+                  <p style={{ fontSize: "11px", color: "#71717A", marginTop: "2px" }}>
                     {pushPermission === "granted"
-                      ? "Push permission granted on this browser"
-                      : pushPermission === "denied"
-                      ? "Notifications blocked in browser settings"
-                      : "Permission required to display desktop alerts"}
+                      ? "Permission active on this browser"
+                      : "Permission required for system notifications"}
                   </p>
                 </div>
 
@@ -362,36 +581,36 @@ export default function ProfilePage() {
                   type="button"
                   onClick={handleTogglePush}
                   style={{
-                    height: "34px",
+                    height: "32px",
                     padding: "0 12px",
-                    borderRadius: "8px",
+                    borderRadius: "6px",
                     fontSize: "12px",
-                    fontWeight: 700,
-                    background: pushPermission === "granted" ? "rgba(52, 211, 153, 0.15)" : "var(--accent)",
-                    color: pushPermission === "granted" ? "var(--positive)" : "#FFFFFF",
-                    border: pushPermission === "granted" ? "1px solid rgba(52, 211, 153, 0.3)" : "none",
+                    fontWeight: 600,
+                    background: pushPermission === "granted" ? "rgba(16, 185, 129, 0.12)" : "#FFFFFF",
+                    color: pushPermission === "granted" ? "#34D399" : "#050505",
+                    border: pushPermission === "granted" ? "1px solid rgba(16, 185, 129, 0.3)" : "none",
                     cursor: "pointer",
                     display: "inline-flex",
                     alignItems: "center",
                     gap: "5px",
                     flexShrink: 0,
+                    transition: "all 0.15s ease",
                   }}
                 >
-                  <Bell size={13} />
-                  <span>{pushPermission === "granted" ? "Enabled" : "Enable Push"}</span>
+                  <Bell size={12} />
+                  <span>{pushPermission === "granted" ? "Configured" : "Enable Alerts"}</span>
                 </button>
               </div>
 
               {/* Granular Notification Channels */}
               <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
-                {/* 1. Transaction Alerts */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div>
-                    <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
-                      Live Transaction Alerts
+                    <p style={{ fontSize: "13px", fontWeight: 600, color: "#EDEDED" }}>
+                      Transaction Activity
                     </p>
-                    <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
-                      Real-time alert on inflow deposits and outflows
+                    <p style={{ fontSize: "11.5px", color: "#71717A" }}>
+                      Instant alert on credits and debits
                     </p>
                   </div>
                   <button
@@ -401,8 +620,8 @@ export default function ProfilePage() {
                       width: "40px",
                       height: "22px",
                       borderRadius: "99px",
-                      background: notifyTransactions ? "var(--accent)" : "var(--bg-elevated)",
-                      border: "1px solid var(--border-base)",
+                      background: notifyTransactions ? "#EDEDED" : "#1F1F1F",
+                      border: "1px solid #27272A",
                       position: "relative",
                       cursor: "pointer",
                       transition: "background 0.2s ease",
@@ -416,22 +635,20 @@ export default function ProfilePage() {
                         width: "16px",
                         height: "16px",
                         borderRadius: "50%",
-                        background: "#FFFFFF",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
+                        background: notifyTransactions ? "#050505" : "#71717A",
                         transition: "left 0.2s ease",
                       }}
                     />
                   </button>
                 </div>
 
-                {/* 2. Sync Alerts */}
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                   <div>
-                    <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
-                      Open Banking Ledger Sync
+                    <p style={{ fontSize: "13px", fontWeight: 600, color: "#EDEDED" }}>
+                      Account Feed Synchronization
                     </p>
-                    <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
-                      Notify when accounts finish background synchronization
+                    <p style={{ fontSize: "11.5px", color: "#71717A" }}>
+                      Notify when background sync finishes
                     </p>
                   </div>
                   <button
@@ -441,8 +658,8 @@ export default function ProfilePage() {
                       width: "40px",
                       height: "22px",
                       borderRadius: "99px",
-                      background: notifySync ? "var(--accent)" : "var(--bg-elevated)",
-                      border: "1px solid var(--border-base)",
+                      background: notifySync ? "#EDEDED" : "#1F1F1F",
+                      border: "1px solid #27272A",
                       position: "relative",
                       cursor: "pointer",
                       transition: "background 0.2s ease",
@@ -456,216 +673,83 @@ export default function ProfilePage() {
                         width: "16px",
                         height: "16px",
                         borderRadius: "50%",
-                        background: "#FFFFFF",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
+                        background: notifySync ? "#050505" : "#71717A",
                         transition: "left 0.2s ease",
                       }}
                     />
                   </button>
-                </div>
-
-                {/* 3. Anomaly Alerts */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div>
-                    <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
-                      Spending Velocity &amp; Anomaly
-                    </p>
-                    <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
-                      Instant alert on abnormal charges or spikes
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setNotifyAnomaly(!notifyAnomaly)}
-                    style={{
-                      width: "40px",
-                      height: "22px",
-                      borderRadius: "99px",
-                      background: notifyAnomaly ? "var(--accent)" : "var(--bg-elevated)",
-                      border: "1px solid var(--border-base)",
-                      position: "relative",
-                      cursor: "pointer",
-                      transition: "background 0.2s ease",
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: "2px",
-                        left: notifyAnomaly ? "20px" : "2px",
-                        width: "16px",
-                        height: "16px",
-                        borderRadius: "50%",
-                        background: "#FFFFFF",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
-                        transition: "left 0.2s ease",
-                      }}
-                    />
-                  </button>
-                </div>
-
-                {/* 4. Acoustic Audio Feedback */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div>
-                    <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
-                      Tactile Audio Chime
-                    </p>
-                    <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
-                      Play subtle synthesizer chime on alert
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setNotifySound(!notifySound)}
-                    style={{
-                      width: "40px",
-                      height: "22px",
-                      borderRadius: "99px",
-                      background: notifySound ? "var(--accent)" : "var(--bg-elevated)",
-                      border: "1px solid var(--border-base)",
-                      position: "relative",
-                      cursor: "pointer",
-                      transition: "background 0.2s ease",
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: "2px",
-                        left: notifySound ? "20px" : "2px",
-                        width: "16px",
-                        height: "16px",
-                        borderRadius: "50%",
-                        background: "#FFFFFF",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
-                        transition: "left 0.2s ease",
-                      }}
-                    />
-                  </button>
-                </div>
-              </div>
-
-              {/* Live Real-Time Push Status */}
-              <div
-                style={{
-                  marginTop: "1.25rem",
-                  borderTop: "1px solid var(--border-subtle)",
-                  paddingTop: "1rem",
-                }}
-              >
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    padding: "0.875rem 1rem",
-                    borderRadius: "12px",
-                    background: "rgba(16, 185, 129, 0.07)",
-                    border: "1px solid rgba(16, 185, 129, 0.22)",
-                  }}
-                >
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span
-                      style={{
-                        width: "8px",
-                        height: "8px",
-                        borderRadius: "50%",
-                        background: "var(--positive)",
-                        boxShadow: "0 0 10px rgba(52, 211, 153, 0.8)",
-                        display: "inline-block",
-                        flexShrink: 0,
-                      }}
-                      className="animate-pulse"
-                    />
-                    <div>
-                      <p style={{ fontSize: "12.5px", fontWeight: 600, color: "var(--text-primary)", margin: 0 }}>
-                        Live Push Alerts Active
-                      </p>
-                      <p style={{ fontSize: "11px", color: "var(--text-secondary)", margin: "2px 0 0 0" }}>
-                        Real-time transactions and alerts stream live via Supabase.
-                      </p>
-                    </div>
-                  </div>
-                  <span
-                    style={{
-                      fontSize: "10.5px",
-                      fontWeight: 700,
-                      color: "var(--positive)",
-                      padding: "3px 8px",
-                      borderRadius: "6px",
-                      background: "rgba(16, 185, 129, 0.14)",
-                      border: "1px solid rgba(16, 185, 129, 0.3)",
-                      textTransform: "uppercase",
-                      letterSpacing: "0.05em",
-                    }}
-                  >
-                    LIVE
-                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Card 2: Security & Open Banking Credentials */}
-            <div className="card" style={{ padding: "1.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.5rem" }}>
-                <Lock size={16} color="var(--accent)" />
-                <p className="label" style={{ color: "var(--accent)" }}>
-                  Data Privacy &amp; Security Architecture
-                </p>
+            {/* 3. Open Banking Security & Architecture */}
+            <div
+              style={{
+                background: "#0D0D0D",
+                border: "1px solid #1F1F1F",
+                borderRadius: "14px",
+                padding: "1.5rem",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "0.5rem" }}>
+                <Lock size={15} color="#A1A1AA" />
+                <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "#71717A", textTransform: "uppercase" }}>
+                  Security &amp; Privacy
+                </span>
               </div>
 
-              <h3 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.75rem" }}>
-                Zero Credential Storage Guarantee
+              <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#FFFFFF", marginBottom: "0.5rem" }}>
+                Read-Only Open Banking Guarantee
               </h3>
-              <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "1.25rem" }}>
-                Monie Lite establishes tokenized read-only connections directly with licensed Open Banking providers. Your banking PINs, login passwords, and biometric credentials never touch our servers.
+              <p style={{ fontSize: "12.5px", color: "#71717A", lineHeight: 1.55, marginBottom: "1.25rem" }}>
+                AJO operates strictly on read-only financial observation feeds. AJO never possesses payment, transfer, or withdrawal authority.
               </p>
 
               <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                 <div
                   style={{
                     padding: "0.875rem 1rem",
-                    borderRadius: "12px",
-                    background: "var(--bg-elevated)",
-                    border: "1px solid var(--border-base)",
+                    borderRadius: "10px",
+                    background: "#141414",
+                    border: "1px solid #27272A",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                   }}
                 >
                   <div>
-                    <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
-                      Open Banking Token Sync
+                    <p style={{ fontSize: "12.5px", fontWeight: 600, color: "#FFFFFF" }}>
+                      Zero Credential Storage
                     </p>
-                    <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
-                      OAuth2 256-bit automated refresh
+                    <p style={{ fontSize: "11px", color: "#71717A" }}>
+                      Banking passwords and PINs are never handled or stored
                     </p>
                   </div>
-                  <span className="pill pill-positive" style={{ fontSize: "10px" }}>
-                    Active
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#34D399" }}>
+                    Guaranteed
                   </span>
                 </div>
 
                 <div
                   style={{
                     padding: "0.875rem 1rem",
-                    borderRadius: "12px",
-                    background: "var(--bg-elevated)",
-                    border: "1px solid var(--border-base)",
+                    borderRadius: "10px",
+                    background: "#141414",
+                    border: "1px solid #27272A",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                   }}
                 >
                   <div>
-                    <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
+                    <p style={{ fontSize: "12.5px", fontWeight: 600, color: "#FFFFFF" }}>
                       Row-Level Security (RLS)
                     </p>
-                    <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
-                      Isolated PostgreSQL ledger partitions
+                    <p style={{ fontSize: "11px", color: "#71717A" }}>
+                      Strict database partitioning per authenticated user
                     </p>
                   </div>
-                  <span className="pill pill-positive" style={{ fontSize: "10px" }}>
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#34D399" }}>
                     Enforced
                   </span>
                 </div>
@@ -673,180 +757,87 @@ export default function ProfilePage() {
                 <div
                   style={{
                     padding: "0.875rem 1rem",
-                    borderRadius: "12px",
-                    background: "var(--bg-elevated)",
-                    border: "1px solid var(--border-base)",
+                    borderRadius: "10px",
+                    background: "#141414",
+                    border: "1px solid #27272A",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
                   }}
                 >
                   <div>
-                    <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
-                      Automatic Deduplication
+                    <p style={{ fontSize: "12.5px", fontWeight: 600, color: "#FFFFFF" }}>
+                      Deterministic SHA-256 Deduplication
                     </p>
-                    <p style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>
-                      SHA-256 fingerprinting on raw feed
+                    <p style={{ fontSize: "11px", color: "#71717A" }}>
+                      Fingerprinted hashes prevent double-counting
                     </p>
                   </div>
-                  <span className="pill pill-positive" style={{ fontSize: "10px" }}>
-                    Enabled
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#34D399" }}>
+                    Active
                   </span>
                 </div>
               </div>
             </div>
 
-            {/* Card 3: Financial Intelligence Configuration */}
-            <div className="card" style={{ padding: "1.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.5rem" }}>
-                <Sliders size={16} color="var(--accent)" />
-                <p className="label" style={{ color: "var(--accent)" }}>
-                  Intelligence &amp; Categorization
-                </p>
+            {/* 4. Active Session & Termination */}
+            <div
+              style={{
+                background: "#0D0D0D",
+                border: "1px solid #1F1F1F",
+                borderRadius: "14px",
+                padding: "1.5rem",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "0.5rem" }}>
+                <ShieldCheck size={15} color="#A1A1AA" />
+                <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "#71717A", textTransform: "uppercase" }}>
+                  Session State
+                </span>
               </div>
 
-              <h3 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.75rem" }}>
-                Engine Behavioral Preferences
+              <h3 style={{ fontSize: "15px", fontWeight: 600, color: "#FFFFFF", marginBottom: "0.5rem" }}>
+                Active Identity Session
               </h3>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", marginTop: "1rem" }}>
-                {/* Currency selector */}
-                <div>
-                  <label style={{ display: "block", fontSize: "12px", color: "var(--text-secondary)", marginBottom: "6px", fontWeight: 600 }}>
-                    Operating Currency
-                  </label>
-                  <select
-                    value={currency}
-                    onChange={(e) => setCurrency(e.target.value)}
-                    style={{
-                      width: "100%",
-                      height: "40px",
-                      padding: "0 0.875rem",
-                      borderRadius: "10px",
-                      background: "var(--bg-elevated)",
-                      border: "1px solid var(--border-base)",
-                      color: "var(--text-primary)",
-                      fontSize: "13px",
-                      outline: "none",
-                    }}
-                  >
-                    <option value="NGN (₦)">NGN (₦) — Nigerian Naira</option>
-                    <option value="USD ($)">USD ($) — US Dollar</option>
-                    <option value="GBP (£)">GBP (£) — British Pound</option>
-                    <option value="EUR (€)">EUR (€) — Euro</option>
-                  </select>
-                </div>
-
-                {/* Toggle: Anomaly Detection */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div>
-                    <p style={{ fontSize: "13.5px", fontWeight: 600, color: "var(--text-primary)" }}>
-                      Proactive Anomaly Alerts
-                    </p>
-                    <p style={{ fontSize: "11.5px", color: "var(--text-tertiary)" }}>
-                      Notify if spending in any category spikes by &gt;30%
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setAnomalyDetection(!anomalyDetection)}
-                    style={{
-                      width: "44px",
-                      height: "24px",
-                      borderRadius: "99px",
-                      background: anomalyDetection ? "var(--accent)" : "var(--bg-elevated)",
-                      border: "1px solid var(--border-base)",
-                      position: "relative",
-                      cursor: "pointer",
-                      transition: "background 0.2s ease",
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: "2px",
-                        left: anomalyDetection ? "22px" : "2px",
-                        width: "18px",
-                        height: "18px",
-                        borderRadius: "50%",
-                        background: "#FFFFFF",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
-                        transition: "left 0.2s ease",
-                      }}
-                    />
-                  </button>
-                </div>
-
-                {/* Toggle: Auto Categorization */}
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                  <div>
-                    <p style={{ fontSize: "13.5px", fontWeight: 600, color: "var(--text-primary)" }}>
-                      Automated Merchant Categorization
-                    </p>
-                    <p style={{ fontSize: "11.5px", color: "var(--text-tertiary)" }}>
-                      Clean raw merchant text (e.g. UBER *TRIP &rarr; Uber)
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setAutoCategorization(!autoCategorization)}
-                    style={{
-                      width: "44px",
-                      height: "24px",
-                      borderRadius: "99px",
-                      background: autoCategorization ? "var(--accent)" : "var(--bg-elevated)",
-                      border: "1px solid var(--border-base)",
-                      position: "relative",
-                      cursor: "pointer",
-                      transition: "background 0.2s ease",
-                    }}
-                  >
-                    <span
-                      style={{
-                        position: "absolute",
-                        top: "2px",
-                        left: autoCategorization ? "22px" : "2px",
-                        width: "18px",
-                        height: "18px",
-                        borderRadius: "50%",
-                        background: "#FFFFFF",
-                        boxShadow: "0 1px 3px rgba(0,0,0,0.4)",
-                        transition: "left 0.2s ease",
-                      }}
-                    />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Card 4: Account Session & Secure Logout */}
-            <div className="card" style={{ padding: "1.5rem" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "0.5rem" }}>
-                <LogOut size={16} color="var(--negative)" />
-                <p className="label" style={{ color: "var(--negative)" }}>
-                  Account Session &amp; Device
-                </p>
-              </div>
-
-              <h3 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", marginBottom: "0.75rem" }}>
-                Active Login Session
-              </h3>
-              <p style={{ fontSize: "12.5px", color: "var(--text-secondary)", lineHeight: 1.6, marginBottom: "1.25rem" }}>
-                You are currently signed in as <strong style={{ color: "var(--text-primary)" }}>{user?.email || "alex.chen@ajopay.app"}</strong> on this browser. Logging out will close active real-time ledger tunnels.
+              <p style={{ fontSize: "12.5px", color: "#71717A", lineHeight: 1.5, marginBottom: "1.25rem" }}>
+                Signed in as <strong style={{ color: "#FFFFFF" }}>{user?.email || "member@ajo.app"}</strong>. Signing out terminates your local session and secures read-only token handshakes.
               </p>
+
+              <div
+                style={{
+                  padding: "0.875rem 1rem",
+                  borderRadius: "10px",
+                  background: "#141414",
+                  border: "1px solid #27272A",
+                  marginBottom: "1.25rem",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "4px" }}>
+                  <span style={{ fontSize: "11.5px", color: "#71717A" }}>Session ID</span>
+                  <span style={{ fontSize: "11.5px", color: "#A1A1AA", fontFamily: "monospace" }}>
+                    {user?.id ? `${user.id.slice(0, 12)}…` : "Active"}
+                  </span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "11.5px", color: "#71717A" }}>Status</span>
+                  <span style={{ fontSize: "11px", fontWeight: 600, color: "#34D399" }}>
+                    Authenticated &amp; Verified
+                  </span>
+                </div>
+              </div>
 
               <button
                 type="button"
                 onClick={() => setIsLogoutOpen(true)}
                 style={{
                   width: "100%",
-                  height: "44px",
-                  borderRadius: "12px",
-                  background: "rgba(244, 63, 94, 0.1)",
-                  border: "1px solid rgba(244, 63, 94, 0.3)",
-                  color: "var(--negative)",
+                  height: "40px",
+                  borderRadius: "8px",
+                  background: "rgba(239, 68, 68, 0.08)",
+                  border: "1px solid rgba(239, 68, 68, 0.25)",
+                  color: "#F87171",
                   fontSize: "13px",
-                  fontWeight: 700,
+                  fontWeight: 600,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -855,16 +846,16 @@ export default function ProfilePage() {
                   transition: "all 0.15s ease",
                 }}
                 onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(244, 63, 94, 0.2)";
-                  e.currentTarget.style.borderColor = "var(--negative)";
+                  e.currentTarget.style.background = "rgba(239, 68, 68, 0.16)";
+                  e.currentTarget.style.borderColor = "#F87171";
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(244, 63, 94, 0.1)";
-                  e.currentTarget.style.borderColor = "rgba(244, 63, 94, 0.3)";
+                  e.currentTarget.style.background = "rgba(239, 68, 68, 0.08)";
+                  e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.25)";
                 }}
               >
-                <LogOut size={15} />
-                <span>Log Out of MoniePay</span>
+                <LogOut size={14} />
+                <span>Sign Out of AJO</span>
               </button>
             </div>
           </div>
@@ -882,7 +873,7 @@ export default function ProfilePage() {
         userName={user?.name}
       />
 
-      {/* Floating Mobile Dock */}
+      {/* Mobile Bottom Bar */}
       <div className="mobile-only">
         <AppBottomBar />
       </div>

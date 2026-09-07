@@ -1,13 +1,11 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoneyMap — Category Spending Breakdown
-// Single accent color with proportional horizontal bars
+// AJO — Where Your Money Went
+// Minimalist, restrained category breakdown with proportional bars.
 // ─────────────────────────────────────────────────────────────────
 
 import { formatNaira } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { getCategoryIconMeta } from "@/components/ui/ModernIcons";
 
 export interface CategorySpend {
   categoryId: string;
@@ -24,33 +22,36 @@ interface MoneyMapProps {
 }
 
 export function MoneyMap({ categories, totalExpenses }: MoneyMapProps) {
-  const topCategories = categories.slice(0, 6);
+  const topCategories = categories.slice(0, 5);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.35 }}
-      className="card"
-      style={{ padding: 0, overflow: "hidden", background: "#0D1526" }}
+    <div
+      style={{
+        background: "#0D0D0D",
+        border: "1px solid #1A1A1A",
+        borderRadius: "12px",
+        overflow: "hidden",
+      }}
     >
       <div
         style={{
           padding: "1.25rem 1.5rem",
-          borderBottom: "1px solid var(--border-base)",
+          borderBottom: "1px solid #171717",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
         }}
       >
         <div>
-          <p className="label">Where Your Money Went</p>
-          <p style={{ fontSize: "12px", color: "var(--text-tertiary)", marginTop: "2px" }}>
-            Automated category intelligence
-          </p>
+          <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "#71717A", textTransform: "uppercase" }}>
+            WHERE YOUR MONEY WENT
+          </span>
+          <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#FFFFFF", marginTop: "2px" }}>
+            Category Distribution
+          </h3>
         </div>
         {totalExpenses > 0 && (
-          <span className="figure" style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 600 }}>
+          <span style={{ fontSize: "12.5px", color: "#A1A1AA", fontWeight: 600 }}>
             {formatNaira(totalExpenses)} total
           </span>
         )}
@@ -58,21 +59,16 @@ export function MoneyMap({ categories, totalExpenses }: MoneyMapProps) {
 
       <div style={{ padding: "1.25rem 1.5rem" }}>
         {topCategories.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "2rem 0", color: "var(--text-tertiary)", fontSize: "13px" }}>
-            No categorized expenses yet.
+          <div style={{ textAlign: "center", padding: "2rem 0", color: "#71717A", fontSize: "13px" }}>
+            No categorized expenses for this period.
           </div>
         ) : (
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.125rem" }}>
-            {topCategories.map((cat, idx) => {
-              const opacity = 1 - idx * 0.12;
-              const barWidth = Math.min(100, Math.max(4, cat.percentage));
-              const { Icon, bg, color } = getCategoryIconMeta(cat.categoryName);
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            {topCategories.map((cat) => {
+              const barWidth = Math.min(100, Math.max(3, cat.percentage));
 
               return (
-                <motion.div
-                  key={cat.categoryId}
-                  whileHover={{ x: 3, transition: { duration: 0.15 } }}
-                >
+                <div key={cat.categoryId}>
                   <div
                     style={{
                       display: "flex",
@@ -81,63 +77,45 @@ export function MoneyMap({ categories, totalExpenses }: MoneyMapProps) {
                       marginBottom: "6px",
                     }}
                   >
-                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <div
-                        style={{
-                          width: "24px",
-                          height: "24px",
-                          borderRadius: "7px",
-                          background: "rgba(79, 156, 249, 0.12)",
-                          border: "1px solid rgba(79, 156, 249, 0.22)",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          color: "var(--accent)",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <Icon size={13} strokeWidth={2.4} />
-                      </div>
-                      <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)" }}>
-                        {cat.categoryName}
-                      </span>
-                    </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                      <span className="figure" style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 600 }}>
-                        {cat.percentage.toFixed(1)}%
-                      </span>
-                      <span className="figure" style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-primary)", minWidth: "80px", textAlign: "right" }}>
+                    <span style={{ fontSize: "13.5px", fontWeight: 500, color: "#EDEDED" }}>
+                      {cat.categoryName}
+                    </span>
+
+                    <div style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+                      <span style={{ fontSize: "13.5px", fontWeight: 600, color: "#FFFFFF" }}>
                         {formatNaira(cat.amount)}
+                      </span>
+                      <span style={{ fontSize: "11.5px", color: "#71717A", minWidth: "32px", textAlign: "right" }}>
+                        {Math.round(cat.percentage)}%
                       </span>
                     </div>
                   </div>
-                  {/* Proportional bar with Spring Motion */}
+
+                  {/* Minimal Proportional Bar */}
                   <div
                     style={{
-                      height: "6px",
-                      background: "rgba(255, 255, 255, 0.06)",
-                      borderRadius: "99px",
+                      height: "4px",
+                      background: "#1A1A1A",
+                      borderRadius: "2px",
                       overflow: "hidden",
                     }}
                   >
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${barWidth}%` }}
-                      transition={{ type: "spring", stiffness: 70, damping: 16, delay: idx * 0.07 }}
+                    <div
                       style={{
                         height: "100%",
-                        background: "linear-gradient(90deg, #2563EB 0%, #4F9CF9 100%)",
-                        opacity,
-                        borderRadius: "99px",
+                        width: `${barWidth}%`,
+                        background: "#EDEDED",
+                        borderRadius: "2px",
+                        transition: "width 0.4s ease",
                       }}
                     />
                   </div>
-                </motion.div>
+                </div>
               );
             })}
           </div>
         )}
       </div>
-    </motion.div>
+    </div>
   );
 }

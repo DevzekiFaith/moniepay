@@ -5,7 +5,7 @@
 // ─────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { InsightService } from "@/services/insights/insight.service";
 
@@ -13,12 +13,12 @@ const insightService = new InsightService();
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
     const { searchParams } = request.nextUrl;
     const unreadOnly = searchParams.get("unread") === "true";
 
@@ -40,12 +40,12 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
 
     // Fetch transactions and account balances for insight generation
     const [accounts, transactions] = await Promise.all([

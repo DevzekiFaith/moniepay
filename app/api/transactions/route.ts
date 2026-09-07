@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { z } from "zod";
 import { TransactionIngestionService } from "@/services/transaction/ingestion.service";
@@ -26,12 +26,13 @@ const querySchema = z.object({
 
 export async function GET(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { searchParams } = request.nextUrl;
+    const userId = user.id;
+    const { searchParams } = new URL(request.url);
     const params = querySchema.safeParse(Object.fromEntries(searchParams));
     if (!params.success) {
       return NextResponse.json({ error: "Invalid params" }, { status: 400 });
@@ -43,7 +44,7 @@ export async function GET(request: NextRequest) {
     } = params.data;
 
     const where = {
-      userId: session.user.id,
+      userId: user.id,
       ...(excludeTransfers && { isTransfer: false }),
       ...(type && { transactionType: type }),
       ...(categoryId && { categoryId }),
@@ -105,8 +106,8 @@ const createTxSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -120,7 +121,7 @@ export async function POST(request: NextRequest) {
 
     // Verify account exists and belongs to user
     const account = await prisma.financialAccount.findFirst({
-      where: { id: accountId, userId: session.user.id },
+      where: { id: accountId, userId: user.id },
     });
 
     if (!account) {
@@ -142,7 +143,7 @@ export async function POST(request: NextRequest) {
     const result = await ingestionService.ingestRaw(
       [rawTx],
       account.id,
-      session.user.id,
+      user.id,
       "MANUAL"
     );
 

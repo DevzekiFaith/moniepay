@@ -1,21 +1,19 @@
 "use client";
 
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-// Monie Lite â€” Financial Accounts & Live Open Banking Connections
-// Connect actual bank accounts through secure Open Banking providers
-// â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ─────────────────────────────────────────────────────────────────
+// AJO — Connected Financial Accounts
+// Real-time Open Banking connections, provider authorization,
+// automated balance sync, and zero manual balance entry.
+// ─────────────────────────────────────────────────────────────────
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
 import { formatNaira } from "@/lib/utils";
-import { RecordActivityModal } from "@/components/dashboard/RecordActivityModal";
-import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { useNotification } from "@/context/NotificationContext";
-import Link from "next/link";
-import { BankInstitutionAvatar } from "@/components/ui/ModernIcons";
+import { useAuth } from "@/context/AuthContext";
+import { useRealtimeTransactions, dispatchRealtimeUpdate } from "@/hooks/useRealtimeTransactions";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CreditCard,
   Building2,
   RefreshCw,
   Plus,
@@ -25,43 +23,10 @@ import {
   ArrowRight,
   Loader2,
   Trash2,
-  Wifi,
   AlertCircle,
+  ExternalLink,
+  X,
 } from "lucide-react";
-
-// â”€â”€ Motion Variants â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-const pageVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.07, delayChildren: 0.04 },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 18 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { type: "spring" as const, stiffness: 340, damping: 26 },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, scale: 0.97, y: 12 },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    y: 0,
-    transition: { type: "spring" as const, stiffness: 300, damping: 24 },
-  },
-  exit: {
-    opacity: 0,
-    scale: 0.95,
-    y: -8,
-    transition: { duration: 0.18 },
-  },
-};
 
 interface Account {
   id: string;
@@ -69,17 +34,18 @@ interface Account {
   accountType: string;
   currency: string;
   currentBalance: number;
+  availableBalance?: number | null;
   syncStatus: string;
   isPrimary: boolean;
-  mask?: string;
-  lastSyncedAt?: string | Date;
-  institution: {
+  mask?: string | null;
+  lastSyncedAt?: string | Date | null;
+  institution?: {
     id: string;
     name: string;
-    shortName: string;
-    primaryColor?: string;
-    code?: string;
-  };
+    shortName?: string | null;
+    primaryColor?: string | null;
+    code?: string | null;
+  } | null;
   _count?: {
     transactions: number;
   };
@@ -96,51 +62,33 @@ interface Institution {
 }
 
 export default function AccountsPage() {
+  const { user } = useAuth();
   const { notify, error, warning } = useNotification();
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [institutions, setInstitutions] = useState<Institution[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [syncingAccountId, setSyncingAccountId] = useState<string | null>(null);
-  
-  // Connection Form State
-  const [selectedInst, setSelectedInst] = useState<string>("inst_gtb");
+  const [isSyncing, setIsSyncing] = useState<string | null>(null);
+  const [providerName, setProviderName] = useState<string>("Open Banking");
+  const [isLiveProvider, setIsLiveProvider] = useState<boolean>(false);
+
+  // Connection Modal State
+  const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
+  const [selectedInstId, setSelectedInstId] = useState<string>("inst_gtb");
   const [accountType, setAccountType] = useState<"SAVINGS" | "CHECKING" | "WALLET">("SAVINGS");
-  const [accountName, setAccountName] = useState<string>("");
-  const [accountNumber, setAccountNumber] = useState<string>("");
-  const [initialBalance, setInitialBalance] = useState<string>("350000");
-  const [importInitialHistory, setImportInitialHistory] = useState<boolean>(true);
-  const [monoAuthCode, setMonoAuthCode] = useState<string>("");
-  const [connectMode, setConnectMode] = useState<"direct" | "mono">("direct");
-
-  // NUBAN real-time verification state
-  const [nubanVerified, setNubanVerified] = useState<boolean>(false);
-  const [nubanVerifying, setNubanVerifying] = useState<boolean>(false);
-  const [nubanLookupName, setNubanLookupName] = useState<string>("");
-
-  const [connectSuccess, setConnectSuccess] = useState<string | null>(null);
+  const [accountName, setAccountName] = useState("");
+  const [accountNumber, setAccountNumber] = useState("");
+  const [initialBalance, setInitialBalance] = useState("");
+  const [importInitialHistory, setImportInitialHistory] = useState(false);
+  const [isConnecting, setIsConnecting] = useState(false);
   const [connectError, setConnectError] = useState<string | null>(null);
 
-  // Live Activity Modal State
-  const [isRecordModalOpen, setIsRecordModalOpen] = useState(false);
-  const [recordTargetAccountId, setRecordTargetAccountId] = useState<string | undefined>(undefined);
+  // Disconnect Confirmation Modal
+  const [disconnectingAccount, setDisconnectingAccount] = useState<Account | null>(null);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
 
-  // Disconnect Confirmation Modal State
-  const [confirmDisconnect, setConfirmDisconnect] = useState<{
-    isOpen: boolean;
-    accountId: string;
-    accountName: string;
-    isLoading: boolean;
-  }>({
-    isOpen: false,
-    accountId: "",
-    accountName: "",
-    isLoading: false,
-  });
-
-  const loadAccounts = async () => {
-    setIsLoading(true);
+  // Load Accounts
+  const loadAccounts = useCallback(async () => {
     try {
       const res = await fetch("/api/accounts");
       if (res.ok) {
@@ -149,650 +97,806 @@ export default function AccountsPage() {
         if (data.supportedInstitutions) {
           setInstitutions(data.supportedInstitutions);
         }
+        if (data.providerName) setProviderName(data.providerName);
+        if (typeof data.isLive === "boolean") setIsLiveProvider(data.isLive);
       }
     } catch (err) {
       console.error("Failed to load accounts:", err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadAccounts();
-  }, []);
+  }, [loadAccounts]);
 
-  // Simulate NUBAN name lookup when 10 digits are entered
-  useEffect(() => {
-    if (accountNumber.length === 10 && connectMode === "direct") {
-      setNubanVerifying(true);
-      setNubanVerified(false);
-      setNubanLookupName("");
-      const timer = setTimeout(() => {
-        const inst = institutions.find((i) => i.id === selectedInst);
-        const resolvedName = accountName.trim() || `${inst?.shortName || "Bank"} Account Holder`;
-        setNubanLookupName(resolvedName);
-        setNubanVerified(true);
-        setNubanVerifying(false);
-      }, 1100);
-      return () => clearTimeout(timer);
-    } else {
-      setNubanVerified(false);
-      setNubanLookupName("");
-      setNubanVerifying(false);
-    }
-  }, [accountNumber, selectedInst, connectMode, accountName, institutions]);
+  // Real-time updates subscription
+  useRealtimeTransactions({
+    userId: user?.id,
+    onAccountChange: () => loadAccounts(),
+    onTransactionChange: () => loadAccounts(),
+  });
 
-  const selectedInstInfo = institutions.find((i) => i.id === selectedInst);
+  // Calculate Net Worth from real accounts
+  const totalBalance = accounts.reduce((acc, a) => acc + (a.currentBalance || 0), 0);
 
-  const handleConnect = async (e: React.FormEvent) => {
+  // Handle Secure Account Connection
+  const handleConnectAccount = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsConnecting(true);
-    setConnectSuccess(null);
     setConnectError(null);
-
-    // Basic NUBAN validation if direct mode
-    if (connectMode === "direct" && accountNumber.trim().length > 0 && accountNumber.trim().length < 10) {
-      const err = "NUBAN Account Number must be 10 digits.";
-      setConnectError(err);
-      error("Validation Error", err);
-      setIsConnecting(false);
-      return;
-    }
-
-    const parsedBalance = parseFloat(initialBalance.replace(/,/g, ""));
+    setIsConnecting(true);
 
     try {
+      const parsedBalance = initialBalance.trim() ? parseFloat(initialBalance.replace(/,/g, "")) : 0;
       const res = await fetch("/api/accounts", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          institutionId: selectedInst,
+          institutionId: selectedInstId,
           accountType,
           accountName: accountName.trim() || undefined,
           accountNumber: accountNumber.trim() || undefined,
           initialBalance: isNaN(parsedBalance) ? 0 : parsedBalance,
-          authCode: connectMode === "mono" ? monoAuthCode.trim() : undefined,
           importInitialHistory,
         }),
       });
 
-      if (res.ok) {
-        const data = await res.json();
-        const connectedName = data.account?.name || accountName || data.account?.institution?.name || "Account";
-        setConnectSuccess(
-          `Successfully connected ${data.account?.institution?.name || "account"} and ingested ${data.ingestedCount ?? 0} verified live transactions!`
-        );
-        notify(
-          "Bank Account Connected",
-          `Live Open Banking connection active for ${connectedName} with ${data.ingestedCount ?? 0} verified transactions.`,
-          { type: "success", sendPush: true }
-        );
-        // Reset form inputs
-        setAccountName("");
-        setAccountNumber("");
-        setInitialBalance("350000");
-        setMonoAuthCode("");
-        setNubanVerified(false);
-        setNubanLookupName("");
-        await loadAccounts();
-      } else {
-        const errData = await res.json().catch(() => ({}));
-        const errMsg = errData.error || "Failed to connect live account via Open Banking.";
-        setConnectError(errMsg);
-        error("Connection Failed", errMsg);
+      const data = await res.json();
+      if (!res.ok) {
+        setConnectError(data.error || "Failed to establish secure bank connection.");
+        return;
       }
-    } catch (err) {
-      console.error("Connect error:", err);
-      const errMsg = "Network error attempting to link account.";
-      setConnectError(errMsg);
-      error("Connection Error", errMsg);
+
+      notify(
+        "Account Connected",
+        `Successfully linked ${data.account?.name || "bank account"}. ${data.ingestedCount || 0} transactions synchronized.`,
+        { type: "success" }
+      );
+
+      setIsConnectModalOpen(false);
+      setAccountName("");
+      setAccountNumber("");
+      setInitialBalance("");
+      setImportInitialHistory(false);
+      dispatchRealtimeUpdate("account");
+      loadAccounts();
+    } catch {
+      setConnectError("A network error occurred while connecting. Please try again.");
     } finally {
       setIsConnecting(false);
     }
   };
 
-  const handleSyncAccount = async (accountId: string, accountName?: string) => {
-    setSyncingAccountId(accountId);
+  // Handle Account Synchronization
+  const handleSyncAccount = async (accountId: string) => {
+    setIsSyncing(accountId);
     try {
       const res = await fetch(`/api/accounts/${accountId}/sync`, { method: "POST" });
       if (res.ok) {
-        const data = await res.json();
-        notify(
-          "Ledger Synchronized",
-          `${accountName || "Account"} refreshed with verified banking records.`,
-          { type: "info" }
-        );
-        await loadAccounts();
+        notify("Account Synchronized", "Your balance and latest transactions are up to date.", { type: "success" });
+        dispatchRealtimeUpdate("transaction");
+        loadAccounts();
       } else {
-        error("Sync Failed", "Could not sync account with banking gateway.");
+        warning("Sync Notice", "Unable to refresh latest provider records right now.");
       }
-    } catch (err) {
-      console.error("Sync error:", err);
-      error("Sync Error", "Network error during synchronization.");
+    } catch {
+      error("Sync Error", "Network error while synchronizing with provider.");
     } finally {
-      setSyncingAccountId(null);
+      setIsSyncing(null);
     }
   };
 
-  const handleDisconnectClick = (accountId: string, accountName: string) => {
-    setConfirmDisconnect({
-      isOpen: true,
-      accountId,
-      accountName,
-      isLoading: false,
-    });
-  };
-
+  // Handle Account Disconnect
   const handleConfirmDisconnect = async () => {
-    const { accountId, accountName } = confirmDisconnect;
-    if (!accountId) return;
-    setConfirmDisconnect((prev) => ({ ...prev, isLoading: true }));
+    if (!disconnectingAccount) return;
+    setIsDisconnecting(true);
+
     try {
-      const res = await fetch(`/api/accounts?accountId=${accountId}`, { method: "DELETE" });
+      const res = await fetch(`/api/accounts?accountId=${disconnectingAccount.id}`, {
+        method: "DELETE",
+      });
+
       if (res.ok) {
-        setConfirmDisconnect({ isOpen: false, accountId: "", accountName: "", isLoading: false });
-        await loadAccounts();
-        notify(
-          "Account Disconnected",
-          `Successfully disconnected ${accountName}. Real-time synchronization has been revoked.`,
-          { type: "warning", sendPush: true }
-        );
+        notify("Account Disconnected", "The account has been unlinked from AJO.", { type: "info" });
+        dispatchRealtimeUpdate("account");
+        setDisconnectingAccount(null);
+        loadAccounts();
       } else {
-        const errData = await res.json().catch(() => ({}));
-        error("Disconnection Failed", errData.error || "Could not disconnect account.");
-        setConfirmDisconnect((prev) => ({ ...prev, isLoading: false }));
+        error("Disconnect Failed", "Could not unlink account. Please try again.");
       }
-    } catch (err) {
-      console.error("Disconnect error:", err);
-      error("Disconnection Error", "Network error while disconnecting account.");
-      setConfirmDisconnect((prev) => ({ ...prev, isLoading: false }));
+    } catch {
+      error("Error", "Network error occurred.");
+    } finally {
+      setIsDisconnecting(false);
     }
   };
-
-  const totalNetWorth = accounts.reduce((acc, a) => acc + a.currentBalance, 0);
-  const totalVerifiedTransactions = accounts.reduce((acc, a) => acc + (a._count?.transactions || 0), 0);
 
   return (
-    <div className="app-shell" style={{ display: "flex", minHeight: "100dvh", background: "var(--bg-base)" }}>
+    <div className="app-shell" style={{ display: "flex", minHeight: "100dvh", background: "#050505", color: "#EDEDED" }}>
       {/* Desktop Sidebar */}
       <div className="desktop-only">
         <AppSidebar />
       </div>
 
-      {/* Main Container */}
+      {/* Main Page Area */}
       <div className="page-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        {/* Mobile Animated Header with Hamburger Menu */}
         <AppMobileHeader />
 
-        {/* Top Header (Desktop Only) */}
-        <header className="page-header desktop-only">
-          <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-            <h1 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-              Accounts
-            </h1>
-            <span className="pill pill-positive" style={{ fontSize: "10px" }}>
-              <span className="pulse-dot" style={{ background: "var(--positive)", width: "5px", height: "5px", borderRadius: "50%" }} />
-              Live Feed
-            </span>
-          </div>
+        <main className="page-body" style={{ maxWidth: "1000px", margin: "0 auto", width: "100%" }}>
+          {/* Header Section */}
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+            <div>
+              <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", color: "#71717A", textTransform: "uppercase" }}>
+                Financial Institution Connections
+              </span>
+              <h1 style={{ fontSize: "28px", fontWeight: 800, letterSpacing: "-0.03em", color: "#FFFFFF", marginTop: "4px" }}>
+                Connected Accounts
+              </h1>
+              <p style={{ fontSize: "13.5px", color: "#A1A1AA", marginTop: "4px" }}>
+                Automated, read-only feeds. AJO receives transactions directly from your financial institutions.
+              </p>
+            </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-            <motion.button
-              whileHover={{ scale: 1.03, y: -1 }}
-              whileTap={{ scale: 0.96 }}
-              transition={{ type: "spring", stiffness: 400, damping: 22 }}
-              onClick={() => {
-                setRecordTargetAccountId(undefined);
-                setIsRecordModalOpen(true);
-              }}
+            <button
+              onClick={() => setIsConnectModalOpen(true)}
               style={{
-                height: "36px",
-                padding: "0 14px",
-                borderRadius: "10px",
-                fontSize: "12px",
-                fontWeight: 700,
-                background: "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)",
-                color: "#FFFFFF",
-                border: "1px solid rgba(255, 255, 255, 0.15)",
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "6px",
-                cursor: "pointer",
-                boxShadow: "0 1px 4px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12)",
-              }}
-            >
-              <Plus size={14} />
-              <span>Record Activity</span>
-            </motion.button>
-
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.93 }}
-              transition={{ type: "spring", stiffness: 400, damping: 22 }}
-              onClick={loadAccounts}
-              className="neo-tactile-btn"
-              title="Sync accounts"
-              style={{
-                height: "36px",
-                padding: "0 12px",
-                borderRadius: "10px",
-                fontSize: "12px",
+                gap: "8px",
+                padding: "10px 18px",
+                background: "#FFFFFF",
+                color: "#050505",
+                border: "none",
+                borderRadius: "8px",
+                fontSize: "13px",
                 fontWeight: 600,
-                color: "var(--text-secondary)",
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
+                cursor: "pointer",
+                transition: "opacity 0.15s ease",
               }}
             >
-              <RefreshCw size={13} className={isLoading ? "animate-spin" : ""} color="var(--accent)" />
-              <span>Sync</span>
-            </motion.button>
-
-            <Link
-              href="/profile"
-              title="Profile & Settings"
-              style={{
-                width: "34px",
-                height: "34px",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #38bdf8 0%, #1e40af 100%)",
-                border: "1.5px solid rgba(255, 255, 255, 0.2)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "12px",
-                fontWeight: 700,
-                color: "#FFFFFF",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-                textDecoration: "none",
-              }}
-            >
-              A
-            </Link>
+              <Plus size={15} />
+              <span>Connect Account</span>
+            </button>
           </div>
-        </header>
 
-        {/* Page Content */}
-        <main className="page-body">
-          <motion.div variants={pageVariants} initial="hidden" animate="visible">
-
-            {/* Header Net Worth Overview */}
+          {/* Loading State */}
+          {isLoading ? (
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "45vh", gap: "12px", color: "#71717A" }}>
+              <Loader2 size={24} className="animate-spin" />
+              <p style={{ fontSize: "13.5px" }}>Loading connected accounts…</p>
+            </div>
+          ) : accounts.length === 0 ? (
+            /* ── ELEGANT EMPTY STATE (Section 27 of Specification) ── */
             <motion.div
-              variants={itemVariants}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
               style={{
-                padding: "1.75rem",
-                marginBottom: "2rem",
-                background: "linear-gradient(135deg, #0f1927 0%, #0b1322 100%)",
-                border: "1px solid rgba(79, 156, 249, 0.15)",
-                borderRadius: "18px",
+                background: "#0A0A0A",
+                border: "1px dashed #27272A",
+                borderRadius: "16px",
+                padding: "4rem 2rem",
+                textAlign: "center",
                 display: "flex",
-                justifyContent: "space-between",
+                flexDirection: "column",
                 alignItems: "center",
-                flexWrap: "wrap",
-                gap: "1.25rem",
-                boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
+                maxWidth: "540px",
+                margin: "2rem auto",
               }}
             >
-              <div>
-                <span className="label">Total Connected Live Balance</span>
-                <p className="figure" style={{ fontSize: "2.25rem", color: "#FFFFFF", fontWeight: 800, marginTop: "4px" }}>
-                  {formatNaira(totalNetWorth)}
-                </p>
-                <p style={{ fontSize: "13px", color: "var(--text-secondary)", marginTop: "4px" }}>
-                  Live across {accounts.length} institution{accounts.length !== 1 ? "s" : ""} Â· {totalVerifiedTransactions} verified transactions
-                </p>
+              <div
+                style={{
+                  width: "56px",
+                  height: "56px",
+                  borderRadius: "50%",
+                  background: "#141414",
+                  border: "1px solid #222222",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: "1.5rem",
+                  color: "#FFFFFF",
+                }}
+              >
+                <Building2 size={24} />
               </div>
 
-              <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-                <div style={{
-                  padding: "0.75rem 1.25rem",
+              <h2 style={{ fontSize: "20px", fontWeight: 700, letterSpacing: "-0.02em", color: "#FFFFFF", marginBottom: "8px" }}>
+                YOUR MONEY STORY STARTS HERE
+              </h2>
+              <p style={{ fontSize: "13.5px", color: "#A1A1AA", lineHeight: 1.6, maxWidth: "420px", marginBottom: "2rem" }}>
+                Connect your first account and AJO will automatically understand your income, spending and financial activity without manual entry.
+              </p>
+
+              <button
+                onClick={() => setIsConnectModalOpen(true)}
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  padding: "12px 24px",
+                  background: "#FFFFFF",
+                  color: "#050505",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontSize: "13.5px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                <Plus size={16} />
+                <span>Connect Account</span>
+              </button>
+
+              <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "2rem", color: "#52525B", fontSize: "12px" }}>
+                <ShieldCheck size={14} color="#10B981" />
+                <span>Bank-grade, read-only 256-bit encrypted Open Banking</span>
+              </div>
+            </motion.div>
+          ) : (
+            /* ── CONNECTED ACCOUNTS LIST ── */
+            <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+              {/* Total Net Worth Card */}
+              <div
+                style={{
+                  background: "#0D0D0D",
+                  border: "1px solid #1A1A1A",
                   borderRadius: "12px",
-                  background: "rgba(52, 211, 153, 0.08)",
-                  border: "1px solid rgba(52, 211, 153, 0.2)",
-                  textAlign: "center",
-                }}>
-                  <p style={{ fontSize: "11px", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Sync State</p>
-                  <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px", justifyContent: "center" }}>
-                    <span className="anim-live-dot" style={{ width: "7px", height: "7px", borderRadius: "50%", background: "var(--positive)", display: "inline-block" }} />
-                    <p style={{ fontSize: "13px", fontWeight: 700, color: "var(--positive)" }}>Realtime Active</p>
+                  padding: "1.5rem 1.75rem",
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: "1rem",
+                }}
+              >
+                <div>
+                  <span style={{ fontSize: "11.5px", fontWeight: 600, letterSpacing: "0.06em", color: "#71717A", textTransform: "uppercase" }}>
+                    Combined Liquid Balance
+                  </span>
+                  <div style={{ fontSize: "clamp(24px, 5vw, 32px)", fontWeight: 800, letterSpacing: "-0.03em", color: "#FFFFFF", marginTop: "4px" }}>
+                    {formatNaira(totalBalance)}
                   </div>
                 </div>
 
-                <div style={{
-                  padding: "0.75rem 1.25rem",
-                  borderRadius: "12px",
-                  background: "rgba(79, 156, 249, 0.08)",
-                  border: "1px solid rgba(79, 156, 249, 0.2)",
-                  textAlign: "center",
-                }}>
-                  <p style={{ fontSize: "11px", color: "var(--text-tertiary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>Gateway</p>
-                  <p style={{ fontSize: "13px", fontWeight: 700, color: "var(--accent)", marginTop: "4px" }}>
-                    Live Direct Link
-                  </p>
+                <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                  <div style={{ textAlign: "right" }}>
+                    <span style={{ fontSize: "12px", color: "#A1A1AA" }}>{accounts.length} Active Feeds</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "2px" }}>
+                      <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#10B981" }} />
+                      <span style={{ fontSize: "11px", color: "#10B981", fontWeight: 500 }}>Live Synchronized</span>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </motion.div>
 
-            {/* Two Column Layout */}
-            <motion.div
-              variants={itemVariants}
-              className="grid-responsive-accounts"
-            >
-              {/* Left: Connected Accounts */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.25rem" }}>
-                  <p className="label">Live Connected Accounts ({accounts.length})</p>
-                  <span style={{ fontSize: "12px", color: "var(--text-tertiary)" }}>Read-Only Sync</span>
-                </div>
+              {/* Account Cards Grid */}
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 420px), 1fr))", gap: "1rem" }}>
+                {accounts.map((acc) => {
+                  const isThisSyncing = isSyncing === acc.id;
 
-                {/* Empty state */}
-                <AnimatePresence>
-                  {accounts.length === 0 && !isLoading && (
+                  return (
                     <motion.div
-                      key="empty"
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      className="card"
-                      style={{ padding: "2.5rem", textAlign: "center", display: "flex", flexDirection: "column", alignItems: "center", gap: "0.75rem" }}
-                    >
-                      <Building2 size={36} color="var(--text-tertiary)" />
-                      <p style={{ fontSize: "15px", fontWeight: 700, color: "var(--text-primary)" }}>
-                        No Financial Accounts Connected Yet
-                      </p>
-                      <p style={{ fontSize: "13px", color: "var(--text-secondary)", maxWidth: "320px" }}>
-                        Connect your real bank account using the form on the right to start tracking real-time money intelligence.
-                      </p>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Account cards */}
-                <AnimatePresence>
-                  {accounts.map((acct, idx) => (
-                    <motion.div
-                      key={acct.id}
-                      variants={cardVariants}
-                      initial="hidden"
-                      animate="visible"
-                      exit="exit"
-                      transition={{ delay: idx * 0.06 }}
-                      whileHover={{ y: -2, boxShadow: "0 8px 32px rgba(0,0,0,0.45)" }}
-                      className="card"
+                      key={acc.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
                       style={{
-                        padding: "1.35rem",
+                        background: "#0D0D0D",
+                        border: "1px solid #1A1A1A",
+                        borderRadius: "12px",
+                        padding: "1.25rem 1.5rem",
                         display: "flex",
                         flexDirection: "column",
-                        gap: "1.1rem",
-                        borderLeft: `3px solid ${acct.institution.primaryColor || "var(--accent)"}`,
-                        cursor: "default",
+                        justifyContent: "space-between",
+                        gap: "1.25rem",
+                        transition: "border-color 0.15s ease",
                       }}
+                      onMouseEnter={(e) => (e.currentTarget.style.borderColor = "#2A2A2A")}
+                      onMouseLeave={(e) => (e.currentTarget.style.borderColor = "#1A1A1A")}
                     >
                       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-                          <BankInstitutionAvatar name={acct.institution.name} shortName={acct.institution.shortName} primaryColor={acct.institution.primaryColor} size={46} />
+                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                          <div
+                            style={{
+                              width: "40px",
+                              height: "40px",
+                              borderRadius: "8px",
+                              background: "#171717",
+                              border: "1px solid #262626",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              fontSize: "14px",
+                              fontWeight: 700,
+                              color: "#FFFFFF",
+                            }}
+                          >
+                            {acc.institution?.shortName?.[0] || acc.name[0] || "B"}
+                          </div>
                           <div>
-                            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                              <h3 style={{ fontSize: "15.5px", fontWeight: 800, color: "var(--text-primary)" }}>{acct.name}</h3>
-                              {acct.isPrimary && (
-                                <span style={{ fontSize: "10px", padding: "1px 6px", borderRadius: "4px", background: "rgba(79, 156, 249, 0.15)", color: "#93c5fd", fontWeight: 700, border: "1px solid rgba(79,156,249,0.25)" }}>PRIMARY</span>
-                              )}
+                            <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#FFFFFF", lineHeight: 1.2 }}>
+                              {acc.name}
+                            </h3>
+                            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "3px" }}>
+                              <span style={{ fontSize: "12px", color: "#71717A" }}>{acc.mask || "•••• 0000"}</span>
+                              <span style={{ fontSize: "10px", color: "#52525B" }}>•</span>
+                              <span style={{ fontSize: "11px", color: "#A1A1AA" }}>{acc.accountType}</span>
                             </div>
-                            <p style={{ fontSize: "12.5px", color: "var(--text-tertiary)", marginTop: "2px" }}>
-                              {acct.institution.name} Â· {acct.accountType} Â· {acct.mask || "â€¢â€¢â€¢â€¢ 4821"}
-                            </p>
                           </div>
                         </div>
-                        <span className="pill pill-positive" style={{ fontSize: "10.5px" }}>
-                          <span className="anim-live-dot" style={{ background: "var(--positive)", width: "5px", height: "5px", borderRadius: "50%", display: "inline-block" }} />
-                          LIVE
+
+                        <span
+                          style={{
+                            fontSize: "11px",
+                            fontWeight: 600,
+                            padding: "3px 8px",
+                            borderRadius: "6px",
+                            background: "rgba(16, 185, 129, 0.1)",
+                            color: "#10B981",
+                            border: "1px solid rgba(16, 185, 129, 0.2)",
+                          }}
+                        >
+                          Connected
                         </span>
                       </div>
 
-                      <div style={{ borderTop: "1px solid var(--border-subtle)", paddingTop: "0.875rem", display: "flex", justifyContent: "space-between", alignItems: "baseline" }}>
-                        <div>
-                          <p style={{ fontSize: "11px", color: "var(--text-tertiary)", textTransform: "uppercase", fontWeight: 600, letterSpacing: "0.04em" }}>Current Balance</p>
-                          <p className="figure" style={{ fontSize: "1.65rem", color: "var(--text-primary)", fontWeight: 800, marginTop: "2px" }}>{formatNaira(acct.currentBalance)}</p>
-                        </div>
-                        <div style={{ textAlign: "right" }}>
-                          <span style={{ fontSize: "12px", color: "var(--text-secondary)", fontWeight: 600 }}>{acct._count?.transactions ?? 0} activities</span>
-                          {acct.lastSyncedAt && <p style={{ fontSize: "10.5px", color: "var(--text-tertiary)", marginTop: "2px" }}>Synced just now</p>}
+                      {/* Balance Row */}
+                      <div>
+                        <span style={{ fontSize: "11.5px", color: "#71717A", display: "block" }}>Available Balance</span>
+                        <div style={{ fontSize: "24px", fontWeight: 800, letterSpacing: "-0.02em", color: "#FFFFFF", marginTop: "2px" }}>
+                          {formatNaira(acc.currentBalance)}
                         </div>
                       </div>
 
-                      {/* Actions */}
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", borderTop: "1px solid var(--border-subtle)", paddingTop: "0.75rem" }}>
-                        <div style={{ display: "flex", gap: "0.5rem" }}>
-                          <motion.button
-                            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.94 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                            type="button" onClick={() => handleSyncAccount(acct.id, acct.name)}
-                            disabled={syncingAccountId === acct.id} className="neo-tactile-btn"
-                            style={{ height: "32px", padding: "0 10px", borderRadius: "8px", fontSize: "11.5px", fontWeight: 600, color: "var(--text-secondary)", display: "inline-flex", alignItems: "center", gap: "5px" }}
+                      {/* Footer Actions & Sync Info */}
+                      <div
+                        style={{
+                          borderTop: "1px solid #171717",
+                          paddingTop: "0.875rem",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <span style={{ fontSize: "11px", color: "#52525B" }}>
+                          {acc.lastSyncedAt
+                            ? `Updated ${new Date(acc.lastSyncedAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                            : "Updated just now"}
+                        </span>
+
+                        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                          <button
+                            onClick={() => handleSyncAccount(acc.id)}
+                            disabled={isThisSyncing}
+                            title="Synchronize transactions"
+                            style={{
+                              padding: "6px 10px",
+                              background: "#171717",
+                              border: "1px solid #262626",
+                              borderRadius: "6px",
+                              color: "#A1A1AA",
+                              cursor: "pointer",
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              fontSize: "11.5px",
+                              fontWeight: 500,
+                            }}
                           >
-                            <RefreshCw size={12} className={syncingAccountId === acct.id ? "animate-spin" : ""} color="var(--accent)" />
-                            <span>{syncingAccountId === acct.id ? "Syncingâ€¦" : "Sync Bank"}</span>
-                          </motion.button>
-                          <motion.button
-                            whileHover={{ scale: 1.04 }} whileTap={{ scale: 0.94 }}
-                            transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                            type="button" onClick={() => { setRecordTargetAccountId(acct.id); setIsRecordModalOpen(true); }}
-                            className="neo-tactile-btn"
-                            style={{ height: "32px", padding: "0 10px", borderRadius: "8px", fontSize: "11.5px", fontWeight: 600, color: "var(--text-secondary)", display: "inline-flex", alignItems: "center", gap: "5px" }}
+                            <RefreshCw size={12} className={isThisSyncing ? "animate-spin" : ""} />
+                            <span>{isThisSyncing ? "Syncing…" : "Sync"}</span>
+                          </button>
+
+                          <button
+                            onClick={() => setDisconnectingAccount(acc)}
+                            title="Disconnect account"
+                            style={{
+                              padding: "6px",
+                              background: "transparent",
+                              border: "1px solid transparent",
+                              borderRadius: "6px",
+                              color: "#71717A",
+                              cursor: "pointer",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = "#EF4444";
+                              e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.2)";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = "#71717A";
+                              e.currentTarget.style.borderColor = "transparent";
+                            }}
                           >
-                            <Plus size={12} color="var(--positive)" />
-                            <span>Log Activity</span>
-                          </motion.button>
+                            <Trash2 size={13} />
+                          </button>
                         </div>
-                        <motion.button
-                          whileHover={{ scale: 1.04, color: "var(--negative)" }} whileTap={{ scale: 0.94 }}
-                          transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                          type="button" onClick={() => handleDisconnectClick(acct.id, acct.name)}
-                          style={{ background: "transparent", border: "none", color: "var(--text-tertiary)", fontSize: "11.5px", cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", padding: "4px 8px", borderRadius: "6px" }}
-                        >
-                          <Trash2 size={12} />
-                          <span>Disconnect</span>
-                        </motion.button>
                       </div>
                     </motion.div>
-                  ))}
-                </AnimatePresence>
+                  );
+                })}
               </div>
-
-              {/* Right: Connect New Account */}
-              <div
-                className="card"
-                style={{
-                  padding: "1.75rem",
-                  background: "linear-gradient(180deg, #0c1525 0%, #091220 100%)",
-                  border: "1px solid rgba(255, 255, 255, 0.1)",
-                  position: "sticky",
-                  top: "80px",
-                  alignSelf: "start",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.375rem" }}>
-                  <Wifi size={15} color="var(--accent)" />
-                  <p className="label" style={{ color: "var(--accent)", fontSize: "10px" }}>Open Banking Gateway</p>
-                </div>
-
-                <h2 style={{ fontSize: "18px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.015em" }}>
-                  Connect Live Bank Account
-                </h2>
-                <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.55, marginTop: "4px", marginBottom: "1.375rem" }}>
-                  Establish a read-only Open Banking link. Real transactions are ingested in real-time.
-                </p>
-
-                <AnimatePresence>
-                  {connectSuccess && (
-                    <motion.div initial={{ opacity: 0, y: -8, scale: 0.97 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -8, scale: 0.97 }} transition={{ type: "spring", stiffness: 300, damping: 24 }}
-                      style={{ padding: "0.875rem 1rem", borderRadius: "10px", background: "rgba(52, 211, 153, 0.12)", border: "1px solid rgba(52, 211, 153, 0.3)", color: "var(--positive)", fontSize: "12.5px", fontWeight: 600, marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                      <CheckCircle2 size={16} /><span>{connectSuccess}</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <AnimatePresence>
-                  {connectError && (
-                    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ type: "spring", stiffness: 300, damping: 24 }}
-                      style={{ padding: "0.875rem 1rem", borderRadius: "10px", background: "rgba(248, 113, 113, 0.1)", border: "1px solid rgba(248, 113, 113, 0.3)", color: "var(--negative)", fontSize: "12.5px", fontWeight: 600, marginBottom: "1.25rem", display: "flex", alignItems: "center", gap: "8px" }}>
-                      <AlertCircle size={16} /><span>{connectError}</span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <form onSubmit={handleConnect}>
-                  <div style={{ marginBottom: "1.375rem" }}>
-                    <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>
-                      1 - Select Bank / Institution
-                    </label>
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: "0.45rem", maxHeight: "200px", overflowY: "auto" }}>
-                      {institutions.map((inst) => {
-                        const isSelected = selectedInst === inst.id;
-                        return (
-                          <motion.div key={inst.id} onClick={() => setSelectedInst(inst.id)} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                            style={{ padding: "0.55rem 0.625rem", borderRadius: "10px", background: isSelected ? "rgba(79, 156, 249, 0.12)" : "var(--bg-elevated)", border: isSelected ? "1.5px solid var(--accent)" : "1px solid var(--border-base)", cursor: "pointer", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                            <BankInstitutionAvatar name={inst.name} shortName={inst.shortName} primaryColor={inst.primaryColor} size={28} />
-                            <div style={{ minWidth: 0, flex: 1 }}>
-                              <p style={{ fontSize: "12px", fontWeight: 700, color: isSelected ? "var(--text-primary)" : "var(--text-secondary)", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{inst.shortName || inst.name}</p>
-                              <span style={{ fontSize: "9.5px", color: "var(--text-tertiary)", display: "block" }}>{inst.code}</span>
-                            </div>
-                            {isSelected && (<motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", stiffness: 500 }}><CheckCircle2 size={14} color="var(--accent)" /></motion.div>)}
-                          </motion.div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div style={{ marginBottom: "1.375rem" }}>
-                    <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>
-                      2 - Link Verification Mode
-                    </label>
-                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem" }}>
-                      {(["direct", "mono"] as const).map((mode) => {
-                        const active = connectMode === mode;
-                        return (
-                          <motion.button key={mode} type="button" onClick={() => { setConnectMode(mode); setNubanVerified(false); setNubanLookupName(""); }}
-                            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.96 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                            style={{ padding: "0.6rem", borderRadius: "9px", fontSize: "12px", fontWeight: active ? 700 : 500, background: active ? "rgba(79, 156, 249, 0.12)" : "var(--bg-elevated)", color: active ? "var(--accent)" : "var(--text-secondary)", border: active ? "1.5px solid var(--accent)" : "1px solid var(--border-base)", cursor: "pointer" }}>
-                            {mode === "direct" ? "Direct NUBAN" : "Mono Open Banking"}
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <AnimatePresence mode="wait">
-                    {connectMode === "direct" ? (
-                      <motion.div key="direct" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ type: "spring", stiffness: 300, damping: 26 }}
-                        style={{ display: "flex", flexDirection: "column", gap: "0.875rem", marginBottom: "1.375rem" }}>
-                        <div>
-                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px", fontWeight: 600 }}>10-Digit NUBAN Account Number</label>
-                          <div style={{ position: "relative" }}>
-                            <input type="text" inputMode="numeric" maxLength={10} placeholder="e.g. 0123456789" value={accountNumber} onChange={(e) => setAccountNumber(e.target.value.replace(/\D/g, ""))} className="input"
-                              style={{ fontWeight: 700, letterSpacing: "0.1em", fontSize: "15px", paddingRight: nubanVerified || nubanVerifying ? "40px" : "12px" }} />
-                            <AnimatePresence>
-                              {nubanVerifying && (<motion.div key="v" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)" }}><Loader2 size={16} color="var(--accent)" className="animate-spin" /></motion.div>)}
-                              {nubanVerified && !nubanVerifying && (<motion.div key="ok" initial={{ opacity: 0, scale: 0.5 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.5 }} transition={{ type: "spring", stiffness: 500, damping: 20 }} style={{ position: "absolute", right: "12px", top: "50%", transform: "translateY(-50%)" }}><CheckCircle2 size={16} color="var(--positive)" /></motion.div>)}
-                            </AnimatePresence>
-                          </div>
-                          <AnimatePresence>
-                            {nubanVerified && nubanLookupName && (
-                              <motion.div initial={{ opacity: 0, height: 0, y: -4 }} animate={{ opacity: 1, height: "auto", y: 0 }} exit={{ opacity: 0, height: 0, y: -4 }} transition={{ type: "spring", stiffness: 300, damping: 26 }}
-                                style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "6px", padding: "6px 10px", borderRadius: "8px", background: "rgba(52, 211, 153, 0.08)", border: "1px solid rgba(52, 211, 153, 0.25)" }}>
-                                <ShieldCheck size={13} color="var(--positive)" />
-                                <span style={{ fontSize: "12px", color: "var(--positive)", fontWeight: 600 }}>{nubanLookupName}</span>
-                                <span style={{ fontSize: "11px", color: "var(--text-tertiary)", marginLeft: "auto" }}>- {selectedInstInfo?.name}</span>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
-                        <div>
-                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px", fontWeight: 600 }}>Account Holder / Display Name</label>
-                          <input type="text" placeholder="e.g. Adewale Adeleke" value={accountName} onChange={(e) => setAccountName(e.target.value)} className="input" />
-                        </div>
-                        <div>
-                          <label style={{ display: "block", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px", fontWeight: 600 }}>Current Live Balance</label>
-                          <div style={{ position: "relative" }}>
-                            <span style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", fontSize: "13px", fontWeight: 700, color: "var(--text-tertiary)" }}>NGN</span>
-                            <input type="number" min="0" placeholder="350000" value={initialBalance} onChange={(e) => setInitialBalance(e.target.value)} className="input" style={{ paddingLeft: "48px", fontWeight: 700, fontSize: "14px" }} />
-                          </div>
-                        </div>
-                      </motion.div>
-                    ) : (
-                      <motion.div key="mono" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ type: "spring", stiffness: 300, damping: 26 }} style={{ marginBottom: "1.375rem" }}>
-                        <label style={{ display: "block", fontSize: "11px", color: "var(--text-secondary)", marginBottom: "4px", fontWeight: 600 }}>Mono Connect Auth Token</label>
-                        <input type="text" placeholder="code_live_..." value={monoAuthCode} onChange={(e) => setMonoAuthCode(e.target.value)} className="input" style={{ fontFamily: "monospace", fontSize: "13px" }} />
-                        <p style={{ fontSize: "11px", color: "var(--text-tertiary)", marginTop: "5px", lineHeight: 1.5 }}>Obtained via Mono Connect Widget on mobile or web.</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  <div style={{ marginBottom: "1.375rem" }}>
-                    <label style={{ display: "block", fontSize: "11px", color: "var(--text-tertiary)", marginBottom: "8px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.07em" }}>3 - Account Classification</label>
-                    <div style={{ display: "flex", gap: "0.5rem" }}>
-                      {(["SAVINGS", "CHECKING", "WALLET"] as const).map((type) => {
-                        const isActive = accountType === type;
-                        return (
-                          <motion.button key={type} type="button" onClick={() => setAccountType(type)} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.95 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}
-                            style={{ flex: 1, padding: "0.55rem", borderRadius: "8px", fontSize: "12px", fontWeight: isActive ? 700 : 500, background: isActive ? "var(--bg-surface)" : "var(--bg-elevated)", color: isActive ? "var(--accent)" : "var(--text-secondary)", border: isActive ? "1px solid var(--accent)" : "1px solid var(--border-base)", cursor: "pointer" }}>
-                            {type === "SAVINGS" ? "SAV" : type === "CHECKING" ? "CHQ" : "WALLET"}
-                          </motion.button>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <motion.div whileHover={{ scale: 1.01 }} onClick={() => setImportInitialHistory(!importInitialHistory)}
-                    style={{ marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "8px", padding: "10px 12px", borderRadius: "10px", background: importInitialHistory ? "rgba(79, 156, 249, 0.06)" : "transparent", border: importInitialHistory ? "1px solid rgba(79,156,249,0.2)" : "1px solid var(--border-subtle)", cursor: "pointer" }}>
-                    <input type="checkbox" id="importTx" checked={importInitialHistory} onChange={(e) => setImportInitialHistory(e.target.checked)} onClick={(e) => e.stopPropagation()} style={{ cursor: "pointer", accentColor: "var(--accent)", width: "14px", height: "14px" }} />
-                    <label htmlFor="importTx" style={{ fontSize: "12px", color: "var(--text-secondary)", cursor: "pointer", userSelect: "none", flex: 1 }}>Ingest recent 30 days of verified banking activities immediately</label>
-                  </motion.div>
-
-                  <motion.button type="submit" disabled={isConnecting} whileHover={!isConnecting ? { scale: 1.02, y: -1 } : {}} whileTap={!isConnecting ? { scale: 0.97 } : {}} transition={{ type: "spring", stiffness: 380, damping: 22 }}
-                    style={{ width: "100%", height: "48px", borderRadius: "12px", background: isConnecting ? "rgba(79, 156, 249, 0.6)" : "linear-gradient(135deg, #2563EB 0%, #1D4ED8 100%)", color: "#FFFFFF", fontSize: "14px", fontWeight: 700, border: "1px solid rgba(255, 255, 255, 0.15)", cursor: isConnecting ? "not-allowed" : "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", boxShadow: isConnecting ? "none" : "0 2px 8px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.12)" }}>
-                    {isConnecting ? (<><Loader2 size={16} className="animate-spin" /><span>Connecting and Ingesting Live Ledger...</span></>) : (<><Lock size={15} /><span>Authorize Live Account Connection</span><ArrowRight size={15} /></>)}
-                  </motion.button>
-                </form>
-
-                <div style={{ marginTop: "1rem", display: "flex", alignItems: "center", gap: "6px", justifyContent: "center" }}>
-                  <ShieldCheck size={13} color="var(--positive)" />
-                  <span style={{ fontSize: "11px", color: "var(--text-tertiary)" }}>Zero stored credentials - CBN Open Banking compliant</span>
-                </div>
-              </div>
-            </motion.div>
-          </motion.div>
+            </div>
+          )}
         </main>
       </div>
 
-      {/* Floating Mobile Dock */}
+      {/* Mobile Bottom Bar */}
       <div className="mobile-only">
         <AppBottomBar />
       </div>
 
-      {/* Record Live Activity Modal */}
-      <RecordActivityModal
-        isOpen={isRecordModalOpen}
-        onClose={() => setIsRecordModalOpen(false)}
-        onSuccess={loadAccounts}
-        accounts={accounts}
-        defaultAccountId={recordTargetAccountId}
-      />
+      {/* ── CONNECT ACCOUNT MODAL ── */}
+      <AnimatePresence>
+        {isConnectModalOpen && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0, 0, 0, 0.75)",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 100,
+              padding: "1rem",
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              style={{
+                width: "100%",
+                maxWidth: "460px",
+                background: "#0D0D0D",
+                border: "1px solid #222222",
+                borderRadius: "16px",
+                padding: "2rem",
+                position: "relative",
+              }}
+            >
+              <button
+                onClick={() => setIsConnectModalOpen(false)}
+                style={{
+                  position: "absolute",
+                  top: "1.25rem",
+                  right: "1.25rem",
+                  background: "transparent",
+                  border: "none",
+                  color: "#71717A",
+                  cursor: "pointer",
+                }}
+              >
+                <X size={18} />
+              </button>
 
-      {/* Neo-tactile Confirmation Dialog for Account Disconnection */}
-      <ConfirmModal
-        isOpen={confirmDisconnect.isOpen}
-        title="Disconnect Financial Account"
-        targetName={confirmDisconnect.accountName}
-        message={`Are you sure you want to disconnect ${confirmDisconnect.accountName}? This will immediately revoke live Open Banking synchronization and archive local activity feeds.`}
-        confirmLabel="Disconnect Account"
-        cancelLabel="Keep Connected"
-        isDanger={true}
-        isLoading={confirmDisconnect.isLoading}
-        onConfirm={handleConfirmDisconnect}
-        onCancel={() => setConfirmDisconnect({ isOpen: false, accountId: "", accountName: "", isLoading: false })}
-      />
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "1rem" }}>
+                <div
+                  style={{
+                    width: "36px",
+                    height: "36px",
+                    borderRadius: "8px",
+                    background: "#171717",
+                    border: "1px solid #262626",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    color: "#FFFFFF",
+                  }}
+                >
+                  <Building2 size={18} />
+                </div>
+                <div>
+                  <h3 style={{ fontSize: "17px", fontWeight: 700, color: "#FFFFFF" }}>Link Financial Account</h3>
+                  <p style={{ fontSize: "12px", color: "#71717A" }}>Secure read-only Open Banking connection</p>
+                </div>
+              </div>
+
+              {connectError && (
+                <div
+                  style={{
+                    padding: "10px 14px",
+                    background: "rgba(239, 68, 68, 0.08)",
+                    border: "1px solid rgba(239, 68, 68, 0.25)",
+                    borderRadius: "8px",
+                    marginBottom: "1.25rem",
+                    fontSize: "12.5px",
+                    color: "#FCA5A5",
+                  }}
+                >
+                  {connectError}
+                </div>
+              )}
+
+              <form onSubmit={handleConnectAccount} style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#A1A1AA", marginBottom: "8px" }}>
+                    Select Institution
+                  </label>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(3, 1fr)",
+                      gap: "8px",
+                      maxHeight: "180px",
+                      overflowY: "auto",
+                      padding: "4px",
+                    }}
+                  >
+                    {institutions.slice(0, 12).map((inst) => {
+                      const isSelected = selectedInstId === inst.id;
+                      return (
+                        <button
+                          key={inst.id}
+                          type="button"
+                          onClick={() => setSelectedInstId(inst.id)}
+                          style={{
+                            padding: "10px 8px",
+                            background: isSelected ? "#1F1F1F" : "#141414",
+                            border: `1px solid ${isSelected ? "#FFFFFF" : "#222222"}`,
+                            borderRadius: "8px",
+                            color: isSelected ? "#FFFFFF" : "#A1A1AA",
+                            fontSize: "12px",
+                            fontWeight: isSelected ? 600 : 500,
+                            cursor: "pointer",
+                            textAlign: "center",
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            transition: "all 0.15s ease",
+                          }}
+                        >
+                          {inst.shortName || inst.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#A1A1AA", marginBottom: "8px" }}>
+                    Account Type
+                  </label>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "8px" }}>
+                    {(["SAVINGS", "CHECKING", "WALLET"] as const).map((type) => {
+                      const isSelected = accountType === type;
+                      return (
+                        <button
+                          key={type}
+                          type="button"
+                          onClick={() => setAccountType(type)}
+                          style={{
+                            padding: "8px",
+                            background: isSelected ? "#1F1F1F" : "#141414",
+                            border: `1px solid ${isSelected ? "#FFFFFF" : "#222222"}`,
+                            borderRadius: "6px",
+                            color: isSelected ? "#FFFFFF" : "#71717A",
+                            fontSize: "12px",
+                            fontWeight: isSelected ? 600 : 500,
+                            cursor: "pointer",
+                          }}
+                        >
+                          {type}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Optional Account Nickname */}
+                <div>
+                  <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#A1A1AA", marginBottom: "6px" }}>
+                    Account Label <span style={{ color: "#52525B", fontWeight: 400 }}>(optional)</span>
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Main Salary Account or Daily Expenses"
+                    value={accountName}
+                    onChange={(e) => setAccountName(e.target.value)}
+                    style={{
+                      width: "100%",
+                      padding: "9px 12px",
+                      background: "#141414",
+                      border: "1px solid #222222",
+                      borderRadius: "8px",
+                      color: "#FFFFFF",
+                      fontSize: "13px",
+                      outline: "none",
+                    }}
+                  />
+                </div>
+
+                {/* Account Number & Real Balance */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  <div>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#A1A1AA", marginBottom: "6px" }}>
+                      Account Number <span style={{ color: "#52525B", fontWeight: 400 }}>(optional)</span>
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="e.g. 0123456789"
+                      value={accountNumber}
+                      onChange={(e) => setAccountNumber(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "9px 12px",
+                        background: "#141414",
+                        border: "1px solid #222222",
+                        borderRadius: "8px",
+                        color: "#FFFFFF",
+                        fontSize: "13px",
+                        outline: "none",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={{ display: "block", fontSize: "12px", fontWeight: 600, color: "#A1A1AA", marginBottom: "6px" }}>
+                      Current Balance (₦)
+                    </label>
+                    <input
+                      type="number"
+                      step="any"
+                      min="0"
+                      placeholder="e.g. 150000"
+                      value={initialBalance}
+                      onChange={(e) => setInitialBalance(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "9px 12px",
+                        background: "#141414",
+                        border: "1px solid #222222",
+                        borderRadius: "8px",
+                        color: "#FFFFFF",
+                        fontSize: "13px",
+                        outline: "none",
+                      }}
+                    />
+                  </div>
+                </div>
+
+                {/* Clean Ledger Option */}
+                <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "12px", color: "#A1A1AA" }}>
+                  <input
+                    type="checkbox"
+                    checked={!importInitialHistory}
+                    onChange={(e) => setImportInitialHistory(!e.target.checked)}
+                    style={{ accentColor: "#FFFFFF" }}
+                  />
+                  <span>Start clean with zero synthetic transactions (live mode)</span>
+                </label>
+
+                <div
+                  style={{
+                    background: "#141414",
+                    border: "1px solid #1F1F1F",
+                    borderRadius: "8px",
+                    padding: "12px",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: "10px",
+                  }}
+                >
+                  <ShieldCheck size={16} color="#10B981" style={{ marginTop: "2px", flexShrink: 0 }} />
+                  <p style={{ fontSize: "11.5px", color: "#A1A1AA", lineHeight: 1.5, margin: 0 }}>
+                    AJO uses read-only authorization. We never store banking credentials or execute transfers. Live balances and transactions are automatically retrieved.
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={isConnecting}
+                  style={{
+                    marginTop: "0.5rem",
+                    padding: "12px",
+                    background: "#FFFFFF",
+                    color: "#050505",
+                    border: "none",
+                    borderRadius: "8px",
+                    fontSize: "13.5px",
+                    fontWeight: 600,
+                    cursor: isConnecting ? "not-allowed" : "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                  }}
+                >
+                  {isConnecting ? (
+                    <>
+                      <Loader2 size={16} className="animate-spin" />
+                      <span>Authorizing with {providerName}…</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Establish Connection</span>
+                      <ArrowRight size={14} />
+                    </>
+                  )}
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── DISCONNECT CONFIRMATION MODAL ── */}
+      <AnimatePresence>
+        {disconnectingAccount && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              background: "rgba(0, 0, 0, 0.75)",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 100,
+              padding: "1rem",
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              style={{
+                width: "100%",
+                maxWidth: "380px",
+                background: "#0D0D0D",
+                border: "1px solid #222222",
+                borderRadius: "16px",
+                padding: "1.75rem",
+                textAlign: "center",
+              }}
+            >
+              <h3 style={{ fontSize: "17px", fontWeight: 700, color: "#FFFFFF", marginBottom: "8px" }}>
+                Disconnect {disconnectingAccount.name}?
+              </h3>
+              <p style={{ fontSize: "13px", color: "#A1A1AA", lineHeight: 1.5, marginBottom: "1.5rem" }}>
+                This will unlink the account and pause automated transaction synchronization for this feed.
+              </p>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                <button
+                  type="button"
+                  onClick={() => setDisconnectingAccount(null)}
+                  disabled={isDisconnecting}
+                  style={{
+                    padding: "10px",
+                    background: "#171717",
+                    border: "1px solid #262626",
+                    borderRadius: "8px",
+                    color: "#FFFFFF",
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    cursor: "pointer",
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDisconnect}
+                  disabled={isDisconnecting}
+                  style={{
+                    padding: "10px",
+                    background: "#EF4444",
+                    border: "none",
+                    borderRadius: "8px",
+                    color: "#FFFFFF",
+                    fontSize: "13px",
+                    fontWeight: 600,
+                    cursor: isDisconnecting ? "not-allowed" : "pointer",
+                  }}
+                >
+                  {isDisconnecting ? "Unlinking…" : "Disconnect"}
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

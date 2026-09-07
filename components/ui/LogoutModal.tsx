@@ -21,7 +21,7 @@ export function LogoutModal({
   isOpen,
   onClose,
   onConfirm,
-  userName = "Alex Chen",
+  userName = "Member",
 }: LogoutModalProps) {
   if (!isOpen) return null;
 
@@ -112,7 +112,7 @@ export function LogoutModal({
             </div>
             <div>
               <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.01em", margin: 0 }}>
-                Log out of MoniePay?
+                Log out of AJO?
               </h3>
               <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "3px", margin: 0 }}>
                 Active session for <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{userName}</span>
@@ -121,7 +121,7 @@ export function LogoutModal({
           </div>
 
           <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.55, marginBottom: "1.5rem" }}>
-            Your Open Banking credentials remain securely encrypted. Logging out will close real-time ledger tunnels across your devices.
+            Logging out will safely end your active session on this device.
           </p>
 
           {/* Action Buttons */}

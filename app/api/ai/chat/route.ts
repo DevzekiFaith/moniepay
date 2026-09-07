@@ -210,7 +210,7 @@ async function callGemini(userMessage: string, history: ChatMessage[], context: 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return null;
 
-  const systemInstruction = `You are Monie AI, an elite, concise, and friendly personal money intelligence assistant for MoniePay.
+  const systemInstruction = `You are AJO Money Intelligence, an intelligent, concise, and calm personal money assistant for AJO (“Your money. Understood.”).
 You have direct access to the user's live financial data snapshot:
 ${JSON.stringify(context, null, 2)}
 

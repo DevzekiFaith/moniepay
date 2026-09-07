@@ -125,4 +125,38 @@ describe("Financial Engine Independence & Core Logic", () => {
     // Net movement should be ₦500,000 - ₦25,000 = ₦475,000
     expect(summary.balance.netMovement).toBe(475000);
   });
+
+  it("6. Allows custom user-learned rules to override default categorization", () => {
+    const customRules = new Map<string, string>();
+    customRules.set("uber", "custom-travel-category");
+
+    const result = categorizer.categorize(
+      {
+        description: "UBER TRIP LAGOS",
+        merchantName: "Uber",
+        transactionType: "EXPENSE",
+      },
+      customRules
+    );
+
+    expect(result.categorySlug).toBe("custom-travel-category");
+    expect(result.method).toBe("user_rule");
+    expect(result.confidence).toBe(1.0);
+  });
+
+  it("7. Gracefully calculates summary for 0 accounts / 0 transactions (empty state fidelity)", () => {
+    const summary = analytics.calculateSummary([], 0, {
+      userId: "new-user-empty",
+      period: "this_month",
+    });
+
+    expect(summary.balance.currentBalance).toBe(0);
+    expect(summary.balance.totalIn).toBe(0);
+    expect(summary.balance.totalOut).toBe(0);
+    expect(summary.balance.netMovement).toBe(0);
+    expect(summary.categoryBreakdown).toEqual([]);
+    expect(summary.topMerchants).toEqual([]);
+    expect(summary.monthlySpend.every((m) => m.totalIn === 0 && m.totalOut === 0)).toBe(true);
+  });
 });
+

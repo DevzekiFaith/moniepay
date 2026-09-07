@@ -1,20 +1,21 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoniePay — Financial Audit Executive Summary
-// Plain-English forensic audit narrative synthesizing ledger flow.
+// AJO — Money Story
+// Plain-English, human explanation of real financial activity.
+// Clear, calm, human, neutral, useful. Zero engineering jargon.
 // ─────────────────────────────────────────────────────────────────
 
 import { formatNaira } from "@/lib/utils";
-import { ShieldCheck, ArrowUpRight, ArrowDownLeft } from "lucide-react";
-import { motion } from "framer-motion";
+import { ArrowRight, Sparkles, TrendingUp } from "lucide-react";
+import Link from "next/link";
 
 interface MoneyStoryProps {
   topCategoryName?: string;
   topCategoryAmount?: number;
   topMerchantName?: string;
-  retentionRate?: number; // replaced savingsRate with audit retention rate
-  savingsRate?: number; // backwards compatibility
+  retentionRate?: number;
+  savingsRate?: number;
   totalIncome: number;
   totalExpenses: number;
   netCashFlow: number;
@@ -25,118 +26,186 @@ export function MoneyStory({
   topCategoryAmount,
   topMerchantName,
   retentionRate,
-  savingsRate = 0,
+  savingsRate,
   totalIncome,
   totalExpenses,
   netCashFlow,
 }: MoneyStoryProps) {
-  const rate = retentionRate ?? savingsRate;
-  const isSurplus = netCashFlow > 0;
   const hasData = totalIncome > 0 || totalExpenses > 0;
+  if (!hasData) {
+    return (
+      <div
+        style={{
+          background: "#0D0D0D",
+          border: "1px solid #1A1A1A",
+          borderRadius: "12px",
+          padding: "1.25rem 1.5rem",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          height: "100%",
+          gap: "8px",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+          <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "#71717A", textTransform: "uppercase" }}>
+            MONEY STORY
+          </span>
+          <span style={{ fontSize: "11px", color: "#3F3F46" }}>•</span>
+          <span style={{ fontSize: "11.5px", color: "#A1A1AA", fontWeight: 500 }}>
+            Live Feed Active
+          </span>
+        </div>
+        <p style={{ fontSize: "13px", color: "#A1A1AA", lineHeight: 1.6, margin: 0 }}>
+          Your accounts are connected. As live financial activity occurs, AJO will explain your inflows, outflows, and spending patterns right here.
+        </p>
+      </div>
+    );
+  }
 
-  if (!hasData) return null;
+  const isSurplus = netCashFlow >= 0;
+  const effectiveRate = retentionRate ?? savingsRate ?? (totalIncome > 0 ? Math.max(0, ((totalIncome - totalExpenses) / totalIncome) * 100) : 0);
 
   return (
-    <motion.div
-      whileHover={{ y: -2 }}
-      transition={{ type: "spring", stiffness: 350, damping: 22 }}
-      className="card"
+    <div
       style={{
-        borderLeft: "3.5px solid var(--accent)",
+        background: "#0D0D0D",
+        border: "1px solid #1A1A1A",
+        borderRadius: "12px",
         padding: "1.25rem 1.5rem",
-        background: "linear-gradient(180deg, rgba(26, 34, 54, 0.5) 0%, rgba(17, 24, 39, 0.85) 100%)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        height: "100%",
       }}
     >
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "1rem" }}>
-        {/* Audit Shield Icon */}
-        <div
-          style={{
-            width: "36px",
-            height: "36px",
-            borderRadius: "10px",
-            background: "rgba(16, 185, 129, 0.12)",
-            border: "1px solid rgba(16, 185, 129, 0.25)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            marginTop: "1px",
-          }}
-        >
-          <ShieldCheck size={18} color="var(--positive)" />
-        </div>
-
-        {/* Narrative */}
-        <div style={{ flex: 1 }}>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.4rem", flexWrap: "wrap", gap: "6px" }}>
-            <p className="label" style={{ color: "var(--accent-text)", fontWeight: 700 }}>
-              Financial Audit Executive Summary
-            </p>
-            <span
-              style={{
-                fontSize: "10.5px",
-                padding: "2px 7px",
-                borderRadius: "4px",
-                background: "rgba(56, 189, 248, 0.12)",
-                color: "var(--accent)",
-                fontWeight: 600,
-              }}
-            >
-              Continuous Reconciled Ledger
+      <div>
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "0.75rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.06em", color: "#71717A", textTransform: "uppercase" }}>
+              MONEY STORY
+            </span>
+            <span style={{ fontSize: "11px", color: "#3F3F46" }}>•</span>
+            <span style={{ fontSize: "11.5px", color: "#A1A1AA", fontWeight: 500 }}>
+              Intelligence Brief
             </span>
           </div>
 
-          <p style={{ fontSize: "14.5px", color: "var(--text-primary)", lineHeight: 1.7, fontWeight: 400 }}>
-            Audit verified{" "}
-            <span className="figure amount-positive" style={{ fontWeight: 600 }}>
-              +{formatNaira(totalIncome)}
-            </span>{" "}
-            in inflows and audited{" "}
-            <span className="figure amount-negative" style={{ fontWeight: 600 }}>
-              {formatNaira(totalExpenses)}
-            </span>{" "}
-            in verified debits across all connected accounts.{" "}
-            {isSurplus ? (
-              <>
-                Net ledger retention is{" "}
-                <span className="figure" style={{ fontWeight: 600, color: "var(--positive)" }}>
-                  {Math.round(rate)}%
-                </span>
-                , preserving an audited surplus of{" "}
-                <span className="figure" style={{ fontWeight: 600, color: "var(--positive)" }}>
-                  {formatNaira(netCashFlow)}
-                </span>
-                .
-              </>
-            ) : (
-              <>
-                Debit volume exceeded inflows by{" "}
-                <span className="figure" style={{ fontWeight: 600, color: "var(--negative)" }}>
-                  {formatNaira(Math.abs(netCashFlow))}
-                </span>
-                , triggering cashflow audit alerts.
-              </>
-            )}
-          </p>
-
-          {topCategoryName && topCategoryAmount ? (
-            <p style={{ marginTop: "0.5rem", fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.6 }}>
-              Primary debit concentration flagged in{" "}
-              <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{topCategoryName}</span>
-              {" "}at{" "}
-              <span className="figure" style={{ color: "var(--text-primary)", fontWeight: 600 }}>
-                {formatNaira(topCategoryAmount)}
-              </span>
-              {topMerchantName ? (
-                <>
-                  , led by activity with{" "}
-                  <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{topMerchantName}</span>.
-                </>
-              ) : "."}
-            </p>
-          ) : null}
+          <Link
+            href="/insights"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "3px",
+              fontSize: "11.5px",
+              color: "#A1A1AA",
+              fontWeight: 600,
+              textDecoration: "none",
+            }}
+          >
+            <span>Full Insights</span>
+            <ArrowRight size={11} />
+          </Link>
         </div>
+
+        {/* Narrative */}
+        <p style={{ fontSize: "13.5px", color: "#D4D4D8", lineHeight: 1.6, fontWeight: 400 }}>
+          You&apos;ve received{" "}
+          <span style={{ fontWeight: 600, color: "#10B981" }}>
+            +{formatNaira(totalIncome)}
+          </span>{" "}
+          this period and spent{" "}
+          <span style={{ fontWeight: 600, color: "#EDEDED" }}>
+            {formatNaira(totalExpenses)}
+          </span>
+          .{" "}
+          {isSurplus ? (
+            <>
+              You have a positive cash flow of{" "}
+              <span style={{ fontWeight: 600, color: "#10B981" }}>
+                +{formatNaira(netCashFlow)}
+              </span>
+              .{" "}
+            </>
+          ) : (
+            <>
+              Your spending exceeds inflows by{" "}
+              <span style={{ fontWeight: 600, color: "#EF4444" }}>
+                {formatNaira(Math.abs(netCashFlow))}
+              </span>
+              .{" "}
+            </>
+          )}
+          {topCategoryName && topCategoryAmount && (
+            <>
+              <span style={{ fontWeight: 600, color: "#FFFFFF" }}>{topCategoryName}</span> is currently your largest spending category ({formatNaira(topCategoryAmount)}).{" "}
+            </>
+          )}
+          {topMerchantName && (
+            <>
+              Your most frequent merchant is{" "}
+              <span style={{ fontWeight: 600, color: "#FFFFFF" }}>{topMerchantName}</span>.
+            </>
+          )}
+        </p>
       </div>
-    </motion.div>
+
+      {/* Insight Micro-Chips */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "6px",
+          marginTop: "1rem",
+          paddingTop: "0.875rem",
+          borderTop: "1px solid #171717",
+        }}
+      >
+        {topCategoryName && (
+          <span
+            style={{
+              fontSize: "11px",
+              padding: "3px 8px",
+              borderRadius: "6px",
+              background: "#141414",
+              border: "1px solid #222222",
+              color: "#A1A1AA",
+            }}
+          >
+            Primary: <strong style={{ color: "#FFFFFF" }}>{topCategoryName}</strong>
+          </span>
+        )}
+        {topMerchantName && (
+          <span
+            style={{
+              fontSize: "11px",
+              padding: "3px 8px",
+              borderRadius: "6px",
+              background: "#141414",
+              border: "1px solid #222222",
+              color: "#A1A1AA",
+            }}
+          >
+            Frequent: <strong style={{ color: "#FFFFFF" }}>{topMerchantName}</strong>
+          </span>
+        )}
+        {effectiveRate > 0 && (
+          <span
+            style={{
+              fontSize: "11px",
+              padding: "3px 8px",
+              borderRadius: "6px",
+              background: "rgba(16, 185, 129, 0.08)",
+              border: "1px solid rgba(16, 185, 129, 0.2)",
+              color: "#10B981",
+              fontWeight: 500,
+            }}
+          >
+            Retention: {Math.round(effectiveRate)}%
+          </span>
+        )}
+      </div>
+    </div>
   );
 }

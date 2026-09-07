@@ -256,7 +256,7 @@ export class MonoFinancialProvider implements FinancialProvider {
 
     const initialBal = typeof input.initialBalance === "number" && input.initialBalance >= 0 
       ? input.initialBalance 
-      : 250000;
+      : 0;
 
     return {
       connectionId: `conn_live_${generatedExternalId}`,

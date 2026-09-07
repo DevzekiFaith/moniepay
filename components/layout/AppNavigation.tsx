@@ -1,377 +1,166 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// AppNavigation — MoniePay Responsive Navigation Architecture
-// Desktop Sidebar + Modern Animated Hamburger Drawer + Mobile Dock
+// AJO — Responsive Navigation Architecture
+// Desktop Sidebar + Mobile Header + Mobile Dock
+// Minimalist, black, white, neutral aesthetics.
 // ─────────────────────────────────────────────────────────────────
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { MoniePayLogo } from "@/components/ui/MoniePayLogo";
+import { AjoLogo } from "@/components/ui/AjoLogo";
 import { useAuth } from "@/context/AuthContext";
 import { LogoutModal } from "@/components/ui/LogoutModal";
 import {
-  Compass,
+  Home,
   ArrowLeftRight,
   BrainCircuit,
-  WalletCards,
+  Building2,
   SlidersHorizontal,
   LogOut,
-  ChevronRight,
+  LogIn,
+  User,
   ShieldCheck,
-  Sparkles,
+  ChevronRight,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
-export const NAV_ITEMS = [
-  { label: "Home",      href: "/",         icon: Compass           },
-  { label: "Activity",  href: "/activity",  icon: ArrowLeftRight    },
-  { label: "Insights",  href: "/insights",  icon: BrainCircuit      },
-  { label: "Accounts",  href: "/accounts",  icon: WalletCards       },
-  { label: "Profile",   href: "/profile",   icon: SlidersHorizontal },
+export const NAV_SECTIONS = [
+  {
+    title: "Overview",
+    items: [
+      { label: "Home", href: "/", icon: Home, description: "Balance & Money Story" },
+    ],
+  },
+  {
+    title: "Intelligence",
+    items: [
+      { label: "Activity", href: "/activity", icon: ArrowLeftRight, description: "Financial Timeline" },
+      { label: "Insights", href: "/insights", icon: BrainCircuit, description: "Pattern Explanations" },
+      { label: "Accounts", href: "/accounts", icon: Building2, description: "Connected Bank Feeds" },
+    ],
+  },
+  {
+    title: "Preferences",
+    items: [
+      { label: "Profile & Settings", href: "/profile", icon: SlidersHorizontal, description: "Security & Alerts" },
+    ],
+  },
 ];
 
-// ── Animated Hamburger Button Component ──────────────────────────
-export function AnimatedHamburgerButton({
-  isOpen,
-  onClick,
-}: {
-  isOpen: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <motion.button
-      type="button"
-      whileTap={{ scale: 0.9 }}
-      whileHover={{ scale: 1.04 }}
-      transition={{ type: "spring", stiffness: 400, damping: 20 }}
-      onClick={onClick}
-      aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
-      style={{
-        width: "42px",
-        height: "42px",
-        borderRadius: "12px",
-        background: isOpen ? "rgba(79, 156, 249, 0.14)" : "var(--bg-elevated)",
-        border: `1px solid ${isOpen ? "rgba(79, 156, 249, 0.35)" : "var(--border-base)"}`,
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        gap: "5px",
-        cursor: "pointer",
-        padding: 0,
-        position: "relative",
-        transition: "background 0.2s ease, border-color 0.2s ease",
-        boxShadow: "0 2px 6px rgba(0, 0, 0, 0.25)",
-      }}
-    >
-      {/* Top line */}
-      <span
-        style={{
-          width: "19px",
-          height: "2px",
-          background: isOpen ? "var(--accent)" : "var(--text-primary)",
-          borderRadius: "2px",
-          transition: "transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease",
-          transformOrigin: "center",
-          transform: isOpen ? "translateY(7px) rotate(45deg)" : "none",
-        }}
-      />
-      {/* Middle line */}
-      <span
-        style={{
-          width: "19px",
-          height: "2px",
-          background: isOpen ? "var(--accent)" : "var(--text-primary)",
-          borderRadius: "2px",
-          transition: "opacity 0.2s ease, transform 0.2s ease",
-          opacity: isOpen ? 0 : 1,
-          transform: isOpen ? "scaleX(0)" : "scaleX(1)",
-        }}
-      />
-      {/* Bottom line */}
-      <span
-        style={{
-          width: "19px",
-          height: "2px",
-          background: isOpen ? "var(--accent)" : "var(--text-primary)",
-          borderRadius: "2px",
-          transition: "transform 0.28s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s ease",
-          transformOrigin: "center",
-          transform: isOpen ? "translateY(-7px) rotate(-45deg)" : "none",
-        }}
-      />
-    </motion.button>
-  );
-}
+// Flat list for mobile navigation
+export const MOBILE_NAV_ITEMS = [
+  { label: "Home", href: "/", icon: Home },
+  { label: "Activity", href: "/activity", icon: ArrowLeftRight },
+  { label: "Insights", href: "/insights", icon: BrainCircuit },
+  { label: "Accounts", href: "/accounts", icon: Building2 },
+  { label: "Profile", href: "/profile", icon: User },
+];
 
-// ── Mobile Animated Navigation Header & Drawer ───────────────────
+// ── Mobile Header ─────────────────────────────────────────────────
 export function AppMobileHeader() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
-  const [isOpen, setIsOpen] = useState(false);
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
-
-  // Close mobile drawer on route navigation
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
-
-  // Prevent background scroll when mobile drawer is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
 
   return (
     <>
-      {/* Mobile Top Header Bar */}
       <header
         className="mobile-only"
         style={{
-          height: "58px",
-          background: "rgba(12, 18, 32, 0.88)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          borderBottom: "1px solid var(--border-base)",
+          height: "56px",
+          background: "rgba(8, 8, 8, 0.95)",
+          backdropFilter: "blur(16px)",
+          borderBottom: "1px solid #171717",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 1rem",
+          padding: "0 1.25rem",
           position: "sticky",
           top: 0,
           zIndex: 45,
           width: "100%",
+          display: "flex",
         }}
       >
-        <Link href="/" style={{ textDecoration: "none", display: "flex", alignItems: "center" }}>
-          <MoniePayLogo size={32} showTagline={false} />
+        <Link href="/" style={{ textDecoration: "none" }}>
+          <AjoLogo size={28} showTagline={false} />
         </Link>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
-          <Link
-            href="/profile"
-            style={{
-              width: "32px",
-              height: "32px",
-              borderRadius: "50%",
-              background: "linear-gradient(135deg, #4F46E5 0%, #2563EB 100%)",
-              border: "1.5px solid rgba(255, 255, 255, 0.2)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "12px",
-              fontWeight: 700,
-              color: "#FFFFFF",
-              textDecoration: "none",
-            }}
-          >
-            {user?.name ? user.name[0].toUpperCase() : "A"}
-          </Link>
-
-          {/* Animated Hamburger Trigger */}
-          <AnimatedHamburgerButton isOpen={isOpen} onClick={() => setIsOpen(!isOpen)} />
-        </div>
-      </header>
-
-      {/* Animated Mobile Drawer Overlay */}
-      <AnimatePresence>
-        {isOpen && (
-          <>
-            {/* Backdrop */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              onClick={() => setIsOpen(false)}
-              style={{
-                position: "fixed",
-                inset: 0,
-                background: "rgba(7, 11, 20, 0.75)",
-                backdropFilter: "blur(12px)",
-                WebkitBackdropFilter: "blur(12px)",
-                zIndex: 55,
-              }}
-            />
-
-            {/* Slide-Down Glassmorphic Drawer */}
-            <motion.div
-              initial={{ opacity: 0, y: -24 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -24 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              style={{
-                position: "fixed",
-                top: "58px",
-                left: "12px",
-                right: "12px",
-                maxWidth: "480px",
-                margin: "0 auto",
-                background: "rgba(15, 23, 42, 0.95)",
-                backdropFilter: "blur(28px)",
-                WebkitBackdropFilter: "blur(28px)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                borderRadius: "20px",
-                boxShadow: "0 20px 50px rgba(0, 0, 0, 0.85)",
-                zIndex: 60,
-                padding: "1.25rem",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1.1rem",
-              }}
-            >
-              {/* User Identity Header */}
-              <div
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          {user ? (
+            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+              <Link
+                href="/profile"
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  justifyContent: "space-between",
-                  paddingBottom: "1rem",
-                  borderBottom: "1px solid var(--border-base)",
+                  gap: "6px",
+                  padding: "4px 8px",
+                  borderRadius: "6px",
+                  background: "#141414",
+                  border: "1px solid #222222",
+                  color: "#EDEDED",
+                  fontSize: "12px",
+                  textDecoration: "none",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                  <div
-                    style={{
-                      width: "40px",
-                      height: "40px",
-                      borderRadius: "50%",
-                      background: "linear-gradient(135deg, #38bdf8 0%, #1e40af 100%)",
-                      border: "1.5px solid rgba(255, 255, 255, 0.2)",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "14px",
-                      fontWeight: 700,
-                      color: "#FFFFFF",
-                      boxShadow: "0 2px 8px rgba(0,0,0,0.3)",
-                    }}
-                  >
-                    {user?.name ? user.name[0].toUpperCase() : "A"}
-                  </div>
-                  <div>
-                    <p style={{ fontSize: "14.5px", fontWeight: 700, color: "var(--text-primary)", letterSpacing: "-0.01em" }}>
-                      {user?.name || "Alex Chen"}
-                    </p>
-                    <p style={{ fontSize: "11.5px", color: "var(--text-tertiary)" }}>
-                      {user?.email || "alex.chen@moniepay.app"}
-                    </p>
-                  </div>
-                </div>
-
-                <span
+                <div
                   style={{
-                    display: "inline-flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    padding: "3px 8px",
-                    borderRadius: "99px",
-                    background: "rgba(52, 211, 153, 0.12)",
-                    border: "1px solid rgba(52, 211, 153, 0.25)",
-                    fontSize: "10.5px",
-                    color: "var(--positive)",
-                    fontWeight: 600,
-                  }}
-                >
-                  <span
-                    style={{
-                      width: "5px",
-                      height: "5px",
-                      borderRadius: "50%",
-                      background: "var(--positive)",
-                    }}
-                  />
-                  Live Sync
-                </span>
-              </div>
-
-              {/* Navigation Items List */}
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem" }}>
-                {NAV_ITEMS.map((item) => {
-                  const isActive = pathname === item.href;
-                  const Icon = item.icon;
-                  return (
-                    <motion.div
-                      key={item.href}
-                      whileTap={{ scale: 0.97 }}
-                      whileHover={{ x: 2 }}
-                      transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                    >
-                      <Link
-                        href={item.href}
-                        onClick={() => setIsOpen(false)}
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          padding: "0.75rem 1rem",
-                          borderRadius: "12px",
-                          fontSize: "14px",
-                          fontWeight: isActive ? 700 : 500,
-                          color: isActive ? "#FFFFFF" : "var(--text-secondary)",
-                          background: isActive ? "rgba(79, 156, 249, 0.15)" : "transparent",
-                          border: isActive ? "1px solid rgba(79, 156, 249, 0.3)" : "1px solid transparent",
-                          textDecoration: "none",
-                          transition: "all 0.15s ease",
-                        }}
-                      >
-                        <div style={{ display: "flex", alignItems: "center", gap: "0.85rem" }}>
-                          <Icon
-                            size={18}
-                            color={isActive ? "var(--accent)" : "var(--text-secondary)"}
-                            strokeWidth={isActive ? 2.3 : 1.8}
-                          />
-                          <span>{item.label}</span>
-                        </div>
-                        <ChevronRight size={15} color="var(--text-tertiary)" />
-                      </Link>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* Drawer Bottom Actions: Sign Out */}
-              <div style={{ borderTop: "1px solid var(--border-base)", paddingTop: "0.875rem" }}>
-                <motion.button
-                  type="button"
-                  whileTap={{ scale: 0.96 }}
-                  whileHover={{ scale: 1.01 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 22 }}
-                  onClick={() => {
-                    setIsOpen(false);
-                    setIsLogoutOpen(true);
-                  }}
-                  style={{
-                    width: "100%",
+                    width: "18px",
+                    height: "18px",
+                    borderRadius: "4px",
+                    background: "#222222",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    gap: "0.5rem",
-                    padding: "0.75rem",
-                    borderRadius: "12px",
-                    background: "rgba(37, 99, 235, 0.12)",
-                    border: "1px solid rgba(79, 156, 249, 0.25)",
-                    color: "var(--accent)",
-                    fontSize: "13.5px",
-                    fontWeight: 600,
-                    cursor: "pointer",
+                    fontSize: "10px",
+                    fontWeight: 700,
                   }}
                 >
-                  <LogOut size={16} />
-                  <span>Sign Out of MoniePay</span>
-                </motion.button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+                  {user.avatarLetter || "A"}
+                </div>
+                <span style={{ maxWidth: "80px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {user.name?.split(" ")[0] || "Profile"}
+                </span>
+              </Link>
+
+              <button
+                type="button"
+                onClick={() => setIsLogoutOpen(true)}
+                style={{
+                  background: "#141414",
+                  border: "1px solid #222222",
+                  borderRadius: "6px",
+                  padding: "5px 7px",
+                  color: "#71717A",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+                title="Sign out"
+              >
+                <LogOut size={13} />
+              </button>
+            </div>
+          ) : (
+            <Link
+              href="/login"
+              style={{
+                background: "#FFFFFF",
+                color: "#050505",
+                borderRadius: "6px",
+                padding: "5px 12px",
+                fontSize: "12px",
+                fontWeight: 600,
+                textDecoration: "none",
+              }}
+            >
+              Sign In
+            </Link>
+          )}
+        </div>
+      </header>
 
       <LogoutModal
         isOpen={isLogoutOpen}
@@ -396,225 +185,288 @@ export function AppSidebar() {
     <>
       <aside
         style={{
-          width: "230px",
-          minHeight: "100dvh",
-          borderRight: "1px solid var(--border-base)",
-          background: "var(--bg-surface)",
+          width: "256px",
+          height: "100dvh",
+          background: "#070707",
+          borderRight: "1px solid #141414",
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
-          padding: "1.75rem 1.125rem",
+          padding: "1.5rem 1.125rem 1.25rem",
           position: "sticky",
           top: 0,
           flexShrink: 0,
-          zIndex: 40,
         }}
       >
-        {/* Brand mark */}
-        <div>
-          <Link
-            href="/"
-            style={{
-              display: "flex",
-              alignItems: "center",
-              paddingLeft: "0.25rem",
-              marginBottom: "2.25rem",
-              textDecoration: "none",
-            }}
-          >
-            <MoniePayLogo size={36} showTagline={true} />
-          </Link>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
+          {/* Brand Header */}
+          <div style={{ paddingLeft: "6px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+            <Link href="/" style={{ textDecoration: "none" }}>
+              <AjoLogo size={32} showTagline={true} />
+            </Link>
 
-          {/* Navigation links */}
-          <nav style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-            {NAV_ITEMS.map((item) => {
-              const isActive = pathname === item.href;
-              const Icon = item.icon;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
+            {/* Read-Only Status Indicator */}
+            <div
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: "3px 8px",
+                borderRadius: "6px",
+                background: "#0F0F0F",
+                border: "1px solid #1A1A1A",
+                width: "fit-content",
+              }}
+            >
+              <span
+                style={{
+                  width: "5px",
+                  height: "5px",
+                  borderRadius: "50%",
+                  background: "#10B981",
+                  boxShadow: "0 0 8px rgba(16, 185, 129, 0.6)",
+                }}
+              />
+              <span style={{ fontSize: "10.5px", fontWeight: 500, color: "#71717A" }}>
+                Read-Only Feed Active
+              </span>
+            </div>
+          </div>
+
+          {/* Grouped Navigation Sections */}
+          <nav style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+            {/* 1. Overview */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+              <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#52525B", paddingLeft: "10px", marginBottom: "4px" }}>
+                Overview
+              </span>
+              <Link
+                href="/"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "8px 10px",
+                  borderRadius: "8px",
+                  fontSize: "13px",
+                  fontWeight: pathname === "/" ? 600 : 500,
+                  color: pathname === "/" ? "#FFFFFF" : "#A1A1AA",
+                  background: pathname === "/" ? "#141414" : "transparent",
+                  border: pathname === "/" ? "1px solid #222222" : "1px solid transparent",
+                  textDecoration: "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <Home size={15} color={pathname === "/" ? "#FFFFFF" : "#71717A"} strokeWidth={pathname === "/" ? 2.2 : 1.8} />
+                  <span>Home</span>
+                </div>
+                {pathname === "/" && <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#FFFFFF" }} />}
+              </Link>
+            </div>
+
+            {/* 2. Intelligence */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+              <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#52525B", paddingLeft: "10px", marginBottom: "4px" }}>
+                Intelligence
+              </span>
+              {[
+                { label: "Activity", href: "/activity", icon: ArrowLeftRight },
+                { label: "Insights", href: "/insights", icon: BrainCircuit },
+                { label: "Accounts", href: "/accounts", icon: Building2 },
+              ].map((item) => {
+                const isActive = pathname === item.href;
+                const Icon = item.icon;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      padding: "8px 10px",
+                      borderRadius: "8px",
+                      fontSize: "13px",
+                      fontWeight: isActive ? 600 : 500,
+                      color: isActive ? "#FFFFFF" : "#A1A1AA",
+                      background: isActive ? "#141414" : "transparent",
+                      border: isActive ? "1px solid #222222" : "1px solid transparent",
+                      textDecoration: "none",
+                      transition: "all 0.15s ease",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                      <Icon size={15} color={isActive ? "#FFFFFF" : "#71717A"} strokeWidth={isActive ? 2.2 : 1.8} />
+                      <span>{item.label}</span>
+                    </div>
+                    {isActive && <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#FFFFFF" }} />}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* 3. Profile Reference & Actions */}
+            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
+              <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#52525B", paddingLeft: "10px", marginBottom: "4px" }}>
+                Profile &amp; Settings
+              </span>
+
+              {/* Profile Link Button */}
+              <Link
+                href="/profile"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  padding: "8px 10px",
+                  borderRadius: "8px",
+                  fontSize: "13px",
+                  fontWeight: pathname === "/profile" ? 600 : 500,
+                  color: pathname === "/profile" ? "#FFFFFF" : "#A1A1AA",
+                  background: pathname === "/profile" ? "#141414" : "transparent",
+                  border: pathname === "/profile" ? "1px solid #222222" : "1px solid transparent",
+                  textDecoration: "none",
+                  transition: "all 0.15s ease",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                  <User size={15} color={pathname === "/profile" ? "#FFFFFF" : "#71717A"} strokeWidth={pathname === "/profile" ? 2.2 : 1.8} />
+                  <span>Profile &amp; Preferences</span>
+                </div>
+                {pathname === "/profile" && <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#FFFFFF" }} />}
+              </Link>
+
+              {/* Sign In & User Actions placed directly under Profile Reference */}
+              {user ? (
+                <div
                   style={{
+                    marginTop: "4px",
+                    background: "#0D0D0D",
+                    border: "1px solid #1A1A1A",
+                    borderRadius: "10px",
+                    padding: "8px 10px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "0.625rem 0.875rem",
-                    borderRadius: "10px",
-                    fontSize: "13.5px",
-                    fontWeight: isActive ? 600 : 500,
-                    color: isActive ? "var(--text-primary)" : "var(--text-secondary)",
-                    background: isActive ? "rgba(79, 156, 249, 0.12)" : "transparent",
-                    border: isActive ? "1px solid rgba(79, 156, 249, 0.2)" : "1px solid transparent",
-                    transition: "all 0.15s ease",
-                    textDecoration: "none",
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.background = "var(--bg-elevated)";
-                      e.currentTarget.style.color = "var(--text-primary)";
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!isActive) {
-                      e.currentTarget.style.background = "transparent";
-                      e.currentTarget.style.color = "var(--text-secondary)";
-                    }
+                    gap: "8px",
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-                    <Icon
-                      size={16}
-                      color={isActive ? "var(--accent)" : "var(--text-secondary)"}
-                      strokeWidth={isActive ? 2.2 : 1.8}
-                    />
-                    <span>{item.label}</span>
-                  </div>
-
-                  {isActive && (
-                    <span
+                  <Link
+                    href="/profile"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      minWidth: 0,
+                      flex: 1,
+                      textDecoration: "none",
+                    }}
+                  >
+                    <div
                       style={{
-                        width: "5px",
-                        height: "5px",
-                        borderRadius: "50%",
-                        background: "var(--accent)",
-                        boxShadow: "0 0 8px var(--accent)",
+                        width: "28px",
+                        height: "28px",
+                        borderRadius: "6px",
+                        background: "#1C1C1E",
+                        border: "1px solid #27272A",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: "#FFFFFF",
+                        fontWeight: 700,
+                        fontSize: "11px",
+                        flexShrink: 0,
                       }}
-                    />
-                  )}
-                </Link>
-              );
-            })}
-          </nav>
+                    >
+                      {user.avatarLetter || "A"}
+                    </div>
 
-          {/* Monie AI Assistant Banner */}
-          <div
-            style={{
-              marginTop: "1.25rem",
-              padding: "0.875rem",
-              borderRadius: "14px",
-              background: "linear-gradient(135deg, rgba(124, 58, 237, 0.14) 0%, rgba(37, 99, 235, 0.08) 100%)",
-              border: "1px solid rgba(124, 58, 237, 0.28)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "4px" }}>
-              <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                <Sparkles size={13} color="#A78BFA" />
-                <span style={{ fontSize: "12px", fontWeight: 700, color: "#EDE9FE" }}>
-                  Monie AI Copilot
-                </span>
-              </div>
-              <span
-                style={{
-                  fontSize: "9px",
-                  fontWeight: 700,
-                  padding: "1px 5px",
-                  borderRadius: "4px",
-                  background: "rgba(52, 211, 153, 0.15)",
-                  color: "var(--positive)",
-                  border: "1px solid rgba(52, 211, 153, 0.3)",
-                }}
-              >
-                LIVE
-              </span>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <p
+                        style={{
+                          fontSize: "12px",
+                          fontWeight: 600,
+                          color: "#EDEDED",
+                          lineHeight: 1.2,
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {user.name || "Member"}
+                      </p>
+                      <span
+                        style={{
+                          fontSize: "10px",
+                          color: "#71717A",
+                          display: "block",
+                          marginTop: "1px",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {user.email}
+                      </span>
+                    </div>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsLogoutOpen(true)}
+                    title="Sign out of AJO"
+                    style={{
+                      width: "26px",
+                      height: "26px",
+                      borderRadius: "6px",
+                      background: "transparent",
+                      border: "1px solid transparent",
+                      color: "#71717A",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <LogOut size={13} />
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  style={{
+                    marginTop: "6px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "8px",
+                    padding: "8px 12px",
+                    background: "#FFFFFF",
+                    color: "#050505",
+                    borderRadius: "8px",
+                    fontSize: "12.5px",
+                    fontWeight: 600,
+                    textDecoration: "none",
+                    transition: "opacity 0.15s ease",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
+                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
+                >
+                  <LogIn size={13} />
+                  <span>Sign In to AJO</span>
+                </Link>
+              )}
             </div>
-            <p style={{ fontSize: "11px", color: "var(--text-tertiary)", margin: 0, lineHeight: 1.45 }}>
-              Ask anything about your money, food spending, or bills.
-            </p>
-          </div>
+          </nav>
         </div>
 
-        {/* Refined Minimalist Footer: User Identity & Quick Logout */}
-        <div>
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <Link
-              href="/profile"
-              style={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                gap: "0.625rem",
-                padding: "0.5rem 0.625rem",
-                textDecoration: "none",
-                borderRadius: "12px",
-                background: "var(--bg-elevated)",
-                border: "1px solid var(--border-base)",
-                transition: "all 0.15s ease",
-                minWidth: 0,
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = "var(--border-strong)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = "var(--border-base)";
-              }}
-            >
-              <div
-                style={{
-                  width: "30px",
-                  height: "30px",
-                  borderRadius: "50%",
-                  background: "linear-gradient(135deg, #4F46E5 0%, #2563EB 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  color: "#fff",
-                  fontWeight: 700,
-                  fontSize: "12px",
-                  flexShrink: 0,
-                }}
-              >
-                {user?.name ? user.name[0].toUpperCase() : "A"}
-              </div>
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <p style={{ fontSize: "12px", fontWeight: 600, color: "var(--text-primary)", lineHeight: 1.2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                  {user?.name || "Alex Chen"}
-                </p>
-                <div style={{ display: "flex", alignItems: "center", gap: "5px", marginTop: "2px" }}>
-                  <span
-                    style={{
-                      width: "5px",
-                      height: "5px",
-                      borderRadius: "50%",
-                      background: "var(--positive)",
-                      boxShadow: "0 0 6px var(--positive)",
-                      display: "inline-block",
-                    }}
-                  />
-                  <span style={{ fontSize: "10px", color: "var(--text-tertiary)" }}>Supabase Live</span>
-                </div>
-              </div>
-            </Link>
-
-            {/* Quick Logout Button */}
-            <button
-              type="button"
-              onClick={() => setIsLogoutOpen(true)}
-              title="Log out of MoniePay"
-              style={{
-                width: "36px",
-                height: "44px",
-                borderRadius: "10px",
-                background: "rgba(244, 63, 94, 0.08)",
-                border: "1px solid rgba(244, 63, 94, 0.2)",
-                color: "var(--negative)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                flexShrink: 0,
-                transition: "all 0.15s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(244, 63, 94, 0.2)";
-                e.currentTarget.style.borderColor = "var(--negative)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(244, 63, 94, 0.08)";
-                e.currentTarget.style.borderColor = "rgba(244, 63, 94, 0.2)";
-              }}
-            >
-              <LogOut size={15} />
-            </button>
+        {/* Footer: Security Guarantee */}
+        <div style={{ borderTop: "1px solid #141414", paddingTop: "0.875rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#52525B", fontSize: "11px", paddingLeft: "6px" }}>
+            <ShieldCheck size={13} color="#10B981" />
+            <span>256-Bit Read-Only Security</span>
           </div>
         </div>
       </aside>
@@ -632,35 +484,35 @@ export function AppSidebar() {
   );
 }
 
-// ── Floating Neo-Tactile Mobile Dock ─────────────────────────────
+// ── Mobile Bottom Bar ─────────────────────────────────────────────
 export function AppBottomBar() {
   const pathname = usePathname();
 
   return (
     <nav
-      className="mobile-only"
       style={{
         position: "fixed",
         bottom: "max(12px, env(safe-area-inset-bottom, 12px))",
         left: "12px",
         right: "12px",
-        maxWidth: "440px",
+        maxWidth: "460px",
         margin: "0 auto",
-        height: "58px",
-        background: "rgba(13, 21, 38, 0.94)",
-        backdropFilter: "blur(24px)",
-        WebkitBackdropFilter: "blur(24px)",
-        border: "1px solid rgba(255, 255, 255, 0.12)",
-        borderRadius: "20px",
-        boxShadow: "0 12px 36px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1)",
+        height: "54px",
+        background: "rgba(10, 10, 10, 0.96)",
+        backdropFilter: "blur(20px)",
+        border: "1px solid #1F1F1F",
+        borderRadius: "14px",
+        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.8)",
+        display: "flex",
         alignItems: "center",
         justifyContent: "space-around",
         zIndex: 50,
       }}
     >
-      {NAV_ITEMS.map((item) => {
+      {MOBILE_NAV_ITEMS.map((item) => {
         const isActive = pathname === item.href;
         const Icon = item.icon;
+
         return (
           <Link
             key={item.href}
@@ -669,36 +521,21 @@ export function AppBottomBar() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
-              gap: "3px",
+              gap: "2px",
               padding: "6px 10px",
-              color: isActive ? "#FFFFFF" : "var(--text-tertiary)",
+              color: isActive ? "#FFFFFF" : "#71717A",
               textDecoration: "none",
               transition: "all 0.15s ease",
-              position: "relative",
             }}
           >
             <Icon
-              size={17}
-              color={isActive ? "var(--accent)" : "var(--text-secondary)"}
-              strokeWidth={isActive ? 2.3 : 1.7}
+              size={16}
+              color={isActive ? "#FFFFFF" : "#71717A"}
+              strokeWidth={isActive ? 2.2 : 1.8}
             />
-            <span style={{ fontSize: "10px", fontWeight: isActive ? 700 : 500, letterSpacing: "0.01em" }}>
+            <span style={{ fontSize: "10px", fontWeight: isActive ? 700 : 500 }}>
               {item.label}
             </span>
-
-            {isActive && (
-              <span
-                style={{
-                  position: "absolute",
-                  bottom: "2px",
-                  width: "4px",
-                  height: "4px",
-                  borderRadius: "50%",
-                  background: "var(--accent)",
-                  boxShadow: "0 0 6px var(--accent)",
-                }}
-              />
-            )}
           </Link>
         );
       })}

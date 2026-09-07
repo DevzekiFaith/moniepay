@@ -12,9 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "MoniePay — Personal Money Intelligence & Real-Time Finance",
-  description: "MoniePay. Real-time personal money intelligence, Open Banking ledger synchronization, and proactive cashflow tracking.",
-  keywords: ["MoniePay", "money intelligence", "open banking", "financial audit", "fintech", "nigeria"],
+  title: "AJO — Personal Money Intelligence | Your money. Understood.",
+  description: "AJO automatically observes financial activity from connected accounts, understands transactions, organizes information, analyzes patterns, and explains your money story.",
+  keywords: ["AJO", "money intelligence", "personal finance", "open banking", "automated finance"],
 };
 
 export default function RootLayout({

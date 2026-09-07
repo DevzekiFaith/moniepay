@@ -1,9 +1,10 @@
 "use client";
 
 // ─────────────────────────────────────────────
-// MoniePay — Live Realtime Synchronization Hook
-// Subscribes to Supabase Realtime, Window Event Bus,
-// and automatic background ledger polling (12s cadence).
+// AJO — Realtime Synchronization Hook
+// Subscribes to real Supabase Realtime backend events
+// and application-wide synchronization event bus.
+// Strictly no fake timers or setInterval polling simulations.
 // ─────────────────────────────────────────────
 
 import { useEffect, useRef } from "react";
@@ -13,36 +14,16 @@ interface UseRealtimeTransactionsOptions {
   userId?: string;
   onTransactionChange?: (payload?: any) => void;
   onAccountChange?: (payload?: any) => void;
-  pollingIntervalMs?: number; // default 12,000ms
-  enablePolling?: boolean;
 }
 
 /**
- * Dispatch an application-wide realtime event to trigger
- * instant synchronization across all charts and audit components.
+ * Dispatch an application-wide realtime event when an account or transaction
+ * is synced, created, or updated through the provider.
  */
 export function dispatchRealtimeUpdate(type: "transaction" | "account" = "transaction") {
   if (typeof window !== "undefined") {
-    const eventName = type === "transaction" ? "moniepay:transaction-sync" : "moniepay:account-sync";
+    const eventName = type === "transaction" ? "ajo:transaction-sync" : "ajo:account-sync";
     window.dispatchEvent(new CustomEvent(eventName, { detail: { timestamp: Date.now(), type } }));
-    // Also dispatch legacy event for compatibility
-    window.dispatchEvent(new CustomEvent(type === "transaction" ? "ajopay:transaction-sync" : "ajopay:account-sync"));
-  }
-}
-
-/**
- * Dispatch a live push notification across the application and to native desktop/mobile.
- */
-export function dispatchLiveNotification(notification: {
-  title: string;
-  message?: string;
-  type?: "success" | "error" | "info" | "warning" | "push";
-  sendPush?: boolean;
-}) {
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(
-      new CustomEvent("moniepay:live-notification", { detail: notification })
-    );
   }
 }
 
@@ -50,8 +31,6 @@ export function useRealtimeTransactions({
   userId,
   onTransactionChange,
   onAccountChange,
-  pollingIntervalMs = 12000,
-  enablePolling = true,
 }: UseRealtimeTransactionsOptions) {
   const onTxRef = useRef(onTransactionChange);
   const onAcctRef = useRef(onAccountChange);
@@ -61,7 +40,7 @@ export function useRealtimeTransactions({
     onAcctRef.current = onAccountChange;
   }, [onTransactionChange, onAccountChange]);
 
-  // 1. Supabase Realtime Channel
+  // 1. Supabase Realtime Channel for Postgres Events
   useEffect(() => {
     if (!userId) return;
 
@@ -70,7 +49,7 @@ export function useRealtimeTransactions({
 
     try {
       const channel = supabase
-        .channel(`realtime:user:${userId}:audit-stream`)
+        .channel(`realtime:user:${userId}:stream`)
         .on(
           "postgres_changes",
           {
@@ -105,35 +84,22 @@ export function useRealtimeTransactions({
     }
   }, [userId]);
 
-  // 2. Window Custom Event Bus (Instant Inter-Component Sync)
+  // 2. Client Event Bus (Triggered upon provider synchronization)
   useEffect(() => {
-    const handleTxEvent = () => onTxRef.current?.({ source: "event-bus" });
-    const handleAcctEvent = () => onAcctRef.current?.({ source: "event-bus" });
+    const handleTxEvent = () => onTxRef.current?.({ source: "sync-event" });
+    const handleAcctEvent = () => onAcctRef.current?.({ source: "sync-event" });
 
+    window.addEventListener("ajo:transaction-sync", handleTxEvent);
+    window.addEventListener("ajo:account-sync", handleAcctEvent);
+    // Legacy event fallbacks
     window.addEventListener("moniepay:transaction-sync", handleTxEvent);
     window.addEventListener("moniepay:account-sync", handleAcctEvent);
-    window.addEventListener("ajopay:transaction-sync", handleTxEvent);
-    window.addEventListener("ajopay:account-sync", handleAcctEvent);
 
     return () => {
+      window.removeEventListener("ajo:transaction-sync", handleTxEvent);
+      window.removeEventListener("ajo:account-sync", handleAcctEvent);
       window.removeEventListener("moniepay:transaction-sync", handleTxEvent);
       window.removeEventListener("moniepay:account-sync", handleAcctEvent);
-      window.removeEventListener("ajopay:transaction-sync", handleTxEvent);
-      window.removeEventListener("ajopay:account-sync", handleAcctEvent);
     };
   }, []);
-
-  // 3. Smart Background Polling (keeps graph alive in real-time)
-  useEffect(() => {
-    if (!enablePolling) return;
-
-    const interval = setInterval(() => {
-      // Only refresh if tab is active/visible to save network
-      if (typeof document !== "undefined" && document.visibilityState === "visible") {
-        onTxRef.current?.({ source: "realtime-poll" });
-      }
-    }, pollingIntervalMs);
-
-    return () => clearInterval(interval);
-  }, [enablePolling, pollingIntervalMs]);
 }

@@ -1,4 +1,4 @@
 "use client";
 
-// Re-export MoniePayLogo for backwards compatibility
-export { MoniePayLogo as AjoPayLogo, MoniePayEmblem as AjoPayEmblem } from "./MoniePayLogo";
+// Re-export AJO Logo as AjoPayLogo for backwards compatibility
+export { AjoLogo as AjoPayLogo, AjoMark as AjoPayEmblem } from "./AjoLogo";

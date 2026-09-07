@@ -1,11 +1,12 @@
 // ─────────────────────────────────────────────
-// Financial Accounts API Route
-// GET  /api/accounts  — Lists connected bank accounts
-// POST /api/accounts  — Connects a new bank account through Open Banking provider
+// Financial Accounts API Route — AJO
+// GET    /api/accounts — Lists real connected bank accounts
+// POST   /api/accounts — Connects a bank account through Open Banking provider
+// DELETE /api/accounts — Disconnects an account
 // ─────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { getSessionUser } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { getFinancialProvider } from "@/providers/provider-registry";
 import { TransactionIngestionService } from "@/services/transaction/ingestion.service";
@@ -14,23 +15,23 @@ import { z } from "zod";
 const ingestionService = new TransactionIngestionService();
 
 const connectAccountSchema = z.object({
-  institutionId: z.string(),
+  institutionId: z.string().min(1),
   accountType: z.enum(["SAVINGS", "CHECKING", "WALLET"]).default("SAVINGS"),
   accountName: z.string().optional(),
   accountNumber: z.string().optional(),
-  initialBalance: z.coerce.number().min(0).default(0),
+  initialBalance: z.coerce.number().min(0).optional(),
   authCode: z.string().optional(),
-  importInitialHistory: z.boolean().default(true),
+  importInitialHistory: z.boolean().default(false),
 });
 
 export async function GET() {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
     const provider = getFinancialProvider();
 
     const [accounts, institutions] = await Promise.all([
@@ -49,7 +50,7 @@ export async function GET() {
       accounts,
       supportedInstitutions: institutions,
       providerName: provider.name,
-      isLive: true,
+      isLive: provider.id !== "mock",
     });
   } catch (error) {
     console.error("GET /api/accounts error:", error);
@@ -59,17 +60,17 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const userId = session.user.id;
+    const userId = user.id;
     const body = await request.json().catch(() => ({}));
     const parsed = connectAccountSchema.safeParse(body);
 
     if (!parsed.success) {
-      return NextResponse.json({ error: "Invalid request payload" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid account connection request" }, { status: 400 });
     }
 
     const {
@@ -81,9 +82,10 @@ export async function POST(request: NextRequest) {
       authCode,
       importInitialHistory,
     } = parsed.data;
+
     const provider = getFinancialProvider();
 
-    // 1. Authorize with the open banking provider
+    // 1. Authorize securely with the financial provider
     const { connectionId, account: providerAcc } = await provider.connectAccount(
       userId,
       {
@@ -97,7 +99,7 @@ export async function POST(request: NextRequest) {
       }
     );
 
-    // 2. Ensure institution record exists
+    // 2. Ensure institution metadata exists
     const institutions = await provider.getInstitutions();
     const instMeta = institutions.find((i) => i.id === institutionId);
 
@@ -115,7 +117,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 3. Create persistent account record
+    // 3. Create persistent account record with provider-verified balance
     const account = await prisma.financialAccount.create({
       data: {
         userId,
@@ -131,7 +133,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 4. Save provider connection record
+    // 4. Save provider connection reference
     await prisma.financialProviderConnection.create({
       data: {
         userId,
@@ -142,7 +144,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // 5. Fetch initial transaction history if enabled
+    // 5. Fetch initial transaction history from provider
     let ingestedCount = 0;
     if (importInitialHistory !== false) {
       const rawTransactions = await provider.fetchTransactions(
@@ -150,7 +152,6 @@ export async function POST(request: NextRequest) {
         providerAcc.externalAccountId
       );
 
-      // 6. Ingest transactions through the live server-side engine
       if (rawTransactions && rawTransactions.length > 0) {
         const ingestionResult = await ingestionService.ingestRaw(
           rawTransactions,
@@ -162,7 +163,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 7. Update account sync status and enforce live verified balance
+    // 6. Finalize account synchronization status
     const updatedAccount = await prisma.financialAccount.update({
       where: { id: account.id },
       data: {
@@ -187,8 +188,8 @@ export async function POST(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
+    const user = await getSessionUser();
+    if (!user?.id) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -199,7 +200,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     const account = await prisma.financialAccount.findFirst({
-      where: { id: accountId, userId: session.user.id },
+      where: { id: accountId, userId: user.id },
     });
 
     if (!account) {

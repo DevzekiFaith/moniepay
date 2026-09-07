@@ -8,59 +8,59 @@
 ═══════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ── Canvas ──────────────────────────────────────────────── */
-  --bg-void:       #070B14;   /* deepest background */
-  --bg-base:       #0C1220;   /* primary page background */
-  --bg-surface:    #111827;   /* card / panel surface */
-  --bg-elevated:   #1A2236;   /* elevated / hover surface */
-  --bg-border:     #1E2D42;   /* subtle borders */
-  --bg-input:      #151F30;   /* input background */
+  /* ── AJO Minimalist Canvas ────────────────────────────────── */
+  --bg-void:       #000000;   /* pure black */
+  --bg-base:       #050505;   /* deep neutral background */
+  --bg-surface:    #0D0D0D;   /* card / panel surface */
+  --bg-elevated:   #141414;   /* elevated surface */
+  --bg-border:     #1F1F1F;   /* subtle borders */
+  --bg-input:      #121212;   /* input background */
 
   /* ── Text ────────────────────────────────────────────────── */
-  --text-primary:   #F0F6FF;   /* primary — headings, big numbers */
-  --text-secondary: #7B90B2;   /* secondary — labels, metadata */
-  --text-tertiary:  #4A5C78;   /* tertiary — placeholders, disabled */
-  --text-inverse:   #0C1220;
+  --text-primary:   #EDEDED;   /* headings, numbers, crisp white */
+  --text-secondary: #A1A1AA;   /* labels, metadata, muted neutral */
+  --text-tertiary:  #52525B;   /* placeholders, disabled */
+  --text-inverse:   #050505;
 
   /* ── Borders ─────────────────────────────────────────────── */
-  --border-subtle:  rgba(255,255,255,0.05);
-  --border-base:    rgba(255,255,255,0.08);
-  --border-strong:  rgba(255,255,255,0.14);
+  --border-subtle:  #171717;
+  --border-base:    #1F1F1F;
+  --border-strong:  #2A2A2A;
 
-  /* ── Accent (single) ─────────────────────────────────────── */
-  --accent:         #4F9CF9;   /* electric blue */
-  --accent-dim:     rgba(79,156,249,0.12);
-  --accent-glow:    rgba(79,156,249,0.20);
-  --accent-text:    #4F9CF9;
+  /* ── Accent (Monochrome / Restrained Slate) ──────────────── */
+  --accent:         #FFFFFF;
+  --accent-dim:     rgba(255, 255, 255, 0.08);
+  --accent-glow:    rgba(255, 255, 255, 0.12);
+  --accent-text:    #FFFFFF;
 
-  /* ── Semantic ─────────────────────────────────────────────── */
-  --positive:       #34D399;   /* income / surplus */
-  --positive-dim:   rgba(52,211,153,0.10);
-  --negative:       #F87171;   /* expense / deficit */
-  --negative-dim:   rgba(248,113,113,0.10);
-  --warning:        #FBBF24;
-  --warning-dim:    rgba(251,191,36,0.10);
+  /* ── Semantic (Clean & Restrained) ────────────────────────── */
+  --positive:       #10B981;   /* income */
+  --positive-dim:   rgba(16, 185, 129, 0.10);
+  --negative:       #EF4444;   /* expense */
+  --negative-dim:   rgba(239, 68, 68, 0.10);
+  --warning:        #F59E0B;
+  --warning-dim:    rgba(245, 158, 11, 0.10);
 
   /* ── Typography ───────────────────────────────────────────── */
   --font-sans:  'Inter', system-ui, -apple-system, sans-serif;
   --font-mono:  'Fira Code', ui-monospace, 'Cascadia Code', monospace;
 
   /* ── Radii ────────────────────────────────────────────────── */
-  --r-xs:  6px;
-  --r-sm:  10px;
-  --r-md:  14px;
-  --r-lg:  20px;
-  --r-xl:  28px;
+  --r-xs:  4px;
+  --r-sm:  8px;
+  --r-md:  12px;
+  --r-lg:  16px;
+  --r-xl:  20px;
   --r-full: 9999px;
 
   /* ── Shadows ──────────────────────────────────────────────── */
-  --shadow-sm:   0 1px 3px rgba(0,0,0,0.4), 0 1px 2px rgba(0,0,0,0.3);
-  --shadow-md:   0 4px 16px rgba(0,0,0,0.5), 0 2px 4px rgba(0,0,0,0.3);
-  --shadow-lg:   0 8px 32px rgba(0,0,0,0.6), 0 4px 8px rgba(0,0,0,0.4);
-  --shadow-glow: 0 0 32px rgba(79,156,249,0.15);
+  --shadow-sm:   0 1px 2px rgba(0,0,0,0.5);
+  --shadow-md:   0 4px 12px rgba(0,0,0,0.6);
+  --shadow-lg:   0 8px 24px rgba(0,0,0,0.7);
+  --shadow-glow: 0 0 16px rgba(255,255,255,0.06);
 
   /* ── Sidebar width ────────────────────────────────────────── */
-  --sidebar-w: 228px;
+  --sidebar-w: 240px;
 
   /* ── Aliases & Component Compatibility ────────────────────── */
   --radius-xs: var(--r-xs);

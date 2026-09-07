@@ -51,7 +51,7 @@ const FILTERS: { label: string; value: FilterType }[] = [
 
 export function MoneyActivity({
   transactions,
-  title = "Senders & Receivers",
+  title = "Recent Activity",
   showViewAll = true,
 }: MoneyActivityProps) {
   const [filter, setFilter] = useState<FilterType>("ALL");
@@ -88,8 +88,13 @@ export function MoneyActivity({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      className="card"
-      style={{ padding: 0, overflow: "hidden", background: "#0D1526" }}
+      style={{
+        padding: 0,
+        overflow: "hidden",
+        background: "#0D0D0D",
+        border: "1px solid #1A1A1A",
+        borderRadius: "12px",
+      }}
     >
       {/* Header */}
       <div
