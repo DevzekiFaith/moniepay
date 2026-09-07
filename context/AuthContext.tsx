@@ -141,7 +141,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             window.dispatchEvent(
               new CustomEvent("ajo:auth-changed", { detail: { state: "signed_out" } })
             );
-            router.push("/login");
+            // Hard redirect so middleware cookie check triggers properly on Vercel
+            window.location.href = "/login";
           }
         }
       );
@@ -262,8 +263,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("moniepay_session");
     localStorage.removeItem("ajopay_session");
     setIsLoading(false);
-    router.push("/login");
-  }, [router]);
+    // Hard redirect so Vercel middleware sees the cleared cookie immediately
+    window.location.href = "/login";
+  }, []);
 
   return (
     <AuthContext.Provider

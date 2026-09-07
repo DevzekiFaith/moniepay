@@ -6,11 +6,12 @@ export function middleware(req: NextRequest) {
   // 1. Block dev routes in production
   const isDevRoute = pathname.startsWith("/dev") || pathname.startsWith("/api/simulate");
   if (isDevRoute && process.env.NODE_ENV !== "development") {
-    return NextResponse.redirect(new URL("/", req.url));
+    return NextResponse.redirect(new URL("/welcome", req.url));
   }
 
-  // 2. Allow public routes, auth APIs, webhooks, and static files
+  // 2. Allow public routes — welcome page, login, auth APIs, webhooks, static
   const isPublicRoute =
+    pathname === "/welcome" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/webhooks") ||
@@ -26,15 +27,19 @@ export function middleware(req: NextRequest) {
       c.name.startsWith("sb-")
   );
 
-  // If visiting protected route while not logged in
+  // If visiting protected route while not logged in → go to welcome page
   if (!isLoggedIn && !isPublicRoute) {
+    // If trying to access the root "/" without auth, send to welcome
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/welcome", req.url));
+    }
     const loginUrl = new URL("/login", req.url);
     loginUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // If visiting /login while logged in
-  if (isLoggedIn && pathname.startsWith("/login")) {
+  // If logged in and visiting /welcome or /login → send to app
+  if (isLoggedIn && (pathname === "/welcome" || pathname.startsWith("/login"))) {
     return NextResponse.redirect(new URL("/", req.url));
   }
 

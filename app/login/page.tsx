@@ -6,18 +6,28 @@
 // Instant local verification with zero hanging.
 // ─────────────────────────────────────────────────────────────────
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { AjoLogo } from "@/components/ui/AjoLogo";
-import { Lock, Mail, User, ArrowRight, Loader2, ShieldCheck } from "lucide-react";
+import { Lock, Mail, User, ArrowRight, Loader2, ShieldCheck, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
   const [mode, setMode] = useState<"signin" | "register">("signin");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // Auto-switch to register tab if ?register=1
+  useEffect(() => {
+    if (searchParams?.get("register") === "1") {
+      setMode("register");
+    }
+  }, [searchParams]);
 
   // Direct fast sign in
   const performLogin = async (loginEmail: string, loginPass: string) => {
@@ -120,14 +130,37 @@ export default function LoginPage() {
       style={{
         minHeight: "100dvh",
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
         background: "#050505",
         padding: "1.5rem 1rem",
         color: "#EDEDED",
         fontFamily: "var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
+        gap: "16px",
       }}
     >
+      {/* Back to welcome */}
+      <Link
+        href="/welcome"
+        style={{
+          display: "inline-flex",
+          alignItems: "center",
+          gap: "6px",
+          fontSize: "12px",
+          color: "#52525B",
+          textDecoration: "none",
+          alignSelf: "flex-start",
+          maxWidth: "400px",
+          width: "100%",
+          transition: "color 0.2s",
+        }}
+        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#A1A1AA"; }}
+        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#52525B"; }}
+      >
+        <ArrowLeft size={12} /> Back to Welcome
+      </Link>
+
       <motion.div
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
@@ -146,6 +179,7 @@ export default function LoginPage() {
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1.75rem", textAlign: "center" }}>
           <AjoLogo variant="stacked" size={40} showTagline={true} theme="dark" />
         </div>
+
 
         {/* Tab Switcher */}
         <div
