@@ -94,6 +94,14 @@ export default function LoginPage() {
           setIsSubmitting(false);
           return;
         }
+
+        // Registration automatically authenticates and provisions user
+        if (regData.user) {
+          localStorage.setItem("ajo_session", JSON.stringify(regData.user));
+          document.cookie = `ajo_session=${encodeURIComponent(regData.user.id)}; path=/; max-age=2592000; SameSite=Lax`;
+          window.location.href = "/";
+          return;
+        }
       }
 
       const success = await performLogin(cleanEmail, password);
