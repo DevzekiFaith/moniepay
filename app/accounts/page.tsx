@@ -617,10 +617,12 @@ export default function AccountsPage() {
               style={{
                 width: "100%",
                 maxWidth: "460px",
+                maxHeight: "90vh",
+                overflowY: "auto",
                 background: "#0D0D0D",
                 border: "1px solid #222222",
                 borderRadius: "16px",
-                padding: "2rem",
+                padding: "clamp(1.25rem, 3vw, 1.75rem)",
                 position: "relative",
               }}
             >
