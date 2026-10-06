@@ -216,19 +216,14 @@ function LoginContent() {
               {mode === "signin" ? "Welcome Back O!" : "Open Your Shop Sharp-Sharp"}
             </h1>
 
-            {/* Descriptive Body - Structured & Legible */}
+            {/* Descriptive Body - Concise & Direct */}
             {mode === "signin" ? (
-              <div className="space-y-1 pt-0.5">
-                <p className="text-xs sm:text-[13px] text-slate-700 font-semibold leading-snug">
-                  Enter your shop make you see how your money dey move today.
-                </p>
-                <p className="text-[11px] sm:text-xs text-slate-500 font-medium leading-snug">
-                  Check daily profit • Track customer gbese • Know wetin to do next
-                </p>
-              </div>
+              <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
+                Enter your shop make you see your daily profit &amp; track customer gbese.
+              </p>
             ) : (
-              <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed pt-0.5">
-                Open your digital record book in 30 seconds. Track sales, debts &amp; restock alerts with zero stress.
+              <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
+                Open your shop record book in 30 seconds, no shaking.
               </p>
             )}
           </div>
