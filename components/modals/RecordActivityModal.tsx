@@ -16,7 +16,7 @@ import {
   ArrowLeftRight,
   Loader2,
   FileText,
-  Sparkles,
+  Smartphone,
   Building2,
   CheckCircle2,
 } from "lucide-react";
@@ -321,7 +321,7 @@ export function RecordActivityModal({
                   gap: "6px",
                 }}
               >
-                <Sparkles size={13} color="#34D399" />
+                <Smartphone size={13} color="#34D399" />
                 <span>Paste Bank Alert</span>
               </button>
             </div>

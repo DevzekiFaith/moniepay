@@ -12,7 +12,6 @@ import {
   Activity,
   ChevronRight,
   Layers,
-  Sparkles,
 } from "lucide-react";
 import type { DeterministicMetrics, Debt } from "@/types/moniepay.types";
 import { deriveLivingBusinessPillars } from "@/lib/intelligence/deterministicEngine";

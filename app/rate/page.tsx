@@ -13,7 +13,6 @@ import {
   CheckCircle2,
   Store,
   MapPin,
-  Sparkles,
   ThumbsUp,
   PackageCheck,
   Zap,

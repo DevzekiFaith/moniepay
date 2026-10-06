@@ -5,7 +5,7 @@
 // Clean dark-mode glass styling with subtle alerts
 // ─────────────────────────────────────────────────────────────────
 
-import { AlertTriangle, CheckCircle2, BrainCircuit, Sparkles, RefreshCw } from "lucide-react";
+import { AlertTriangle, CheckCircle2, BrainCircuit, Lightbulb, TrendingUp, RefreshCw } from "lucide-react";
 import Link from "next/link";
 
 export interface InsightItem {
@@ -53,7 +53,7 @@ export function InsightCards({ insights, onGenerateClick, isGenerating }: Insigh
                 gap: "3px",
               }}
             >
-              <Sparkles size={10} />
+              <Lightbulb size={10} />
               Proactive
             </span>
           </div>
@@ -131,7 +131,7 @@ export function InsightCards({ insights, onGenerateClick, isGenerating }: Insigh
                   ) : isPositive ? (
                     <CheckCircle2 size={15} color="var(--positive)" style={{ flexShrink: 0, marginTop: "2px" }} />
                   ) : (
-                    <Sparkles size={15} color="var(--accent)" style={{ flexShrink: 0, marginTop: "2px" }} />
+                    <TrendingUp size={15} color="var(--accent)" style={{ flexShrink: 0, marginTop: "2px" }} />
                   )}
                   <div>
                     <p style={{ fontSize: "13px", fontWeight: 600, color: "var(--text-primary)", marginBottom: "3px" }}>

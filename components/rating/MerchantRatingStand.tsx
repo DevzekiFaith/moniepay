@@ -17,7 +17,6 @@ import {
   Star,
   Store,
   MapPin,
-  Sparkles,
   ExternalLink,
   Copy,
   Check,

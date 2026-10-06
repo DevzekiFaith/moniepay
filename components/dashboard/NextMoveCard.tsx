@@ -16,7 +16,6 @@ import {
   Tag,
   Users,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import type { DeterministicMetrics, Debt, Recommendation } from "@/types/moniepay.types";
 import { recordDecisionAction } from "@/lib/intelligence/decisionMemory";

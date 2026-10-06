@@ -7,7 +7,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import { formatNaira } from "@/lib/utils";
-import { ArrowRight, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 interface MoneyStoryProps {

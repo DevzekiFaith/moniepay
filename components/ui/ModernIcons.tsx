@@ -31,7 +31,6 @@ import {
   PiggyBank,
   CreditCard,
   Building2,
-  Sparkles,
   BrainCircuit,
   Compass,
   WalletCards,

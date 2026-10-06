@@ -19,7 +19,7 @@ import {
   ShieldCheck,
   Trash2,
   Check,
-  Sparkles,
+  BellRing,
   Info,
   Radio,
 } from "lucide-react";
@@ -268,7 +268,7 @@ export function NotificationBellDrawer() {
                   onClick={handleSendTestPush}
                   className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
                 >
-                  <Sparkles className="h-3.5 w-3.5 text-emerald-600" />
+                  <BellRing className="h-3.5 w-3.5 text-emerald-600" />
                   <span>{testSent ? "Alert Sent!" : "Test Push Alert"}</span>
                 </button>
 

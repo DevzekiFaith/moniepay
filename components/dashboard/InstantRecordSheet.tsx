@@ -13,7 +13,6 @@ import {
   MicOff,
   ClipboardPaste,
   CheckCircle2,
-  Sparkles,
   ArrowRight,
   Loader2,
   Banknote,

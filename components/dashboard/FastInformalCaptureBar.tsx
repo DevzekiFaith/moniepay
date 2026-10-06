@@ -10,7 +10,6 @@ import {
   Send,
   Plus,
   CheckCircle2,
-  Sparkles,
 } from "lucide-react";
 import type { TransactionType, PaymentMethod } from "@/types/moniepay.types";
 import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";

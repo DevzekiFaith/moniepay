@@ -7,7 +7,6 @@ import {
   BrainCircuit,
   Store,
   LogOut,
-  Sparkles,
   QrCode,
 } from "lucide-react";
 import type { Business } from "@/types/moniepay.types";

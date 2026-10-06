@@ -9,7 +9,7 @@ import {
   ArrowRight,
   Send,
   Wallet,
-  Sparkles,
+  Zap,
   ChevronRight,
   ShieldCheck,
   CheckCircle2,
@@ -288,7 +288,7 @@ export function FourQuestionsCard({
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-xs font-extrabold text-emerald-800 uppercase tracking-wider">
-                  <Sparkles className="h-4 w-4 text-emerald-600" />
+                  <Zap className="h-4 w-4 text-emerald-600" />
                   <span>Question 4: Recommended Move Today</span>
                 </div>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-black">

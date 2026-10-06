@@ -25,7 +25,7 @@ import {
   Zap,
   BarChart3,
   ChevronRight,
-  Sparkles,
+  Camera,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -426,7 +426,7 @@ function LoginContent() {
                             title="Take or upload shop photo"
                             className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white shadow-md border-2 border-white cursor-pointer active:scale-95 transition-all"
                           >
-                            <Sparkles className="h-3.5 w-3.5" />
+                            <Camera className="h-3.5 w-3.5" />
                           </button>
                         </div>
 
