@@ -1,404 +1,523 @@
 "use client";
 
-// ─────────────────────────────────────────────────────────────────
-// AJO — Personal Money Intelligence
-// Minimalist, premium sign-in & onboarding portal.
-// Instant local verification with zero hanging.
-// ─────────────────────────────────────────────────────────────────
+import React, { useState, useEffect, useRef } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import {
+  Store,
+  Lock,
+  Mail,
+  User,
+  MapPin,
+  ArrowRight,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+  Crown,
+  CheckCircle2,
+  AlertCircle,
+  Loader2,
+  TrendingUp,
+  Zap,
+  BarChart3,
+  ChevronRight,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
-import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
-import Link from "next/link";
-import { AjoLogo } from "@/components/ui/AjoLogo";
-import { Lock, Mail, User, ArrowRight, Loader2, ShieldCheck, ArrowLeft } from "lucide-react";
-import { motion } from "framer-motion";
+// ── Tiny floating stat card ──────────────────────────────────────
+function StatBubble({
+  label,
+  value,
+  color,
+  delay,
+}: {
+  label: string;
+  value: string;
+  color: string;
+  delay: number;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.8, y: 10 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ delay, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+      className="flex items-center gap-2 px-3.5 py-2.5 rounded-2xl bg-white/95 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-white/60"
+    >
+      <span className={`h-2 w-2 rounded-full ${color} shrink-0`} />
+      <div>
+        <p className="text-[10px] font-semibold text-slate-500 leading-none mb-0.5">{label}</p>
+        <p className="text-xs font-black text-slate-900 leading-none">{value}</p>
+      </div>
+    </motion.div>
+  );
+}
 
 export default function LoginPage() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const [mode, setMode] = useState<"signin" | "register">("signin");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const { login, loginDemo, registerShop, isAuthenticated, isLoading: authLoading } = useAuth();
 
-  // Auto-switch to register tab if ?register=1
+  const [mode, setMode] = useState<"signin" | "register">("signin");
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+
+  // Register fields
+  const [fullName, setFullName] = useState("");
+  const [businessName, setBusinessName] = useState("");
+  const [marketLocation, setMarketLocation] = useState("");
+
+  // UI state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isDemoLoading, setIsDemoLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Auto-redirect if already authenticated
   useEffect(() => {
-    if (searchParams?.get("register") === "1") {
-      setMode("register");
+    if (isAuthenticated && !authLoading) {
+      router.replace("/");
     }
+  }, [isAuthenticated, authLoading, router]);
+
+  // Handle ?register=1
+  useEffect(() => {
+    if (searchParams?.get("register") === "1") setMode("register");
   }, [searchParams]);
 
-  // Direct fast sign in
-  const performLogin = async (loginEmail: string, loginPass: string) => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-    try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: loginEmail.trim().toLowerCase(), password: loginPass }),
-        signal: controller.signal,
-      });
-      clearTimeout(timeoutId);
-
-      const data = await res.json().catch(() => ({}));
-
-      if (!res.ok || !data.user) {
-        setErrorMsg(data.error || "Invalid email or password. Please verify your credentials.");
-        return false;
-      }
-
-      // Persist session to local storage and cookies
-      localStorage.setItem("ajo_session", JSON.stringify(data.user));
-      document.cookie = `ajo_session=${encodeURIComponent(data.user.id)}; path=/; max-age=2592000; SameSite=Lax`;
-
-      // Full window navigation to refresh Next.js router cache cleanly
-      window.location.href = "/";
-      return true;
-    } catch (err: any) {
-      if (err.name === "AbortError") {
-        setErrorMsg("Request timed out. Please check your connection and try again.");
-      } else {
-        setErrorMsg("Authentication error. Please try again.");
-      }
-      return false;
+  // One-tap demo
+  const handleQuickDemo = async () => {
+    setErrorMessage(null);
+    setIsDemoLoading(true);
+    const res = await loginDemo();
+    if (res.success) {
+      setSuccessMessage("Opening Mama Chidi's store…");
+      setTimeout(() => { window.location.href = "/"; }, 300);
+    } else {
+      setErrorMessage("Demo unavailable. Please try again.");
+      setIsDemoLoading(false);
     }
   };
 
+  // Main form handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setErrorMsg(null);
+    setErrorMessage(null);
+    setSuccessMessage(null);
 
-    const cleanEmail = email.trim();
-    if (!cleanEmail || !password) {
-      setErrorMsg("Please provide both email and password.");
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      if (mode === "register") {
-        if (!name.trim()) {
-          setErrorMsg("Please enter your name.");
-          setIsSubmitting(false);
-          return;
-        }
-
-        if (password.length < 8) {
-          setErrorMsg("Password must be at least 8 characters long.");
-          setIsSubmitting(false);
-          return;
-        }
-
-        const regRes = await fetch("/api/auth/register", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name: name.trim(), email: cleanEmail, password }),
-        });
-
-        const regData = await regRes.json().catch(() => ({}));
-        if (!regRes.ok) {
-          setErrorMsg(regData.error || "Failed to create account.");
-          setIsSubmitting(false);
-          return;
-        }
-
-        // Registration automatically authenticates and provisions user
-        if (regData.user) {
-          localStorage.setItem("ajo_session", JSON.stringify(regData.user));
-          document.cookie = `ajo_session=${encodeURIComponent(regData.user.id)}; path=/; max-age=2592000; SameSite=Lax`;
-          window.location.href = "/";
-          return;
-        }
+    if (mode === "signin") {
+      if (!identifier.trim() || !password) {
+        setErrorMessage("Enter your email and password.");
+        return;
       }
-
-      const success = await performLogin(cleanEmail, password);
-      if (!success) {
+      setIsSubmitting(true);
+      const res = await login(identifier, password);
+      if (res.success) {
+        setSuccessMessage("Signed in! Loading your shop…");
+        setTimeout(() => { window.location.href = "/"; }, 300);
+      } else {
+        setErrorMessage(res.error || "Incorrect credentials. Try the demo shop instead.");
         setIsSubmitting(false);
       }
-    } catch {
-      setErrorMsg("An unexpected error occurred. Please try again.");
-      setIsSubmitting(false);
+    } else {
+      if (!fullName.trim() || !identifier.trim() || !password) {
+        setErrorMessage("Please fill in all required fields.");
+        return;
+      }
+      if (password.length < 6) {
+        setErrorMessage("Password must be at least 6 characters.");
+        return;
+      }
+      setIsSubmitting(true);
+      const res = await registerShop({
+        name: fullName,
+        email: identifier,
+        pass: password,
+        businessName: businessName.trim() || `${fullName}'s Store`,
+        marketLocation: marketLocation.trim() || "Balogun Market, Lagos",
+      });
+      if (res.success) {
+        setSuccessMessage("Shop registered! Setting up your workspace…");
+        setTimeout(() => { window.location.href = "/"; }, 500);
+      } else {
+        setErrorMessage(res.error || "Registration failed. Please try again.");
+        setIsSubmitting(false);
+      }
     }
   };
 
+  const switchMode = (next: "signin" | "register") => {
+    setMode(next);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+  };
 
   return (
-    <div
-      style={{
-        minHeight: "100dvh",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#050505",
-        padding: "1.5rem 1rem",
-        color: "#EDEDED",
-        fontFamily: "var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
-        gap: "16px",
-      }}
-    >
-      {/* Back to welcome */}
-      <Link
-        href="/welcome"
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "6px",
-          fontSize: "12px",
-          color: "#52525B",
-          textDecoration: "none",
-          alignSelf: "flex-start",
-          maxWidth: "400px",
-          width: "100%",
-          transition: "color 0.2s",
-        }}
-        onMouseEnter={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#A1A1AA"; }}
-        onMouseLeave={(e) => { (e.currentTarget as HTMLAnchorElement).style.color = "#52525B"; }}
-      >
-        <ArrowLeft size={12} /> Back to Welcome
-      </Link>
+    <div className="min-h-screen flex flex-col bg-slate-50 overflow-x-hidden">
+      {/* ═══════════════════════════════════════════
+          HERO SECTION — Full-bleed emerald gradient
+      ═══════════════════════════════════════════ */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-700 flex-shrink-0">
+        {/* Orb decorations */}
+        <div className="pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full bg-emerald-400/25 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-10 -left-16 h-56 w-56 rounded-full bg-teal-300/20 blur-3xl" />
+        <div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-64 w-64 rounded-full bg-emerald-500/15 blur-2xl" />
 
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, ease: "easeOut" }}
-        style={{
-          width: "100%",
-          maxWidth: "400px",
-          background: "#0A0A0A",
-          border: "1px solid #1A1A1A",
-          borderRadius: "16px",
-          padding: "clamp(1.5rem, 4vw, 2.25rem) clamp(1rem, 4vw, 2rem)",
-          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.8)",
-        }}
-      >
-        {/* Brand Header */}
-        <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: "1.75rem", textAlign: "center" }}>
-          <AjoLogo variant="stacked" size={40} showTagline={true} theme="dark" />
-        </div>
-
-
-        {/* Tab Switcher */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr",
-            background: "#111111",
-            padding: "3px",
-            borderRadius: "8px",
-            border: "1px solid #1C1C1C",
-            marginBottom: "1.25rem",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => {
-              setMode("signin");
-              setErrorMsg(null);
-            }}
-            style={{
-              padding: "8px 0",
-              fontSize: "12.5px",
-              fontWeight: mode === "signin" ? 600 : 500,
-              color: mode === "signin" ? "#FFFFFF" : "#71717A",
-              background: mode === "signin" ? "#1F1F1F" : "transparent",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-              transition: "all 0.15s ease",
-            }}
+        <div className="relative px-5 pt-12 pb-24 max-w-lg mx-auto">
+          {/* Brand mark */}
+          <motion.div
+            initial={{ opacity: 0, y: -12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center gap-2.5 mb-8"
           >
-            Sign In
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setMode("register");
-              setErrorMsg(null);
-            }}
-            style={{
-              padding: "8px 0",
-              fontSize: "12.5px",
-              fontWeight: mode === "register" ? 600 : 500,
-              color: mode === "register" ? "#FFFFFF" : "#71717A",
-              background: mode === "register" ? "#1F1F1F" : "transparent",
-              border: "none",
-              borderRadius: "6px",
-              cursor: "pointer",
-              transition: "all 0.15s ease",
-            }}
-          >
-            Create Account
-          </button>
-        </div>
-
-        {/* Error Alert */}
-        {errorMsg && (
-          <div
-            style={{
-              padding: "10px 14px",
-              background: "rgba(239, 68, 68, 0.08)",
-              border: "1px solid rgba(239, 68, 68, 0.25)",
-              borderRadius: "8px",
-              marginBottom: "1.25rem",
-              fontSize: "12.5px",
-              color: "#FCA5A5",
-              lineHeight: 1.4,
-            }}
-          >
-            {errorMsg}
-          </div>
-        )}
-
-        {/* Credentials Form */}
-        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "0.875rem" }}>
-          {mode === "register" && (
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 shadow-inner">
+              <Store className="h-5 w-5 text-white" />
+            </div>
             <div>
-              <label style={{ display: "block", fontSize: "11.5px", fontWeight: 500, color: "#A1A1AA", marginBottom: "5px" }}>
-                Full Name
-              </label>
-              <div style={{ position: "relative" }}>
-                <User
-                  size={14}
-                  color="#52525B"
-                  style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }}
-                />
-                <input
-                  type="text"
-                  placeholder="e.g. Adewale Adeleke"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  style={{
-                    width: "100%",
-                    padding: "9px 12px 9px 36px",
-                    background: "#121212",
-                    border: "1px solid #242424",
-                    borderRadius: "8px",
-                    color: "#FFFFFF",
-                    fontSize: "13px",
-                    outline: "none",
-                    transition: "border-color 0.15s ease",
-                  }}
-                  onFocus={(e) => (e.currentTarget.style.borderColor = "#52525B")}
-                  onBlur={(e) => (e.currentTarget.style.borderColor = "#242424")}
-                />
+              <span className="text-white font-black text-base tracking-tight leading-none block">MoniePay</span>
+              <span className="text-emerald-200 text-[11px] font-semibold tracking-wide">Business OS</span>
+            </div>
+          </motion.div>
+
+          {/* Hero headline */}
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1, duration: 0.55 }}
+          >
+            <h1 className="text-[28px] sm:text-3xl font-black text-white leading-tight tracking-tight">
+              Your shop.<br />
+              <span className="text-emerald-200">Your money.</span><br />
+              In your hands.
+            </h1>
+            <p className="mt-3 text-sm text-emerald-100/85 leading-relaxed max-w-xs">
+              Built for Nigeria's market traders. Know what happened in your shop today.
+            </p>
+          </motion.div>
+
+          {/* Floating stat bubbles */}
+          <div className="mt-6 flex flex-wrap gap-2">
+            <StatBubble label="Today's Revenue" value="₦340,500" color="bg-emerald-500" delay={0.25} />
+            <StatBubble label="Customers Owe" value="₦85,000" color="bg-amber-400" delay={0.35} />
+            <StatBubble label="Business Health" value="95 • Thriving" color="bg-blue-500" delay={0.45} />
+          </div>
+        </div>
+      </div>
+
+      {/* ═══════════════════════════════════════════
+          AUTH CARD — Slides up over hero
+      ═══════════════════════════════════════════ */}
+      <div className="relative -mt-10 flex-1 rounded-t-[32px] bg-slate-50 px-4 sm:px-5 pb-12">
+        <div className="mx-auto max-w-md pt-6 space-y-5">
+          {/* Pill drag handle */}
+          <div className="flex justify-center">
+            <div className="h-1 w-12 rounded-full bg-slate-300/80" />
+          </div>
+
+          {/* ── 1-TAP DEMO SHOP ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.4 }}
+          >
+            <button
+              type="button"
+              onClick={handleQuickDemo}
+              disabled={isDemoLoading || isSubmitting}
+              className="group w-full relative overflow-hidden rounded-[22px] bg-gradient-to-br from-emerald-600 to-teal-600 p-[1px] shadow-[0_6px_24px_rgba(5,150,105,0.35)] active:scale-[0.98] transition-all cursor-pointer disabled:opacity-80"
+            >
+              <div className="rounded-[21px] bg-gradient-to-br from-emerald-600 to-teal-600 px-5 py-4 flex items-center gap-4">
+                {/* Avatar badge */}
+                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 border border-white/30 shrink-0">
+                  <Crown className="h-5 w-5 text-amber-300 fill-amber-300/40" />
+                </div>
+
+                <div className="flex-1 text-left">
+                  <div className="flex items-center gap-1.5 mb-0.5">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-200">
+                      Try Demo Shop
+                    </span>
+                    <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-black text-white uppercase tracking-wider">
+                      Free
+                    </span>
+                  </div>
+                  <p className="text-sm font-black text-white leading-tight">
+                    Mama Chidi's Provisions
+                  </p>
+                  <p className="text-[11px] text-emerald-100/80 font-medium mt-0.5">
+                    Balogun Market, Lagos • No sign up needed
+                  </p>
+                </div>
+
+                <div className="shrink-0">
+                  {isDemoLoading ? (
+                    <Loader2 className="h-5 w-5 text-white animate-spin" />
+                  ) : (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/20 border border-white/25 group-hover:bg-white/30 transition-all">
+                      <ArrowRight className="h-4 w-4 text-white" />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </button>
+          </motion.div>
+
+          {/* ── DIVIDER ── */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-slate-200" />
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">or</span>
+            <div className="flex-1 h-px bg-slate-200" />
+          </div>
+
+          {/* ── AUTH CARD ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.4 }}
+            className="rounded-[26px] bg-white border border-slate-200/80 shadow-[0_8px_30px_rgba(15,23,42,0.06)] overflow-hidden"
+          >
+            {/* Tab switcher */}
+            <div className="grid grid-cols-2 bg-slate-50 border-b border-slate-100">
+              <button
+                type="button"
+                onClick={() => switchMode("signin")}
+                className={`py-4 text-xs font-extrabold tracking-wide transition-all cursor-pointer ${
+                  mode === "signin"
+                    ? "bg-white text-emerald-800 border-b-2 border-emerald-600 shadow-sm"
+                    : "text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                Sign In
+              </button>
+              <button
+                type="button"
+                onClick={() => switchMode("register")}
+                className={`py-4 text-xs font-extrabold tracking-wide transition-all cursor-pointer ${
+                  mode === "register"
+                    ? "bg-white text-emerald-800 border-b-2 border-emerald-600 shadow-sm"
+                    : "text-slate-400 hover:text-slate-600"
+                }`}
+              >
+                Open My Shop
+              </button>
+            </div>
+
+            <div className="p-5 sm:p-6 space-y-4">
+              {/* Feedback banners */}
+              <AnimatePresence>
+                {errorMessage && (
+                  <motion.div
+                    key="error"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200/80 text-xs text-rose-800 font-semibold"
+                  >
+                    <AlertCircle className="h-4 w-4 text-rose-500 shrink-0 mt-0.5" />
+                    <span>{errorMessage}</span>
+                  </motion.div>
+                )}
+                {successMessage && (
+                  <motion.div
+                    key="success"
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="flex items-start gap-2.5 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200/80 text-xs text-emerald-800 font-semibold"
+                  >
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                    <span>{successMessage}</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <AnimatePresence mode="wait">
+                  {mode === "register" && (
+                    <motion.div
+                      key="register-fields"
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -6 }}
+                      transition={{ duration: 0.25 }}
+                      className="space-y-3.5"
+                    >
+                      {/* Full Name */}
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">
+                          Your Name
+                        </label>
+                        <div className="relative">
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-350" />
+                          <input
+                            type="text"
+                            placeholder="e.g. Adewale Okafor"
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                            required
+                            className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-[13px] font-semibold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Shop Name */}
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">
+                          Shop / Store Name
+                        </label>
+                        <div className="relative">
+                          <Store className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-350" />
+                          <input
+                            type="text"
+                            placeholder="e.g. Mama Chidi Provisions"
+                            value={businessName}
+                            onChange={(e) => setBusinessName(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-[13px] font-semibold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 transition-all"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Market Location */}
+                      <div className="space-y-1.5">
+                        <label className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">
+                          Market / Location
+                        </label>
+                        <div className="relative">
+                          <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-350" />
+                          <input
+                            type="text"
+                            placeholder="e.g. Shop 14, Balogun Market"
+                            value={marketLocation}
+                            onChange={(e) => setMarketLocation(e.target.value)}
+                            className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-[13px] font-semibold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 transition-all"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Email / Phone */}
+                <div className="space-y-1.5">
+                  <label className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">
+                    Email Address
+                  </label>
+                  <div className="relative">
+                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-350" />
+                    <input
+                      type="text"
+                      placeholder="name@example.com"
+                      value={identifier}
+                      onChange={(e) => setIdentifier(e.target.value)}
+                      required
+                      autoCapitalize="none"
+                      autoCorrect="off"
+                      inputMode="email"
+                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-[13px] font-semibold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 transition-all"
+                    />
+                  </div>
+                </div>
+
+                {/* Password */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[11px] font-extrabold uppercase tracking-widest text-slate-500">
+                      Password
+                    </label>
+                    {mode === "signin" && (
+                      <button
+                        type="button"
+                        className="text-[11px] font-bold text-emerald-700 hover:text-emerald-600 transition-colors cursor-pointer"
+                      >
+                        Forgot password?
+                      </button>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-350" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      className="w-full pl-10 pr-11 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-[13px] font-semibold text-slate-900 placeholder:text-slate-300 focus:outline-none focus:bg-white focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/15 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors p-1 cursor-pointer"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
+                  {mode === "register" && (
+                    <p className="text-[11px] text-slate-400 font-medium ml-1">Minimum 6 characters</p>
+                  )}
+                </div>
+
+                {/* CTA Button */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting || isDemoLoading}
+                  className="w-full py-3.5 rounded-2xl bg-slate-900 hover:bg-slate-800 active:scale-[0.98] text-white font-extrabold text-sm shadow-[0_4px_16px_rgba(15,23,42,0.18)] transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <span>{mode === "signin" ? "Signing in…" : "Creating shop…"}</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>{mode === "signin" ? "Sign In to My Shop" : "Open My MoniePay Store"}</span>
+                      <ArrowRight className="h-4 w-4" />
+                    </>
+                  )}
+                </button>
+              </form>
+
+              {/* Trust footer */}
+              <div className="flex items-center justify-center gap-2 pt-1">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                <span className="text-[11px] font-semibold text-slate-400">
+                  Bank-grade encryption • Works offline
+                </span>
               </div>
             </div>
-          )}
+          </motion.div>
 
-          <div>
-            <label style={{ display: "block", fontSize: "11.5px", fontWeight: 500, color: "#A1A1AA", marginBottom: "5px" }}>
-              Email Address
-            </label>
-            <div style={{ position: "relative" }}>
-              <Mail
-                size={14}
-                color="#52525B"
-                style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }}
-              />
-              <input
-                type="email"
-                placeholder="name@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "9px 12px 9px 36px",
-                  background: "#121212",
-                  border: "1px solid #242424",
-                  borderRadius: "8px",
-                  color: "#FFFFFF",
-                  fontSize: "13px",
-                  outline: "none",
-                  transition: "border-color 0.15s ease",
-                }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = "#52525B")}
-                onBlur={(e) => (e.currentTarget.style.borderColor = "#242424")}
-              />
-            </div>
-          </div>
-
-          <div>
-            <label style={{ display: "block", fontSize: "11.5px", fontWeight: 500, color: "#A1A1AA", marginBottom: "5px" }}>
-              Password
-            </label>
-            <div style={{ position: "relative" }}>
-              <Lock
-                size={14}
-                color="#52525B"
-                style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)" }}
-              />
-              <input
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                style={{
-                  width: "100%",
-                  padding: "9px 12px 9px 36px",
-                  background: "#121212",
-                  border: "1px solid #242424",
-                  borderRadius: "8px",
-                  color: "#FFFFFF",
-                  fontSize: "13px",
-                  outline: "none",
-                  transition: "border-color 0.15s ease",
-                }}
-                onFocus={(e) => (e.currentTarget.style.borderColor = "#52525B")}
-                onBlur={(e) => (e.currentTarget.style.borderColor = "#242424")}
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            style={{
-              marginTop: "0.5rem",
-              padding: "10px 16px",
-              background: "#FFFFFF",
-              color: "#050505",
-              border: "none",
-              borderRadius: "8px",
-              fontSize: "13px",
-              fontWeight: 600,
-              cursor: isSubmitting ? "not-allowed" : "pointer",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: "8px",
-              transition: "opacity 0.15s ease",
-              opacity: isSubmitting ? 0.75 : 1,
-            }}
+          {/* ── FEATURE PILLS ── */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6, duration: 0.4 }}
+            className="grid grid-cols-3 gap-2.5"
           >
-            {isSubmitting ? (
-              <>
-                <Loader2 size={15} className="animate-spin" />
-                <span>Signing in…</span>
-              </>
-            ) : (
-              <>
-                <span>{mode === "signin" ? "Sign In to AJO" : "Create AJO Account"}</span>
-                <ArrowRight size={13} />
-              </>
-            )}
-          </button>
-        </form>
+            {[
+              { icon: Zap, label: "Instant", desc: "5ms capture" },
+              { icon: BarChart3, label: "Decisions", desc: "Daily advice" },
+              { icon: TrendingUp, label: "Profit", desc: "Live margin" },
+            ].map(({ icon: Icon, label, desc }) => (
+              <div
+                key={label}
+                className="flex flex-col items-center text-center p-3 rounded-2xl bg-white border border-slate-200/70 shadow-[0_2px_8px_rgba(15,23,42,0.04)]"
+              >
+                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-100 mb-2">
+                  <Icon className="h-4 w-4 text-emerald-700" />
+                </div>
+                <span className="text-xs font-extrabold text-slate-800">{label}</span>
+                <span className="text-[10px] font-medium text-slate-400 mt-0.5">{desc}</span>
+              </div>
+            ))}
+          </motion.div>
 
-        {/* Security Footnote */}
-        <div style={{ marginTop: "1.5rem", borderTop: "1px solid #171717", paddingTop: "1rem", textAlign: "center" }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "5px", color: "#52525B", fontSize: "11px" }}>
-            <ShieldCheck size={12} color="#71717A" />
-            <span>Read-only Open Banking intelligence. No card entry required.</span>
-          </div>
+          {/* Footer note */}
+          <p className="text-center text-[11px] text-slate-400 font-medium pb-2">
+            Built for Nigeria&apos;s informal and micro-business economy
+          </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }

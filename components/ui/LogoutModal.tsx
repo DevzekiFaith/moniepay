@@ -1,174 +1,94 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoniePay — Luxury Glassmorphic Logout Confirmation Modal
-// Tactile Framer Motion spring physics & unified brand palette (no variant colors)
+// MONIEPAY — Daylight Safe Sign-Out Confirmation Modal
+// Ensures market traders know their recorded offline sales are safe.
 // ─────────────────────────────────────────────────────────────────
 
 import React from "react";
-import { LogOut, X } from "lucide-react";
+import { LogOut, X, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { MoniePayEmblem } from "./MoniePayLogo";
 
 interface LogoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
   userName?: string;
+  businessName?: string;
 }
 
 export function LogoutModal({
   isOpen,
   onClose,
   onConfirm,
-  userName = "Member",
+  userName = "Shop Owner",
+  businessName = "Mama Chidi Super Provisions",
 }: LogoutModalProps) {
   if (!isOpen) return null;
 
   return (
     <AnimatePresence>
       <div
-        style={{
-          position: "fixed",
-          inset: 0,
-          background: "rgba(3, 7, 18, 0.78)",
-          backdropFilter: "blur(18px)",
-          WebkitBackdropFilter: "blur(18px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          zIndex: 100,
-          padding: "1rem",
-        }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
-          initial={{ opacity: 0, scale: 0.92, y: 18 }}
+          initial={{ opacity: 0, scale: 0.94, y: 14 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.92, y: 18 }}
-          transition={{ type: "spring", damping: 24, stiffness: 320 }}
-          style={{
-            width: "100%",
-            maxWidth: "410px",
-            background: "rgba(13, 21, 38, 0.92)",
-            backdropFilter: "blur(28px)",
-            WebkitBackdropFilter: "blur(28px)",
-            border: "1px solid rgba(79, 156, 249, 0.25)",
-            borderRadius: "22px",
-            padding: "1.85rem",
-            boxShadow:
-              "0 28px 60px -12px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.15)",
-            position: "relative",
-          }}
+          exit={{ opacity: 0, scale: 0.94, y: 14 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="relative w-full max-w-sm rounded-[28px] bg-white border border-slate-200/90 p-6 sm:p-7 shadow-[0_20px_60px_rgba(15,23,42,0.22)]"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}
-          <motion.button
-            whileHover={{ scale: 1.1 }}
-            whileTap={{ scale: 0.9 }}
+          <button
             type="button"
             onClick={onClose}
-            style={{
-              position: "absolute",
-              top: "16px",
-              right: "16px",
-              width: "30px",
-              height: "30px",
-              borderRadius: "8px",
-              background: "rgba(255, 255, 255, 0.05)",
-              border: "1px solid rgba(255, 255, 255, 0.1)",
-              color: "var(--text-secondary)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              cursor: "pointer",
-            }}
+            className="absolute top-4 right-4 p-1.5 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           >
-            <X size={15} />
-          </motion.button>
+            <X className="h-5 w-5" />
+          </button>
 
-          {/* Header with MoniePay Emblem & Logout Glyph */}
-          <div style={{ display: "flex", alignItems: "center", gap: "0.875rem", marginBottom: "1.25rem" }}>
-            <div style={{ position: "relative" }}>
-              <MoniePayEmblem size={44} />
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "-2px",
-                  right: "-2px",
-                  width: "18px",
-                  height: "18px",
-                  borderRadius: "50%",
-                  background: "var(--bg-surface)",
-                  border: "1px solid rgba(79, 156, 249, 0.4)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: "0 2px 5px rgba(0,0,0,0.5)",
-                }}
-              >
-                <LogOut size={10} color="var(--accent)" />
-              </div>
-            </div>
-            <div>
-              <h3 style={{ fontSize: "17px", fontWeight: 800, color: "var(--text-primary)", letterSpacing: "-0.01em", margin: 0 }}>
-                Log out of AJO?
-              </h3>
-              <p style={{ fontSize: "12px", color: "var(--text-secondary)", marginTop: "3px", margin: 0 }}>
-                Active session for <span style={{ color: "var(--text-primary)", fontWeight: 600 }}>{userName}</span>
-              </p>
-            </div>
+          {/* Icon Badge */}
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 mb-4 shadow-sm">
+            <ShieldAlert className="h-6 w-6 stroke-[2.2]" />
           </div>
 
-          <p style={{ fontSize: "13px", color: "var(--text-secondary)", lineHeight: 1.55, marginBottom: "1.5rem" }}>
-            Logging out will safely end your active session on this device.
+          {/* Heading */}
+          <h3 className="text-lg font-black text-slate-900 leading-tight">
+            Sign Out of {businessName}?
+          </h3>
+
+          <p className="mt-2 text-xs sm:text-sm text-slate-600 leading-relaxed">
+            Are you sure you want to sign out, <span className="font-bold text-slate-800">{userName}</span>?
           </p>
 
+          {/* Reassurance Banner for Traders */}
+          <div className="mt-3.5 p-3 rounded-2xl bg-slate-50 border border-slate-200/80 flex items-start gap-2 text-xs text-slate-600">
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" />
+            <span>
+              Your recorded transactions on this phone will stay saved offline and sync when you sign back in.
+            </span>
+          </div>
+
           {/* Action Buttons */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.96 }}
+          <div className="mt-6 flex flex-col sm:flex-row items-center gap-2.5">
+            <button
               type="button"
               onClick={onClose}
-              style={{
-                height: "42px",
-                borderRadius: "10px",
-                background: "rgba(255, 255, 255, 0.05)",
-                border: "1px solid rgba(255, 255, 255, 0.12)",
-                color: "var(--text-primary)",
-                fontSize: "13px",
-                fontWeight: 600,
-                cursor: "pointer",
-              }}
+              className="w-full sm:flex-1 py-3 px-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs active:scale-95 transition-all order-2 sm:order-1"
             >
               Cancel
-            </motion.button>
+            </button>
 
-            <motion.button
-              whileHover={{ scale: 1.02, y: -1 }}
-              whileTap={{ scale: 0.96 }}
+            <button
               type="button"
               onClick={onConfirm}
-              style={{
-                height: "42px",
-                borderRadius: "10px",
-                background: "linear-gradient(135deg, #4F9CF9 0%, #2563EB 100%)",
-                border: "1px solid rgba(255, 255, 255, 0.25)",
-                color: "#FFFFFF",
-                fontSize: "13px",
-                fontWeight: 700,
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                gap: "6px",
-                boxShadow: "0 4px 16px rgba(37, 99, 235, 0.45)",
-              }}
+              className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-extrabold text-xs shadow-md shadow-rose-600/25 active:scale-95 transition-all flex items-center justify-center gap-1.5 order-1 sm:order-2 cursor-pointer"
             >
-              <LogOut size={14} />
-              <span>Log Out</span>
-            </motion.button>
+              <LogOut className="h-3.5 w-3.5" />
+              <span>Sign Out</span>
+            </button>
           </div>
         </motion.div>
       </div>

@@ -7,7 +7,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Plus, ArrowRight, ShieldCheck, Sparkles, Store } from "lucide-react";
+import { Plus, ArrowRight, ShieldCheck, Store } from "lucide-react";
 
 // Types
 import type {

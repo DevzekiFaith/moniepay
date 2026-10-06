@@ -7,7 +7,6 @@ import {
   Users,
   Wallet,
   Clock,
-  Sparkles,
   ArrowLeftRight,
 } from "lucide-react";
 import type { TransactionType } from "@/types/moniepay.types";
