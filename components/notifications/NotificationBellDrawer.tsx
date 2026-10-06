@@ -68,7 +68,6 @@ export function NotificationBellDrawer() {
   } = useNotifications();
 
   const [activeFilter, setActiveFilter] = useState<"all" | "debts" | "alerts" | "sales">("all");
-  const [testSent, setTestSent] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -111,22 +110,6 @@ export function NotificationBellDrawer() {
     if (activeFilter === "sales") return n.type === "sales_milestone" || n.type === "rating_received";
     return true;
   });
-
-
-  const handleTriggerDebtReminder = () => {
-    playChime();
-    sendDebtReminderNotification({
-      personName: "Mama Chidi",
-      amount: 25000,
-      dueDate: "Today",
-      phone: "08031234567",
-      notes: "Provisions carton purchase",
-      debtType: "CUSTOMER_CREDIT",
-      isOverdue: true,
-    });
-    setTestSent(true);
-    setTimeout(() => setTestSent(false), 2200);
-  };
 
   const handleActionClick = (n: MarketNotification, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -387,20 +370,16 @@ export function NotificationBellDrawer() {
               </div>
 
               {/* Drawer Footer Actions */}
-              <div className="p-3 sm:p-4 bg-[#edf3fb]/50 backdrop-blur-md border-t border-white/40 flex items-center justify-between gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={handleTriggerDebtReminder}
-                  className="px-3.5 py-2.5 rounded-2xl bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-900 text-xs font-black active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
-                >
-                  <BellRing className={`h-4 w-4 text-amber-700 ${testSent ? "animate-bounce" : ""}`} />
-                  <span>Ping Due Debt 🔔</span>
-                </button>
+              <div className="p-3.5 sm:p-4 bg-[#edf3fb]/60 backdrop-blur-md border-t border-white/40 flex items-center justify-between gap-2 shrink-0">
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+                  <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Due debt & market alerts sync automatically</span>
+                </div>
 
                 <button
                   type="button"
                   onClick={clearNotifications}
-                  className="p-2.5 rounded-2xl bg-white/30 hover:bg-white/50 border border-white/40 text-slate-400 hover:text-rose-600 text-xs font-bold cursor-pointer transition-colors"
+                  className="p-2 rounded-xl bg-white/40 hover:bg-white/70 border border-white/50 text-slate-400 hover:text-rose-600 text-xs font-bold cursor-pointer transition-colors shadow-2xs"
                   title="Clear all alerts"
                 >
                   <Trash2 className="h-4 w-4" />

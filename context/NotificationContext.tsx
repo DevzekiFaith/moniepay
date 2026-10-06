@@ -129,6 +129,109 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
+  // Automatic Background Debt Scanner (Scans due & overdue debts without pressing buttons)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const runAutoDebtScan = () => {
+      try {
+        const raw = localStorage.getItem("moniepay_debts");
+        if (!raw) return;
+        const debts: any[] = JSON.parse(raw);
+        if (!Array.isArray(debts) || debts.length === 0) return;
+
+        const now = new Date();
+        const todayStr = now.toISOString().split("T")[0];
+        const pingedKey = `moniepay_debts_autoping_${todayStr}`;
+        const pingedIds: Record<string, boolean> = JSON.parse(localStorage.getItem(pingedKey) || "{}");
+
+        let hasNewAlerts = false;
+        const newAlerts: MarketNotification[] = [];
+
+        debts.forEach((debt) => {
+          if (debt.status === "SETTLED") return;
+
+          const isOverdue = debt.status === "OVERDUE" || (debt.due_date && new Date(debt.due_date) < now);
+          const isDueToday = debt.due_date && new Date(debt.due_date).toDateString() === now.toDateString();
+
+          if ((isOverdue || isDueToday) && !pingedIds[debt.id]) {
+            pingedIds[debt.id] = true;
+            hasNewAlerts = true;
+
+            const isSupplier = debt.debt_type === "SUPPLIER_OBLIGATION";
+            const formattedAmount = `₦${Number(debt.balance_due || 0).toLocaleString()}`;
+            const cleanPhone = (debt.phone || "").replace(/[^0-9]/g, "");
+
+            const title = isSupplier
+              ? isOverdue
+                ? "⚠️ Overdue Supplier Payment"
+                : "⏰ Supplier Payment Due Today"
+              : isOverdue
+              ? "🚨 Overdue Customer Gbese Due"
+              : "🔔 Customer Gbese Due Today";
+
+            const message = isSupplier
+              ? `You owe ${debt.person_name} ${formattedAmount}${debt.notes ? ` (${debt.notes})` : ""}. Settle on time make supplier continue giving you goods on credit.`
+              : `${debt.person_name} owes your shop ${formattedAmount}${debt.notes ? ` for ${debt.notes}` : ""}. Tap to send WhatsApp reminder now.`;
+
+            const actionLabel = isSupplier ? "Record Payment" : "Send WhatsApp Nudge";
+            const actionUrl = isSupplier
+              ? "/accounts"
+              : cleanPhone
+              ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
+                  `Good day ${debt.person_name}, hope work is going well. Friendly reminder regarding your balance of ${formattedAmount} with MoniePay shop. Kindly arrange payment today. Thank you!`
+                )}`
+              : undefined;
+
+            newAlerts.push({
+              id: `auto_debt_${debt.id}_${Date.now()}`,
+              title,
+              message,
+              type: "debt_reminder",
+              timestamp: "Just now",
+              read: false,
+              amount: formattedAmount,
+              actionLabel,
+              actionUrl,
+            });
+
+            // Native OS browser notification if granted
+            if ("Notification" in window && Notification.permission === "granted") {
+              try {
+                new Notification(title, {
+                  body: message,
+                  icon: "/icons/icon-192x192.png",
+                });
+              } catch {}
+            }
+          }
+        });
+
+        if (hasNewAlerts && newAlerts.length > 0) {
+          localStorage.setItem(pingedKey, JSON.stringify(pingedIds));
+          setNotifications((prev) => {
+            const updated = [...newAlerts, ...prev];
+            try {
+              localStorage.setItem("moniepay_notifications", JSON.stringify(updated));
+            } catch {}
+            return updated;
+          });
+        }
+      } catch (err) {
+        console.warn("Auto debt scan error:", err);
+      }
+    };
+
+    // Auto-scan shortly after load
+    const timer = setTimeout(runAutoDebtScan, 1800);
+    window.addEventListener("moniepay:debts-updated", runAutoDebtScan);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("moniepay:debts-updated", runAutoDebtScan);
+    };
+  }, []);
+
   // Save to localStorage on change
   const saveNotifications = (newList: MarketNotification[]) => {
     setNotifications(newList);
