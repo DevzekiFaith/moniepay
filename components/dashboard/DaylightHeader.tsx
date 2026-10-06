@@ -88,7 +88,7 @@ export function DaylightHeader({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-1.5 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               {/* Push Notification Bell & Drawer */}
               <NotificationBellDrawer />
 
@@ -98,7 +98,7 @@ export function DaylightHeader({
                   type="button"
                   onClick={() => setIsRatingStandOpen(true)}
                   aria-label="Customer Rating QR & Barcode Stand"
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer shadow-xs"
+                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-auto sm:gap-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer shadow-xs"
                 >
                   <QrCode className="h-3.5 w-3.5 text-emerald-200" />
                   <span className="hidden sm:inline">Rating Stand</span>
@@ -111,7 +111,7 @@ export function DaylightHeader({
                   type="button"
                   onClick={onOpenTracker}
                   aria-label="Decision Memory & Outcomes"
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer shadow-xs"
+                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-auto sm:gap-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer shadow-xs"
                 >
                   <BrainCircuit className="h-3.5 w-3.5 text-emerald-200" />
                   <span className="hidden sm:inline">Memory</span>
@@ -124,17 +124,17 @@ export function DaylightHeader({
                   type="button"
                   onClick={onManualSync}
                   aria-label={isOnline ? "Online • Instant Sync" : "Offline • Saved on device"}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/15 text-white text-xs font-bold backdrop-blur-md border border-white/20 active:scale-95 transition-all cursor-pointer shadow-xs"
+                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-auto sm:gap-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/15 text-white text-xs font-bold backdrop-blur-md border border-white/20 active:scale-95 transition-all cursor-pointer shadow-xs"
                 >
                   {isOnline ? (
                     <>
                       <span className="h-2 w-2 rounded-full bg-emerald-300 animate-pulse" />
-                      <span className="text-[11px]">{isSyncing ? "..." : "Online"}</span>
+                      <span className="text-[11px] hidden sm:inline">{isSyncing ? "..." : "Online"}</span>
                     </>
                   ) : (
                     <>
-                      <WifiOff className="h-3 w-3 text-amber-300" />
-                      <span className="text-[11px] text-amber-200">Offline</span>
+                      <WifiOff className="h-3.5 w-3.5 text-amber-300" />
+                      <span className="text-[11px] text-amber-200 hidden sm:inline">Offline</span>
                     </>
                   )}
                 </button>
@@ -146,7 +146,7 @@ export function DaylightHeader({
                   type="button"
                   onClick={() => setIsLogoutOpen(true)}
                   aria-label="Sign Out"
-                  className="flex items-center justify-center h-8 w-8 rounded-xl bg-white/10 hover:bg-white/20 text-white active:scale-95 transition-all cursor-pointer backdrop-blur-md border border-white/10"
+                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-white/10 hover:bg-white/20 text-white active:scale-95 transition-all cursor-pointer backdrop-blur-md border border-white/10"
                 >
                   <LogOut className="h-3.5 w-3.5 text-emerald-100" />
                 </button>

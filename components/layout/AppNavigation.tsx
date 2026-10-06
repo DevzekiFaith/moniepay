@@ -184,7 +184,7 @@ export function AppBottomBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-emerald-900/10 backdrop-blur-md px-2 py-1.5 flex items-center justify-around shadow-lg">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-emerald-900/10 backdrop-blur-md px-1 sm:px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg">
       {MOBILE_NAV_ITEMS.map((item) => {
         const isActive = pathname === item.href;
         const Icon = item.icon;
@@ -192,12 +192,12 @@ export function AppBottomBar() {
           <Link
             key={item.href}
             href={item.href}
-            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+            className={`flex flex-col items-center justify-center py-1 px-1 sm:px-2 rounded-xl text-[10px] font-bold transition-all min-w-[50px] ${
               isActive ? "text-emerald-800 font-black" : "text-slate-400 hover:text-slate-700"
             }`}
           >
             <Icon className={`h-5 w-5 ${isActive ? "text-emerald-700 stroke-[2.5]" : "text-slate-400"}`} />
-            <span className="mt-0.5">{item.label}</span>
+            <span className="mt-0.5 text-[9.5px] sm:text-[10px] leading-tight truncate">{item.label}</span>
           </Link>
         );
       })}
