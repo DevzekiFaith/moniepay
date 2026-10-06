@@ -224,12 +224,12 @@ export default function MoniePayDashboard() {
       />
 
       {/* ── DAYLIGHT MAIN CONTAINER (Fluid Mobile Frame) ── */}
-      <main className="relative -mt-4 rounded-t-[32px] bg-slate-50 pt-3 px-3 sm:px-5 md:px-8 w-full max-w-3xl mx-auto space-y-4">
+      <main className="relative -mt-4 rounded-t-[32px] bg-[#edf3fb] pt-3 px-3 sm:px-5 md:px-8 w-full max-w-3xl mx-auto space-y-4">
         {/* Soft Drag Handle */}
         <div className="mx-auto h-1 w-10 rounded-full bg-slate-300 mb-1" />
 
-        {/* ── INTERACTIVE TAB SWITCHER (Sliding Framer Motion Pill) ── */}
-        <div className="flex rounded-2xl bg-white border border-emerald-950/[0.08] p-1 shadow-[0_4px_16px_rgba(15,23,42,0.03)] relative">
+        {/* ── INTERACTIVE TAB SWITCHER (3D Soft Glass Sliding Pill) ── */}
+        <div className="flex rounded-2xl clay-card-sm p-1 relative">
           {(
             [
               { id: "today", label: "Today's View", icon: Store },
@@ -253,7 +253,7 @@ export default function MoniePayDashboard() {
                   <motion.div
                     layoutId="activeTabPill"
                     transition={{ type: "spring", stiffness: 450, damping: 32 }}
-                    className="absolute inset-0 rounded-xl bg-emerald-700 shadow-sm z-[-1]"
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-[#3b82f6] via-[#2563eb] to-[#1d4ed8] shadow-[0_6px_18px_rgba(37,99,235,0.42)] z-[-1]"
                   />
                 )}
                 <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5" />

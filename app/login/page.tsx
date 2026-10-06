@@ -2,7 +2,7 @@
 
 // ─────────────────────────────────────────────────────────────────
 // MoniePay — Shop Login & Trader Identity Portal
-// Deep Emerald Theme • Authentic Local Trader Headshots • 1-Tap Demo
+// Soft 3D Glassmorphism & Neumorphism Design System
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState, useEffect, useRef } from "react";
@@ -21,65 +21,43 @@ import {
   CheckCircle2,
   AlertCircle,
   Loader2,
-  TrendingUp,
-  Zap,
-  BarChart3,
-  ChevronRight,
   Camera,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// ── Floating stat card ───────────────────────────────────────────
-function StatBubble({
-  label,
-  value,
-  color,
-  delay,
-}: {
-  label: string;
-  value: string;
-  color: string;
-  delay: number;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.8, y: 10 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ delay, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white/95 backdrop-blur-sm shadow-[0_4px_20px_rgba(0,0,0,0.12)] border border-white/60"
-    >
-      <span className={`h-2 w-2 rounded-full ${color} shrink-0`} />
-      <div>
-        <p className="text-[10px] font-semibold text-slate-500 leading-none mb-0.5">{label}</p>
-        <p className="text-xs font-black text-slate-900 leading-none">{value}</p>
-      </div>
-    </motion.div>
-  );
-}
-
 // Authentic Nigerian Market Stall Presets
-const MARKET_STALL_PRESETS = [
+const MARKET_STALL_PRESETS: Array<{
+  id: "mama_chidi" | "alhaji_garba" | "emeka" | "blessing";
+  label: string;
+  trade: string;
+  market: string;
+  image: string;
+}> = [
   {
-    id: "provisions",
-    label: "Provisions & FMCG",
+    id: "mama_chidi",
+    label: "Mama Chidi",
+    trade: "Provisions & FMCG",
     market: "Balogun Market",
     image: "/images/traders/mama_chidi.jpg",
   },
   {
-    id: "grains",
-    label: "Grain Wholesale",
+    id: "alhaji_garba",
+    label: "Alhaji Garba",
+    trade: "Grain Wholesale",
     market: "Mile 12 Market",
     image: "/images/traders/alhaji_garba.jpg",
   },
   {
-    id: "gadgets",
-    label: "Electronics & Phones",
+    id: "emeka",
+    label: "Emeka Alaba",
+    trade: "Electronics & Phones",
     market: "Alaba Int'l",
     image: "/images/traders/emeka_electronics.jpg",
   },
   {
-    id: "textiles",
-    label: "Fabrics & Lace",
+    id: "blessing",
+    label: "Blessing",
+    trade: "Fabrics & Lace",
     market: "Tejuosho Yaba",
     image: "/images/traders/blessing_fabrics.jpg",
   },
@@ -94,6 +72,7 @@ function LoginContent() {
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   // Register fields
   const [fullName, setFullName] = useState("");
@@ -144,525 +123,366 @@ function LoginContent() {
   };
 
   // One-tap demo
-  const handleQuickDemo = async () => {
+  const handleQuickDemo = async (presetId: "mama_chidi" | "alhaji_garba" | "emeka" | "blessing" = "mama_chidi") => {
     setErrorMessage(null);
     setIsDemoLoading(true);
-    const res = await loginDemo("mama_chidi");
-    if (res.success) {
-      setSuccessMessage("Opening Mama Chidi's shop workspace…");
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 300);
-    } else {
-      setErrorMessage("Demo unavailable. Please try again.");
+    const res = await loginDemo(presetId);
+    if (!res.success) {
+      setErrorMessage("Could not sign in with demo account.");
       setIsDemoLoading(false);
     }
   };
 
-  // Main form handler
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
     setSuccessMessage(null);
+    setIsSubmitting(true);
 
     if (mode === "signin") {
-      if (!identifier.trim() || !password) {
-        setErrorMessage("Enter your email and password.");
+      if (!identifier || !password) {
+        setErrorMessage("Please enter your email/phone and password.");
+        setIsSubmitting(false);
         return;
       }
-      setIsSubmitting(true);
+
       const res = await login(identifier, password);
-      if (res.success) {
-        setSuccessMessage("Signed in! Loading your shop…");
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 300);
-      } else {
-        setErrorMessage(res.error || "Incorrect credentials. Try the demo shop below.");
+      if (!res.success) {
+        setErrorMessage(res.error || "Incorrect credentials. Please try again.");
         setIsSubmitting(false);
+      } else {
+        setSuccessMessage("Signed in! Loading your shop…");
+        setTimeout(() => router.replace("/"), 400);
       }
     } else {
-      if (!fullName.trim() || !identifier.trim() || !password) {
-        setErrorMessage("Please fill in all required fields.");
-        return;
-      }
-      if (password.length < 6) {
-        setErrorMessage("Password must be at least 6 characters.");
-        return;
-      }
-      setIsSubmitting(true);
-      const res = await registerShop({
-        name: fullName,
-        email: identifier,
-        pass: password,
-        businessName: businessName.trim() || `${fullName}'s Store`,
-        marketLocation: marketLocation.trim() || "Balogun Market, Lagos",
-        avatarUrl: avatarUrl || "/images/traders/mama_chidi.jpg",
-      });
-      if (res.success) {
-        setSuccessMessage("Shop registered! Setting up your workspace…");
-        setTimeout(() => {
-          window.location.href = "/";
-        }, 500);
-      } else {
-        setErrorMessage(res.error || "Registration failed. Please try again.");
+      // REGISTER
+      if (!fullName.trim()) {
+        setErrorMessage("Please enter your name.");
         setIsSubmitting(false);
+        return;
+      }
+      if (!identifier.trim()) {
+        setErrorMessage("Please enter your email or phone number.");
+        setIsSubmitting(false);
+        return;
+      }
+      if (!password || password.length < 4) {
+        setErrorMessage("Password must be at least 4 characters.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const res = await registerShop({
+        name: fullName.trim(),
+        email: identifier.trim(),
+        pass: password,
+        businessName: businessName.trim() || `${fullName.trim()}'s Shop`,
+        marketLocation: marketLocation.trim() || "Balogun Market, Lagos",
+        avatarUrl,
+      });
+
+      if (!res.success) {
+        setErrorMessage(res.error || "Registration failed. Please try another email/phone.");
+        setIsSubmitting(false);
+      } else {
+        setSuccessMessage("Shop registered! Activating your decision intelligence…");
+        setTimeout(() => router.replace("/"), 600);
       }
     }
   };
 
-  const switchMode = (next: "signin" | "register") => {
-    setMode(next);
-    setErrorMessage(null);
-    setSuccessMessage(null);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 overflow-x-hidden">
-      {/* ═══════════════════════════════════════════
-          HERO SECTION — Deep Emerald Gradient
-      ═══════════════════════════════════════════ */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#047857] flex-shrink-0 text-white">
-        {/* Ambient light orbs */}
-        <div className="pointer-events-none absolute -top-20 -right-20 h-72 w-72 rounded-full bg-emerald-400/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-10 -left-16 h-56 w-56 rounded-full bg-teal-300/15 blur-3xl" />
+    <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden bg-[#edf3fb] selection:bg-blue-500/20">
+      {/* ── AMBIENT 3D FROSTED GLASS BACKGROUND ELEMENTS ── */}
+      <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-gradient-to-br from-blue-300/30 to-indigo-200/20 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-gradient-to-tl from-blue-400/25 to-sky-200/20 blur-3xl" />
+      
+      {/* Top Floating 3D Soft Orb */}
+      <div className="pointer-events-none absolute top-12 left-1/4 h-32 w-32 rounded-full bg-white/40 shadow-[10px_10px_30px_rgba(160,185,218,0.4)] backdrop-blur-xl border border-white/80 float-3d" />
+      <div className="pointer-events-none absolute bottom-16 right-1/4 h-24 w-24 rounded-full bg-white/30 shadow-[8px_8px_24px_rgba(160,185,218,0.35)] backdrop-blur-lg border border-white/70 float-3d" style={{ animationDelay: "-3s" }} />
 
-        <div className="relative px-4 sm:px-6 pt-10 pb-16 max-w-lg mx-auto">
-          {/* Brand mark */}
-          <motion.div
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="flex items-center justify-between gap-2.5 mb-5"
-          >
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-inner">
-                <Store className="h-5 w-5 text-white" />
+      {/* ── MAIN 3D SOFT GLASS AUTH CONTAINER ── */}
+      <div className="relative w-full max-w-sm sm:max-w-md my-6 z-10 space-y-5">
+        {/* 3D Emblems & Brand Badge */}
+        <motion.div
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex flex-col items-center text-center space-y-3"
+        >
+          {/* 3D Soft App Icon Container */}
+          <div className="relative flex h-20 w-20 sm:h-22 sm:w-22 items-center justify-center rounded-[28px] clay-icon-box">
+            {/* 3D Gradient Ribbon Emblem */}
+            <div className="relative flex items-center justify-center">
+              <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-gradient-to-tr from-[#1d4ed8] via-[#2563eb] to-[#60a5fa] shadow-[0_8px_20px_rgba(37,99,235,0.45)] flex items-center justify-center transform rotate-6">
+                <Store className="h-5 w-5 sm:h-6 sm:w-6 text-white -rotate-6" />
               </div>
-              <div>
-                <span className="text-white font-black text-base tracking-tight leading-none block">MoniePay</span>
-                <span className="text-emerald-200 text-[11px] font-semibold tracking-wide">Business OS</span>
-              </div>
+              <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-sky-300/90 border border-white shadow-xs" />
             </div>
+          </div>
 
-            {/* Offline-ready indicator */}
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-400/20 text-[10px] font-bold text-emerald-300">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Offline-Ready (No Data Needed)</span>
-            </div>
-          </motion.div>
-
-          {/* Hero headline */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.55 }}
-          >
-            <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight">
-              Your shop.<br />
-              <span className="text-emerald-300">Your moni.</span><br />
-              Dey your hand.
+          <div className="space-y-1 pt-1">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+              {mode === "signin" ? "Welcome Back" : "Register Your Shop"}
             </h1>
-            <p className="mt-2 text-xs sm:text-sm text-emerald-100/90 leading-relaxed max-w-xs font-medium">
-              We build am for Nigerian market traders. Know wetin happen inside your shop today sharp-sharp.
+            <p className="text-xs sm:text-sm text-slate-500 font-medium">
+              {mode === "signin"
+                ? "Sign in to manage your shop & track your money"
+                : "Open your digital record book in 30 seconds"}
             </p>
-          </motion.div>
-
-          {/* Real Market Trader Social Proof Stack */}
-          <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.55 }}
-            className="mt-4 flex items-center gap-3 p-2.5 rounded-2xl bg-white/10 backdrop-blur-md border border-white/15 max-w-sm"
-          >
-            <div className="flex -space-x-2 shrink-0">
-              <img
-                src="/images/traders/mama_chidi.jpg"
-                alt="Mama Chidi"
-                className="h-8 w-8 rounded-full object-cover border-2 border-emerald-800 shadow-xs"
-              />
-              <img
-                src="/images/traders/alhaji_garba.jpg"
-                alt="Alhaji Garba"
-                className="h-8 w-8 rounded-full object-cover border-2 border-emerald-800 shadow-xs"
-              />
-              <img
-                src="/images/traders/emeka_electronics.jpg"
-                alt="Emeka Alaba"
-                className="h-8 w-8 rounded-full object-cover border-2 border-emerald-800 shadow-xs"
-              />
-              <img
-                src="/images/traders/blessing_fabrics.jpg"
-                alt="Blessing Tejuosho"
-                className="h-8 w-8 rounded-full object-cover border-2 border-emerald-800 shadow-xs"
-              />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 text-[10px] text-emerald-300 font-black">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-300 shrink-0" />
-                <span className="text-white uppercase tracking-wider">Original Market Traders</span>
-              </div>
-              <p className="text-[11px] font-bold text-emerald-100 truncate">
-                Real shop rating with QR &amp; Barcode stand
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Floating stat bubbles */}
-          <div className="mt-4 flex flex-wrap gap-2">
-            <StatBubble label="Moni Wey Enter" value="₦340,500" color="bg-emerald-400" delay={0.25} />
-            <StatBubble label="Customer Gbese" value="₦85,000" color="bg-amber-400" delay={0.35} />
-            <StatBubble label="Shop Health" value="95 • Body Sweet" color="bg-teal-300" delay={0.45} />
           </div>
-        </div>
-      </div>
+        </motion.div>
 
-      {/* ═══════════════════════════════════════════
-          AUTH CARD — LOGIN / SIGNUP PORTAL
-      ═══════════════════════════════════════════ */}
-      <div className="relative -mt-6 flex-1 rounded-t-[32px] bg-slate-50 px-3.5 sm:px-5 pb-12">
-        <div className="mx-auto max-w-md pt-5 space-y-4">
-          {/* Pill drag handle */}
-          <div className="flex justify-center">
-            <div className="h-1 w-12 rounded-full bg-slate-300/80" />
+        {/* ── 3D SOFT GLASS CARD ── */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.45, delay: 0.1 }}
+          className="clay-card p-5 sm:p-7 space-y-4"
+        >
+          {/* Mode Switcher Pill */}
+          <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-200/50 border border-white/60 shadow-inner text-xs font-black">
+            <button
+              type="button"
+              onClick={() => setMode("signin")}
+              className={`py-2 rounded-xl transition-all cursor-pointer ${
+                mode === "signin"
+                  ? "clay-btn-secondary text-blue-700 font-black"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Sign In
+            </button>
+            <button
+              type="button"
+              onClick={() => setMode("register")}
+              className={`py-2 rounded-xl transition-all cursor-pointer ${
+                mode === "register"
+                  ? "clay-btn-secondary text-blue-700 font-black"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              Register Shop
+            </button>
           </div>
 
-          {/* ── AUTH CARD ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-            className="rounded-[28px] bg-white border border-slate-200/80 shadow-[0_8px_30px_rgba(15,23,42,0.06)] overflow-hidden"
-          >
-            {/* Tab switcher */}
-            <div className="grid grid-cols-2 bg-slate-50 border-b border-slate-100">
-              <button
-                type="button"
-                onClick={() => switchMode("signin")}
-                className={`py-3.5 text-xs font-extrabold tracking-wide transition-all cursor-pointer ${
-                  mode === "signin"
-                    ? "bg-white text-emerald-800 border-b-2 border-emerald-600 shadow-sm"
-                    : "text-slate-400 hover:text-slate-600"
-                }`}
+          {/* Alert messages */}
+          <AnimatePresence>
+            {errorMessage && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="flex items-center gap-2 p-3 rounded-2xl bg-rose-50/90 border border-rose-200 text-rose-700 text-xs font-semibold"
               >
-                Sign In
-              </button>
-              <button
-                type="button"
-                onClick={() => switchMode("register")}
-                className={`py-3.5 text-xs font-extrabold tracking-wide transition-all cursor-pointer ${
-                  mode === "register"
-                    ? "bg-white text-emerald-800 border-b-2 border-emerald-600 shadow-sm"
-                    : "text-slate-400 hover:text-slate-600"
-                }`}
+                <AlertCircle className="h-4 w-4 shrink-0" />
+                <span>{errorMessage}</span>
+              </motion.div>
+            )}
+            {successMessage && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="flex items-center gap-2 p-3 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-emerald-800 text-xs font-semibold"
               >
-                Register Shop
-              </button>
-            </div>
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                <span>{successMessage}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-            <div className="p-4 sm:p-6 space-y-4">
-              {/* Status alerts */}
-              <AnimatePresence>
-                {errorMessage && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center gap-2.5 p-3 rounded-2xl bg-rose-50 border border-rose-200/80 text-rose-700 text-xs font-semibold"
-                  >
-                    <AlertCircle className="h-4 w-4 shrink-0" />
-                    <span>{errorMessage}</span>
-                  </motion.div>
-                )}
-                {successMessage && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="flex items-center gap-2.5 p-3 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold"
-                  >
-                    <CheckCircle2 className="h-4 w-4 shrink-0" />
-                    <span>{successMessage}</span>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                {/* ═════════════════════════════════════════════════════════
-                    SIGNUP MODE: STRATEGIC STORE & PROFILE IMAGE UPLOAD
-                ══════════════════════════════════════════════════════════ */}
-                {mode === "register" && (
-                  <div className="space-y-4">
-                    {/* Strategically Positioned Store / Merchant Photo Card */}
-                    <div className="p-3.5 rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50/50 to-emerald-50/30 border border-emerald-200/80">
-                      <div className="flex items-center justify-between mb-2.5">
-                        <div className="flex items-center gap-1.5">
-                          <Store className="h-4 w-4 text-emerald-700" />
-                          <span className="text-[11px] font-black uppercase tracking-wider text-emerald-950">
-                            Your Market Store Photo
-                          </span>
-                        </div>
-                        <span className="text-[9px] font-bold text-emerald-700 bg-emerald-100/70 px-2 py-0.5 rounded-full border border-emerald-300">
-                          {isCustomPhoto ? "Custom Photo Loaded" : "Live Store Preview"}
-                        </span>
-                      </div>
-
-                      {/* Main Interactive Avatar Frame */}
-                      <div className="flex items-center gap-3.5">
-                        <div className="relative group shrink-0">
-                          <div className="relative h-18 w-18 sm:h-20 sm:w-20 rounded-2xl overflow-hidden border-2 border-emerald-600 shadow-md bg-slate-100">
-                            <img
-                              src={avatarUrl}
-                              alt="Your Market Store"
-                              className="h-full w-full object-cover object-center transition-all group-hover:scale-105"
-                            />
-                            <span className="absolute bottom-1 right-1 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
-                          </div>
-
-                          {/* Quick Camera Trigger */}
-                          <button
-                            type="button"
-                            onClick={() => fileInputRef.current?.click()}
-                            title="Take or upload shop photo"
-                            className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white shadow-md border-2 border-white cursor-pointer active:scale-95 transition-all"
-                          >
-                            <Camera className="h-3.5 w-3.5" />
-                          </button>
-                        </div>
-
-                        {/* Upload Controls & Description */}
-                        <div className="flex-1 min-w-0 space-y-2">
-                          <div>
-                            <p className="text-xs font-black text-slate-900 leading-tight">
-                              Show yourself in your market stall
-                            </p>
-                            <p className="text-[10px] text-slate-500 font-medium leading-relaxed mt-0.5">
-                              This authenticates your shop for supplier credit and customer receipts.
-                            </p>
-                          </div>
-
-                          <div className="flex flex-wrap items-center gap-1.5">
-                            {/* Hidden file input supporting camera capture on mobile */}
-                            <input
-                              ref={fileInputRef}
-                              type="file"
-                              accept="image/*"
-                              capture="user"
-                              onChange={handlePhotoUpload}
-                              className="hidden"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => fileInputRef.current?.click()}
-                              className="px-2.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-[10.5px] font-black shadow-xs active:scale-95 transition-all cursor-pointer inline-flex items-center gap-1"
-                            >
-                              <span>Take / Upload Photo</span>
-                            </button>
-
-                            {isCustomPhoto && (
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setAvatarUrl("/images/traders/mama_chidi.jpg");
-                                  setIsCustomPhoto(false);
-                                }}
-                                className="px-2 py-1 text-[10px] font-bold text-slate-500 hover:text-slate-800 cursor-pointer"
-                              >
-                                Reset
-                              </button>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Quick Nigerian Market Store Presets */}
-                      <div className="mt-3 pt-2.5 border-t border-emerald-200/60">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 block mb-1.5">
-                          Or choose your market trade type:
-                        </span>
-                        <div className="grid grid-cols-2 gap-1.5">
-                          {MARKET_STALL_PRESETS.map((preset) => {
-                            const isActive = avatarUrl === preset.image && !isCustomPhoto;
-                            return (
-                              <button
-                                key={preset.id}
-                                type="button"
-                                onClick={() => {
-                                  setAvatarUrl(preset.image);
-                                  setIsCustomPhoto(false);
-                                }}
-                                className={`p-1.5 rounded-xl flex items-center gap-2 text-left transition-all cursor-pointer ${
-                                  isActive
-                                    ? "bg-emerald-700 text-white shadow-xs font-bold ring-1 ring-emerald-500"
-                                    : "bg-white/80 hover:bg-white text-slate-700 border border-emerald-200/60 text-[10.5px]"
-                                }`}
-                              >
-                                <img
-                                  src={preset.image}
-                                  alt={preset.label}
-                                  className="h-6 w-6 rounded-lg object-cover shrink-0"
-                                />
-                                <div className="min-w-0 truncate">
-                                  <p className="text-[10px] font-black truncate leading-none">{preset.label}</p>
-                                  <p className={`text-[8.5px] truncate mt-0.5 leading-none ${isActive ? "text-emerald-200" : "text-slate-400"}`}>
-                                    {preset.market}
-                                  </p>
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Full Name */}
-                    <div>
-                      <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block mb-1">
-                        Your Full Name
-                      </label>
-                      <div className="relative">
-                        <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <input
-                          type="text"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          placeholder="e.g. Chinedu Eze"
-                          required
-                          className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Shop Name */}
-                    <div>
-                      <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block mb-1">
-                        Shop Name
-                      </label>
-                      <div className="relative">
-                        <Store className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <input
-                          type="text"
-                          value={businessName}
-                          onChange={(e) => setBusinessName(e.target.value)}
-                          placeholder="e.g. Eze Super Provisions"
-                          className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-all"
-                        />
-                      </div>
-                    </div>
-
-                    {/* Market Location */}
-                    <div>
-                      <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block mb-1">
-                        Market Location
-                      </label>
-                      <div className="relative">
-                        <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                        <input
-                          type="text"
-                          value={marketLocation}
-                          onChange={(e) => setMarketLocation(e.target.value)}
-                          placeholder="e.g. Shop 24, Balogun Market, Lagos"
-                          className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-all"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Email / Phone */}
-                <div>
-                  <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block mb-1">
-                    Email Address / Phone Number
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                    <input
-                      type="text"
-                      value={identifier}
-                      onChange={(e) => setIdentifier(e.target.value)}
-                      placeholder="e.g. mama@shop.ng or 08012345678"
-                      required
-                      className="w-full pl-10 pr-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-all"
-                    />
-                  </div>
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block mb-1">
-                    Password
-                  </label>
-                  <div className="relative">
-                    <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                    <input
-                      type={showPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      placeholder="••••••••"
-                      required
-                      className="w-full pl-10 pr-10 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 transition-all"
+          <form onSubmit={handleSubmit} className="space-y-3.5">
+            {/* REGISTER EXTRA FIELDS */}
+            {mode === "register" && (
+              <div className="space-y-3 pt-1">
+                {/* Store Photo Upload Frame */}
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/60 border border-white/90 shadow-sm">
+                  <div className="relative h-14 w-14 rounded-2xl overflow-hidden border border-blue-200 shrink-0 bg-slate-100">
+                    <img
+                      src={avatarUrl}
+                      alt="Shop Avatar"
+                      className="h-full w-full object-cover object-center"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute inset-0 bg-black/30 flex items-center justify-center text-white opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
                     >
-                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      <Camera className="h-4 w-4" />
                     </button>
                   </div>
-                </div>
-
-                {/* Submit Button */}
-                <button
-                  type="submit"
-                  disabled={isSubmitting || isDemoLoading}
-                  className="w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-75 mt-2"
-                >
-                  {isSubmitting ? (
-                    <Loader2 className="h-4 w-4 text-white animate-spin" />
-                  ) : (
-                    <>
-                      <span>{mode === "signin" ? "Open My Shop" : "Register Shop & Activate OS"}</span>
-                      <ArrowRight className="h-4 w-4" />
-                    </>
-                  )}
-                </button>
-              </form>
-
-              {/* 1-Tap Quick Demo for Testing */}
-              {mode === "signin" && (
-                <div className="pt-3 border-t border-slate-100 text-center">
-                  <p className="text-[11px] text-slate-400 font-medium mb-2">You wan test am first without password?</p>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-slate-900 truncate">Shop Photo / Logo</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Upload stall picture or preset</p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                      className="hidden"
+                    />
+                  </div>
                   <button
                     type="button"
-                    onClick={handleQuickDemo}
-                    disabled={isDemoLoading || isSubmitting}
-                    className="w-full py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-black active:scale-95 transition-all cursor-pointer flex items-center justify-center gap-2"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-2.5 py-1 rounded-xl text-[10.5px] font-bold clay-btn-secondary cursor-pointer"
                   >
-                    {isDemoLoading ? (
-                      <Loader2 className="h-3.5 w-3.5 text-slate-600 animate-spin" />
-                    ) : (
-                      <>
-                        <img
-                          src="/images/traders/mama_chidi.jpg"
-                          alt="Mama Chidi"
-                          className="h-4 w-4 rounded-full object-cover"
-                        />
-                        <span>Check Mama Chidi Demo Shop</span>
-                      </>
-                    )}
+                    Change
                   </button>
                 </div>
-              )}
-            </div>
-          </motion.div>
 
-          {/* Privacy & offline security note */}
-          <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400 font-semibold text-center">
-            <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-            <span>Safe &amp; Sealed • E dey work sharp-sharp inside busy market even without network</span>
+                {/* Full Name */}
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Your Full Name (e.g. Mama Chidi)"
+                    required
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+                  />
+                </div>
+
+                {/* Shop Name */}
+                <div className="relative">
+                  <Store className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={businessName}
+                    onChange={(e) => setBusinessName(e.target.value)}
+                    placeholder="Shop Name (e.g. Mama Chidi Provisions)"
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+                  />
+                </div>
+
+                {/* Market Location */}
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <input
+                    type="text"
+                    value={marketLocation}
+                    onChange={(e) => setMarketLocation(e.target.value)}
+                    placeholder="Market Location (e.g. Balogun Market)"
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Email or Username input */}
+            <div className="relative">
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                value={identifier}
+                onChange={(e) => setIdentifier(e.target.value)}
+                placeholder="Username or Email / Phone"
+                required
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+              />
+            </div>
+
+            {/* Password input */}
+            <div className="relative">
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Password"
+                required
+                className="w-full pl-11 pr-11 py-3.5 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+              >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+              </button>
+            </div>
+
+            {/* Remember Me & Forgot Password row */}
+            <div className="flex items-center justify-between text-xs pt-1 px-1">
+              <label className="flex items-center gap-2 text-slate-600 font-semibold cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer"
+                />
+                <span>Remember Me</span>
+              </label>
+
+              <button
+                type="button"
+                onClick={() => handleQuickDemo("mama_chidi")}
+                className="text-blue-600 hover:text-blue-800 font-bold transition-colors cursor-pointer"
+              >
+                Forgot Password?
+              </button>
+            </div>
+
+            {/* Primary Action Button (Electric Blue Pill) */}
+            <button
+              type="submit"
+              disabled={isSubmitting || isDemoLoading}
+              className="w-full py-4 rounded-2xl clay-btn-primary font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 mt-2"
+            >
+              {isSubmitting ? (
+                <Loader2 className="h-4 w-4 text-white animate-spin" />
+              ) : (
+                <>
+                  <span>{mode === "signin" ? "Login" : "Register Shop"}</span>
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
+                    <ArrowRight className="h-3.5 w-3.5 text-white" />
+                  </div>
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* ── OR CONTINUE WITH MARKET TRADER DEMO PRESETS ── */}
+          <div className="pt-2 space-y-3">
+            <div className="flex items-center gap-2">
+              <div className="flex-1 h-px bg-slate-200" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+                Or Continue With
+              </span>
+              <div className="flex-1 h-px bg-slate-200" />
+            </div>
+
+            {/* 4 Soft 3D Frosted Preset Tiles */}
+            <div className="grid grid-cols-4 gap-2.5">
+              {MARKET_STALL_PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  type="button"
+                  onClick={() => handleQuickDemo(preset.id)}
+                  disabled={isDemoLoading}
+                  className="clay-card-sm p-2 flex flex-col items-center justify-center gap-1 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+                  title={`Sign in as ${preset.label}`}
+                >
+                  <img
+                    src={preset.image}
+                    alt={preset.label}
+                    className="h-8 w-8 rounded-full object-cover border border-white shadow-xs group-hover:ring-2 group-hover:ring-blue-500 transition-all"
+                  />
+                  <span className="text-[9px] font-black text-slate-700 truncate w-full text-center">
+                    {preset.label.split(" ")[0]}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
+        </motion.div>
+
+        {/* Privacy & Trust Badge */}
+        <p className="text-[11px] text-slate-400 font-semibold text-center tracking-wide">
+          MONIEPAY • OPERATES OFFLINE &amp; LIVE IN MARKETS
+        </p>
       </div>
     </div>
   );
@@ -672,8 +492,8 @@ export default function LoginPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900">
-          <Loader2 className="h-6 w-6 text-emerald-700 animate-spin" />
+        <div className="min-h-screen flex items-center justify-center bg-[#edf3fb] text-slate-900">
+          <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
         </div>
       }
     >
@@ -681,4 +501,3 @@ export default function LoginPage() {
     </React.Suspense>
   );
 }
-
