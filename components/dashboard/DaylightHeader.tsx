@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import { LogoutModal } from "@/components/ui/LogoutModal";
 import { MerchantRatingStand } from "@/components/rating/MerchantRatingStand";
 import { NotificationBellDrawer } from "@/components/notifications/NotificationBellDrawer";
+import { SubscriptionStatusPill } from "@/components/subscription/SubscriptionStatusPill";
 import { InfoTooltip } from "@/components/ui/tooltip";
 
 interface DaylightHeaderProps {
@@ -89,6 +90,9 @@ export function DaylightHeader({
 
             {/* Action Buttons */}
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              {/* MoniePay Plus / Free Trial Status Pill */}
+              <SubscriptionStatusPill />
+
               {/* Push Notification Bell & Drawer */}
               <NotificationBellDrawer />
 

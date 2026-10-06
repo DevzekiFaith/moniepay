@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/tooltip";
 import type { TransactionType, PaymentMethod } from "@/types/moniepay.types";
 import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";
+import { useSubscription } from "@/context/SubscriptionContext";
 
 // Natural Nigerian Voice Audio Playback for traders
 export function speakTraderAudioFeedback(text: string) {
@@ -69,6 +70,7 @@ export function TellMoniePay({
   onOpenDetailedSheet,
   onActivityRecorded,
 }: TellMoniePayProps) {
+  const { requireSubscription } = useSubscription();
   const [inputVal, setInputVal] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [feedback, setFeedback] = useState<ValueFeedback | null>(null);
@@ -284,7 +286,16 @@ export function TellMoniePay({
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    processTraderInput(inputVal);
+    requireSubscription(() => {
+      processTraderInput(inputVal);
+    }, "Sharp-Sharp Recording");
+  };
+
+  const handleQuickExampleClick = (text: string) => {
+    requireSubscription(() => {
+      setInputVal(text);
+      processTraderInput(text);
+    }, "Sharp-Sharp Recording");
   };
 
   const quickExamples = [
@@ -378,10 +389,7 @@ export function TellMoniePay({
                 type="button"
                 whileHover={{ y: -1, scale: 1.02 }}
                 whileTap={{ scale: 0.96 }}
-                onClick={() => {
-                  setInputVal(item.text);
-                  processTraderInput(item.text);
-                }}
+                onClick={() => handleQuickExampleClick(item.text)}
                 className="px-2.5 sm:px-3 py-1.5 rounded-xl clay-card-sm text-slate-700 hover:text-blue-700 text-[11px] sm:text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0"
               >
                 {item.label}

@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { SubscriptionProvider } from "@/context/SubscriptionContext";
+import { UpgradeModal } from "@/components/subscription/UpgradeModal";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { TooltipProvider } from "@/components/ui/tooltip";
 
@@ -51,10 +53,13 @@ export default function RootLayout({
       >
         <AuthProvider>
           <NotificationProvider>
-            <TooltipProvider delayDuration={150}>
-              {children}
-              <ServiceWorkerRegister />
-            </TooltipProvider>
+            <SubscriptionProvider>
+              <TooltipProvider delayDuration={150}>
+                {children}
+                <UpgradeModal />
+                <ServiceWorkerRegister />
+              </TooltipProvider>
+            </SubscriptionProvider>
           </NotificationProvider>
         </AuthProvider>
       </body>

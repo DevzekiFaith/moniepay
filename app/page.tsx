@@ -64,12 +64,14 @@ import { DecisionTrackerSheet } from "@/components/dashboard/DecisionTrackerShee
 import { SafeWithdrawalModal } from "@/components/dashboard/SafeWithdrawalModal";
 import { FloatingActionDock } from "@/components/dashboard/FloatingActionDock";
 import { useToast } from "@/context/NotificationContext";
+import { useSubscription } from "@/context/SubscriptionContext";
 
 type Period = "today" | "this_week" | "this_month";
 type MainTab = "today" | "decisions" | "activity";
 
 export default function MoniePayDashboard() {
   const { toast } = useToast();
+  const { requireSubscription } = useSubscription();
   const [business, setBusiness] = useState<Business>(DEFAULT_BUSINESS);
   const [period, setPeriod] = useState<Period>("this_week");
   const [activeTab, setActiveTab] = useState<MainTab>("today");
@@ -180,8 +182,10 @@ export default function MoniePayDashboard() {
   }, [metrics, filteredTransactions, debts, business.name]);
 
   const handleOpenRecord = (type: TransactionType = "SALE") => {
-    setRecordInitialType(type);
-    setIsRecordOpen(true);
+    requireSubscription(() => {
+      setRecordInitialType(type);
+      setIsRecordOpen(true);
+    }, "Sharp-Sharp Recording");
   };
 
   const handleManualSync = async () => {
