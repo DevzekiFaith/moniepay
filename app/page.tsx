@@ -230,7 +230,7 @@ export default function MoniePayDashboard() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-colors cursor-pointer z-10 ${
+                className={`relative flex-1 flex items-center justify-center gap-1 sm:gap-1.5 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs md:text-sm font-black transition-colors cursor-pointer z-10 ${
                   isActive ? "text-white" : "text-slate-600 hover:text-slate-900"
                 }`}
               >
@@ -241,8 +241,8 @@ export default function MoniePayDashboard() {
                     className="absolute inset-0 rounded-xl bg-emerald-700 shadow-sm z-[-1]"
                   />
                 )}
-                <Icon className="h-3.5 w-3.5" />
-                <span>{tab.label}</span>
+                <Icon className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                <span className="truncate">{tab.label}</span>
               </button>
             );
           })}

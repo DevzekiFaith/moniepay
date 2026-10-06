@@ -173,18 +173,18 @@ export function QuickDecisionsGrid({
               whileHover={{ y: -2, scale: 1.01 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setActiveDecision(d)}
-              className="rounded-[24px] bg-white/80 backdrop-blur-md border border-emerald-950/[0.08] p-3.5 sm:p-4 text-left shadow-[0_4px_20px_rgba(4,120,87,0.04)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
+              className="rounded-[22px] sm:rounded-[24px] bg-white/80 backdrop-blur-md border border-emerald-950/[0.08] p-3 sm:p-4 text-left shadow-[0_4px_20px_rgba(4,120,87,0.04)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
             >
               <div className="min-w-0">
-                <span className="text-[11px] font-bold text-slate-500 block leading-tight truncate">
+                <span className="text-[10.5px] sm:text-[11px] font-bold text-slate-500 block leading-tight line-clamp-2">
                   {d.question}
                 </span>
-                <span className="text-xs sm:text-sm font-black text-slate-900 mt-2 block leading-snug truncate">
+                <span className="text-[11.5px] sm:text-xs md:text-sm font-black text-slate-900 mt-1.5 block leading-snug line-clamp-2">
                   {d.verdict}
                 </span>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-slate-100/80">
-                <span className="text-[10px] font-black text-emerald-800">See Action</span>
+              <div className="mt-2.5 flex items-center justify-between pt-1.5 border-t border-slate-100/80">
+                <span className="text-[9.5px] sm:text-[10px] font-black text-emerald-800">See Action</span>
                 <ArrowRight className="h-3 w-3 text-emerald-700" />
               </div>
             </motion.button>
