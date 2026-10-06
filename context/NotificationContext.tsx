@@ -1,13 +1,8 @@
 "use client";
 
-// ─────────────────────────────────────────────────────────────────
-// MoniePay — Push Notification & Market Intelligence Alerts Context
-// Native Web Push API + Offline-ready In-App Notification Center
-// ─────────────────────────────────────────────────────────────────
-
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { CheckCircle2, AlertCircle, AlertTriangle, Info, Sparkles, X } from "lucide-react";
+import { CheckCircle2, AlertCircle, AlertTriangle, Info, X } from "lucide-react";
 
 export interface MarketNotification {
   id: string;
@@ -335,23 +330,26 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     >
       {children}
 
-      {/* ── FLOATING TOAST NOTIFICATION STACK ── */}
-      <div className="fixed top-3 sm:top-4 inset-x-0 z-[99999] pointer-events-none flex flex-col items-center gap-2 px-3">
+      {/* ── FLOATING GLASSMORPHIC TOAST NOTIFICATION STACK ── */}
+      <div className="fixed top-3 sm:top-5 inset-x-0 z-[99999] pointer-events-none flex flex-col items-center gap-2 px-3">
         <AnimatePresence>
           {toasts.map((t) => (
             <motion.div
               key={t.id}
-              initial={{ opacity: 0, y: -24, scale: 0.92 }}
+              initial={{ opacity: 0, y: -24, scale: 0.94 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -16, scale: 0.92, transition: { duration: 0.15 } }}
-              transition={{ type: "spring", stiffness: 500, damping: 30 }}
-              className="pointer-events-auto w-full max-w-sm rounded-2xl bg-slate-950/95 backdrop-blur-xl border border-emerald-500/30 text-white shadow-[0_12px_36px_rgba(0,0,0,0.45)] px-3.5 py-2.5 flex items-center gap-3"
+              exit={{ opacity: 0, y: -16, scale: 0.94, transition: { duration: 0.15 } }}
+              transition={{ type: "spring", stiffness: 480, damping: 32 }}
+              className="pointer-events-auto w-full max-w-sm rounded-2xl bg-[#022c22]/85 sm:bg-[#064e3b]/80 backdrop-blur-2xl border border-emerald-400/40 text-white shadow-[0_16px_40px_rgba(2,44,34,0.4),0_0_24px_rgba(16,185,129,0.15)] ring-1 ring-white/15 px-3.5 py-2.5 flex items-center gap-3 relative overflow-hidden"
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 shrink-0">
-                {t.type === "success" && <CheckCircle2 className="h-4 w-4 text-emerald-400" />}
-                {t.type === "error" && <AlertCircle className="h-4 w-4 text-rose-400" />}
-                {t.type === "warning" && <AlertTriangle className="h-4 w-4 text-amber-400" />}
-                {t.type === "info" && <Sparkles className="h-4 w-4 text-emerald-300" />}
+              {/* Subtle top glass refraction highlight */}
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+
+              <div className="flex h-7.5 w-7.5 items-center justify-center rounded-xl bg-white/15 border border-white/20 shadow-inner shrink-0">
+                {t.type === "success" && <CheckCircle2 className="h-4 w-4 text-emerald-300" />}
+                {t.type === "error" && <AlertCircle className="h-4 w-4 text-rose-300" />}
+                {t.type === "warning" && <AlertTriangle className="h-4 w-4 text-amber-300" />}
+                {t.type === "info" && <Info className="h-4 w-4 text-emerald-200" />}
               </div>
 
               <div className="flex-1 min-w-0">
@@ -359,7 +357,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                   {t.title}
                 </p>
                 {t.message && (
-                  <p className="text-[10.5px] font-medium text-slate-300 leading-tight truncate mt-0.5">
+                  <p className="text-[10.5px] font-medium text-emerald-100/90 leading-tight truncate mt-0.5">
                     {t.message}
                   </p>
                 )}
@@ -368,7 +366,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               <button
                 type="button"
                 onClick={() => dismissToast(t.id)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all shrink-0 cursor-pointer"
+                className="p-1 rounded-lg text-emerald-200/70 hover:text-white hover:bg-white/15 transition-all shrink-0 cursor-pointer"
                 aria-label="Close notification"
               >
                 <X className="h-3.5 w-3.5" />
