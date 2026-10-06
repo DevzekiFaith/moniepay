@@ -17,6 +17,12 @@ import {
   AlertCircle,
   HelpCircle,
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { TransactionType, PaymentMethod } from "@/types/moniepay.types";
 import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";
 
@@ -309,42 +315,54 @@ export function TellMoniePay({
         </div>
 
         {/* Voice Trigger Button */}
-        <motion.button
-          type="button"
-          whileHover={{ scale: 1.04 }}
-          whileTap={{ scale: 0.94 }}
-          onClick={toggleListening}
-          className={`h-11 w-11 rounded-2xl flex items-center justify-center cursor-pointer transition-all shrink-0 ${
-            isListening
-              ? "bg-rose-600 text-white animate-pulse shadow-md shadow-rose-500/30"
-              : "bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-2xs"
-          }`}
-          title={isListening ? "Listening... Speak now" : "Speak to MoniePay (Voice)"}
-        >
-          {isListening ? (
-            <MicOff className="h-5 w-5" />
-          ) : (
-            <Mic className="h-5 w-5" />
-          )}
-        </motion.button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <motion.button
+              type="button"
+              whileHover={{ scale: 1.04 }}
+              whileTap={{ scale: 0.94 }}
+              onClick={toggleListening}
+              className={`h-11 w-11 rounded-2xl flex items-center justify-center cursor-pointer transition-all shrink-0 ${
+                isListening
+                  ? "bg-rose-600 text-white animate-pulse shadow-md shadow-rose-500/30"
+                  : "bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-2xs"
+              }`}
+            >
+              {isListening ? (
+                <MicOff className="h-5 w-5" />
+              ) : (
+                <Mic className="h-5 w-5" />
+              )}
+            </motion.button>
+          </TooltipTrigger>
+          <TooltipContent>
+            {isListening ? "Listening... Speak in English or Pidgin" : "Record voice transaction (Hands-free)"}
+          </TooltipContent>
+        </Tooltip>
       </form>
 
       {/* Quick 1-Tap Example Phrases */}
       <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
         {quickExamples.map((item, idx) => (
-          <motion.button
-            key={idx}
-            type="button"
-            whileHover={{ y: -1, scale: 1.02 }}
-            whileTap={{ scale: 0.96 }}
-            onClick={() => {
-              setInputVal(item.text);
-              processTraderInput(item.text);
-            }}
-            className="px-3 py-1.5 rounded-xl bg-emerald-50/70 hover:bg-emerald-100/90 border border-emerald-200/60 text-emerald-950 text-xs font-bold whitespace-nowrap cursor-pointer transition-all"
-          >
-            {item.label}
-          </motion.button>
+          <Tooltip key={idx}>
+            <TooltipTrigger asChild>
+              <motion.button
+                type="button"
+                whileHover={{ y: -1, scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
+                onClick={() => {
+                  setInputVal(item.text);
+                  processTraderInput(item.text);
+                }}
+                className="px-3 py-1.5 rounded-xl bg-emerald-50/70 hover:bg-emerald-100/90 border border-emerald-200/60 text-emerald-950 text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0"
+              >
+                {item.label}
+              </motion.button>
+            </TooltipTrigger>
+            <TooltipContent>
+              1-Tap instant record: {item.text}
+            </TooltipContent>
+          </Tooltip>
         ))}
       </div>
 

@@ -25,6 +25,12 @@ import {
   X,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface MerchantRatingStandProps {
   isOpen: boolean;
@@ -263,56 +269,76 @@ export function MerchantRatingStand({
                   value={ratingUrl}
                   className="flex-1 bg-transparent text-[11px] font-semibold text-slate-600 px-1 truncate focus:outline-none"
                 />
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[10.5px] font-black shrink-0 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
-                >
-                  {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
-                  <span>{copied ? "Copied" : "Copy"}</span>
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={handleCopyLink}
+                      className="px-2.5 py-1 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[10.5px] font-black shrink-0 active:scale-95 transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                      <span>{copied ? "Copied" : "Copy"}</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>Copy rating link to clipboard</TooltipContent>
+                </Tooltip>
               </div>
             </div>
 
             {/* Action Buttons: Try Rating Form, Print & Share */}
             <div className="space-y-2">
-              <a
-                href={`/rate?shop=${encodeURIComponent(shopId)}`}
-                className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
-              >
-                <Star className="h-4 w-4 fill-amber-300 text-amber-300" />
-                <span>Open Customer Rating Form</span>
-                <ChevronRight className="h-4 w-4" />
-              </a>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <a
+                    href={`/rate?shop=${encodeURIComponent(shopId)}`}
+                    className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <Star className="h-4 w-4 fill-amber-300 text-amber-300" />
+                    <span>Open Customer Rating Form</span>
+                    <ChevronRight className="h-4 w-4" />
+                  </a>
+                </TooltipTrigger>
+                <TooltipContent>Preview the live rating page as seen by customers</TooltipContent>
+              </Tooltip>
 
               <div className="grid grid-cols-2 gap-2">
-                <button
-                  type="button"
-                  onClick={handlePrint}
-                  className="py-2.5 rounded-xl bg-white border border-slate-200/90 hover:border-emerald-600 text-slate-800 text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                >
-                  <Printer className="h-3.5 w-3.5 text-slate-600" />
-                  <span>Print Counter Card</span>
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={handlePrint}
+                      className="py-2.5 rounded-xl bg-white border border-slate-200/90 hover:border-emerald-600 text-slate-800 text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <Printer className="h-3.5 w-3.5 text-slate-600" />
+                      <span>Print Counter Card</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>Print physical A5 QR card for your shop counter</TooltipContent>
+                </Tooltip>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (navigator.share) {
-                      navigator.share({
-                        title: `Rate ${shopName} on MoniePay`,
-                        text: `Scan our QR code or visit to leave a verified rating for ${shopName}`,
-                        url: ratingUrl,
-                      }).catch(() => {});
-                    } else {
-                      handleCopyLink();
-                    }
-                  }}
-                  className="py-2.5 rounded-xl bg-white border border-slate-200/90 hover:border-emerald-600 text-slate-800 text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-                >
-                  <Share2 className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>Share via WhatsApp</span>
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator.share({
+                            title: `Rate ${shopName} on MoniePay`,
+                            text: `Scan our QR code or visit to leave a verified rating for ${shopName}`,
+                            url: ratingUrl,
+                          }).catch(() => {});
+                        } else {
+                          handleCopyLink();
+                        }
+                      }}
+                      className="py-2.5 rounded-xl bg-white border border-slate-200/90 hover:border-emerald-600 text-slate-800 text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                    >
+                      <Share2 className="h-3.5 w-3.5 text-emerald-600" />
+                      <span>Share via WhatsApp</span>
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>Send direct rating invite to customers on WhatsApp</TooltipContent>
+                </Tooltip>
               </div>
             </div>
           </div>

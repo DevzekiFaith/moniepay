@@ -23,6 +23,7 @@ import {
   Compass,
 } from "lucide-react";
 import type { DeterministicMetrics, Debt } from "@/types/moniepay.types";
+import { InfoTooltip } from "@/components/ui/tooltip";
 
 interface QuickDecisionsGridProps {
   metrics: DeterministicMetrics;
@@ -166,27 +167,28 @@ export function QuickDecisionsGrid({
       {/* Decision Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
         {decisions.map((d) => (
-          <motion.button
-            key={d.id}
-            type="button"
-            whileHover={{ y: -2, scale: 1.01 }}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => setActiveDecision(d)}
-            className="rounded-[24px] bg-white border border-emerald-950/[0.08] p-3.5 sm:p-4 text-left shadow-[0_4px_16px_rgba(15,23,42,0.03)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
-          >
-            <div className="min-w-0">
-              <span className="text-[11px] font-bold text-slate-500 block leading-tight truncate">
-                {d.question}
-              </span>
-              <span className="text-xs sm:text-sm font-black text-slate-900 mt-2 block leading-snug truncate">
-                {d.verdict}
-              </span>
-            </div>
-            <div className="mt-3 flex items-center justify-between pt-2 border-t border-slate-100">
-              <span className="text-[10px] font-black text-emerald-800">See Action</span>
-              <ArrowRight className="h-3 w-3 text-emerald-700" />
-            </div>
-          </motion.button>
+          <InfoTooltip key={d.id} content={`Tap to see why: ${d.explanation}`}>
+            <motion.button
+              type="button"
+              whileHover={{ y: -2, scale: 1.01 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => setActiveDecision(d)}
+              className="rounded-[24px] bg-white border border-emerald-950/[0.08] p-3.5 sm:p-4 text-left shadow-[0_4px_16px_rgba(15,23,42,0.03)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
+            >
+              <div className="min-w-0">
+                <span className="text-[11px] font-bold text-slate-500 block leading-tight truncate">
+                  {d.question}
+                </span>
+                <span className="text-xs sm:text-sm font-black text-slate-900 mt-2 block leading-snug truncate">
+                  {d.verdict}
+                </span>
+              </div>
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-slate-100">
+                <span className="text-[10px] font-black text-emerald-800">See Action</span>
+                <ArrowRight className="h-3 w-3 text-emerald-700" />
+              </div>
+            </motion.button>
+          </InfoTooltip>
         ))}
       </div>
 

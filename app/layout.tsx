@@ -4,6 +4,7 @@ import "./globals.css";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -50,8 +51,10 @@ export default function RootLayout({
       >
         <AuthProvider>
           <NotificationProvider>
-            {children}
-            <ServiceWorkerRegister />
+            <TooltipProvider delayDuration={150}>
+              {children}
+              <ServiceWorkerRegister />
+            </TooltipProvider>
           </NotificationProvider>
         </AuthProvider>
       </body>
