@@ -165,67 +165,89 @@ function LoginContent() {
 
       {/* ── MAIN 3D SOFT GLASS AUTH CONTAINER ── */}
       <div className="relative w-full max-w-sm sm:max-w-md my-6 z-10 space-y-5">
-        {/* 3D User Profile & Welcoming Hero (Flex Presentation with Bold Text Hierarchy) */}
+        {/* 3D User Profile & Welcoming Hero with Integrated 3-Step Decision Flow */}
         <motion.div
           initial={{ opacity: 0, y: -14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="clay-card p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left relative overflow-hidden"
+          className="clay-card p-4 sm:p-5 space-y-3.5 relative overflow-hidden text-center sm:text-left"
         >
           {/* Ambient refraction top line */}
           <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-sky-400 opacity-90" />
 
-          {/* 3D Profile Avatar */}
-          <div className="relative flex h-20 w-20 sm:h-22 sm:w-22 items-center justify-center rounded-[28px] clay-icon-box p-1 shrink-0 shadow-[0_10px_25px_rgba(154,180,214,0.45)] group">
-            <div className="relative h-full w-full rounded-[22px] overflow-hidden bg-slate-100 border border-white/80">
-              <img
-                src={avatarUrl}
-                alt="Trader Profile"
-                className="h-full w-full object-cover object-center"
-                onError={(e) => {
-                  e.currentTarget.src = "/images/traders/mama_chidi.jpg";
-                }}
-              />
-              {mode === "register" && (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  title="Upload profile photo"
-                >
-                  <Camera className="h-5 w-5" />
-                  <span className="text-[9px] font-bold mt-0.5">Change</span>
-                </button>
-              )}
+          {/* Top Row: Avatar + Welcome Title */}
+          <div className="flex flex-col sm:flex-row items-center sm:items-center gap-3.5 sm:gap-4">
+            {/* 3D Profile Avatar */}
+            <div className="relative flex h-16 w-16 sm:h-18 sm:w-18 items-center justify-center rounded-[24px] clay-icon-box p-1 shrink-0 shadow-[0_8px_20px_rgba(154,180,214,0.4)] group">
+              <div className="relative h-full w-full rounded-[20px] overflow-hidden bg-slate-100 border border-white/80">
+                <img
+                  src={avatarUrl}
+                  alt="Trader Profile"
+                  className="h-full w-full object-cover object-center"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/traders/mama_chidi.jpg";
+                  }}
+                />
+                {mode === "register" && (
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    title="Upload profile photo"
+                  >
+                    <Camera className="h-4 w-4" />
+                    <span className="text-[8.5px] font-bold mt-0.5">Change</span>
+                  </button>
+                )}
+              </div>
+              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
             </div>
 
-            {/* Active / Verified Online Dot */}
-            <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
+            {/* Title & Tag */}
+            <div className="flex-1 min-w-0 space-y-1 text-center sm:text-left">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-700 text-[10px] font-black tracking-wide uppercase">
+                <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
+                <span>Trader Shop Portal</span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
+                {mode === "signin" ? "Welcome Back O!" : "Open Your Shop Sharp-Sharp"}
+              </h1>
+            </div>
           </div>
 
-          {/* Text Hierarchy */}
-          <div className="flex-1 min-w-0 space-y-1.5">
-            {/* Micro Tag / Category */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-700 text-[10.5px] font-black tracking-wide uppercase">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
-              <span>Trader Shop Portal</span>
+          {/* Under Welcome Back O: Understand your money value & 3 Steps */}
+          <div className="pt-2 border-t border-slate-200/60 space-y-2.5">
+            <div className="text-center sm:text-left space-y-0.5">
+              <h2 className="text-xs sm:text-[13px] font-black text-slate-900 tracking-tight">
+                Understand your money, <span className="text-blue-700">no be just to record am.</span>
+              </h2>
+              <p className="text-[11px] text-slate-500 font-medium">
+                Know where your profit dey go every single day.
+              </p>
             </div>
 
-            {/* Main Headline - Bold & Prominent */}
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
-              {mode === "signin" ? "Welcome Back O!" : "Open Your Shop Sharp-Sharp"}
-            </h1>
+            {/* 3 Concise Steps Grid */}
+            <div className="grid grid-cols-3 gap-1.5 pt-0.5 text-center">
+              <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
+                <p className="text-[11px] sm:text-xs font-black text-slate-900">1. Record</p>
+                <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Sales &amp; Gbese</p>
+              </div>
 
-            {/* Descriptive Body - Concise & Direct */}
-            {mode === "signin" ? (
-              <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
-                Enter your shop make you see your daily profit &amp; track customer gbese.
-              </p>
-            ) : (
-              <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
-                Open your shop record book in 30 seconds, no shaking.
-              </p>
-            )}
+              <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
+                <p className="text-[11px] sm:text-xs font-black text-slate-900">2. Understand</p>
+                <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Real Profit</p>
+              </div>
+
+              <div className="p-2 rounded-xl bg-white/85 border border-blue-300/70 shadow-xs ring-1 ring-blue-400/30">
+                <p className="text-[11px] sm:text-xs font-black text-blue-900">3. Decide</p>
+                <p className="text-[9.5px] text-blue-600 font-bold mt-0.5">Sharp-Sharp</p>
+              </div>
+            </div>
+
+            {/* Bottom Motto Tagline */}
+            <p className="text-[9.5px] sm:text-[10px] text-slate-400 font-bold tracking-wider uppercase text-center pt-1 border-t border-slate-200/40">
+              Your Money • Your Picture • Your Decisions
+            </p>
           </div>
         </motion.div>
 
@@ -441,44 +463,10 @@ function LoginContent() {
           </form>
         </motion.div>
 
-        {/* MoniePay Trader Motto Card (Clean, Minimal, Punchy) */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="clay-card p-4 space-y-3 relative overflow-hidden text-center"
-        >
-          <div className="space-y-0.5">
-            <h3 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
-              Understand your money, <span className="text-blue-700">no be just to record am.</span>
-            </h3>
-            <p className="text-[11px] text-slate-500 font-medium">
-              Know where your profit dey go every single day.
-            </p>
-          </div>
-
-          {/* 3 Concise Steps */}
-          <div className="grid grid-cols-3 gap-1.5 pt-0.5">
-            <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
-              <p className="text-xs font-black text-slate-900">1. Record</p>
-              <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Sales &amp; Gbese</p>
-            </div>
-
-            <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
-              <p className="text-xs font-black text-slate-900">2. Understand</p>
-              <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Real Profit</p>
-            </div>
-
-            <div className="p-2 rounded-xl bg-white/80 border border-blue-300/70 shadow-xs ring-1 ring-blue-400/30">
-              <p className="text-xs font-black text-blue-900">3. Decide</p>
-              <p className="text-[9.5px] text-blue-600 font-bold mt-0.5">Sharp-Sharp</p>
-            </div>
-          </div>
-
-          <p className="text-[9.5px] sm:text-[10px] text-slate-400 font-bold tracking-wider uppercase pt-1 border-t border-slate-200/50">
-            Your Money • Your Picture • Your Decisions
-          </p>
-        </motion.div>
+        {/* Minimal Footer Brand Line */}
+        <p className="text-[10px] sm:text-[11px] text-slate-400 font-bold text-center tracking-widest uppercase">
+          MONIEPAY • BALOGUN MARKET PORTAL
+        </p>
       </div>
     </div>
   );
