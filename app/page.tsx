@@ -63,16 +63,31 @@ import { GbeseDebtSheet } from "@/components/dashboard/GbeseDebtSheet";
 import { DecisionTrackerSheet } from "@/components/dashboard/DecisionTrackerSheet";
 import { SafeWithdrawalModal } from "@/components/dashboard/SafeWithdrawalModal";
 import { FloatingActionDock } from "@/components/dashboard/FloatingActionDock";
+import { useToast } from "@/context/NotificationContext";
 
 type Period = "today" | "this_week" | "this_month";
 type MainTab = "today" | "decisions" | "activity";
 
 export default function MoniePayDashboard() {
+  const { toast } = useToast();
   const [business, setBusiness] = useState<Business>(DEFAULT_BUSINESS);
   const [period, setPeriod] = useState<Period>("this_week");
   const [activeTab, setActiveTab] = useState<MainTab>("today");
   const [isOnline, setIsOnline] = useState<boolean>(true);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
+
+  // Tab switch handler with instant toast
+  const handleTabChange = (tabId: MainTab) => {
+    if (tabId === activeTab) return;
+    setActiveTab(tabId);
+    if (tabId === "today") {
+      toast("Today's View", "Shop pulse, available cash & wetin you suppose do next.", { type: "info" });
+    } else if (tabId === "decisions") {
+      toast("7 Market Decisions", "Wholesaler price alerts & stock restocking advice.", { type: "info" });
+    } else if (tabId === "activity") {
+      toast("Activity Log", "Transactions, cash flow & money records.", { type: "info" });
+    }
+  };
 
   // Core Data States
   const [transactions, setTransactions] = useState<BusinessTransaction[]>([]);
@@ -229,7 +244,7 @@ export default function MoniePayDashboard() {
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => handleTabChange(tab.id)}
                 className={`relative flex-1 flex items-center justify-center gap-1 sm:gap-1.5 py-2 sm:py-2.5 rounded-xl text-[11px] sm:text-xs md:text-sm font-black transition-colors cursor-pointer z-10 ${
                   isActive ? "text-white" : "text-slate-600 hover:text-slate-900"
                 }`}

@@ -6,6 +6,8 @@
 // ─────────────────────────────────────────────────────────────────
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { CheckCircle2, AlertCircle, AlertTriangle, Info, Sparkles, X } from "lucide-react";
 
 export interface MarketNotification {
   id: string;
@@ -17,6 +19,14 @@ export interface MarketNotification {
   actionUrl?: string;
   actionLabel?: string;
   amount?: string;
+}
+
+export interface ToastItem {
+  id: string;
+  title: string;
+  message?: string;
+  type: "info" | "success" | "warning" | "error";
+  duration?: number;
 }
 
 interface NotificationContextType {
@@ -38,6 +48,7 @@ interface NotificationContextType {
   error: (title: string, message?: string) => void;
   success: (title: string, message?: string) => void;
   warning: (title: string, message?: string) => void;
+  toast: (title: string, message?: string, options?: { type?: "info" | "success" | "warning" | "error"; duration?: number }) => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   clearNotifications: () => void;
@@ -89,6 +100,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [notifications, setNotifications] = useState<MarketNotification[]>(INITIAL_NOTIFICATIONS);
   const [permission, setPermission] = useState<NotificationPermission | "unsupported">("default");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   // Initialize permission and local storage cache
   useEffect(() => {
@@ -119,6 +131,38 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     } catch {}
   };
 
+  // Toast trigger function
+  const toast = useCallback(
+    (
+      title: string,
+      message?: string,
+      options?: { type?: "info" | "success" | "warning" | "error"; duration?: number }
+    ) => {
+      const id = `toast_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+      const duration = options?.duration || 3000;
+      const type = options?.type || "info";
+
+      const newToast: ToastItem = {
+        id,
+        title,
+        message,
+        type,
+        duration,
+      };
+
+      setToasts((prev) => [...prev.slice(-2), newToast]);
+
+      setTimeout(() => {
+        setToasts((prev) => prev.filter((t) => t.id !== id));
+      }, duration);
+    },
+    []
+  );
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
   // Request browser push permission
   const requestPermission = useCallback(async (): Promise<boolean> => {
     if (typeof window === "undefined" || !("Notification" in window)) {
@@ -132,15 +176,16 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           body: "You will now receive instant alerts for customer debt payments, price changes, and sales records.",
           icon: "/favicon.ico",
         });
+        toast("Push Alerts Activated", "You will get live shop notices.", { type: "success" });
         return true;
       }
       return false;
     } catch {
       return false;
     }
-  }, []);
+  }, [toast]);
 
-  // Send a push notification (both browser push and in-app alert)
+  // Send a push notification (both browser push, in-app drawer, and instant toast)
   const sendPushNotification = useCallback(
     ({
       title,
@@ -177,6 +222,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         return updated;
       });
 
+      // Also trigger instant floating toast
+      const toastType: ToastItem["type"] =
+        type === "sales_milestone" ? "success" : type === "price_alert" ? "error" : type === "debt_reminder" ? "warning" : "info";
+      toast(title, message, { type: toastType });
+
       // Fire native browser notification if granted
       if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted") {
         try {
@@ -187,7 +237,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         } catch {}
       }
     },
-    []
+    [toast]
   );
 
   const markAsRead = useCallback((id: string) => {
@@ -277,12 +327,56 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         error,
         success,
         warning,
+        toast,
         markAsRead,
         markAllAsRead,
         clearNotifications,
       }}
     >
       {children}
+
+      {/* ── FLOATING TOAST NOTIFICATION STACK ── */}
+      <div className="fixed top-3 sm:top-4 inset-x-0 z-[99999] pointer-events-none flex flex-col items-center gap-2 px-3">
+        <AnimatePresence>
+          {toasts.map((t) => (
+            <motion.div
+              key={t.id}
+              initial={{ opacity: 0, y: -24, scale: 0.92 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -16, scale: 0.92, transition: { duration: 0.15 } }}
+              transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              className="pointer-events-auto w-full max-w-sm rounded-2xl bg-slate-950/95 backdrop-blur-xl border border-emerald-500/30 text-white shadow-[0_12px_36px_rgba(0,0,0,0.45)] px-3.5 py-2.5 flex items-center gap-3"
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-white/10 shrink-0">
+                {t.type === "success" && <CheckCircle2 className="h-4 w-4 text-emerald-400" />}
+                {t.type === "error" && <AlertCircle className="h-4 w-4 text-rose-400" />}
+                {t.type === "warning" && <AlertTriangle className="h-4 w-4 text-amber-400" />}
+                {t.type === "info" && <Sparkles className="h-4 w-4 text-emerald-300" />}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-black text-white leading-tight tracking-tight truncate">
+                  {t.title}
+                </p>
+                {t.message && (
+                  <p className="text-[10.5px] font-medium text-slate-300 leading-tight truncate mt-0.5">
+                    {t.message}
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => dismissToast(t.id)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-all shrink-0 cursor-pointer"
+                aria-label="Close notification"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
     </NotificationContext.Provider>
   );
 }
@@ -296,3 +390,8 @@ export function useNotifications() {
 }
 
 export const useNotification = useNotifications;
+export const useToast = () => {
+  const { toast } = useNotifications();
+  return { toast };
+};
+
