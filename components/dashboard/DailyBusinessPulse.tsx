@@ -36,8 +36,8 @@ export function DailyBusinessPulse({
         <InfoTooltip content={`Shop Health Score: ${metrics.healthScore}/100. E show whether your capital, cash in hand, and customer debts dey balanced well.`}>
           <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/10 backdrop-blur-md border border-emerald-600/20 text-emerald-950 text-[10.5px] sm:text-xs font-black shadow-2xs cursor-help shrink-0">
             <Activity className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-700" />
-            <span className="sm:hidden">{metrics.healthScore >= 75 ? "Health: Sweet 🚀" : "Health: Adjust ⚡"} ({metrics.healthScore}/100)</span>
-            <span className="hidden sm:inline">Shop Condition: {metrics.healthScore >= 75 ? "Body Dey Sweet Business 🚀" : "Small Adjustment Needed ⚡"} ({metrics.healthScore}/100)</span>
+            <span className="sm:hidden">{metrics.healthScore >= 75 ? "Health: Good" : "Health: Adjust"} ({metrics.healthScore}/100)</span>
+            <span className="hidden sm:inline">Shop Condition: {metrics.healthScore >= 75 ? "Body Dey Sweet Business" : "Small Adjustment Needed"} ({metrics.healthScore}/100)</span>
           </div>
         </InfoTooltip>
       </div>
