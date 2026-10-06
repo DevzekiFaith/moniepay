@@ -10,7 +10,7 @@ import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus,
-  Sparkles,
+  Store,
   HelpCircle,
   Clock,
   Home,
@@ -224,7 +224,7 @@ export default function MoniePayDashboard() {
                 : "text-slate-600 hover:text-slate-900"
             }`}
           >
-            <Sparkles className="h-3.5 w-3.5" />
+            <Store className="h-3.5 w-3.5" />
             <span>Today's View</span>
           </button>
 

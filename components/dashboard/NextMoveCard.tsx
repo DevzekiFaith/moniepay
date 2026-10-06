@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Send,
-  Sparkles,
+  Compass,
   CheckCircle2,
   Wallet,
   Tag,
@@ -100,7 +100,7 @@ export function NextMoveCard({
       <div className="flex items-center justify-between gap-2 mb-3">
         <div className="flex items-center gap-2">
           <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md border border-white/25">
-            <Sparkles className="h-4 w-4 text-emerald-200" />
+            <Compass className="h-4 w-4 text-emerald-200" />
           </div>
           <span className="text-[11px] font-black uppercase tracking-widest text-emerald-200">
             Your Next Move

@@ -7,7 +7,6 @@ import {
   Mic,
   MicOff,
   CheckCircle2,
-  Sparkles,
   ArrowRight,
   TrendingUp,
   AlertCircle,
