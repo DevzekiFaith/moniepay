@@ -1,411 +1,199 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// AJO — Financial Intelligence & Insights
-// Calm, prioritized observations derived exclusively from real data.
-// Plain-English explanations. Zero rainbow cards or fake predictions.
+// MoniePay — Business Decision Intelligence & Diagnostics Page
+// “Know what is happening in your business. Know what to do next.”
+// Continuous diagnosis of leaks, pressures, improvements, and safe actions.
 // ─────────────────────────────────────────────────────────────────
 
-import { useState, useEffect, useCallback } from "react";
-import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
-import { useAuth } from "@/context/AuthContext";
-import { useRealtimeTransactions } from "@/hooks/useRealtimeTransactions";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import {
   Sparkles,
-  RefreshCw,
-  TrendingUp,
+  ArrowLeft,
+  Send,
+  Wallet,
+  Tag,
+  ShieldCheck,
   AlertTriangle,
-  CheckCircle2,
-  Loader2,
-  ArrowRight,
+  Clock,
+  TrendingUp,
   BrainCircuit,
-  Building2,
-  Plus,
-  ChevronLeft,
-  ChevronRight,
+  CheckCircle2,
 } from "lucide-react";
-import Link from "next/link";
 import { motion } from "framer-motion";
-
-interface InsightItem {
-  id: string;
-  type: string;
-  title: string;
-  body: string;
-  isRead: boolean;
-  importance: "LOW" | "NORMAL" | "HIGH" | "CRITICAL" | string;
-  createdAt: string | Date;
-}
+import type { Recommendation, DeterministicMetrics } from "@/types/moniepay.types";
+import { calculateDeterministicMetrics } from "@/lib/intelligence/deterministicEngine";
+import { generatePriorityRecommendations } from "@/lib/intelligence/diagnosticEngine";
+import {
+  getCachedTransactions,
+  getCachedDebts,
+  getCachedAccounts,
+} from "@/lib/offline/offlineQueue";
+import {
+  DEFAULT_TRANSACTIONS,
+  DEFAULT_DEBTS,
+  DEFAULT_ACCOUNTS,
+  DEFAULT_BUSINESS,
+} from "@/lib/data/initialBusinessData";
 
 export default function InsightsPage() {
-  const { user } = useAuth();
-  const [insights, setInsights] = useState<InsightItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isEvaluating, setIsEvaluating] = useState(false);
-  const [accountCount, setAccountCount] = useState<number>(0);
-
-  // Pagination state (4 insights per page for clean vertical rhythm)
-  const [currentPage, setCurrentPage] = useState(1);
-  const pageSize = 4;
-
-  const loadInsights = useCallback(async (silent = false) => {
-    if (!silent) setIsLoading(true);
-
-    try {
-      // Check accounts count
-      const acctRes = await fetch("/api/accounts");
-      if (acctRes.ok) {
-        const acctData = await acctRes.json();
-        setAccountCount(acctData.accounts?.length || 0);
-      }
-
-      // Fetch stored insights
-      const res = await fetch("/api/insights");
-      if (res.ok) {
-        const data = await res.json();
-        setInsights(data.insights || []);
-      }
-    } catch (err) {
-      console.error("Failed to load insights:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const [metrics, setMetrics] = useState<DeterministicMetrics | null>(null);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
 
   useEffect(() => {
-    loadInsights();
-  }, [loadInsights]);
+    const txs = getCachedTransactions().length > 0 ? getCachedTransactions() : DEFAULT_TRANSACTIONS;
+    const debts = getCachedDebts().length > 0 ? getCachedDebts() : DEFAULT_DEBTS;
+    const accs = getCachedAccounts().length > 0 ? getCachedAccounts() : DEFAULT_ACCOUNTS;
 
-  // Realtime updates subscription
-  useRealtimeTransactions({
-    userId: user?.id,
-    onTransactionChange: () => loadInsights(true),
-    onAccountChange: () => loadInsights(true),
-  });
+    const calcMetrics = calculateDeterministicMetrics(txs, debts, accs);
+    setMetrics(calcMetrics);
 
-  const handleEvaluate = async () => {
-    setIsEvaluating(true);
-    try {
-      const res = await fetch("/api/insights", { method: "POST" });
-      if (res.ok) {
-        const data = await res.json();
-        setInsights(data.insights || []);
-      }
-    } catch (err) {
-      console.error("Failed to evaluate insights:", err);
-    } finally {
-      setIsEvaluating(false);
-    }
-  };
+    const recs = generatePriorityRecommendations(calcMetrics, txs, debts, DEFAULT_BUSINESS.name);
+    setRecommendations(recs);
+  }, []);
 
   return (
-    <div className="app-shell" style={{ display: "flex", minHeight: "100dvh", background: "#050505", color: "#EDEDED" }}>
-      {/* Desktop Sidebar */}
-      <div className="desktop-only">
-        <AppSidebar />
-      </div>
-
-      {/* Main Page Area */}
-      <div className="page-content" style={{ flex: 1, display: "flex", flexDirection: "column", minWidth: 0 }}>
-        <AppMobileHeader />
-
-        <main className="page-body" style={{ maxWidth: "1000px", margin: "0 auto", width: "100%" }}>
-          {/* Header */}
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+    <div className="min-h-screen bg-zinc-950 text-zinc-100 pb-16">
+      {/* Header */}
+      <header className="sticky top-0 z-30 border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur-xl px-4 py-3 sm:px-6">
+        <div className="mx-auto flex max-w-2xl items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Link
+              href="/"
+              className="p-1.5 rounded-xl text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Link>
             <div>
-              <span style={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.08em", color: "#71717A", textTransform: "uppercase" }}>
-                Money Story Intelligence
-              </span>
-              <h1 style={{ fontSize: "28px", fontWeight: 800, letterSpacing: "-0.03em", color: "#FFFFFF", marginTop: "4px" }}>
-                Insights
+              <h1 className="text-base font-bold text-white tracking-tight">
+                Business Decision Engine
               </h1>
-              <p style={{ fontSize: "13.5px", color: "#A1A1AA", marginTop: "4px" }}>
-                Automated pattern recognition and explanations derived from your real financial activity.
-              </p>
+              <p className="text-[11px] text-zinc-400">Continuous business diagnostics</p>
             </div>
-
-            {accountCount > 0 && (
-              <button
-                onClick={handleEvaluate}
-                disabled={isEvaluating}
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "8px 14px",
-                  background: "#141414",
-                  border: "1px solid #27272A",
-                  borderRadius: "8px",
-                  fontSize: "12.5px",
-                  fontWeight: 600,
-                  color: "#FFFFFF",
-                  cursor: isEvaluating ? "not-allowed" : "pointer",
-                }}
-              >
-                <RefreshCw size={13} className={isEvaluating ? "animate-spin" : ""} />
-                <span>{isEvaluating ? "Analyzing…" : "Refresh Insights"}</span>
-              </button>
-            )}
           </div>
 
-          {/* Content */}
-          {isLoading ? (
-            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "45vh", gap: "12px", color: "#71717A" }}>
-              <Loader2 size={24} className="animate-spin" />
-              <p style={{ fontSize: "13.5px" }}>Evaluating financial patterns…</p>
-            </div>
-          ) : accountCount === 0 ? (
-            /* ── EMPTY STATE ── */
-            <div
-              style={{
-                background: "#0A0A0A",
-                border: "1px dashed #222222",
-                borderRadius: "16px",
-                padding: "3.5rem 2rem",
-                textAlign: "center",
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                maxWidth: "500px",
-                margin: "2rem auto",
-              }}
-            >
-              <div
-                style={{
-                  width: "48px",
-                  height: "48px",
-                  borderRadius: "12px",
-                  background: "#141414",
-                  border: "1px solid #222222",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: "1.25rem",
-                  color: "#FFFFFF",
-                }}
-              >
-                <BrainCircuit size={20} />
-              </div>
-              <h3 style={{ fontSize: "17px", fontWeight: 700, color: "#FFFFFF", marginBottom: "6px" }}>
-                Connect an Account to Begin
-              </h3>
-              <p style={{ fontSize: "13px", color: "#A1A1AA", lineHeight: 1.5, maxWidth: "380px", marginBottom: "1.5rem" }}>
-                AJO only generates insights from actual financial data. Link your first account to receive automated pattern recognition.
-              </p>
-              <Link
-                href="/accounts"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "9px 16px",
-                  background: "#FFFFFF",
-                  color: "#050505",
-                  borderRadius: "6px",
-                  fontSize: "12.5px",
-                  fontWeight: 600,
-                  textDecoration: "none",
-                }}
-              >
-                <Plus size={14} />
-                <span>Connect Account</span>
-              </Link>
-            </div>
-          ) : insights.length === 0 ? (
-            <div
-              style={{
-                background: "#0D0D0D",
-                border: "1px solid #1A1A1A",
-                borderRadius: "12px",
-                padding: "3rem 2rem",
-                textAlign: "center",
-                maxWidth: "500px",
-                margin: "2rem auto",
-              }}
-            >
-              <CheckCircle2 size={24} color="#10B981" style={{ margin: "0 auto 12px" }} />
-              <h3 style={{ fontSize: "16px", fontWeight: 700, color: "#FFFFFF", marginBottom: "6px" }}>
-                Your Money Story is Calm
-              </h3>
-              <p style={{ fontSize: "13px", color: "#71717A", lineHeight: 1.5 }}>
-                No unusual spending, spikes, or anomalies detected. As new activity is observed, key patterns will appear here.
-              </p>
-            </div>
-          ) : (
-            /* ── PRIORITIZED INSIGHTS FEED ── */
-            (() => {
-              const totalItems = insights.length;
-              const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
-              const safePage = Math.min(Math.max(1, currentPage), totalPages);
-              const paginatedInsights = insights.slice((safePage - 1) * pageSize, safePage * pageSize);
-
-              return (
-                <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
-                  {paginatedInsights.map((ins) => {
-                    const isHigh = ins.importance === "HIGH" || ins.importance === "CRITICAL";
-                    const isPositive = ins.type.includes("INCOME") || ins.type.includes("DECREASE");
-
-                    return (
-                      <motion.div
-                        key={ins.id}
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        style={{
-                          background: "#0D0D0D",
-                          border: "1px solid #1A1A1A",
-                          borderRadius: "12px",
-                          padding: "1.25rem 1.5rem",
-                          display: "flex",
-                          alignItems: "flex-start",
-                          gap: "1rem",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: "36px",
-                            height: "36px",
-                            borderRadius: "8px",
-                            background: "#171717",
-                            border: "1px solid #262626",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            flexShrink: 0,
-                            color: isHigh ? "#F59E0B" : isPositive ? "#10B981" : "#FFFFFF",
-                          }}
-                        >
-                          {isHigh ? (
-                            <AlertTriangle size={16} />
-                          ) : isPositive ? (
-                            <CheckCircle2 size={16} />
-                          ) : (
-                            <Sparkles size={16} />
-                          )}
-                        </div>
-
-                        <div style={{ flex: 1 }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap", marginBottom: "4px" }}>
-                            <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#FFFFFF" }}>
-                              {ins.title}
-                            </h3>
-                            <span
-                              style={{
-                                fontSize: "10px",
-                                fontWeight: 600,
-                                padding: "2px 6px",
-                                borderRadius: "4px",
-                                background: isHigh ? "rgba(245, 158, 11, 0.12)" : isPositive ? "rgba(16, 185, 129, 0.12)" : "#1F1F1F",
-                                color: isHigh ? "#F59E0B" : isPositive ? "#10B981" : "#A1A1AA",
-                                textTransform: "uppercase",
-                                letterSpacing: "0.04em",
-                              }}
-                            >
-                              {ins.type.replace(/_/g, " ")}
-                            </span>
-                          </div>
-
-                          <p style={{ fontSize: "13.5px", color: "#A1A1AA", lineHeight: 1.55 }}>
-                            {ins.body}
-                          </p>
-
-                          <span style={{ fontSize: "11px", color: "#52525B", marginTop: "8px", display: "block" }}>
-                            Observed {new Date(ins.createdAt).toLocaleDateString(undefined, { month: "short", day: "numeric" })}
-                          </span>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-
-                  {/* Pagination Controls */}
-                  {totalPages > 1 && (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        flexWrap: "wrap",
-                        gap: "1rem",
-                        padding: "1rem 0.25rem",
-                        borderTop: "1px solid #1A1A1A",
-                        marginTop: "0.5rem",
-                      }}
-                    >
-                      <span style={{ fontSize: "12.5px", color: "#71717A" }}>
-                        Showing{" "}
-                        <strong style={{ color: "#EDEDED" }}>
-                          {(safePage - 1) * pageSize + 1}–{Math.min(safePage * pageSize, totalItems)}
-                        </strong>{" "}
-                        of <strong style={{ color: "#EDEDED" }}>{totalItems}</strong> observations
-                      </span>
-
-                      <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCurrentPage((p) => Math.max(1, p - 1));
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                          disabled={safePage <= 1}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "4px",
-                            padding: "6px 12px",
-                            background: "#0D0D0D",
-                            border: "1px solid #222222",
-                            borderRadius: "8px",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            color: safePage <= 1 ? "#3F3F46" : "#EDEDED",
-                            cursor: safePage <= 1 ? "not-allowed" : "pointer",
-                          }}
-                        >
-                          <ChevronLeft size={14} />
-                          <span>Previous</span>
-                        </button>
-
-                        <span style={{ fontSize: "12px", color: "#A1A1AA", padding: "0 6px" }}>
-                          Page {safePage} of {totalPages}
-                        </span>
-
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCurrentPage((p) => Math.min(totalPages, p + 1));
-                            window.scrollTo({ top: 0, behavior: "smooth" });
-                          }}
-                          disabled={safePage >= totalPages}
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "4px",
-                            padding: "6px 12px",
-                            background: "#0D0D0D",
-                            border: "1px solid #222222",
-                            borderRadius: "8px",
-                            fontSize: "12px",
-                            fontWeight: 600,
-                            color: safePage >= totalPages ? "#3F3F46" : "#EDEDED",
-                            cursor: safePage >= totalPages ? "not-allowed" : "pointer",
-                          }}
-                        >
-                          <span>Next</span>
-                          <ChevronRight size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              );
-            })()
+          {metrics && (
+            <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+              {metrics.healthScore}/100 • {metrics.healthStatus}
+            </span>
           )}
-        </main>
-      </div>
+        </div>
+      </header>
 
-      {/* Mobile Bottom Bar */}
-      <div className="mobile-only">
-        <AppBottomBar />
-      </div>
+      {/* Main Body */}
+      <main className="mx-auto max-w-2xl px-4 sm:px-6 pt-5 space-y-4">
+        {/* Architecture Reminder Card */}
+        <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
+          <div className="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
+            <BrainCircuit className="h-4 w-4" />
+            <span>MoniePay Core Engine</span>
+          </div>
+          <p className="text-xs text-zinc-300 leading-relaxed">
+            <strong className="text-white">CAPTURE → UNDERSTAND → DIAGNOSE → RECOMMEND → TRACK → LEARN</strong>
+            <br />
+            Every sale, fuel receipt, customer debt, and owner withdrawal feeds into a live understanding of your working capital.
+          </p>
+        </div>
+
+        {/* Priority Recommendations List */}
+        <div className="space-y-3 pt-1">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
+            Diagnosed Actions For Your Business
+          </h2>
+
+          {recommendations.map((rec, idx) => (
+            <div
+              key={rec.id}
+              className={`rounded-2xl border p-4.5 space-y-3 transition-all ${
+                idx === 0
+                  ? "border-emerald-500/40 bg-gradient-to-b from-emerald-950/20 to-zinc-900/60 shadow-lg shadow-emerald-500/5"
+                  : "border-zinc-800 bg-zinc-900/40"
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <span
+                  className={`text-[11px] font-bold px-2 py-0.5 rounded-full ${
+                    idx === 0
+                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                      : "bg-zinc-800 text-zinc-400"
+                  }`}
+                >
+                  Priority #{idx + 1}
+                </span>
+
+                <span className="text-xs font-medium text-zinc-400 flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
+                  {rec.impact_summary}
+                </span>
+              </div>
+
+              <div>
+                <h3 className="text-base font-bold text-white leading-snug">
+                  “{rec.title}”
+                </h3>
+                <p className="mt-1 text-xs sm:text-sm text-zinc-300 leading-relaxed">
+                  {rec.description}
+                </p>
+              </div>
+
+              {/* Action Trigger */}
+              <div className="pt-2 border-t border-zinc-800/80 flex items-center justify-between">
+                <span className="text-xs text-zinc-400">Recommended Next Step:</span>
+                {rec.action_type === "COLLECT_DEBT" && (
+                  <button
+                    onClick={() => {
+                      if (rec.action_payload?.phone && rec.action_payload?.suggested_message) {
+                        const cleanPhone = rec.action_payload.phone.replace(/[^0-9]/g, "");
+                        window.open(
+                          `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
+                            rec.action_payload.suggested_message
+                          )}`,
+                          "_blank"
+                        );
+                      }
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-zinc-950 text-xs font-bold shadow"
+                  >
+                    <Send className="h-3.5 w-3.5" />
+                    <span>WhatsApp Debt Reminder</span>
+                  </button>
+                )}
+
+                {rec.action_type === "SAFE_WITHDRAWAL" && (
+                  <Link
+                    href="/"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500 hover:bg-purple-400 text-white text-xs font-bold shadow"
+                  >
+                    <Wallet className="h-3.5 w-3.5" />
+                    <span>Withdraw Safe ₦{rec.action_payload?.safe_amount?.toLocaleString()}</span>
+                  </Link>
+                )}
+
+                {rec.action_type === "PRICE_ADJUSTMENT" && (
+                  <Link
+                    href="/"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-xs font-bold shadow"
+                  >
+                    <Tag className="h-3.5 w-3.5" />
+                    <span>Adjust Unit Prices</span>
+                  </Link>
+                )}
+
+                {rec.action_type === "GENERAL" && (
+                  <Link
+                    href="/"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-white text-xs font-bold"
+                  >
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                    <span>Return to Dashboard</span>
+                  </Link>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </main>
     </div>
   );
 }

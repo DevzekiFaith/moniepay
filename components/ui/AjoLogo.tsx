@@ -1,65 +1,48 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// AJO — Brand Identity & Mark
-// Personal Money Intelligence — "Your money. Understood."
-// Minimalist, black, white, neutral, premium, intelligent, calm.
+// MoniePay — Brand Identity & Mark
+// “Know what is happening in your business. Know what to do next.”
+// Fast, modern, high-contrast, designed for Nigeria's informal economy.
 // ─────────────────────────────────────────────────────────────────
 
 import React from "react";
 
-interface AjoLogoProps {
+interface MoniePayLogoProps {
   size?: number;
   variant?: "icon" | "horizontal" | "stacked";
   className?: string;
   showTagline?: boolean;
-  theme?: "dark" | "light";
 }
 
-/**
- * Official AJO Geometric Mark
- * Clean, architectural monochrome geometry: an intentional,
- * open circular ring unified with an apex triangle ("A").
- */
-export function AjoMark({ size = 32, theme = "dark" }: { size?: number; theme?: "dark" | "light" }) {
-  const isDark = theme === "dark";
-  const fg = isDark ? "#FFFFFF" : "#0A0A0A";
-  const bg = isDark ? "#121212" : "#F4F4F5";
-  const border = isDark ? "rgba(255, 255, 255, 0.15)" : "rgba(0, 0, 0, 0.12)";
-
+export function AjoMark({ size = 32 }: { size?: number }) {
   return (
     <div
       style={{
         width: `${size}px`,
         height: `${size}px`,
-        borderRadius: "8px",
-        background: bg,
-        border: `1px solid ${border}`,
+        borderRadius: "10px",
+        background: "#10b981", // Emerald 500
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         position: "relative",
         flexShrink: 0,
-        boxShadow: isDark ? "0 1px 3px rgba(0, 0, 0, 0.5)" : "0 1px 2px rgba(0, 0, 0, 0.05)",
+        boxShadow: "0 2px 10px rgba(16, 185, 129, 0.25)",
       }}
-      aria-label="AJO mark"
+      aria-label="MoniePay mark"
     >
-      <svg
-        width={Math.round(size * 0.58)}
-        height={Math.round(size * 0.58)}
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
+      <span
+        style={{
+          color: "#09090b",
+          fontWeight: 900,
+          fontSize: `${Math.round(size * 0.55)}px`,
+          fontFamily: "system-ui, sans-serif",
+          lineHeight: 1,
+        }}
       >
-        <path
-          d="M12 3.5L4 19.5H7.5L9.5 15.5H14.5L16.5 19.5H20L12 3.5Z"
-          fill={fg}
-        />
-        <path
-          d="M10.8 13H13.2L12 10.4L10.8 13Z"
-          fill={isDark ? "#121212" : "#F4F4F5"}
-        />
-      </svg>
+        M
+      </span>
     </div>
   );
 }
@@ -67,103 +50,33 @@ export function AjoMark({ size = 32, theme = "dark" }: { size?: number; theme?: 
 export function AjoLogo({
   size = 32,
   variant = "horizontal",
+  className = "",
   showTagline = true,
-  theme = "dark",
-}: AjoLogoProps) {
-  const isDark = theme === "dark";
-  const textPrimary = isDark ? "#FFFFFF" : "#0A0A0A";
-  const textSecondary = isDark ? "#A1A1AA" : "#71717A";
-
+}: MoniePayLogoProps) {
   if (variant === "icon") {
-    return <AjoMark size={size} theme={theme} />;
+    return <AjoMark size={size} />;
   }
 
-  if (variant === "stacked") {
-    return (
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", gap: "0.5rem" }}>
-        <AjoMark size={Math.round(size * 1.25)} theme={theme} />
-        <div>
-          <span
-            style={{
-              fontSize: `${Math.round(size * 0.72)}px`,
-              fontWeight: 800,
-              letterSpacing: "0.08em",
-              color: textPrimary,
-              lineHeight: 1.1,
-              fontFamily: "var(--font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)",
-            }}
-          >
-            AJO
-          </span>
-          <p
-            style={{
-              fontSize: "11px",
-              fontWeight: 600,
-              letterSpacing: "0.04em",
-              color: textSecondary,
-              marginTop: "4px",
-            }}
-          >
-            Personal Money Intelligence
-          </p>
-          {showTagline && (
-            <p
-              style={{
-                fontSize: "10.5px",
-                fontStyle: "italic",
-                color: textSecondary,
-                marginTop: "2px",
-              }}
-            >
-              “Your money. Understood.”
-            </p>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  // Default: Horizontal brand mark
   return (
-    <div style={{ display: "inline-flex", alignItems: "center", gap: "0.625rem" }}>
-      <AjoMark size={size} theme={theme} />
-      <div style={{ display: "flex", flexDirection: "column" }}>
-        <div style={{ display: "flex", alignItems: "baseline", gap: "6px" }}>
-          <span
-            style={{
-              fontSize: `${Math.round(size * 0.52)}px`,
-              fontWeight: 800,
-              letterSpacing: "0.08em",
-              color: textPrimary,
-              lineHeight: 1.1,
-            }}
-          >
-            AJO
+    <div className={`flex items-center gap-2.5 ${className}`}>
+      <AjoMark size={size} />
+      <div className="flex flex-col">
+        <div className="flex items-center gap-1.5">
+          <span className="text-base font-black tracking-tight text-white">
+            MoniePay
           </span>
-          <span
-            style={{
-              fontSize: "10.5px",
-              fontWeight: 500,
-              color: textSecondary,
-              letterSpacing: "0.02em",
-            }}
-          >
-            Money Intelligence
+          <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+            OS
           </span>
         </div>
         {showTagline && (
-          <span
-            style={{
-              fontSize: "9.5px",
-              color: textSecondary,
-              letterSpacing: "0.01em",
-              marginTop: "1px",
-            }}
-          >
-            Your money. Understood.
+          <span className="text-[11px] font-medium text-zinc-400 tracking-normal">
+            Know what to do next
           </span>
         )}
       </div>
     </div>
   );
 }
+
+export default AjoLogo;

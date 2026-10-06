@@ -1,92 +1,57 @@
 // ─────────────────────────────────────────────
-// Insights API Route
-// GET  /api/insights  — Returns generated financial insights
-// POST /api/insights/generate — Evaluates and saves new insights
+// MoniePay — Decision Insights & Priority Recommendations API Route
+// Zero Prisma — Pure Supabase & Deterministic Diagnostic Engine
 // ─────────────────────────────────────────────
 
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-import { InsightService } from "@/services/insights/insight.service";
-
-const insightService = new InsightService();
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseServerClient } from "@/lib/supabase/client";
+import { calculateDeterministicMetrics } from "@/lib/intelligence/deterministicEngine";
+import { generatePriorityRecommendations } from "@/lib/intelligence/diagnosticEngine";
+import {
+  DEFAULT_TRANSACTIONS,
+  DEFAULT_DEBTS,
+  DEFAULT_ACCOUNTS,
+  DEFAULT_BUSINESS,
+} from "@/lib/data/initialBusinessData";
 
 export async function GET(request: NextRequest) {
   try {
     const user = await getSessionUser();
-    if (!user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const supabase = (await createSupabaseServerClient()) || getSupabaseServerClient();
+
+    let transactions = DEFAULT_TRANSACTIONS;
+    let debts = DEFAULT_DEBTS;
+    let accounts = DEFAULT_ACCOUNTS;
+
+    if (supabase) {
+      const [txRes, debtRes, accRes] = await Promise.all([
+        supabase.from("transactions").select("*").limit(200),
+        supabase.from("debts").select("*").limit(100),
+        supabase.from("accounts").select("*").limit(20),
+      ]);
+
+      if (txRes.data && txRes.data.length > 0) transactions = txRes.data;
+      if (debtRes.data && debtRes.data.length > 0) debts = debtRes.data;
+      if (accRes.data && accRes.data.length > 0) accounts = accRes.data;
     }
 
-    const userId = user.id;
-    const { searchParams } = request.nextUrl;
-    const unreadOnly = searchParams.get("unread") === "true";
-
-    const insights = await prisma.insight.findMany({
-      where: {
-        userId,
-        ...(unreadOnly ? { isRead: false } : {}),
-      },
-      orderBy: { createdAt: "desc" },
-      take: 20,
-    });
-
-    return NextResponse.json({ insights });
-  } catch (error) {
-    console.error("GET /api/insights error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    const user = await getSessionUser();
-    if (!user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const userId = user.id;
-
-    // Fetch transactions and account balances for insight generation
-    const [accounts, transactions] = await Promise.all([
-      prisma.financialAccount.findMany({ where: { userId, isActive: true } }),
-      prisma.transaction.findMany({
-        where: { userId },
-        include: { category: true, merchant: true },
-        orderBy: { transactionDate: "desc" },
-        take: 100,
-      }),
-    ]);
-
-    const totalBalance = accounts.reduce(
-      (acc: number, a: { currentBalance: number }) => acc + a.currentBalance,
-      0
+    const metrics = calculateDeterministicMetrics(transactions, debts, accounts);
+    const recommendations = generatePriorityRecommendations(
+      metrics,
+      transactions,
+      debts,
+      DEFAULT_BUSINESS.name
     );
-    const candidates = insightService.generate(transactions as any, totalBalance, userId);
-
-    // Persist new insights
-    const saved = [];
-    for (const c of candidates) {
-      const created = await prisma.insight.create({
-        data: {
-          userId,
-          type: c.type,
-          title: c.title,
-          body: c.body,
-          importance: c.importance,
-          data: c.data ? JSON.stringify(c.data) : null,
-        },
-      });
-      saved.push(created);
-    }
 
     return NextResponse.json({
-      success: true,
-      generatedCount: saved.length,
-      insights: saved,
+      recommendations,
+      metrics,
+      primaryRecommendation: recommendations[0] || null,
     });
   } catch (error) {
-    console.error("POST /api/insights error:", error);
+    console.error("GET /api/insights error:", error);
     return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

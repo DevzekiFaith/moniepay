@@ -27,33 +27,33 @@ import {
 
 export const NAV_SECTIONS = [
   {
-    title: "Overview",
+    title: "Operating Layer",
     items: [
-      { label: "Home", href: "/", icon: Home, description: "Balance & Money Story" },
+      { label: "Decisions", href: "/", icon: Home, description: "Operating Dashboard & Next Actions" },
     ],
   },
   {
     title: "Intelligence",
     items: [
-      { label: "Activity", href: "/activity", icon: ArrowLeftRight, description: "Financial Timeline" },
-      { label: "Insights", href: "/insights", icon: BrainCircuit, description: "Pattern Explanations" },
-      { label: "Accounts", href: "/accounts", icon: Building2, description: "Connected Bank Feeds" },
+      { label: "Activity", href: "/activity", icon: ArrowLeftRight, description: "Live Business Activity" },
+      { label: "Diagnostics", href: "/insights", icon: BrainCircuit, description: "Business Health & Leak Diagnosis" },
+      { label: "Cash & POS", href: "/accounts", icon: Building2, description: "Cash Drawer, POS & Bank Accounts" },
     ],
   },
   {
-    title: "Preferences",
+    title: "Settings",
     items: [
-      { label: "Profile & Settings", href: "/profile", icon: SlidersHorizontal, description: "Security & Alerts" },
+      { label: "Business Profile", href: "/profile", icon: SlidersHorizontal, description: "Shop Info & Target" },
     ],
   },
 ];
 
 // Flat list for mobile navigation
 export const MOBILE_NAV_ITEMS = [
-  { label: "Home", href: "/", icon: Home },
+  { label: "Decisions", href: "/", icon: Home },
   { label: "Activity", href: "/activity", icon: ArrowLeftRight },
-  { label: "Insights", href: "/insights", icon: BrainCircuit },
-  { label: "Accounts", href: "/accounts", icon: Building2 },
+  { label: "Diagnostics", href: "/insights", icon: BrainCircuit },
+  { label: "Cash & POS", href: "/accounts", icon: Building2 },
   { label: "Profile", href: "/profile", icon: User },
 ];
 

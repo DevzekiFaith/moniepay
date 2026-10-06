@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -11,10 +12,24 @@ const inter = Inter({
   display: "swap",
 });
 
+export const viewport: Viewport = {
+  themeColor: "#059669",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
-  title: "AJO — Personal Money Intelligence | Your money. Understood.",
-  description: "AJO automatically observes financial activity from connected accounts, understands transactions, organizes information, analyzes patterns, and explains your money story.",
-  keywords: ["AJO", "money intelligence", "personal finance", "open banking", "automated finance"],
+  title: "MoniePay — Business Decision Intelligence OS",
+  description: "Know what is happening in your business. Know what to do next. Operating system for Nigeria's informal and micro-business economy.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: "MoniePay",
+  },
+  keywords: ["MoniePay", "Business Decision Intelligence", "Nigeria SME", "Shop Operating System", "Cash POS Debt"],
 };
 
 export default function RootLayout({
@@ -29,12 +44,15 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className="min-h-full"
+        className="min-h-full bg-slate-50 text-slate-900 antialiased selection:bg-emerald-500/20 selection:text-emerald-900"
         suppressHydrationWarning
-        style={{ fontFamily: "var(--font-sans)" }}
+        style={{ fontFamily: "var(--font-sans, system-ui, sans-serif)" }}
       >
         <AuthProvider>
-          <NotificationProvider>{children}</NotificationProvider>
+          <NotificationProvider>
+            {children}
+            <ServiceWorkerRegister />
+          </NotificationProvider>
         </AuthProvider>
       </body>
     </html>

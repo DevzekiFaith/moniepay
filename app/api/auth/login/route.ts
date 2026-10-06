@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { getSupabaseServerClient } from "@/lib/supabase/client";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -23,51 +23,58 @@ export async function POST(request: NextRequest) {
     const { email, password } = parsed.data;
     const normalizedEmail = email.toLowerCase();
 
-    const user = await prisma.user.findUnique({
-      where: { email: normalizedEmail },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        passwordHash: true,
-      },
-    });
+    // 1. Supabase Auth
+    const supabase = (await createSupabaseServerClient()) || getSupabaseServerClient();
+    if (supabase) {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: normalizedEmail,
+        password,
+      });
 
-    if (!user) {
-      return NextResponse.json(
-        { error: "Invalid email or password." },
-        { status: 401 }
-      );
+      if (!error && data?.user) {
+        const response = NextResponse.json({
+          user: {
+            id: data.user.id,
+            email: data.user.email,
+            name: data.user.user_metadata?.full_name || "Business Owner",
+          },
+        });
+        response.cookies.set("moniepay_session", data.user.id, {
+          path: "/",
+          httpOnly: false,
+          maxAge: 30 * 24 * 60 * 60,
+          sameSite: "lax",
+        });
+        return response;
+      }
     }
 
-    const valid = await bcrypt.compare(password, user.passwordHash);
-    if (!valid) {
-      return NextResponse.json(
-        { error: "Invalid email or password." },
-        { status: 401 }
-      );
+    // 2. Demo fallback
+    if (normalizedEmail === "demo@monielite.app" && password === "MoneyMatters2024!") {
+      const response = NextResponse.json({
+        user: {
+          id: "user_owner_01",
+          email: "demo@monielite.app",
+          name: "Mama Chidi",
+        },
+      });
+      response.cookies.set("moniepay_session", "user_owner_01", {
+        path: "/",
+        httpOnly: false,
+        maxAge: 30 * 24 * 60 * 60,
+        sameSite: "lax",
+      });
+      return response;
     }
 
-    const response = NextResponse.json({
-      user: {
-        id: user.id,
-        email: user.email,
-        name: user.name ?? undefined,
-      },
-    });
-
-    response.cookies.set("ajo_session", user.id, {
-      path: "/",
-      maxAge: 30 * 24 * 60 * 60,
-      sameSite: "lax",
-      httpOnly: false,
-    });
-
-    return response;
-  } catch (error: any) {
-    console.error("POST /api/auth/login error:", error);
     return NextResponse.json(
-      { error: error?.message || "Internal server error." },
+      { error: "Invalid email or password." },
+      { status: 401 }
+    );
+  } catch (error) {
+    console.error("Login error:", error);
+    return NextResponse.json(
+      { error: "Something went wrong. Please try again." },
       { status: 500 }
     );
   }
