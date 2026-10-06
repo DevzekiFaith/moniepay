@@ -160,10 +160,10 @@ export function TellMoniePay({
     let type: TransactionType = "SALE";
     let category = "Sales";
     let paymentMethod: PaymentMethod = "CASH";
-    let typeLabel = "Sale";
-    let whatChanged = `Today's sales increased by ₦${amount.toLocaleString()}.`;
-    let whyItMatters = "Fresh cash added to your daily business position.";
-    let whatToDoNext = "Set aside restock cash before taking chop money.";
+    let typeLabel = "Market Sales";
+    let whatChanged = `Today sales don jump up with ₦${amount.toLocaleString()} clean cash.`;
+    let whyItMatters = "Drawer cash dey solid; fresh profit enter your daily position.";
+    let whatToDoNext = "Keep at least 70% inside drawer make you take restock market.";
 
     if (lower.includes("transfer")) paymentMethod = "TRANSFER";
     else if (lower.includes("pos")) paymentMethod = "POS";
@@ -177,18 +177,18 @@ export function TellMoniePay({
       if (lower.includes("supplier") || lower.includes("wholesaler")) {
         type = "SUPPLIER_PAYMENT";
         category = "Supplier Debt";
-        typeLabel = "Supplier Debt Logged";
-        whatChanged = `₦${amount.toLocaleString()} supplier debt recorded.`;
-        whyItMatters = "Clear before wholesale cut-off to protect credit rating.";
-        whatToDoNext = "Plan repayment from tomorrow's morning sales.";
+        typeLabel = "Supplier Gbese (You Owe)";
+        whatChanged = `You collect ₦${amount.toLocaleString()} market on credit from supplier.`;
+        whyItMatters = "Clear am on time make wholesaler keep good price for your shop.";
+        whatToDoNext = "Plan make you pay am from tomorrow morning market sales.";
       } else {
         type = "SALE";
         paymentMethod = "CREDIT";
         category = "Customer Credit";
-        typeLabel = "Customer Credit (Owing)";
-        whatChanged = `₦${amount.toLocaleString()} goods given on credit.`;
-        whyItMatters = "Money is trapped outside your cash drawer.";
-        whatToDoNext = "Send a WhatsApp reminder before Friday restock.";
+        typeLabel = "Customer Gbese (Credit)";
+        whatChanged = `You give customer ₦${amount.toLocaleString()} market goods on credit.`;
+        whyItMatters = "Your money still dey trap for outside, drawer never balance.";
+        whatToDoNext = "Send am WhatsApp reminder sharp-sharp before weekend restock.";
       }
     }
     // 2. Stock / Material Purchase
@@ -201,10 +201,10 @@ export function TellMoniePay({
     ) {
       type = "STOCK_PURCHASE";
       category = "Materials & Stock";
-      typeLabel = "Stock Purchase";
-      whatChanged = `Spent ₦${amount.toLocaleString()} on new business stock.`;
-      whyItMatters = "Restock pool converted to physical inventory.";
-      whatToDoNext = "Mark up goods with at least 25% margin to protect profit.";
+      typeLabel = "Restock / Market Goods";
+      whatChanged = `You spend ₦${amount.toLocaleString()} buy fresh market stock.`;
+      whyItMatters = "Cash don turn to heavy goods wey go bring correct profit.";
+      whatToDoNext = "Put better market margin (at least 25%) make you gain well.";
     }
     // 3. Customer Paid
     else if (
@@ -216,10 +216,10 @@ export function TellMoniePay({
     ) {
       type = "DEBT_COLLECTION";
       category = "Customer Debt Recovered";
-      typeLabel = "Debt Collected";
-      whatChanged = `₦${amount.toLocaleString()} recovered into cash drawer.`;
-      whyItMatters = "Locked capital returned to working cash.";
-      whatToDoNext = "Safe to allocate toward tomorrow's restock.";
+      typeLabel = "Gbese Recovered (Customer Pay)";
+      whatChanged = `₦${amount.toLocaleString()} don return enter your cash drawer sharp-sharp.`;
+      whyItMatters = "Money wey trap outside don enter back as working capital.";
+      whatToDoNext = "E safe well-well to put am for tomorrow restock.";
     }
     // 4. Chop Money
     else if (
@@ -231,10 +231,10 @@ export function TellMoniePay({
     ) {
       type = "OWNER_WITHDRAWAL";
       category = "Chop Money";
-      typeLabel = "Chop Money Taken";
-      whatChanged = `₦${amount.toLocaleString()} taken out for personal expenses.`;
-      whyItMatters = "Personal money separated from shop business capital.";
-      whatToDoNext = "Restock capital remains protected.";
+      typeLabel = "Chop Money (Personal Cash)";
+      whatChanged = `You commot ₦${amount.toLocaleString()} for house & personal upkeep.`;
+      whyItMatters = "Personal chop money separated clean from shop business capital.";
+      whatToDoNext = "Restock capital still dey safe 100%, no shaking.";
     }
     // 5. Staff payment
     else if (
@@ -246,19 +246,19 @@ export function TellMoniePay({
     ) {
       type = "STAFF_PAYMENT";
       category = "Staff Wage";
-      typeLabel = "Staff Wage";
-      whatChanged = `₦${amount.toLocaleString()} paid for shop assistance.`;
-      whyItMatters = "Operating expense recorded cleanly.";
-      whatToDoNext = "Counted against this week's shop overhead.";
+      typeLabel = "Shop Boy / Staff Wage";
+      whatChanged = `You settle shop helper ₦${amount.toLocaleString()}.`;
+      whyItMatters = "Shop running cost record clean, no hidden shortage.";
+      whatToDoNext = "Don calculate inside this week shop overhead.";
     }
     // 6. Regular Sale
     else {
       type = "SALE";
       category = "General Sales";
-      typeLabel = "Sales Recorded";
-      whatChanged = `Today's sales up by ₦${amount.toLocaleString()}.`;
-      whyItMatters = "Drawer cash healthy; ~24% profit margin.";
-      whatToDoNext = "Keep 70% in drawer for restock.";
+      typeLabel = "Sales Don Enter";
+      whatChanged = `Today sales don jump up with ₦${amount.toLocaleString()} clean cash.`;
+      whyItMatters = "Drawer cash dey solid; fresh profit enter your daily position.";
+      whatToDoNext = "Keep at least 70% inside drawer make you take restock market.";
     }
 
     recordOptimisticTransaction({
@@ -281,7 +281,7 @@ export function TellMoniePay({
     });
     onActivityRecorded();
 
-    // Natural audio voice readout confirming the record
+    // Natural audio voice readout confirming the record in Nigerian English
     speakTraderAudioFeedback(`${typeLabel}: ${whatChanged} ${whatToDoNext}`);
   };
 
@@ -291,8 +291,8 @@ export function TellMoniePay({
   };
 
   const quickExamples = [
-    { text: "Sold 45k today", label: "“Sold 45k today”" },
-    { text: "Bought stock for 20k", label: "“Buy stock 20k”" },
+    { text: "Sold 45k today", label: "“Sell 45k today”" },
+    { text: "Bought stock for 20k", label: "“Buy market 20k”" },
     { text: "Chidi paid me 15k", label: "“Chidi pay me 15k”" },
     { text: "I owe supplier 80k", label: "“I owe supplier 80k”" },
     { text: "I withdrew 30k chop money", label: "“Take 30k chop moni”" },
@@ -318,7 +318,7 @@ export function TellMoniePay({
           </h2>
         </div>
         <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-blue-50/80 text-blue-700 border border-blue-200/60 shadow-xs">
-          Instant • Voice &amp; Offline
+          Sharp-Sharp • Talk am or Type am
         </span>
       </div>
 
@@ -329,7 +329,7 @@ export function TellMoniePay({
             type="text"
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
-            placeholder="Talk or type: e.g. Sold 45k, Chidi pay 15k, Buy stock 20k..."
+            placeholder="Talk or type: e.g. Sell 45k, Chidi pay 15k, Buy market 20k..."
             className="clay-input w-full pl-4 pr-11 py-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
           />
           {inputVal && (
@@ -418,7 +418,7 @@ export function TellMoniePay({
                   <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
                 </div>
                 <span className="text-xs font-black text-slate-900 tracking-tight">
-                  Recorded ✓ ₦{feedback.amount.toLocaleString()} <span className="text-blue-700">({feedback.typeLabel})</span>
+                  Don Record Sharp-Sharp ✓ ₦{feedback.amount.toLocaleString()} <span className="text-blue-700">({feedback.typeLabel})</span>
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -429,18 +429,18 @@ export function TellMoniePay({
                       `${feedback.typeLabel}: ${feedback.whatChanged} ${feedback.whatToDoNext}`
                     )
                   }
-                  className="flex items-center gap-1 text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-blue-50/90 hover:bg-blue-100/90 border border-blue-200/70 px-2.5 py-1 rounded-xl transition-all cursor-pointer shadow-xs active:scale-95"
+                  className="flex items-center gap-1.5 text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-blue-50/90 hover:bg-blue-100/90 border border-blue-200/70 px-2.5 py-1 rounded-xl transition-all cursor-pointer shadow-xs active:scale-95"
                   title="Listen to voice confirmation again"
                 >
                   <Volume2 className="h-3.5 w-3.5 text-blue-600" />
-                  <span>Listen</span>
+                  <span>Hear am</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setFeedback(null)}
                   className="text-[11px] font-bold text-slate-400 hover:text-slate-700 px-2 py-1 rounded-lg hover:bg-slate-100/70 transition-colors cursor-pointer"
                 >
-                  Dismiss
+                  Comot am
                 </button>
               </div>
             </div>
@@ -449,7 +449,7 @@ export function TellMoniePay({
             <div className="space-y-2 text-xs">
               <div className="flex items-start gap-2.5">
                 <span className="font-black text-blue-700 shrink-0 min-w-[90px]">
-                  What changed?
+                  Wetin change?
                 </span>
                 <span className="text-slate-800 font-bold leading-relaxed">
                   {feedback.whatChanged}
@@ -458,7 +458,7 @@ export function TellMoniePay({
 
               <div className="flex items-start gap-2.5">
                 <span className="font-black text-indigo-600 shrink-0 min-w-[90px]">
-                  Why it matters?
+                  Why e matter?
                 </span>
                 <span className="text-slate-700 font-semibold leading-relaxed">
                   {feedback.whyItMatters}
@@ -467,7 +467,7 @@ export function TellMoniePay({
 
               <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-gradient-to-r from-blue-600/10 via-sky-500/10 to-transparent border-l-4 border-blue-600 shadow-xs">
                 <span className="font-black text-blue-800 shrink-0 min-w-[90px]">
-                  Next move:
+                  Wetin you go do now:
                 </span>
                 <span className="text-blue-950 font-black leading-relaxed">
                   {feedback.whatToDoNext}

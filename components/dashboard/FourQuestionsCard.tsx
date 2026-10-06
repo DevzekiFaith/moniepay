@@ -86,10 +86,10 @@ export function FourQuestionsCard({
   };
 
   const tabs = [
-    { id: 0, label: "1. How I'm Doing", tag: `${diagnosis.howAmIDoing.healthScore}/100` },
-    { id: 1, label: "2. What Changed", tag: `+${metrics.trends.salesGrowthPercent}%` },
-    { id: 2, label: "3. Why It Changed", tag: "Cause" },
-    { id: 3, label: "4. What To Do", tag: "Action", isPrimary: true },
+    { id: 0, label: "1. How Shop Dey Go", tag: `${diagnosis.howAmIDoing.healthScore}/100` },
+    { id: 1, label: "2. Wetin Change", tag: `+${metrics.trends.salesGrowthPercent}%` },
+    { id: 2, label: "3. Why E Change", tag: "Reason" },
+    { id: 3, label: "4. Wetin You Go Do", tag: "Sharp Action", isPrimary: true },
   ];
 
   return (
@@ -108,15 +108,15 @@ export function FourQuestionsCard({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black uppercase tracking-widest text-blue-300">
-                  Business Decision Intelligence
+                  Shop Decision Intelligence
                 </span>
                 <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-400/20 border border-blue-300/30 text-[9.5px] font-black text-blue-200 backdrop-blur-sm">
                   <span className="h-1.5 w-1.5 rounded-full bg-blue-300 animate-pulse" />
-                  Live Advisor
+                  Live Market Advisor
                 </span>
               </div>
               <h2 className="text-base sm:text-lg font-black text-white tracking-tight mt-0.5">
-                The 4 Questions That Drive Your Profit
+                4 Questions Wey Go Make Your Shop Profit Grow
               </h2>
             </div>
           </div>
