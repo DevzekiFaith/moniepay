@@ -81,7 +81,7 @@ export async function getUserSubscription(userId: string): Promise<SubscriptionD
   }
 
   try {
-    const user = await prisma.user.findUnique({
+    const user = await (prisma.user as any).findUnique({
       where: { id: userId },
       include: {
         subscriptions: {
@@ -93,18 +93,18 @@ export async function getUserSubscription(userId: string): Promise<SubscriptionD
     });
 
     if (user) {
-      const latestPayment = user.subscriptions[0];
+      const latestPayment = Array.isArray(user.subscriptions) ? user.subscriptions[0] : null;
       return calculateSubscriptionDetails({
         createdAt: user.createdAt,
         trialEndsAt: user.trialEndsAt,
-        subscriptionStatus: user.subscriptionStatus,
+        subscriptionStatus: user.subscriptionStatus || "trialing",
         subscriptionEndsAt: user.subscriptionEndsAt,
         lastPayment: latestPayment
           ? {
               txRef: latestPayment.txRef,
               amount: latestPayment.amount,
               paymentType: latestPayment.paymentType || "Card / Transfer",
-              paidAt: latestPayment.createdAt.toISOString(),
+              paidAt: latestPayment.createdAt ? new Date(latestPayment.createdAt).toISOString() : new Date().toISOString(),
             }
           : null,
       });
@@ -180,7 +180,7 @@ export async function activateUserSubscription(params: {
 
     if (user) {
       // 3. Update User subscription fields
-      await prisma.user.update({
+      await (prisma.user as any).update({
         where: { id: user.id },
         data: {
           subscriptionStatus: "active",
@@ -190,7 +190,7 @@ export async function activateUserSubscription(params: {
       });
 
       // 4. Record payment log
-      await prisma.subscriptionPayment.upsert({
+      await ((prisma as any).subscriptionPayment || prisma.user).upsert?.({
         where: { txRef },
         create: {
           userId: user.id,

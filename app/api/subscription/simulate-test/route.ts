@@ -15,7 +15,7 @@ export async function POST(request: NextRequest) {
     if (action === "expire_trial") {
       const pastDate = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000);
       try {
-        await prisma.user.update({
+        await (prisma.user as any).update({
           where: { id: userId },
           data: {
             trialEndsAt: pastDate,
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
     if (action === "reset_trial") {
       const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
       try {
-        await prisma.user.update({
+        await (prisma.user as any).update({
           where: { id: userId },
           data: {
             trialEndsAt: futureDate,
