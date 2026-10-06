@@ -265,10 +265,10 @@ export function TellMoniePay({
 
   const quickExamples = [
     { text: "Sold 45k today", label: "“Sold 45k today”" },
-    { text: "Bought materials for 20k", label: "“Bought materials 20k”" },
-    { text: "Chidi paid me 15k", label: "“Chidi paid 15k”" },
+    { text: "Bought stock for 20k", label: "“Buy stock 20k”" },
+    { text: "Chidi paid me 15k", label: "“Chidi pay me 15k”" },
     { text: "I owe supplier 80k", label: "“I owe supplier 80k”" },
-    { text: "I withdrew 30k", label: "“I withdrew 30k”" },
+    { text: "I withdrew 30k chop money", label: "“Take 30k chop moni”" },
   ];
 
   return (
@@ -276,18 +276,18 @@ export function TellMoniePay({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="rounded-[28px] bg-white border border-emerald-950/[0.08] p-4 sm:p-5 shadow-[0_8px_30px_rgba(4,120,87,0.04)] space-y-3"
+      className="rounded-[28px] bg-white/80 backdrop-blur-md border border-emerald-950/[0.08] p-4 sm:p-5 shadow-[0_8px_32px_rgba(4,120,87,0.04)] space-y-3"
     >
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
           <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-600 animate-pulse" />
           <h2 className="text-xs font-black uppercase tracking-wider text-emerald-950">
-            Tell MoniePay
+            Tell MoniePay Wetin Happen For Shop
           </h2>
         </div>
         <span className="text-[11px] font-bold text-emerald-700">
-          Instant • Voice &amp; Offline
+          Instant • Voice &amp; No-Internet
         </span>
       </div>
 
@@ -298,8 +298,8 @@ export function TellMoniePay({
             type="text"
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
-            placeholder="Tell MoniePay: e.g. Sold 45k, Chidi paid 15k, Bought stock 20k..."
-            className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-all"
+            placeholder="Talk or type: e.g. Sold 45k, Chidi pay 15k, Buy stock 20k..."
+            className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-50/90 backdrop-blur-xs border border-slate-200/90 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-all"
           />
           {inputVal && (
             <motion.button
@@ -307,7 +307,7 @@ export function TellMoniePay({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center cursor-pointer shadow-sm"
-              title="Send to MoniePay"
+              title="Record to MoniePay"
             >
               <Send className="h-3.5 w-3.5" />
             </motion.button>
@@ -325,7 +325,7 @@ export function TellMoniePay({
               className={`h-11 w-11 rounded-2xl flex items-center justify-center cursor-pointer transition-all shrink-0 ${
                 isListening
                   ? "bg-rose-600 text-white animate-pulse shadow-md shadow-rose-500/30"
-                  : "bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-2xs"
+                  : "bg-emerald-50/90 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-2xs backdrop-blur-xs"
               }`}
             >
               {isListening ? (
@@ -336,7 +336,7 @@ export function TellMoniePay({
             </motion.button>
           </TooltipTrigger>
           <TooltipContent>
-            {isListening ? "Listening... Speak in English or Pidgin" : "Record voice transaction (Hands-free)"}
+            {isListening ? "Dey listen... Talk in English or Pidgin now" : "Talk wetin happen with voice (Hands-free)"}
           </TooltipContent>
         </Tooltip>
       </form>
@@ -354,13 +354,13 @@ export function TellMoniePay({
                   setInputVal(item.text);
                   processTraderInput(item.text);
                 }}
-                className="px-3 py-1.5 rounded-xl bg-emerald-50/70 hover:bg-emerald-100/90 border border-emerald-200/60 text-emerald-950 text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0"
+                className="px-3 py-1.5 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/70 text-emerald-950 text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0 backdrop-blur-xs"
               >
                 {item.label}
               </motion.button>
             </TooltipTrigger>
             <TooltipContent>
-              1-Tap instant record: {item.text}
+              1-Tap record sharp-sharp: {item.text}
             </TooltipContent>
           </Tooltip>
         ))}

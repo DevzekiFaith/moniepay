@@ -64,12 +64,12 @@ export function QuickDecisionsGrid({
   const decisions: DecisionDetail[] = [
     {
       id: "withdraw",
-      question: "Can I withdraw this money?",
-      verdict: `YES — ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe`,
+      question: "I fit withdraw this moni?",
+      verdict: `YES O — ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe to Chop`,
       statusType: "safe",
-      explanation: "Restock capital and shop running costs are protected. This portion is safe chop money.",
-      nextStep: "Withdraw only this amount so you don't eat into tomorrow's inventory capital.",
-      buttonLabel: `Take ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe Chop Money`,
+      explanation: "Your market capital and shop bills dey safe. This amount na clean profit wey you fit take chop life.",
+      nextStep: "Withdraw only this safe amount so tomorrow's market stock no go suffer.",
+      buttonLabel: `Take ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe Chop Moni`,
       onAction: () => {
         setActiveDecision(null);
         if (onOpenWithdrawal) onOpenWithdrawal();
@@ -77,12 +77,12 @@ export function QuickDecisionsGrid({
     },
     {
       id: "restock",
-      question: "Can I restock?",
-      verdict: `READY — ₦${Math.max(0, metrics.liquidCash - metrics.safeWithdrawalAmount).toLocaleString()} Available`,
+      question: "I fit buy new market/stock?",
+      verdict: `YES O — ₦${Math.max(0, metrics.liquidCash - metrics.safeWithdrawalAmount).toLocaleString()} Available`,
       statusType: "safe",
-      explanation: "You have working cash ready for inventory purchase without taking high-interest loans.",
-      nextStep: "Target fast-moving items with margins above 20% to maximize turnover.",
-      buttonLabel: "Plan Restock Purchase",
+      explanation: "You get solid working capital ready for hand to buy wholesale stock without taking loan.",
+      nextStep: "Target fast-moving goods with sweet profit margins to maximize quick turnover.",
+      buttonLabel: "Plan Restock & Buy Market",
       onAction: () => {
         setActiveDecision(null);
         if (onOpenRestock) onOpenRestock();
@@ -90,13 +90,13 @@ export function QuickDecisionsGrid({
     },
     {
       id: "pay_debt",
-      question: "Can I pay this debt?",
-      verdict: supplierTotal > 0 ? `YES — Pay ₦${Math.min(supplierTotal, metrics.liquidCash).toLocaleString()}` : "NO DEBT OWED",
+      question: "I fit pay supplier debt today?",
+      verdict: supplierTotal > 0 ? `YES — Pay ₦${Math.min(supplierTotal, metrics.liquidCash).toLocaleString()} Sharp-Sharp` : "NO DEBT OWED",
       statusType: supplierTotal > 0 ? "action_needed" : "safe",
       explanation: supplierTotal > 0
-        ? `You owe suppliers ₦${supplierTotal.toLocaleString()}. Clearing this protects wholesale credit terms.`
-        : "You have zero pending supplier debt. Your wholesale reputation is pristine.",
-      nextStep: supplierTotal > 0 ? "Pay supplier today to keep your supply line open." : "Maintain this clean record.",
+        ? `You owe suppliers ₦${supplierTotal.toLocaleString()}. Clearing this keeps your wholesale trust 100% solid.`
+        : "You no dey owe any supplier kobo. Your wholesale name and integrity clean pass mirror!",
+      nextStep: supplierTotal > 0 ? "Settle supplier today so they go bring fresh goods immediately." : "Keep this clean record.",
       buttonLabel: supplierTotal > 0 ? "Settle Supplier Gbese" : "Close",
       onAction: () => {
         setActiveDecision(null);
@@ -105,12 +105,12 @@ export function QuickDecisionsGrid({
     },
     {
       id: "profit",
-      question: "Am I actually making profit?",
-      verdict: `${metrics.profitMarginPercent}% Margin (₦${metrics.operatingProfit.toLocaleString()} Net)`,
+      question: "Profit dey come out so?",
+      verdict: `${metrics.profitMarginPercent}% Margin (₦${metrics.operatingProfit.toLocaleString()} Net Gain)`,
       statusType: metrics.operatingProfit > 0 ? "safe" : "warning",
-      explanation: `Calculated after subtracting ₦${metrics.directStockCost.toLocaleString()} stock costs and ₦${metrics.operatingExpenses.toLocaleString()} shop overhead.`,
-      nextStep: "Your margins are healthy. Keep tracking every small expense to avoid hidden leakage.",
-      buttonLabel: "View Profit Breakdown",
+      explanation: `Calculated after subtracting ₦${metrics.directStockCost.toLocaleString()} goods costs and ₦${metrics.operatingExpenses.toLocaleString()} shop bills.`,
+      nextStep: "Your profit dey healthy! Keep recording every small expense to avoid hidden leakage.",
+      buttonLabel: "See Full Profit Breakdown",
       onAction: () => {
         setActiveDecision(null);
         if (onOpenProfitDetail) onOpenProfitDetail();
@@ -118,12 +118,12 @@ export function QuickDecisionsGrid({
     },
     {
       id: "who_owes",
-      question: "Who owes me money?",
-      verdict: `₦${metrics.customerDebtTotal.toLocaleString()} Owed (${customerDebts.length} Customers)`,
+      question: "Who dey owe my shop gbese?",
+      verdict: `₦${metrics.customerDebtTotal.toLocaleString()} Outside (${customerDebts.length} Customers)`,
       statusType: metrics.customerDebtTotal > 0 ? "action_needed" : "safe",
-      explanation: "Customers have taken goods on credit. This cash is currently locked outside your business.",
-      nextStep: "Follow up with top debtors via WhatsApp before the weekend.",
-      buttonLabel: "Open Customer Credit Book",
+      explanation: "People don take goods on credit and your hard-earned money dey outside. Time to collect am!",
+      nextStep: "Send polite reminder to top debtors on WhatsApp before weekend rush.",
+      buttonLabel: "Open Debt Book & Send Reminders",
       onAction: () => {
         setActiveDecision(null);
         if (onOpenGbeseBook) onOpenGbeseBook();
@@ -131,24 +131,24 @@ export function QuickDecisionsGrid({
     },
     {
       id: "losing_money",
-      question: "Where am I losing money?",
-      verdict: (metrics.trends?.stockCostGrowthPercent || 0) > 0 ? `Stock Costs Up +${metrics.trends.stockCostGrowthPercent}%` : "Low Cost Leakage",
+      question: "Where my money dey leak enter?",
+      verdict: (metrics.trends?.stockCostGrowthPercent || 0) > 0 ? `Stock Price Up +${metrics.trends.stockCostGrowthPercent}%` : "Zero Leakage",
       statusType: (metrics.trends?.stockCostGrowthPercent || 0) > 10 ? "warning" : "safe",
-      explanation: "Supplier price inflation and untracked transport/POS charges are your primary cost leakages.",
-      nextStep: "Check wholesale unit prices when buying in bulk and review POS slip reconciliations.",
-      buttonLabel: "Review Leakage Diagnostics",
+      explanation: "Supplier price inflation and untracked transport/POS charges na the main place money fit leak.",
+      nextStep: "Check wholesale unit prices when buying in bulk and review POS slips every evening.",
+      buttonLabel: "Check Money Leakage",
       onAction: () => {
         setActiveDecision(null);
       },
     },
     {
       id: "today_cash",
-      question: "What to do with today's cash?",
-      verdict: `Keep ₦${Math.round(metrics.liquidCash * 0.7).toLocaleString()} in Drawer`,
+      question: "Wetin I go do with today cash?",
+      verdict: `Lock ₦${Math.round(metrics.liquidCash * 0.7).toLocaleString()} for Stock First`,
       statusType: "safe",
-      explanation: `Rule of thumb: 70% for stock replenishment, 15% for bills/wages, 15% safe withdrawal.`,
-      nextStep: "Lock restock money in safe drawer or bank before taking personal money home.",
-      buttonLabel: "Set Aside Restock Capital",
+      explanation: `Market golden rule: 70% for stock replenishment, 15% for bills/wages, 15% clean chop moni.`,
+      nextStep: "Keep restock money inside bank or safe drawer before taking personal chop money home.",
+      buttonLabel: "Lock In Restock Capital",
       onAction: () => {
         setActiveDecision(null);
       },
@@ -158,22 +158,22 @@ export function QuickDecisionsGrid({
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
-          Decisions You Can Make Right Now
+        <h2 className="text-xs font-black uppercase tracking-wider text-emerald-950/60">
+          Decisions Wey You Fit Take Sharp-Sharp
         </h2>
-        <span className="text-[11px] font-bold text-emerald-800">Tap to answer</span>
+        <span className="text-[11px] font-bold text-emerald-800">Tap to see answer</span>
       </div>
 
       {/* Decision Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
         {decisions.map((d) => (
-          <InfoTooltip key={d.id} content={`Tap to see why: ${d.explanation}`}>
+          <InfoTooltip key={d.id} content={`Wetin make us talk so: ${d.explanation}`}>
             <motion.button
               type="button"
               whileHover={{ y: -2, scale: 1.01 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setActiveDecision(d)}
-              className="rounded-[24px] bg-white border border-emerald-950/[0.08] p-3.5 sm:p-4 text-left shadow-[0_4px_16px_rgba(15,23,42,0.03)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
+              className="rounded-[24px] bg-white/80 backdrop-blur-md border border-emerald-950/[0.08] p-3.5 sm:p-4 text-left shadow-[0_4px_20px_rgba(4,120,87,0.04)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
             >
               <div className="min-w-0">
                 <span className="text-[11px] font-bold text-slate-500 block leading-tight truncate">
@@ -183,7 +183,7 @@ export function QuickDecisionsGrid({
                   {d.verdict}
                 </span>
               </div>
-              <div className="mt-3 flex items-center justify-between pt-2 border-t border-slate-100">
+              <div className="mt-3 flex items-center justify-between pt-2 border-t border-slate-100/80">
                 <span className="text-[10px] font-black text-emerald-800">See Action</span>
                 <ArrowRight className="h-3 w-3 text-emerald-700" />
               </div>
@@ -195,13 +195,13 @@ export function QuickDecisionsGrid({
       {/* Interactive Decision Answer Modal */}
       <AnimatePresence>
         {activeDecision && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="w-full max-w-md rounded-[28px] bg-white border border-emerald-900/10 p-5 sm:p-6 shadow-2xl space-y-4 relative overflow-hidden"
+              className="w-full max-w-md rounded-[28px] bg-white/95 backdrop-blur-xl border border-emerald-900/15 p-5 sm:p-6 shadow-2xl space-y-4 relative overflow-hidden"
             >
               <button
                 type="button"

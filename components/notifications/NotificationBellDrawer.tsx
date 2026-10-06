@@ -108,18 +108,18 @@ export function NotificationBellDrawer() {
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: "100%", opacity: 0.5 }}
               transition={{ type: "spring", stiffness: 350, damping: 32 }}
-              className="relative w-full max-w-sm sm:max-w-md bg-white h-full shadow-2xl flex flex-col z-10 overflow-hidden text-slate-900"
+              className="relative w-full max-w-sm sm:max-w-md bg-white/95 backdrop-blur-2xl h-full shadow-2xl flex flex-col z-10 overflow-hidden text-slate-900 border-l border-white/20"
             >
               {/* Drawer Top Header */}
-              <div className="bg-gradient-to-r from-[#022c22] via-[#064e3b] to-[#047857] px-5 py-4 text-white flex items-center justify-between">
+              <div className="bg-gradient-to-r from-[#022c22]/95 via-[#064e3b]/95 to-[#047857]/95 backdrop-blur-xl px-5 py-4 text-white flex items-center justify-between border-b border-white/10">
                 <div className="flex items-center gap-2.5">
-                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 border border-white/20">
+                  <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md border border-white/25">
                     <Bell className="h-4 w-4 text-emerald-200" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black tracking-tight leading-none">Shop &amp; Market Alerts</h3>
+                    <h3 className="text-sm font-black tracking-tight leading-none">Wetin Dey Happen (Alerts)</h3>
                     <p className="text-[10.5px] text-emerald-200 font-semibold mt-0.5">
-                      Real-time alerts for your shop
+                      Live alerts for customer debts, prices &amp; sales
                     </p>
                   </div>
                 </div>
@@ -127,7 +127,7 @@ export function NotificationBellDrawer() {
                 <button
                   type="button"
                   onClick={() => setIsDrawerOpen(false)}
-                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+                  className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all cursor-pointer backdrop-blur-md border border-white/10"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -135,11 +135,11 @@ export function NotificationBellDrawer() {
 
               {/* Push Permission Prompt Strip */}
               {permission !== "granted" && permission !== "unsupported" && (
-                <div className="p-3 bg-amber-50 border-b border-amber-200/80 flex items-center justify-between gap-2">
+                <div className="p-3 bg-amber-500/10 backdrop-blur-md border-b border-amber-500/20 flex items-center justify-between gap-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <Radio className="h-4 w-4 text-amber-600 shrink-0 animate-pulse" />
-                    <p className="text-[11px] font-bold text-amber-900 leading-tight">
-                      Turn on Push Alerts for instant sales &amp; debt reminders
+                    <p className="text-[11px] font-bold text-amber-950 leading-tight">
+                      Turn on phone alerts make MoniePay ping you sharp-sharp when customer pay or price change
                     </p>
                   </div>
                   <button
@@ -153,13 +153,13 @@ export function NotificationBellDrawer() {
               )}
 
               {/* Filter Tabs & Quick Actions */}
-              <div className="p-3 border-b border-slate-100 bg-slate-50/70 flex items-center justify-between gap-2">
+              <div className="p-3 border-b border-slate-100/80 bg-slate-50/80 backdrop-blur-md flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
                   {[
-                    { id: "all", label: "All" },
-                    { id: "debts", label: "Debts" },
-                    { id: "alerts", label: "Price Surges" },
-                    { id: "sales", label: "Sales" },
+                    { id: "all", label: "Everything" },
+                    { id: "debts", label: "Customer Gbese" },
+                    { id: "alerts", label: "Price Alerts" },
+                    { id: "sales", label: "Sales Target" },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -168,7 +168,7 @@ export function NotificationBellDrawer() {
                       className={`px-2.5 py-1 text-[11px] font-black rounded-lg transition-all cursor-pointer ${
                         activeFilter === tab.id
                           ? "bg-emerald-700 text-white shadow-xs"
-                          : "text-slate-500 hover:text-slate-900 bg-white border border-slate-200/60"
+                          : "text-slate-600 hover:text-slate-900 bg-white/80 border border-slate-200/70 backdrop-blur-xs"
                       }`}
                     >
                       {tab.label}
@@ -180,7 +180,7 @@ export function NotificationBellDrawer() {
                   <button
                     type="button"
                     onClick={markAllAsRead}
-                    className="text-[10.5px] font-bold text-emerald-700 hover:text-emerald-900 shrink-0 cursor-pointer flex items-center gap-1"
+                    className="text-[10.5px] font-bold text-emerald-800 hover:text-emerald-950 shrink-0 cursor-pointer flex items-center gap-1"
                   >
                     <Check className="h-3 w-3" />
                     <span>Mark read</span>
@@ -199,12 +199,12 @@ export function NotificationBellDrawer() {
                       onClick={() => markAsRead(n.id)}
                       className={`p-3 rounded-2xl border transition-all cursor-pointer relative ${
                         n.read
-                          ? "bg-white border-slate-200/70 text-slate-700"
-                          : "bg-emerald-50/40 border-emerald-300 text-slate-900 shadow-xs"
+                          ? "bg-white/70 backdrop-blur-sm border-slate-200/80 text-slate-700"
+                          : "bg-emerald-50/80 backdrop-blur-sm border-emerald-300 text-slate-900 shadow-xs"
                       }`}
                     >
                       {!n.read && (
-                        <span className="absolute top-3 right-3 h-2 w-2 rounded-full bg-emerald-600" />
+                        <span className="absolute top-3 right-3 h-2 w-2 rounded-full bg-emerald-600 animate-ping" />
                       )}
 
                       <div className="flex items-start gap-2.5">
@@ -253,23 +253,23 @@ export function NotificationBellDrawer() {
                     <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mx-auto">
                       <Bell className="h-5 w-5" />
                     </div>
-                    <p className="text-xs font-bold text-slate-600">No alerts in this category</p>
+                    <p className="text-xs font-bold text-slate-600">No alert for this section right now</p>
                     <p className="text-[10px] text-slate-400 max-w-xs mx-auto">
-                      Your shop notifications and market alerts will appear here.
+                      Your customer debts, sales progress and market price updates go appear here.
                     </p>
                   </div>
                 )}
               </div>
 
               {/* Drawer Footer Actions */}
-              <div className="p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
+              <div className="p-3 bg-slate-50/90 backdrop-blur-md border-t border-slate-200/80 flex items-center justify-between gap-2">
                 <button
                   type="button"
                   onClick={handleSendTestPush}
-                  className="px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                  className="px-3 py-2 rounded-xl bg-white/90 border border-slate-200 text-slate-700 text-xs font-bold hover:bg-slate-100 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs backdrop-blur-xs"
                 >
                   <BellRing className="h-3.5 w-3.5 text-emerald-600" />
-                  <span>{testSent ? "Alert Sent!" : "Test Push Alert"}</span>
+                  <span>{testSent ? "Alert Sent!" : "Test Alert Sound & Ping"}</span>
                 </button>
 
                 <button

@@ -44,21 +44,22 @@ export function DaylightHeader({
 
   return (
     <>
-      <header className="relative overflow-hidden bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-900 pt-4 pb-9 px-3.5 sm:px-6 md:px-8 text-white shadow-md">
+      <header className="relative overflow-hidden bg-gradient-to-br from-emerald-900/95 via-emerald-800/90 to-teal-950/95 backdrop-blur-2xl pt-4 pb-9 px-3.5 sm:px-6 md:px-8 text-white shadow-lg border-b border-white/10">
         {/* Decorative background light orb */}
-        <div className="pointer-events-none absolute -right-8 -top-8 h-48 w-48 rounded-full bg-emerald-400/15 blur-2xl" />
+        <div className="pointer-events-none absolute -right-8 -top-8 h-48 w-48 rounded-full bg-emerald-400/20 blur-2xl" />
+        <div className="pointer-events-none absolute -left-8 -bottom-8 h-40 w-40 rounded-full bg-teal-300/10 blur-xl" />
 
         <div className="relative mx-auto w-full max-w-4xl">
           {/* Top Bar with Avatar, Greeting & Actions */}
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
               {/* Profile Image Avatar Button with Tooltip */}
-              <InfoTooltip content="View Shop Profile & Sign Out">
+              <InfoTooltip content="View shop profile, details & sign out">
                 <button
                   type="button"
                   onClick={() => setIsLogoutOpen(true)}
                   aria-label="Account profile & Sign Out"
-                  className="relative h-11 w-11 sm:h-12 sm:w-12 rounded-2xl overflow-hidden border-2 border-emerald-300/80 shadow-[0_2px_12px_rgba(0,0,0,0.25)] shrink-0 cursor-pointer active:scale-95 transition-all bg-emerald-950"
+                  className="relative h-11 w-11 sm:h-12 sm:w-12 rounded-2xl overflow-hidden border-2 border-emerald-300/80 shadow-[0_4px_16px_rgba(0,0,0,0.3)] shrink-0 cursor-pointer active:scale-95 transition-all bg-emerald-950"
                 >
                   <img
                     src={profilePhoto}
@@ -74,7 +75,7 @@ export function DaylightHeader({
 
               <div className="min-w-0">
                 <span className="text-[11px] font-semibold text-emerald-200 block truncate">
-                  Good day, {displayName.split(" ")[0]}
+                  Good day, {displayName.split(" ")[0]} 👋
                 </span>
                 <h1 className="text-sm sm:text-base font-black tracking-tight text-white leading-tight truncate">
                   {user?.businessName || business.name}
@@ -92,12 +93,12 @@ export function DaylightHeader({
               <NotificationBellDrawer />
 
               {/* Rating Barcode & QR Stand Button with Tooltip */}
-              <InfoTooltip content="Display Scannable QR Code & Barcode Stand for customers">
+              <InfoTooltip content="Show customer QR & Barcode stand for your shop counter">
                 <button
                   type="button"
                   onClick={() => setIsRatingStandOpen(true)}
                   aria-label="Customer Rating QR & Barcode Stand"
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer shadow-xs"
                 >
                   <QrCode className="h-3.5 w-3.5 text-emerald-200" />
                   <span className="hidden sm:inline">Rating Stand</span>
@@ -105,12 +106,12 @@ export function DaylightHeader({
               </InfoTooltip>
 
               {/* Decision Memory Button with Tooltip */}
-              <InfoTooltip content="View Past Business Decisions & Recorded Outcomes">
+              <InfoTooltip content="Check memory of past decisions and actions wey you don record">
                 <button
                   type="button"
                   onClick={onOpenTracker}
                   aria-label="Decision Memory & Outcomes"
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer shadow-xs"
                 >
                   <BrainCircuit className="h-3.5 w-3.5 text-emerald-200" />
                   <span className="hidden sm:inline">Memory</span>
@@ -118,12 +119,12 @@ export function DaylightHeader({
               </InfoTooltip>
 
               {/* Network Sync Status with Tooltip */}
-              <InfoTooltip content={isOnline ? "Online: Transactions sync instantly" : "Offline: Transactions saved locally on your phone"}>
+              <InfoTooltip content={isOnline ? "Online: Transactions dey sync live to cloud" : "Offline: Everything saved safe on your phone memory"}>
                 <button
                   type="button"
                   onClick={onManualSync}
                   aria-label={isOnline ? "Online • Instant Sync" : "Offline • Saved on device"}
-                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/15 text-white text-xs font-bold backdrop-blur-md border border-white/20 active:scale-95 transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/15 text-white text-xs font-bold backdrop-blur-md border border-white/20 active:scale-95 transition-all cursor-pointer shadow-xs"
                 >
                   {isOnline ? (
                     <>
@@ -140,12 +141,12 @@ export function DaylightHeader({
               </InfoTooltip>
 
               {/* Logout Button with Tooltip */}
-              <InfoTooltip content="Sign Out">
+              <InfoTooltip content="Lock shop & Sign Out">
                 <button
                   type="button"
                   onClick={() => setIsLogoutOpen(true)}
                   aria-label="Sign Out"
-                  className="flex items-center justify-center h-8 w-8 rounded-xl bg-white/10 hover:bg-white/20 text-white active:scale-95 transition-all cursor-pointer"
+                  className="flex items-center justify-center h-8 w-8 rounded-xl bg-white/10 hover:bg-white/20 text-white active:scale-95 transition-all cursor-pointer backdrop-blur-md border border-white/10"
                 >
                   <LogOut className="h-3.5 w-3.5 text-emerald-100" />
                 </button>
@@ -155,7 +156,7 @@ export function DaylightHeader({
 
           {/* Compact Period Switcher Strip */}
           <div className="mt-3.5 flex items-center justify-between">
-            <div className="flex rounded-xl bg-black/20 p-0.5 border border-white/15 backdrop-blur-md">
+            <div className="flex rounded-xl bg-black/25 p-0.5 border border-white/15 backdrop-blur-md">
               {(["today", "this_week", "this_month"] as const).map((p) => {
                 const isActive = activePeriod === p;
                 return (
@@ -169,7 +170,7 @@ export function DaylightHeader({
                         : "text-emerald-100 hover:text-white"
                     }`}
                   >
-                    {p === "today" && "Today"}
+                    {p === "today" && "Today Market"}
                     {p === "this_week" && "This Week"}
                     {p === "this_month" && "This Month"}
                   </button>
@@ -178,7 +179,7 @@ export function DaylightHeader({
             </div>
 
             <span className="hidden sm:inline text-[11px] font-bold text-emerald-200/90">
-              Informal Business OS
+              Live Market Ledger • 100% Offline Ready
             </span>
           </div>
         </div>

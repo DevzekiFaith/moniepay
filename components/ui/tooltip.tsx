@@ -17,7 +17,7 @@ const TooltipContent = React.forwardRef<
     <TooltipPrimitive.Content
       ref={ref}
       sideOffset={sideOffset}
-      className={`z-50 overflow-hidden rounded-xl bg-slate-900 px-3 py-1.5 text-[11px] font-bold text-white shadow-xl animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 border border-slate-800 backdrop-blur-md max-w-xs text-center leading-snug ${className}`}
+      className={`z-50 overflow-hidden rounded-2xl bg-emerald-950/90 backdrop-blur-xl px-3.5 py-2 text-[11.5px] font-bold text-emerald-100 shadow-[0_16px_40px_rgba(0,0,0,0.35),0_0_24px_rgba(5,150,105,0.2)] border border-emerald-400/30 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-xs text-center leading-snug tracking-wide ${className}`}
       {...props}
     />
   </TooltipPrimitive.Portal>
