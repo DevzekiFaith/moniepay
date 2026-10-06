@@ -231,9 +231,10 @@ export default function MoniePayDashboard() {
           onOpenCosts={() => handleOpenRecord("EXPENSE")}
         />
 
-        {/* ── 4. DECISIONS YOU CAN MAKE RIGHT NOW (4 Natural Entry Points) ── */}
+        {/* ── 4. DECISIONS YOU CAN MAKE RIGHT NOW (7 Natural Entry Points) ── */}
         <QuickDecisionsGrid
           metrics={metrics}
+          debts={debts}
           onOpenWithdrawal={() => {
             setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
             setIsWithdrawalOpen(true);
