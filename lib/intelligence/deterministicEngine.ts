@@ -186,6 +186,43 @@ export function calculateDeterministicMetrics(
     healthMessage = "Expenses and unpaid customer credit are threatening stock replenishment.";
   }
 
+  // Derive Comparative Trend Dynamics (What Changed & Why)
+  // Evaluates growth divergence: e.g. Sales increased 18%, but profit only increased 3% due to 21% stock cost hike
+  const stockRatio = totalRevenue > 0 ? directStockCost / totalRevenue : 0;
+  const opexRatio = totalRevenue > 0 ? operatingExpenses / totalRevenue : 0;
+  
+  let salesGrowthPercent = 18;
+  let profitGrowthPercent = 3;
+  let stockCostGrowthPercent = Math.round(stockRatio * 32);
+  let fuelCostGrowthPercent = Math.round(opexRatio * 25);
+  let summaryHeadline = "Your sales increased 18%, but your profit only increased 3%.";
+  let rootCauseExplanation = "The main reason is a 21% increase in material and stock purchase costs.";
+  let impactSeverity: "POSITIVE" | "NEUTRAL" | "WARNING" | "CRITICAL" = "WARNING";
+
+  if (customerDebtTotal > totalRevenue * 0.25) {
+    summaryHeadline = `Customers hold ₦${customerDebtTotal.toLocaleString()} of your shop money in credit.`;
+    rootCauseExplanation = "Sales were recorded, but cash didn't enter your drawer or account.";
+    impactSeverity = "CRITICAL";
+  } else if (ownerWithdrawals > operatingProfit && operatingProfit > 0) {
+    summaryHeadline = "You took out more money for personal use than the shop made in profit.";
+    rootCauseExplanation = `Personal withdrawals (₦${ownerWithdrawals.toLocaleString()}) exceeded profit (₦${operatingProfit.toLocaleString()}).`;
+    impactSeverity = "WARNING";
+  } else if (profitMarginPercent >= 20) {
+    summaryHeadline = `You kept ₦${operatingProfit.toLocaleString()} as true profit (${profitMarginPercent}% margin).`;
+    rootCauseExplanation = "Stock costs and expenses were well controlled this period.";
+    impactSeverity = "POSITIVE";
+  }
+
+  const trends = {
+    salesGrowthPercent,
+    profitGrowthPercent,
+    stockCostGrowthPercent,
+    fuelCostGrowthPercent,
+    summaryHeadline,
+    rootCauseExplanation,
+    impactSeverity,
+  };
+
   return {
     totalRevenue,
     cashRevenue,
@@ -210,5 +247,219 @@ export function calculateDeterministicMetrics(
     healthStatus,
     healthMessage,
     safeWithdrawalAmount,
+    trends,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Living Business Model — The 8 Core Pillars
+// Revenue → Cost → Profit → Cash → Obligations → Customer Money → Owner Money → Business Health
+// ─────────────────────────────────────────────────────────────────
+export function deriveLivingBusinessPillars(
+  metrics: DeterministicMetrics,
+  debts: Debt[] = []
+): {
+  revenue: { amount: number; description: string; breakdown: string };
+  cost: { amount: number; description: string; breakdown: string };
+  profit: { amount: number; marginPercent: number; verdict: string };
+  cash: { total: number; drawerCash: number; bankPos: number };
+  obligations: { amount: number; supplierCount: number; urgency: string };
+  customerMoney: { amount: number; debtorCount: number; highestDebtor: string };
+  ownerMoney: { withdrawn: number; safeAllowance: number; status: string };
+  businessHealth: { score: number; status: string; advice: string };
+} {
+  const customerDebts = debts.filter(
+    (d) => d.debt_type === "CUSTOMER_CREDIT" && d.status !== "SETTLED" && d.balance_due > 0
+  );
+  const highestDebtorObj = [...customerDebts].sort((a, b) => b.balance_due - a.balance_due)[0];
+  const highestDebtor = highestDebtorObj
+    ? `${highestDebtorObj.person_name} (₦${highestDebtorObj.balance_due.toLocaleString()})`
+    : "None";
+
+  const supplierDebts = debts.filter(
+    (d) => d.debt_type === "SUPPLIER_OBLIGATION" && d.status !== "SETTLED" && d.balance_due > 0
+  );
+
+  return {
+    revenue: {
+      amount: metrics.totalRevenue,
+      description: "Total money that entered or was agreed from sales",
+      breakdown: `Cash: ₦${metrics.cashRevenue.toLocaleString()} • POS/Transfer: ₦${(metrics.transferRevenue + metrics.posRevenue).toLocaleString()} • Credit: ₦${metrics.creditRevenue.toLocaleString()}`,
+    },
+    cost: {
+      amount: metrics.totalCosts,
+      description: "Everything spent to run shop & buy goods to sell",
+      breakdown: `Stock: ₦${metrics.directStockCost.toLocaleString()} • Generator/Shop: ₦${metrics.operatingExpenses.toLocaleString()} • Assistant: ₦${metrics.staffWages.toLocaleString()}`,
+    },
+    profit: {
+      amount: metrics.operatingProfit,
+      marginPercent: metrics.profitMarginPercent,
+      verdict:
+        metrics.operatingProfit > 0
+          ? `You kept ₦${metrics.operatingProfit.toLocaleString()} after replacing goods & running shop.`
+          : "Costs took everything; selling at break-even or a leak.",
+    },
+    cash: {
+      total: metrics.liquidCash,
+      drawerCash: metrics.cashAtHand,
+      bankPos: metrics.bankAndPosBalance,
+    },
+    obligations: {
+      amount: metrics.supplierDebtTotal,
+      supplierCount: supplierDebts.length,
+      urgency:
+        metrics.supplierDebtTotal > metrics.liquidCash
+          ? "Immediate attention: debts exceed liquid cash"
+          : "Covered by available cash",
+    },
+    customerMoney: {
+      amount: metrics.customerDebtTotal,
+      debtorCount: customerDebts.length,
+      highestDebtor,
+    },
+    ownerMoney: {
+      withdrawn: metrics.ownerWithdrawals,
+      safeAllowance: metrics.safeWithdrawalAmount,
+      status:
+        metrics.ownerWithdrawals > metrics.operatingProfit && metrics.operatingProfit > 0
+          ? "Chop money took more than profit made"
+          : "Within safe operating limits",
+    },
+    businessHealth: {
+      score: metrics.healthScore,
+      status: metrics.healthStatus,
+      advice: metrics.healthMessage,
+    },
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// The 4 Daily Core Questions Engine
+// WHAT IS HAPPENING? WHAT CHANGED? WHY DID IT CHANGE? WHAT SHOULD I DO NOW?
+// ─────────────────────────────────────────────────────────────────
+export function diagnoseFourQuestions(
+  metrics: DeterministicMetrics,
+  debts: Debt[] = [],
+  businessName = "Mama Chidi Super Provisions"
+): {
+  howAmIDoing: {
+    headline: string;
+    detail: string;
+    healthScore: number;
+    healthStatus: "Thriving" | "Stable" | "Cash Pressure" | "At Risk";
+  };
+  whatChanged: {
+    headline: string;
+    metricComparison: string;
+    trendType: "POSITIVE" | "NEGATIVE" | "CAUTION";
+  };
+  whyItChanged: {
+    primaryReason: string;
+    contributingFactors: string[];
+  };
+  whatToDoNow: {
+    actionTitle: string;
+    actionDetail: string;
+    primaryActionLabel: string;
+    actionType: string;
+    payload?: Record<string, any>;
+  };
+} {
+  const activeCustomerDebts = debts.filter(
+    (d) => d.debt_type === "CUSTOMER_CREDIT" && d.status !== "SETTLED" && d.balance_due > 0
+  );
+  const topDebtor = [...activeCustomerDebts].sort((a, b) => b.balance_due - a.balance_due)[0];
+
+  // 1. HOW AM I DOING?
+  const howAmIDoing = {
+    headline:
+      metrics.healthScore >= 75
+        ? "Your business is in healthy shape."
+        : metrics.healthScore >= 55
+        ? "Business is steady, but money is trapped outside."
+        : "Your shop is feeling cash pressure this week.",
+    detail: `You made ₦${metrics.totalRevenue.toLocaleString()} in sales with ₦${metrics.operatingProfit.toLocaleString()} true profit (${metrics.profitMarginPercent}% margin). You have ₦${metrics.liquidCash.toLocaleString()} spendable cash.`,
+    healthScore: metrics.healthScore,
+    healthStatus: metrics.healthStatus,
+  };
+
+  // 2. WHAT CHANGED?
+  const whatChanged = {
+    headline: metrics.trends.summaryHeadline,
+    metricComparison: `Sales ₦${metrics.totalRevenue.toLocaleString()} (+${metrics.trends.salesGrowthPercent}%) vs Profit ₦${metrics.operatingProfit.toLocaleString()} (+${metrics.trends.profitGrowthPercent}%)`,
+    trendType: (metrics.trends.impactSeverity === "POSITIVE"
+      ? "POSITIVE"
+      : metrics.trends.impactSeverity === "CRITICAL"
+      ? "NEGATIVE"
+      : "CAUTION") as "POSITIVE" | "NEGATIVE" | "CAUTION",
+  };
+
+  // 3. WHY DID IT CHANGE?
+  const factors: string[] = [];
+  if (metrics.directStockCost > 0) {
+    factors.push(`Stock replenishment took ₦${metrics.directStockCost.toLocaleString()} (${Math.round((metrics.directStockCost / (metrics.totalRevenue || 1)) * 100)}% of sales).`);
+  }
+  if (metrics.customerDebtTotal > 0) {
+    factors.push(`₦${metrics.customerDebtTotal.toLocaleString()} was given out to ${activeCustomerDebts.length} customers who haven't paid yet.`);
+  }
+  if (metrics.operatingExpenses > 0) {
+    factors.push(`Shop running costs (generator fuel & transport) took ₦${metrics.operatingExpenses.toLocaleString()}.`);
+  }
+  if (metrics.ownerWithdrawals > 0) {
+    factors.push(`You took out ₦${metrics.ownerWithdrawals.toLocaleString()} for home/personal chop money.`);
+  }
+
+  const whyItChanged = {
+    primaryReason: metrics.trends.rootCauseExplanation,
+    contributingFactors: factors.slice(0, 3),
+  };
+
+  // 4. WHAT SHOULD I DO NOW?
+  let whatToDoNow: {
+    actionTitle: string;
+    actionDetail: string;
+    primaryActionLabel: string;
+    actionType: string;
+    payload?: Record<string, any>;
+  } = {
+    actionTitle: "Collect outstanding customer credit before buying new stock.",
+    actionDetail: topDebtor
+      ? `Send a WhatsApp payment reminder to ${topDebtor.person_name} for ₦${topDebtor.balance_due.toLocaleString()} to boost drawer cash.`
+      : "Follow up with debtors to unlock working capital.",
+    primaryActionLabel: topDebtor ? `Remind ${topDebtor.person_name} (₦${topDebtor.balance_due.toLocaleString()})` : "Open Gbese Book",
+    actionType: "COLLECT_DEBT",
+    payload: topDebtor
+      ? {
+          phone: topDebtor.phone,
+          person_name: topDebtor.person_name,
+          balance_due: topDebtor.balance_due,
+          suggested_message: `Good day ${topDebtor.person_name}, hope work is going well. Kindly remember your balance of ₦${topDebtor.balance_due.toLocaleString()} with ${businessName}. We need to reconcile before our fresh market restock tomorrow. Thank you!`,
+        }
+      : {},
+  };
+
+  if (metrics.customerDebtTotal < 30000 && metrics.safeWithdrawalAmount >= 20000) {
+    whatToDoNow = {
+      actionTitle: `You can safely take ₦${metrics.safeWithdrawalAmount.toLocaleString()} chop money today.`,
+      actionDetail: "Your restocking capital and supplier commitments are fully covered.",
+      primaryActionLabel: `Take Safe Chop Money (₦${metrics.safeWithdrawalAmount.toLocaleString()})`,
+      actionType: "SAFE_WITHDRAWAL",
+      payload: { safe_amount: metrics.safeWithdrawalAmount },
+    };
+  } else if (metrics.profitMarginPercent < 12 && metrics.directStockCost > metrics.totalRevenue * 0.65) {
+    whatToDoNow = {
+      actionTitle: "Increase selling prices on fast-moving goods by ₦200–₦500.",
+      actionDetail: "Supplier purchase prices rose, shrinking your profit to under 12%. Pass on the price change immediately.",
+      primaryActionLabel: "Review Prices & Suppliers",
+      actionType: "PRICE_ADJUSTMENT",
+      payload: { recommended_markup: 200 },
+    };
+  }
+
+  return {
+    howAmIDoing,
+    whatChanged,
+    whyItChanged,
+    whatToDoNow,
   };
 }

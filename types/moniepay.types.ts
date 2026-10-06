@@ -184,4 +184,74 @@ export interface DeterministicMetrics {
 
   // Safe Withdrawal Calculation
   safeWithdrawalAmount: number;
+
+  // Comparative Trends (What Changed & Why)
+  trends: {
+    salesGrowthPercent: number;
+    profitGrowthPercent: number;
+    stockCostGrowthPercent: number;
+    fuelCostGrowthPercent: number;
+    summaryHeadline: string;
+    rootCauseExplanation: string;
+    impactSeverity: "POSITIVE" | "NEUTRAL" | "WARNING" | "CRITICAL";
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// The 4 Daily Core Questions
+// ─────────────────────────────────────────────────────────────────
+export interface FourQuestionsDiagnosis {
+  howAmIDoing: {
+    headline: string;
+    detail: string;
+    healthScore: number;
+    healthStatus: "Thriving" | "Stable" | "Cash Pressure" | "At Risk";
+  };
+  whatChanged: {
+    headline: string;
+    metricComparison: string;
+    trendType: "POSITIVE" | "NEGATIVE" | "CAUTION";
+  };
+  whyItChanged: {
+    primaryReason: string;
+    contributingFactors: string[];
+  };
+  whatToDoNow: {
+    actionTitle: string;
+    actionDetail: string;
+    primaryActionLabel: string;
+    actionType: ActionType;
+    payload?: Record<string, any>;
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Living Business Model — The 8 Core Pillars
+// ─────────────────────────────────────────────────────────────────
+export interface LivingBusinessPillars {
+  revenue: { amount: number; description: string; breakdown: string };
+  cost: { amount: number; description: string; breakdown: string };
+  profit: { amount: number; marginPercent: number; verdict: string };
+  cash: { total: number; drawerCash: number; bankPos: number };
+  obligations: { amount: number; supplierCount: number; urgency: string };
+  customerMoney: { amount: number; debtorCount: number; highestDebtor: string };
+  ownerMoney: { withdrawn: number; safeAllowance: number; status: string };
+  businessHealth: { score: number; status: string; advice: string };
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Decision Memory & Learning Loop
+// ─────────────────────────────────────────────────────────────────
+export interface DecisionMemoryItem {
+  id: string;
+  recommendationTitle: string;
+  actionTaken: string;
+  recommendedAt: string;
+  actionTakenAt?: string;
+  verifiedAt?: string;
+  expectedOutcome: string;
+  actualOutcome?: string;
+  status: "LEARNING" | "PROVEN" | "MISSED";
+  metricImpactSummary?: string;
+  learningLesson: string;
 }

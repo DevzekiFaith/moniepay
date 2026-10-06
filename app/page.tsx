@@ -41,10 +41,11 @@ import {
 
 // Components
 import { DaylightHeader } from "@/components/dashboard/DaylightHeader";
-import { BusinessDecisionHero } from "@/components/dashboard/BusinessDecisionHero";
+import { FourQuestionsCard } from "@/components/dashboard/FourQuestionsCard";
+import { FastInformalCaptureBar } from "@/components/dashboard/FastInformalCaptureBar";
+import { LivingBusinessPillarsGrid } from "@/components/dashboard/LivingBusinessPillarsGrid";
+import { DecisionMemoryCard } from "@/components/dashboard/DecisionMemoryCard";
 import { MarketDayStrip } from "@/components/dashboard/MarketDayStrip";
-import { CoreQuestionsGrid } from "@/components/dashboard/CoreQuestionsGrid";
-import { LiquidAccountsDeck } from "@/components/dashboard/LiquidAccountsDeck";
 import { RecentActivityList } from "@/components/dashboard/RecentActivityList";
 import { InstantRecordSheet } from "@/components/dashboard/InstantRecordSheet";
 import { GbeseDebtSheet } from "@/components/dashboard/GbeseDebtSheet";
@@ -194,62 +195,46 @@ export default function MoniePayDashboard() {
         {/* Soft Organic Pill Bar */}
         <div className="mx-auto h-1.5 w-14 rounded-full bg-slate-300/80 mb-1" />
 
-        {/* ── RESPONSIVE DYNAMIC GRID: DECISION ENGINE & CORE NUMBERS ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-start">
-          {/* LEFT COLUMN: THE DECISION HERO & MARKET MOMENTUM (58% width on large screens) */}
-          <div className="lg:col-span-7 space-y-6 sm:space-y-7">
-            {/* The #1 Priority Action Card & Health Gauge */}
-            <BusinessDecisionHero
-              metrics={metrics}
-              recommendations={recommendations}
-              businessName={business.name}
-              onOpenGbeseBook={() => setIsGbeseOpen(true)}
-              onOpenWithdrawal={(safeAmt) => {
-                setSafeWithdrawalAmount(safeAmt);
-                setIsWithdrawalOpen(true);
-              }}
-              onActionComplete={() => {
-                triggerBackgroundSync();
-              }}
-            />
+        {/* ── 1. FAST INFORMAL ACTIVITY CAPTURE BAR (Natural Language & 1-Tap) ── */}
+        <FastInformalCaptureBar
+          onOpenDetailedSheet={handleOpenRecord}
+          onTransactionSaved={() => {
+            const cachedTxs = getCachedTransactions();
+            if (cachedTxs.length > 0) setTransactions(cachedTxs);
+          }}
+        />
 
-            {/* 7-Day Market Rhythm Strip */}
-            <MarketDayStrip />
-          </div>
+        {/* ── 2. THE 4 CORE QUESTIONS: THE DECISION IS THE PRODUCT ── */}
+        <FourQuestionsCard
+          metrics={metrics}
+          debts={debts}
+          businessName={business.name}
+          onOpenGbeseBook={() => setIsGbeseOpen(true)}
+          onOpenWithdrawal={(safeAmt) => {
+            setSafeWithdrawalAmount(safeAmt);
+            setIsWithdrawalOpen(true);
+          }}
+        />
 
-          {/* RIGHT COLUMN: CORE FINANCIAL QUESTIONS & ACCOUNTS DECK (42% width on large screens) */}
-          <div className="lg:col-span-5 space-y-6 sm:space-y-7">
-            {/* 4 Core Financial Questions Grid */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between px-1">
-                <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500">
-                  Business Flow Summary
-                </h3>
-                <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">
-                  Live Balances
-                </span>
-              </div>
-              <CoreQuestionsGrid
-                metrics={metrics}
-                onOpenGbeseBook={() => setIsGbeseOpen(true)}
-                onOpenCashDetail={() => setIsWithdrawalOpen(true)}
-                onOpenRevenueDetail={() => handleOpenRecord("SALE")}
-                onOpenCostsDetail={() => handleOpenRecord("EXPENSE")}
-              />
-            </div>
+        {/* ── 3. THE LIVING MODEL OF YOUR BUSINESS (The 8 Economic Pillars) ── */}
+        <LivingBusinessPillarsGrid
+          metrics={metrics}
+          debts={debts}
+          onOpenGbeseBook={() => setIsGbeseOpen(true)}
+          onOpenWithdrawal={() => {
+            setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
+            setIsWithdrawalOpen(true);
+          }}
+          onOpenRecordSheet={() => handleOpenRecord("SALE")}
+        />
 
-            {/* Liquid Cash & POS Accounts Deck (Horizontal card peek inspired by Image 1) */}
-            <LiquidAccountsDeck
-              accounts={accounts}
-              onOpenWithdrawal={() => {
-                setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
-                setIsWithdrawalOpen(true);
-              }}
-            />
-          </div>
-        </div>
+        {/* ── 4. DECISION MEMORY & ADAPTIVE LEARNING TIMELINE ── */}
+        <DecisionMemoryCard />
 
-        {/* ── FULL-WIDTH EXPANSIVE SECTION: LIVE BUSINESS ACTIVITY TIMELINE ── */}
+        {/* ── 5. MARKET RHYTHM STRIP ── */}
+        <MarketDayStrip />
+
+        {/* ── 6. FULL-WIDTH LIVE BUSINESS ACTIVITY TIMELINE ── */}
         <section className="pt-2 sm:pt-4 border-t border-slate-200/70">
           <div className="flex items-center justify-between pb-3 px-1">
             <div>
@@ -263,7 +248,7 @@ export default function MoniePayDashboard() {
 
             <button
               onClick={() => handleOpenRecord("SALE")}
-              className="px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-1.5"
+              className="px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold shadow-md shadow-emerald-600/20 active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
             >
               <Plus className="h-4 w-4" />
               <span>Record Sale</span>
