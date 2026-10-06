@@ -190,10 +190,10 @@ export default function MoniePayDashboard() {
         onChangePeriod={setPeriod}
       />
 
-      {/* ── FLEXIBLE, EXPANSIVE CONTAINER (Smooth Curved Transition) ── */}
-      <main className="relative -mt-6 rounded-t-[32px] sm:rounded-t-[40px] bg-slate-50 pt-6 px-4 sm:px-8 w-full max-w-5xl lg:max-w-6xl mx-auto space-y-7 sm:space-y-9">
+      {/* ── FLEXIBLE, EXPANSIVE CONTAINER (Smooth Curved Daylight Sheet) ── */}
+      <main className="relative -mt-6 rounded-t-[36px] bg-slate-50 pt-5 px-3.5 sm:px-6 md:px-8 w-full max-w-4xl mx-auto space-y-5 sm:space-y-6">
         {/* Soft Organic Pill Bar */}
-        <div className="mx-auto h-1.5 w-14 rounded-full bg-slate-300/80 mb-1" />
+        <div className="mx-auto h-1.5 w-12 rounded-full bg-slate-300/80 mb-2" />
 
         {/* ── 1. FAST INFORMAL ACTIVITY CAPTURE BAR (Natural Language & 1-Tap) ── */}
         <FastInformalCaptureBar

@@ -3,10 +3,9 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  HelpCircle,
+  Lightbulb,
   TrendingUp,
   AlertTriangle,
-  Lightbulb,
   ArrowRight,
   Send,
   Wallet,
@@ -14,7 +13,11 @@ import {
   ChevronRight,
   ShieldCheck,
   CheckCircle2,
-  DollarSign,
+  Activity,
+  Layers,
+  HelpCircle,
+  PhoneCall,
+  Crown,
 } from "lucide-react";
 import type { DeterministicMetrics, Debt } from "@/types/moniepay.types";
 import { diagnoseFourQuestions } from "@/lib/intelligence/deterministicEngine";
@@ -35,11 +38,14 @@ export function FourQuestionsCard({
   onOpenGbeseBook,
   onOpenWithdrawal,
 }: FourQuestionsCardProps) {
+  const [activeTab, setActiveTab] = useState<0 | 1 | 2 | 3>(3); // Default to "What Should I Do Now?"
   const [actionDone, setActionDone] = useState<string | null>(null);
+  const [isActioning, setIsActioning] = useState(false);
 
   const diagnosis = diagnoseFourQuestions(metrics, debts, businessName);
 
   const handleExecuteAction = () => {
+    setIsActioning(true);
     const { whatToDoNow } = diagnosis;
 
     if (whatToDoNow.actionType === "COLLECT_DEBT") {
@@ -72,149 +78,274 @@ export function FourQuestionsCard({
       if (onOpenGbeseBook) onOpenGbeseBook();
     }
 
-    setActionDone("Action tracked! Decision memory updated.");
-    setTimeout(() => setActionDone(null), 4000);
+    setTimeout(() => {
+      setIsActioning(false);
+      setActionDone("Action tracked! Decision memory updated.");
+      setTimeout(() => setActionDone(null), 4000);
+    }, 400);
   };
 
+  const tabs = [
+    { id: 0, label: "1. How I'm Doing", tag: `${diagnosis.howAmIDoing.healthScore}/100` },
+    { id: 1, label: "2. What Changed", tag: `+${metrics.trends.salesGrowthPercent}%` },
+    { id: 2, label: "3. Why It Changed", tag: "Cause" },
+    { id: 3, label: "4. What To Do", tag: "Action", isPrimary: true },
+  ];
+
   return (
-    <section className="rounded-[28px] bg-white border border-slate-200/90 shadow-[0_6px_30px_-4px_rgba(15,23,42,0.06)] overflow-hidden">
-      {/* ── CARD HEADER: THE ADVISOR PROMISE ── */}
-      <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 px-5 sm:px-6 py-4 flex items-center justify-between text-white">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm border border-white/20">
-            <Lightbulb className="h-4 w-4 text-emerald-300" />
+    <section className="relative overflow-hidden rounded-[30px] bg-gradient-to-b from-white via-slate-50/50 to-white border border-slate-200/90 shadow-[0_12px_36px_-6px_rgba(15,23,42,0.08),0_4px_16px_rgba(15,23,42,0.03)] transition-all">
+      {/* ── TOP HERO HEADER: SLEEK EMERALD GLASS WITH HEALTH PULSE ── */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 p-5 sm:p-6 text-white">
+        {/* Subtle decorative glow */}
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-400/25 blur-2xl" />
+        <div className="pointer-events-none absolute left-1/3 bottom-0 h-28 w-28 rounded-full bg-teal-300/15 blur-xl" />
+
+        <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-inner shrink-0">
+              <Crown className="h-5 w-5 text-amber-300 fill-amber-300/30" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">
+                  Business Operating System
+                </span>
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-400/20 border border-emerald-300/30 text-[9.5px] font-black text-emerald-200">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse" />
+                  Live Advisor
+                </span>
+              </div>
+              <h2 className="text-base sm:text-lg font-black text-white tracking-tight mt-0.5">
+                The 4 Questions That Drive Your Profit
+              </h2>
+            </div>
           </div>
-          <div>
-            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300 block leading-none">
-              Daily Business Intelligence
-            </span>
-            <h2 className="text-sm font-black text-white leading-tight mt-0.5">
-              The 4 Questions That Matter Today
-            </h2>
+
+          {/* Quick Health Vitality Pill */}
+          <div className="flex items-center gap-2.5 self-start sm:self-auto bg-black/25 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-white/15">
+            <Activity className="h-4 w-4 text-emerald-300" />
+            <div>
+              <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-200/80 block leading-none">
+                Vitality Index
+              </span>
+              <span className="text-xs font-black text-white leading-tight">
+                {diagnosis.howAmIDoing.healthScore} • {diagnosis.howAmIDoing.healthStatus}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10 border border-white/15 text-[10.5px] font-bold text-emerald-200">
-          <span>Health: {diagnosis.howAmIDoing.healthScore}/100</span>
+        {/* ── MOBILE-FLUID QUESTION SELECTOR TABS ── */}
+        <div className="relative mt-5 flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1">
+          {tabs.map((tab) => {
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`relative px-3.5 py-2 rounded-xl text-xs font-black shrink-0 transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isActive
+                    ? "bg-white text-emerald-950 shadow-md shadow-black/10 scale-[1.02]"
+                    : "bg-white/10 text-emerald-100/90 hover:bg-white/15"
+                }`}
+              >
+                <span>{tab.label}</span>
+                <span
+                  className={`text-[9.5px] font-black px-1.5 py-0.5 rounded-md ${
+                    isActive
+                      ? tab.isPrimary
+                        ? "bg-emerald-700 text-white"
+                        : "bg-slate-200 text-slate-800"
+                      : "bg-white/15 text-white"
+                  }`}
+                >
+                  {tab.tag}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      <div className="p-5 sm:p-6 space-y-5">
-        {/* ── QUESTION 1: HOW IS MY BUSINESS DOING? ── */}
-        <div className="space-y-1.5 pb-4 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">
-              1
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">
-              How is my business doing?
-            </span>
-          </div>
-          <h3 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-            {diagnosis.howAmIDoing.headline}
-          </h3>
-          <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-            {diagnosis.howAmIDoing.detail}
-          </p>
-        </div>
+      {/* ── INTERACTIVE TAB CONTENT VIEWPORT ── */}
+      <div className="p-5 sm:p-6">
+        <AnimatePresence mode="wait">
+          {/* TAB 0: HOW AM I DOING? */}
+          {activeTab === 0 && (
+            <motion.div
+              key="tab-0"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center gap-2 text-xs font-extrabold text-emerald-800 uppercase tracking-wider">
+                <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                Question 1: Overall Vitality
+              </div>
+              <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-snug tracking-tight">
+                {diagnosis.howAmIDoing.headline}
+              </h3>
+              <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-200/70">
+                {diagnosis.howAmIDoing.detail}
+              </p>
 
-        {/* ── QUESTION 2: WHAT CHANGED? ── */}
-        <div className="space-y-1.5 pb-4 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-100 text-blue-800 text-[10px] font-black">
-              2
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">
-              What changed?
-            </span>
-          </div>
-          <h3 className="text-base font-black text-slate-900 tracking-tight">
-            {diagnosis.whatChanged.headline}
-          </h3>
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-slate-50 border border-slate-200/80 text-xs font-bold text-slate-700">
-            <TrendingUp className="h-3.5 w-3.5 text-blue-600" />
-            <span>{diagnosis.whatChanged.metricComparison}</span>
-          </div>
-        </div>
+              <div className="grid grid-cols-3 gap-2.5 pt-1">
+                <div className="p-3 rounded-2xl bg-emerald-50/60 border border-emerald-100 text-center">
+                  <span className="text-[10px] font-extrabold text-emerald-700 uppercase block">Revenue</span>
+                  <span className="text-xs sm:text-sm font-black text-slate-900 mt-0.5 block">₦{metrics.totalRevenue.toLocaleString()}</span>
+                </div>
+                <div className="p-3 rounded-2xl bg-blue-50/60 border border-blue-100 text-center">
+                  <span className="text-[10px] font-extrabold text-blue-700 uppercase block">True Profit</span>
+                  <span className="text-xs sm:text-sm font-black text-slate-900 mt-0.5 block">₦{metrics.operatingProfit.toLocaleString()}</span>
+                </div>
+                <div className="p-3 rounded-2xl bg-teal-50/60 border border-teal-100 text-center">
+                  <span className="text-[10px] font-extrabold text-teal-700 uppercase block">Spendable Cash</span>
+                  <span className="text-xs sm:text-sm font-black text-slate-900 mt-0.5 block">₦{metrics.liquidCash.toLocaleString()}</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
 
-        {/* ── QUESTION 3: WHY DID IT CHANGE? ── */}
-        <div className="space-y-2 pb-4 border-b border-slate-100">
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-100 text-amber-800 text-[10px] font-black">
-              3
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-widest text-slate-400">
-              Why did it change?
-            </span>
-          </div>
-          <p className="text-xs sm:text-[13px] font-bold text-slate-800">
-            {diagnosis.whyItChanged.primaryReason}
-          </p>
-          <ul className="space-y-1.5 pl-1">
-            {diagnosis.whyItChanged.contributingFactors.map((factor, i) => (
-              <li key={i} className="flex items-start gap-2 text-xs font-medium text-slate-600">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 shrink-0 mt-1.5" />
-                <span>{factor}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+          {/* TAB 1: WHAT CHANGED? */}
+          {activeTab === 1 && (
+            <motion.div
+              key="tab-1"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center gap-2 text-xs font-extrabold text-blue-800 uppercase tracking-wider">
+                <span className="h-2 w-2 rounded-full bg-blue-500" />
+                Question 2: Trend Divergence
+              </div>
+              <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-snug tracking-tight">
+                {diagnosis.whatChanged.headline}
+              </h3>
 
-        {/* ── QUESTION 4: WHAT SHOULD I DO NOW? (THE PRIMARY ACTION) ── */}
-        <div className="space-y-3 pt-1">
-          <div className="flex items-center gap-2">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-600 text-white text-[10px] font-black">
-              4
-            </span>
-            <span className="text-[11px] font-black uppercase tracking-widest text-emerald-700">
-              What should I do right now?
-            </span>
-          </div>
+              <div className="p-4 rounded-2xl bg-blue-50/50 border border-blue-200/70 flex items-center gap-3">
+                <TrendingUp className="h-5 w-5 text-blue-600 shrink-0" />
+                <span className="text-xs sm:text-[13px] font-bold text-slate-800">
+                  {diagnosis.whatChanged.metricComparison}
+                </span>
+              </div>
 
-          <div className="rounded-2xl bg-gradient-to-br from-emerald-50 via-teal-50 to-emerald-100/50 border border-emerald-200/80 p-4 sm:p-5">
-            <h4 className="text-sm sm:text-base font-black text-slate-900">
-              {diagnosis.whatToDoNow.actionTitle}
-            </h4>
-            <p className="text-xs text-slate-600 font-medium mt-1 leading-relaxed">
-              {diagnosis.whatToDoNow.actionDetail}
-            </p>
+              <p className="text-xs text-slate-500 font-medium">
+                MoniePay calculates both growth in top-line sales and growth in retained cash to see if you are keeping more or losing margin.
+              </p>
+            </motion.div>
+          )}
 
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <button
-                type="button"
-                onClick={handleExecuteAction}
-                className="px-5 py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 active:scale-[0.98] text-white text-xs font-black shadow-md shadow-emerald-700/20 flex items-center gap-2 cursor-pointer transition-all"
-              >
-                <span>{diagnosis.whatToDoNow.primaryActionLabel}</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
+          {/* TAB 2: WHY DID IT CHANGE? */}
+          {activeTab === 2 && (
+            <motion.div
+              key="tab-2"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center gap-2 text-xs font-extrabold text-amber-800 uppercase tracking-wider">
+                <span className="h-2 w-2 rounded-full bg-amber-500" />
+                Question 3: Root Cause Analysis
+              </div>
+              <h3 className="text-base sm:text-lg font-black text-slate-900 leading-snug tracking-tight">
+                {diagnosis.whyItChanged.primaryReason}
+              </h3>
 
-              {onOpenGbeseBook && (
-                <button
-                  type="button"
-                  onClick={onOpenGbeseBook}
-                  className="px-4 py-3 rounded-2xl bg-white hover:bg-slate-50 border border-slate-200 text-xs font-bold text-slate-700 cursor-pointer transition-all"
-                >
-                  View All Debts
-                </button>
-              )}
-            </div>
+              <div className="space-y-2 pt-1">
+                {diagnosis.whyItChanged.contributingFactors.map((factor, i) => (
+                  <div
+                    key={i}
+                    className="p-3 rounded-2xl bg-slate-50 border border-slate-200/70 flex items-start gap-3"
+                  >
+                    <span className="h-5 w-5 rounded-xl bg-amber-100 text-amber-900 flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5">
+                      {i + 1}
+                    </span>
+                    <span className="text-xs font-semibold text-slate-700 leading-snug">
+                      {factor}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          )}
 
-            <AnimatePresence>
-              {actionDone && (
-                <motion.div
-                  initial={{ opacity: 0, y: 4 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="mt-3 flex items-center gap-2 text-xs font-bold text-emerald-800"
-                >
-                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                  <span>{actionDone}</span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
+          {/* TAB 3: WHAT SHOULD I DO NOW? (THE STAR DECISION) */}
+          {activeTab === 3 && (
+            <motion.div
+              key="tab-3"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-xs font-extrabold text-emerald-800 uppercase tracking-wider">
+                  <Sparkles className="h-4 w-4 text-emerald-600" />
+                  <span>Question 4: Recommended Move Today</span>
+                </div>
+                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-black">
+                  Highest Leverage
+                </span>
+              </div>
+
+              {/* Elevated Action Card */}
+              <div className="rounded-[24px] bg-gradient-to-br from-emerald-600 via-emerald-700 to-teal-800 p-5 text-white shadow-[0_8px_24px_rgba(5,150,105,0.25)] relative overflow-hidden">
+                <div className="pointer-events-none absolute right-0 top-0 h-32 w-32 bg-white/10 rounded-full blur-2xl" />
+
+                <h3 className="text-base sm:text-lg font-black text-white leading-tight">
+                  {diagnosis.whatToDoNow.actionTitle}
+                </h3>
+                <p className="text-xs sm:text-[13px] text-emerald-100/90 font-medium mt-1.5 leading-relaxed">
+                  {diagnosis.whatToDoNow.actionDetail}
+                </p>
+
+                <div className="mt-5 flex flex-wrap items-center gap-2.5">
+                  <button
+                    type="button"
+                    onClick={handleExecuteAction}
+                    disabled={isActioning}
+                    className="px-5 py-3 rounded-2xl bg-white hover:bg-slate-100 text-emerald-950 font-black text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center gap-2 cursor-pointer disabled:opacity-80"
+                  >
+                    <span>{diagnosis.whatToDoNow.primaryActionLabel}</span>
+                    <ArrowRight className="h-4 w-4" />
+                  </button>
+
+                  {onOpenGbeseBook && (
+                    <button
+                      type="button"
+                      onClick={onOpenGbeseBook}
+                      className="px-4 py-3 rounded-2xl bg-white/15 hover:bg-white/20 text-white font-bold text-xs backdrop-blur-md border border-white/20 active:scale-95 transition-all cursor-pointer"
+                    >
+                      View All Debts
+                    </button>
+                  )}
+                </div>
+
+                <AnimatePresence>
+                  {actionDone && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="mt-3.5 flex items-center gap-2 text-xs font-bold text-emerald-200 bg-black/20 p-2.5 rounded-xl border border-white/15"
+                    >
+                      <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
+                      <span>{actionDone}</span>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </section>
   );

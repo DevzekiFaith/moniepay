@@ -129,59 +129,59 @@ export function FastInformalCaptureBar({
         </button>
       </form>
 
-      {/* 1-Tap Preset Buttons */}
-      <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+      {/* 1-Tap Preset Action Chips (Smooth Horizontal Peek on Mobile) */}
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
         <button
           type="button"
           onClick={() => onOpenDetailedSheet("SALE")}
-          className="px-2.5 py-2 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/70 text-emerald-900 text-[11px] font-black flex items-center justify-center gap-1.5 cursor-pointer transition-colors active:scale-95"
+          className="px-3.5 py-2.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200/80 text-emerald-950 text-xs font-black flex items-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0 shadow-sm"
         >
-          <Zap className="h-3.5 w-3.5 text-emerald-600" />
+          <Zap className="h-4 w-4 text-emerald-600" />
           <span>Sold Money</span>
         </button>
 
         <button
           type="button"
           onClick={() => onOpenDetailedSheet("STOCK_PURCHASE")}
-          className="px-2.5 py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-[11px] font-black flex items-center justify-center gap-1.5 cursor-pointer transition-colors active:scale-95"
+          className="px-3.5 py-2.5 rounded-2xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-800 text-xs font-black flex items-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0 shadow-sm"
         >
-          <ShoppingBag className="h-3.5 w-3.5 text-slate-600" />
+          <ShoppingBag className="h-4 w-4 text-slate-600" />
           <span>Bought Stock</span>
         </button>
 
         <button
           type="button"
           onClick={() => onOpenDetailedSheet("SALE")}
-          className="px-2.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-[11px] font-black flex items-center justify-center gap-1.5 cursor-pointer transition-colors active:scale-95"
+          className="px-3.5 py-2.5 rounded-2xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-950 text-xs font-black flex items-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0 shadow-sm"
         >
-          <Users className="h-3.5 w-3.5 text-amber-700" />
+          <Users className="h-4 w-4 text-amber-700" />
           <span>Customer Owes</span>
         </button>
 
         <button
           type="button"
           onClick={() => onOpenDetailedSheet("OWNER_WITHDRAWAL")}
-          className="px-2.5 py-2 rounded-xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-900 text-[11px] font-black flex items-center justify-center gap-1.5 cursor-pointer transition-colors active:scale-95"
+          className="px-3.5 py-2.5 rounded-2xl bg-purple-50 hover:bg-purple-100 border border-purple-200 text-purple-950 text-xs font-black flex items-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0 shadow-sm"
         >
-          <PiggyBank className="h-3.5 w-3.5 text-purple-700" />
+          <PiggyBank className="h-4 w-4 text-purple-700" />
           <span>Chop Money</span>
         </button>
 
         <button
           type="button"
           onClick={() => onOpenDetailedSheet("STAFF_PAYMENT")}
-          className="px-2.5 py-2 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-900 text-[11px] font-black flex items-center justify-center gap-1.5 cursor-pointer transition-colors active:scale-95"
+          className="px-3.5 py-2.5 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-blue-950 text-xs font-black flex items-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0 shadow-sm"
         >
-          <HandCoins className="h-3.5 w-3.5 text-blue-700" />
+          <HandCoins className="h-4 w-4 text-blue-700" />
           <span>Paid Assistant</span>
         </button>
 
         <button
           type="button"
           onClick={() => onOpenDetailedSheet("DEBT_COLLECTION")}
-          className="px-2.5 py-2 rounded-xl bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-900 text-[11px] font-black flex items-center justify-center gap-1.5 cursor-pointer transition-colors active:scale-95"
+          className="px-3.5 py-2.5 rounded-2xl bg-teal-50 hover:bg-teal-100 border border-teal-200 text-teal-950 text-xs font-black flex items-center gap-2 cursor-pointer transition-all active:scale-95 shrink-0 shadow-sm"
         >
-          <Plus className="h-3.5 w-3.5 text-teal-700" />
+          <Plus className="h-4 w-4 text-teal-700" />
           <span>Collected Debt</span>
         </button>
       </div>
