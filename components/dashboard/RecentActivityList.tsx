@@ -1,5 +1,10 @@
 "use client";
 
+// ─────────────────────────────────────────────────────────────────
+// MoniePay — Recent Business Activity Component
+// 100% Mobile Fluid • Zero Overflow • Single Green Theme
+// ─────────────────────────────────────────────────────────────────
+
 import React from "react";
 import {
   ArrowDownLeft,
@@ -24,61 +29,22 @@ export function RecentActivityList({
 }: RecentActivityListProps) {
   if (transactions.length === 0) {
     return (
-      <div className="rounded-[26px] bg-white border border-slate-200/80 p-8 sm:p-12 text-center shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06)]">
-        <Clock className="h-10 w-10 text-slate-400 mx-auto mb-3" />
-        <h4 className="text-base font-extrabold text-slate-800">No activity recorded today</h4>
-        <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-sm mx-auto leading-relaxed">
-          Tap below to record your first cash sale, fuel expense, or inventory restock.
+      <div className="rounded-[24px] bg-white border border-emerald-900/10 p-6 sm:p-10 text-center shadow-xs">
+        <Clock className="h-8 w-8 text-slate-300 mx-auto mb-2" />
+        <h4 className="text-sm sm:text-base font-black text-slate-800">No activity recorded for this period</h4>
+        <p className="text-xs text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
+          Record your first cash sale, stock purchase, or chop money withdrawal.
         </p>
         <button
+          type="button"
           onClick={onOpenRecordModal}
-          className="mt-4 px-5 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-md shadow-emerald-600/20 active:scale-95 transition-all"
+          className="mt-3.5 px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black shadow-sm active:scale-95 transition-all cursor-pointer"
         >
           + Record First Sale
         </button>
       </div>
     );
   }
-
-  const getTypeBadge = (type: BusinessTransaction["type"]) => {
-    switch (type) {
-      case "SALE":
-        return {
-          icon: <ArrowDownLeft className="h-5 w-5 text-emerald-600" />,
-          bg: "bg-emerald-50 border-emerald-100",
-        };
-      case "EXPENSE":
-        return {
-          icon: <ArrowUpRight className="h-5 w-5 text-rose-600" />,
-          bg: "bg-rose-50 border-rose-100",
-        };
-      case "STOCK_PURCHASE":
-        return {
-          icon: <Package className="h-5 w-5 text-blue-600" />,
-          bg: "bg-blue-50 border-blue-100",
-        };
-      case "OWNER_WITHDRAWAL":
-        return {
-          icon: <Wallet className="h-5 w-5 text-purple-600" />,
-          bg: "bg-purple-50 border-purple-100",
-        };
-      case "STAFF_PAYMENT":
-        return {
-          icon: <Users className="h-5 w-5 text-orange-600" />,
-          bg: "bg-orange-50 border-orange-100",
-        };
-      case "DEBT_COLLECTION":
-        return {
-          icon: <CheckCircle2 className="h-5 w-5 text-emerald-600" />,
-          bg: "bg-emerald-50 border-emerald-100",
-        };
-      default:
-        return {
-          icon: <Clock className="h-5 w-5 text-slate-500" />,
-          bg: "bg-slate-50 border-slate-100",
-        };
-    }
-  };
 
   const formatTxTime = (dateStr: string) => {
     try {
@@ -90,57 +56,66 @@ export function RecentActivityList({
   };
 
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-2 w-full min-w-0">
       {transactions.slice(0, 8).map((tx) => {
-        const badge = getTypeBadge(tx.type);
         const isPositive = tx.type === "SALE" || tx.type === "DEBT_COLLECTION";
 
         return (
           <div
             key={tx.id || tx.client_tx_id}
-            className="flex items-center justify-between p-4 sm:p-4.5 rounded-[24px] bg-white border border-slate-200/80 shadow-[0_2px_12px_-1px_rgba(15,23,42,0.04)] hover:shadow-[0_8px_24px_-2px_rgba(15,23,42,0.08)] active:scale-[0.99] transition-all"
+            className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-white border border-emerald-900/10 shadow-xs hover:border-emerald-500 active:scale-[0.99] transition-all min-w-0 gap-2.5"
           >
-            <div className="flex items-center gap-3.5">
-              {/* Vibrant Thumbnail Badge */}
+            {/* Left info */}
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+              {/* Thumbnail Badge */}
               <div
-                className={`flex h-11 w-11 items-center justify-center rounded-2xl border ${badge.bg} shrink-0 shadow-sm`}
+                className={`flex h-9 w-9 sm:h-10 sm:w-10 items-center justify-center rounded-xl shrink-0 border ${
+                  isPositive
+                    ? "bg-emerald-50 text-emerald-800 border-emerald-200/80"
+                    : "bg-slate-50 text-slate-700 border-slate-200"
+                }`}
               >
-                {badge.icon}
+                {isPositive ? (
+                  <ArrowDownLeft className="h-4 w-4" />
+                ) : (
+                  <ArrowUpRight className="h-4 w-4" />
+                )}
               </div>
 
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs sm:text-sm font-extrabold text-slate-900 truncate max-w-[170px] sm:max-w-xs">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-xs sm:text-sm font-black text-slate-900 truncate block">
                     {tx.description || tx.category}
                   </span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0">
                     {tx.payment_method}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 mt-1 text-[11px] text-slate-500 font-medium">
-                  <span>{tx.category}</span>
+                <div className="flex items-center gap-1.5 text-[10.5px] text-slate-400 mt-0.5 truncate">
+                  <span className="truncate">{tx.category}</span>
                   <span>•</span>
-                  <span>{formatTxTime(tx.transaction_date)}</span>
+                  <span className="shrink-0">{formatTxTime(tx.transaction_date)}</span>
                 </div>
               </div>
             </div>
 
-            <div className="text-right">
+            {/* Right amount */}
+            <div className="text-right shrink-0 pl-1">
               <div
-                className={`text-base sm:text-lg font-black tracking-tight ${
-                  isPositive ? "text-emerald-700" : "text-slate-800"
+                className={`text-xs sm:text-sm font-black tracking-tight ${
+                  isPositive ? "text-emerald-800" : "text-slate-900"
                 }`}
               >
                 {isPositive ? "+" : "-"}₦{Number(tx.amount).toLocaleString()}
               </div>
 
-              <div className="flex items-center justify-end gap-1 text-[11px] text-slate-400 mt-0.5">
+              <div className="flex items-center justify-end gap-1 text-[10px] text-slate-400 mt-0.5">
                 {tx.sync_status === "pending" ? (
-                  <span className="text-amber-600 font-bold">Saving...</span>
+                  <span className="text-amber-700 font-bold">Saving...</span>
                 ) : (
-                  <span className="flex items-center gap-1 text-emerald-600 font-bold">
-                    <CheckCircle2 className="h-3 w-3 text-emerald-600" />
-                    <span>Recorded ✓</span>
+                  <span className="flex items-center gap-0.5 text-emerald-700 font-bold">
+                    <CheckCircle2 className="h-2.5 w-2.5 text-emerald-600" />
+                    <span>Saved ✓</span>
                   </span>
                 )}
               </div>
