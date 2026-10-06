@@ -33,7 +33,7 @@ export function DailyBusinessPulse({
         <h2 className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-emerald-950/60 truncate">
           Shop Pulse (Wetin Dey Enter)
         </h2>
-        <InfoTooltip content={`Shop Health Score: ${metrics.healthScore}/100. E dey show whether your capital, cash wey dey hand, and customer gbese balance well.`}>
+        <InfoTooltip content="Shop financial health score (0-100)">
           <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/10 backdrop-blur-md border border-emerald-600/20 text-emerald-950 text-[10.5px] sm:text-xs font-black shadow-2xs cursor-help shrink-0">
             <Activity className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-700" />
             <span className="sm:hidden">{metrics.healthScore >= 75 ? "Health: Body Dey Sweet" : "Health: Small Adjustment"} ({metrics.healthScore}/100)</span>
@@ -45,7 +45,7 @@ export function DailyBusinessPulse({
       {/* 4 Core Scannable Metric Cards with Tooltips */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         {/* 1. TODAY'S SALES */}
-        <InfoTooltip content="Total moni wey enter your shop today from cash and bank transfer. Tap make you see full sales breakdown.">
+        <InfoTooltip content="Total sales recorded today">
           <motion.div
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -72,7 +72,7 @@ export function DailyBusinessPulse({
         </InfoTooltip>
 
         {/* 2. MONEY OUT */}
-        <InfoTooltip content="Every kobo wey comot today for fresh market stock, shop bills, transport, and loader fees. Tap make you see expense list.">
+        <InfoTooltip content="All expenses & market restock today">
           <motion.div
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -99,7 +99,7 @@ export function DailyBusinessPulse({
         </InfoTooltip>
 
         {/* 3. MONEY AVAILABLE */}
-        <InfoTooltip content="Real liquid cash wey dey your drawer and bank right now, plus safe chop moni wey you fit withdraw without shaking market capital.">
+        <InfoTooltip content="Real liquid cash in drawer & bank">
           <motion.div
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -126,7 +126,7 @@ export function DailyBusinessPulse({
         </InfoTooltip>
 
         {/* 4. CUSTOMERS OWING */}
-        <InfoTooltip content="Total customer gbese outside. Tap make you open debt book send polite WhatsApp reminder sharp-sharp!">
+        <InfoTooltip content="Customer debt to collect">
           <motion.div
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}

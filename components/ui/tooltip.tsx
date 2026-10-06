@@ -12,14 +12,17 @@ const TooltipTrigger = TooltipPrimitive.Trigger;
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,
   React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Content>
->(({ className = "", sideOffset = 6, ...props }, ref) => (
+>(({ className = "", sideOffset = 6, children, ...props }, ref) => (
   <TooltipPrimitive.Portal>
     <TooltipPrimitive.Content
       ref={ref}
       sideOffset={sideOffset}
-      className={`z-50 overflow-hidden rounded-2xl bg-emerald-950/90 backdrop-blur-xl px-3.5 py-2 text-[11.5px] font-bold text-emerald-100 shadow-[0_16px_40px_rgba(0,0,0,0.35),0_0_24px_rgba(5,150,105,0.2)] border border-emerald-400/30 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 max-w-xs text-center leading-snug tracking-wide ${className}`}
+      className={`z-50 pointer-events-none overflow-hidden rounded-xl bg-slate-950/95 backdrop-blur-md px-2.5 py-1 text-[10.5px] sm:text-[11px] font-medium text-slate-100 shadow-[0_8px_20px_rgba(0,0,0,0.25)] border border-white/15 animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-1 data-[side=left]:slide-in-from-right-1 data-[side=right]:slide-in-from-left-1 data-[side=top]:slide-in-from-bottom-1 max-w-[220px] text-center leading-tight tracking-normal ${className}`}
       {...props}
-    />
+    >
+      {children}
+      <TooltipPrimitive.Arrow className="fill-slate-950/95" width={8} height={4} />
+    </TooltipPrimitive.Content>
   </TooltipPrimitive.Portal>
 ));
 TooltipContent.displayName = TooltipPrimitive.Content.displayName;
@@ -36,8 +39,10 @@ export function InfoTooltip({
   content: React.ReactNode;
   side?: "top" | "bottom" | "left" | "right";
 }) {
+  if (!content) return <>{children}</>;
+
   return (
-    <TooltipProvider delayDuration={150}>
+    <TooltipProvider delayDuration={250} skipDelayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>{children}</TooltipTrigger>
         <TooltipContent side={side}>{content}</TooltipContent>
@@ -47,3 +52,4 @@ export function InfoTooltip({
 }
 
 export { Tooltip, TooltipTrigger, TooltipContent, TooltipProvider };
+
