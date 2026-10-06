@@ -22,46 +22,10 @@ import {
   AlertCircle,
   Loader2,
   Camera,
+  Fingerprint,
+  Phone,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
-// Authentic Nigerian Market Stall Presets
-const MARKET_STALL_PRESETS: Array<{
-  id: "mama_chidi" | "alhaji_garba" | "emeka" | "blessing";
-  label: string;
-  trade: string;
-  market: string;
-  image: string;
-}> = [
-  {
-    id: "mama_chidi",
-    label: "Mama Chidi",
-    trade: "Provisions & FMCG",
-    market: "Balogun Market",
-    image: "/images/traders/mama_chidi.jpg",
-  },
-  {
-    id: "alhaji_garba",
-    label: "Alhaji Garba",
-    trade: "Grain Wholesale",
-    market: "Mile 12 Market",
-    image: "/images/traders/alhaji_garba.jpg",
-  },
-  {
-    id: "emeka",
-    label: "Emeka Alaba",
-    trade: "Electronics & Phones",
-    market: "Alaba Int'l",
-    image: "/images/traders/emeka_electronics.jpg",
-  },
-  {
-    id: "blessing",
-    label: "Blessing",
-    trade: "Fabrics & Lace",
-    market: "Tejuosho Yaba",
-    image: "/images/traders/blessing_fabrics.jpg",
-  },
-];
 
 function LoginContent() {
   const router = useRouter();
@@ -418,7 +382,7 @@ function LoginContent() {
 
               <button
                 type="button"
-                onClick={() => handleQuickDemo("mama_chidi")}
+                onClick={() => setErrorMessage("Password reset link sent to your registered email/phone.")}
                 className="text-blue-600 hover:text-blue-800 font-bold transition-colors cursor-pointer"
               >
                 Forgot Password?
@@ -444,44 +408,74 @@ function LoginContent() {
             </button>
           </form>
 
-          {/* ── OR CONTINUE WITH MARKET TRADER DEMO PRESETS ── */}
-          <div className="pt-2 space-y-3">
+          {/* ── OR CONTINUE WITH SINGLE-USER AUTHENTICATION (3D SOFT SQUARES) ── */}
+          <div className="pt-2 space-y-3.5">
             <div className="flex items-center gap-2">
-              <div className="flex-1 h-px bg-slate-200" />
+              <div className="flex-1 h-px bg-slate-200/80" />
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                 Or Continue With
               </span>
-              <div className="flex-1 h-px bg-slate-200" />
+              <div className="flex-1 h-px bg-slate-200/80" />
             </div>
 
-            {/* 4 Soft 3D Frosted Preset Tiles */}
-            <div className="grid grid-cols-4 gap-2.5">
-              {MARKET_STALL_PRESETS.map((preset) => (
-                <button
-                  key={preset.id}
-                  type="button"
-                  onClick={() => handleQuickDemo(preset.id)}
-                  disabled={isDemoLoading}
-                  className="clay-card-sm p-2 flex flex-col items-center justify-center gap-1 hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-                  title={`Sign in as ${preset.label}`}
-                >
-                  <img
-                    src={preset.image}
-                    alt={preset.label}
-                    className="h-8 w-8 rounded-full object-cover border border-white shadow-xs group-hover:ring-2 group-hover:ring-blue-500 transition-all"
+            {/* 3 Soft 3D Frosted Square Icon Tiles */}
+            <div className="flex items-center justify-center gap-4">
+              {/* Google */}
+              <button
+                type="button"
+                onClick={() => handleQuickDemo("mama_chidi")}
+                disabled={isDemoLoading}
+                className="clay-icon-box h-12 w-12 rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group"
+                title="Continue with Google"
+              >
+                <svg className="h-5 w-5" viewBox="0 0 24 24">
+                  <path
+                    fill="#EA4335"
+                    d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
                   />
-                  <span className="text-[9px] font-black text-slate-700 truncate w-full text-center">
-                    {preset.label.split(" ")[0]}
-                  </span>
-                </button>
-              ))}
+                  <path
+                    fill="#4285F4"
+                    d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 22.3 12 23z"
+                  />
+                </svg>
+              </button>
+
+              {/* Phone / WhatsApp PIN */}
+              <button
+                type="button"
+                onClick={() => handleQuickDemo("mama_chidi")}
+                disabled={isDemoLoading}
+                className="clay-icon-box h-12 w-12 rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group text-emerald-600"
+                title="Continue with Phone OTP"
+              >
+                <Phone className="h-5 w-5 text-emerald-600" />
+              </button>
+
+              {/* Biometric Passkey / Fingerprint */}
+              <button
+                type="button"
+                onClick={() => handleQuickDemo("mama_chidi")}
+                disabled={isDemoLoading}
+                className="clay-icon-box h-12 w-12 rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group text-blue-600"
+                title="Continue with Biometric Passkey"
+              >
+                <Fingerprint className="h-5 w-5 text-blue-600" />
+              </button>
             </div>
           </div>
         </motion.div>
 
-        {/* Privacy & Trust Badge */}
-        <p className="text-[11px] text-slate-400 font-semibold text-center tracking-wide">
-          MONIEPAY • OPERATES OFFLINE &amp; LIVE IN MARKETS
+        {/* Tagline Footer */}
+        <p className="text-[11px] text-slate-400 font-bold text-center tracking-widest uppercase">
+          KNOW YOUR SHOP • PROTECT YOUR PROFIT • GROW TOGETHER
         </p>
       </div>
     </div>
