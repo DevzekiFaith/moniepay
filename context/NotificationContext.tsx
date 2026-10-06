@@ -340,12 +340,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -16, scale: 0.94, transition: { duration: 0.15 } }}
               transition={{ type: "spring", stiffness: 480, damping: 32 }}
-              className="pointer-events-auto w-full max-w-sm sm:max-w-md rounded-[26px] clay-card px-3.5 py-2.5 flex items-center gap-3 relative overflow-hidden text-slate-800"
+              className="pointer-events-auto w-full max-w-sm sm:max-w-md rounded-[22px] backdrop-blur-xl bg-[#edf3fb]/60 sm:bg-[#edf3fb]/65 border border-white/40 shadow-[0_12px_28px_rgba(154,180,214,0.22),0_2px_8px_rgba(154,180,214,0.1)] ring-1 ring-white/20 px-3.5 py-2.5 flex items-center gap-3 relative overflow-hidden text-slate-800"
             >
               {/* Soft ambient refraction highlight */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
 
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl clay-icon-box shrink-0">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/35 border border-white/45 shadow-2xs shrink-0">
                 {t.type === "success" && <CheckCircle2 className="h-4.5 w-4.5 text-emerald-600 stroke-[2.5]" />}
                 {t.type === "error" && <AlertCircle className="h-4.5 w-4.5 text-rose-600 stroke-[2.5]" />}
                 {t.type === "warning" && <AlertTriangle className="h-4.5 w-4.5 text-amber-600 stroke-[2.5]" />}
@@ -366,7 +366,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               <button
                 type="button"
                 onClick={() => dismissToast(t.id)}
-                className="p-1 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100/80 transition-all shrink-0 cursor-pointer"
+                className="p-1 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-white/30 transition-all shrink-0 cursor-pointer"
                 aria-label="Close notification"
               >
                 <X className="h-4 w-4" />
