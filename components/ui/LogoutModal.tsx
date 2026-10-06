@@ -5,7 +5,8 @@
 // Ensures market traders know their recorded offline sales are safe.
 // ─────────────────────────────────────────────────────────────────
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { LogOut, X, ShieldAlert, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -26,12 +27,18 @@ export function LogoutModal({
   businessName = "Mama Chidi Super Provisions",
   avatarUrl = "/images/traders/mama_chidi.jpg",
 }: LogoutModalProps) {
-  if (!isOpen) return null;
+  const [mounted, setMounted] = useState(false);
 
-  return (
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted) return null;
+
+  return createPortal(
     <AnimatePresence>
       <div
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-900/65 backdrop-blur-sm"
         onClick={onClose}
       >
         <motion.div
@@ -110,6 +117,7 @@ export function LogoutModal({
           </div>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }

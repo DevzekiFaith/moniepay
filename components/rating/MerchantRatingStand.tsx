@@ -6,6 +6,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import QRCode from "qrcode";
 import {
   QrCode,
@@ -92,6 +93,11 @@ export function MerchantRatingStand({
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState<"qr" | "barcode">("qr");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Construct rating portal URL
   const ratingUrl = typeof window !== "undefined"
@@ -127,11 +133,11 @@ export function MerchantRatingStand({
     window.print();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-sm overflow-y-auto">
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/75 backdrop-blur-sm overflow-y-auto">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 15 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -343,6 +349,7 @@ export function MerchantRatingStand({
           </div>
         </motion.div>
       </div>
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
