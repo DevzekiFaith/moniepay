@@ -53,9 +53,20 @@ export function DaylightHeader({
                 type="button"
                 onClick={() => setIsLogoutOpen(true)}
                 title="Account details & Sign Out"
-                className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-2xl bg-white/20 hover:bg-white/30 text-white font-black text-lg shadow-inner backdrop-blur-md border border-white/30 shrink-0 cursor-pointer active:scale-95 transition-all"
+                className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-2xl overflow-hidden bg-white/20 hover:bg-white/30 text-white font-black text-lg shadow-inner backdrop-blur-md border border-white/30 shrink-0 cursor-pointer active:scale-95 transition-all"
               >
-                <span>{avatarLetter}</span>
+                {user?.avatarUrl ? (
+                  <img
+                    src={user.avatarUrl}
+                    alt={displayName}
+                    className="h-full w-full object-cover object-center"
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center">
+                    <span>{avatarLetter}</span>
+                  </div>
+                )}
+                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-emerald-900" />
               </button>
 
               <div className="min-w-0">

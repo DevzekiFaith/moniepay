@@ -18,6 +18,7 @@ export interface AuthUser {
   marketLocation?: string;
   role: string;
   avatarLetter: string;
+  avatarUrl?: string;
   lastLoginAt: string;
 }
 
@@ -27,6 +28,7 @@ interface RegisterParams {
   pass: string;
   businessName?: string;
   marketLocation?: string;
+  avatarUrl?: string;
 }
 
 interface AuthContextType {
@@ -34,7 +36,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
-  loginDemo: () => Promise<{ success: boolean }>;
+  loginDemo: (personaKey?: "mama_chidi" | "alhaji_garba" | "emeka" | "blessing") => Promise<{ success: boolean }>;
   registerShop: (params: RegisterParams) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
 }
@@ -49,6 +51,7 @@ const DEMO_USER: AuthUser = {
   marketLocation: "Shop 14, Balogun Market, Lagos",
   role: "Shop Owner",
   avatarLetter: "M",
+  avatarUrl: "/images/traders/mama_chidi.jpg",
   lastLoginAt: "Active now",
 };
 
@@ -238,26 +241,61 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     []
   );
 
-  // 3. One-Tap Quick Demo Login (Mama Chidi — Balogun Market)
-  // Bypasses the API entirely for instant access even offline
-  const loginDemo = useCallback(async (): Promise<{ success: boolean }> => {
+  // 3. One-Tap Quick Demo Login (Mama Chidi, Alhaji Garba, Emeka, Blessing)
+  const loginDemo = useCallback(async (personaKey?: "mama_chidi" | "alhaji_garba" | "emeka" | "blessing"): Promise<{ success: boolean }> => {
     setIsLoading(true);
 
-    // Always hydrate client-side immediately — no network required
-    setUser(DEMO_USER);
-    localStorage.setItem("moniepay_session", JSON.stringify(DEMO_USER));
+    let selectedDemo = DEMO_USER;
+    if (personaKey === "alhaji_garba") {
+      selectedDemo = {
+        id: "user_owner_02",
+        name: "Alhaji Garba",
+        email: "garba@moniepay.app",
+        businessName: "Alhaji Garba Grains & Foodstuff",
+        marketLocation: "Mile 12 Market, Lagos",
+        role: "Shop Owner",
+        avatarLetter: "A",
+        avatarUrl: "/images/traders/alhaji_garba.jpg",
+        lastLoginAt: "Active now",
+      };
+    } else if (personaKey === "emeka") {
+      selectedDemo = {
+        id: "user_owner_03",
+        name: "Emeka Okonkwo",
+        email: "emeka@moniepay.app",
+        businessName: "Emeka Mobile & Electronics Hub",
+        marketLocation: "Alaba Int. Market, Lagos",
+        role: "Shop Owner",
+        avatarLetter: "E",
+        avatarUrl: "/images/traders/emeka_electronics.jpg",
+        lastLoginAt: "Active now",
+      };
+    } else if (personaKey === "blessing") {
+      selectedDemo = {
+        id: "user_owner_04",
+        name: "Blessing Adebayo",
+        email: "blessing@moniepay.app",
+        businessName: "Blessing Fabrics & Lace",
+        marketLocation: "Tejuosho Market, Yaba",
+        role: "Shop Owner",
+        avatarLetter: "B",
+        avatarUrl: "/images/traders/blessing_fabrics.jpg",
+        lastLoginAt: "Active now",
+      };
+    }
 
-    // Best-effort: also set a demo session cookie via API for server-side middleware
+    // Always hydrate client-side immediately
+    setUser(selectedDemo);
+    localStorage.setItem("moniepay_session", JSON.stringify(selectedDemo));
+
     try {
       fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: "demo@monielite.app", password: "MoneyMatters2024!" }),
         keepalive: true,
-      }).catch(() => {/* silent — already hydrated client-side */});
-    } catch {
-      // Ignore — client already authenticated
-    }
+      }).catch(() => {});
+    } catch {}
 
     setIsLoading(false);
     return { success: true };
@@ -277,6 +315,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             password: params.pass,
             businessName: params.businessName?.trim(),
             marketLocation: params.marketLocation?.trim(),
+            avatarUrl: params.avatarUrl,
           }),
         });
 
@@ -291,6 +330,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             marketLocation: data.user.marketLocation,
             role: "Shop Owner",
             avatarLetter: (data.user.name[0] || "M").toUpperCase(),
+            avatarUrl: params.avatarUrl || data.user.avatarUrl || "/images/traders/mama_chidi.jpg",
             lastLoginAt: "Just registered",
           };
 
@@ -314,6 +354,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           marketLocation: params.marketLocation?.trim() || "Balogun Market, Lagos",
           role: "Shop Owner",
           avatarLetter: (params.name.trim()[0] || "M").toUpperCase(),
+          avatarUrl: params.avatarUrl || "/images/traders/mama_chidi.jpg",
           lastLoginAt: "Offline provisioned",
         };
 
