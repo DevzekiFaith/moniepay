@@ -298,12 +298,12 @@ function LoginContent() {
               />
             </div>
             <div className="min-w-0">
-              <div className="flex items-center gap-1 text-[10px] text-amber-300 font-black">
-                <span>★★★★★</span>
-                <span className="text-white">4.9/5</span>
+              <div className="flex items-center gap-1.5 text-[10px] text-emerald-300 font-black">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-300 shrink-0" />
+                <span className="text-white uppercase tracking-wider">Verified Shop Rating</span>
               </div>
               <p className="text-[11px] font-bold text-emerald-100 truncate">
-                14,000+ traders across Nigerian markets
+                Scannable Barcode &amp; QR Code Reviews
               </p>
             </div>
           </motion.div>

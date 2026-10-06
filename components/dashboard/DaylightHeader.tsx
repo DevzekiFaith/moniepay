@@ -8,10 +8,12 @@ import {
   Store,
   LogOut,
   Sparkles,
+  QrCode,
 } from "lucide-react";
 import type { Business } from "@/types/moniepay.types";
 import { useAuth } from "@/context/AuthContext";
 import { LogoutModal } from "@/components/ui/LogoutModal";
+import { MerchantRatingStand } from "@/components/rating/MerchantRatingStand";
 
 interface DaylightHeaderProps {
   business: Business;
@@ -34,6 +36,7 @@ export function DaylightHeader({
 }: DaylightHeaderProps) {
   const { user, logout } = useAuth();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [isRatingStandOpen, setIsRatingStandOpen] = useState(false);
 
   const displayName = user?.name || "Mama Chidi";
   const avatarLetter = (displayName[0] || "M").toUpperCase();
@@ -85,6 +88,17 @@ export function DaylightHeader({
 
             {/* Action Buttons */}
             <div className="flex items-center gap-1.5 shrink-0">
+              {/* Rating Barcode & QR Stand Button */}
+              <button
+                type="button"
+                onClick={() => setIsRatingStandOpen(true)}
+                title="Customer Rating QR & Barcode Stand"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer"
+              >
+                <QrCode className="h-3.5 w-3.5 text-emerald-200" />
+                <span className="hidden sm:inline">Rating Stand</span>
+              </button>
+
               <button
                 type="button"
                 onClick={onOpenTracker}
@@ -166,6 +180,17 @@ export function DaylightHeader({
           setIsLogoutOpen(false);
           await logout();
         }}
+      />
+
+      {/* Customer Rating Barcode & QR Code Counter Stand */}
+      <MerchantRatingStand
+        isOpen={isRatingStandOpen}
+        onClose={() => setIsRatingStandOpen(false)}
+        shopName={user?.businessName || business.name}
+        traderName={displayName}
+        marketLocation={user?.marketLocation || business.market_location || "Balogun Market, Lagos"}
+        shopId={user?.id || "mama_chidi"}
+        avatarUrl={user?.avatarUrl || "/images/traders/mama_chidi.jpg"}
       />
     </>
   );
