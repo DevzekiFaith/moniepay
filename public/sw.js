@@ -39,9 +39,20 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;
-  const url = new URL(request.url);
 
-  // Skip caching API routes, POST requests, and external resources
+  // Only handle http and https requests
+  if (!request.url.startsWith("http://") && !request.url.startsWith("https://")) {
+    return;
+  }
+
+  let url;
+  try {
+    url = new URL(request.url);
+  } catch (err) {
+    return;
+  }
+
+  // Skip caching API routes, POST requests, and external database connections
   if (
     request.method !== "GET" ||
     url.pathname.startsWith("/api/") ||
@@ -54,10 +65,17 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
+        if (
+          networkResponse &&
+          networkResponse.status === 200 &&
+          networkResponse.type === "basic" &&
+          (request.url.startsWith("http://") || request.url.startsWith("https://"))
+        ) {
           const responseClone = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(request, responseClone);
+            cache.put(request, responseClone).catch((err) => {
+              console.warn("Service worker cache.put warning:", err);
+            });
           });
         }
         return networkResponse;
