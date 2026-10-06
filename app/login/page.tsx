@@ -52,7 +52,7 @@ function StatBubble({
   );
 }
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, loginDemo, registerShop, isAuthenticated, isLoading: authLoading } = useAuth();
@@ -519,5 +519,19 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-slate-50">
+          <Loader2 className="h-8 w-8 text-emerald-600 animate-spin" />
+        </div>
+      }
+    >
+      <LoginContent />
+    </React.Suspense>
   );
 }

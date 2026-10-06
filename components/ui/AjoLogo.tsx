@@ -13,6 +13,7 @@ interface MoniePayLogoProps {
   variant?: "icon" | "horizontal" | "stacked";
   className?: string;
   showTagline?: boolean;
+  theme?: "dark" | "light" | string;
 }
 
 export function AjoMark({ size = 32 }: { size?: number }) {
