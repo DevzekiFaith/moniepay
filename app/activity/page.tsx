@@ -56,7 +56,8 @@ export default function ActivityPage() {
 
       const matchesType =
         filterType === "ALL" ||
-        (filterType === "SALE" && tx.type === "SALE") ||
+        (filterType === "SALE" && tx.type === "SALE" && tx.payment_method !== "CREDIT") ||
+        (filterType === "CREDIT" && (tx.payment_method === "CREDIT" || tx.type === "DEBT_COLLECTION" || tx.category?.toLowerCase().includes("credit"))) ||
         (filterType === "STOCK" && tx.type === "STOCK_PURCHASE") ||
         (filterType === "EXPENSE" && (tx.type === "EXPENSE" || tx.type === "STAFF_PAYMENT")) ||
         (filterType === "WITHDRAWAL" && tx.type === "OWNER_WITHDRAWAL");
@@ -126,6 +127,7 @@ export default function ActivityPage() {
               {[
                 { id: "ALL", label: "All" },
                 { id: "SALE", label: "Sales" },
+                { id: "CREDIT", label: "Credit (Gbese)" },
                 { id: "STOCK", label: "Stock" },
                 { id: "EXPENSE", label: "Expenses" },
                 { id: "WITHDRAWAL", label: "Chop Money" },

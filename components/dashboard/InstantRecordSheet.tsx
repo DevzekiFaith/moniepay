@@ -63,7 +63,21 @@ export function InstantRecordSheet({
   const amountInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (initialType) setType(initialType);
+    if (initialType) {
+      setType(initialType);
+      if (initialType === "SALE") {
+        setCategory("Goods Sold");
+      } else if (initialType === "EXPENSE") {
+        setCategory("Shop Gen Fuel");
+        setPaymentMethod("CASH");
+      } else if (initialType === "STOCK_PURCHASE") {
+        setCategory("Restock Goods");
+        setPaymentMethod("TRANSFER");
+      } else if (initialType === "OWNER_WITHDRAWAL") {
+        setCategory("Owner Chop Money");
+        setPaymentMethod("CASH");
+      }
+    }
   }, [initialType]);
 
   useEffect(() => {
@@ -74,26 +88,6 @@ export function InstantRecordSheet({
       }
     }
   }, [isOpen, accounts, selectedAccountId]);
-
-  // Set default category and payment method based on transaction type
-  useEffect(() => {
-    if (type === "SALE") {
-      setCategory("Goods Sold");
-      if (paymentMethod === "CREDIT") setPaymentMethod("CASH");
-    } else if (type === "EXPENSE") {
-      setCategory("Shop Gen Fuel");
-      setPaymentMethod("CASH");
-    } else if (type === "STOCK_PURCHASE") {
-      setCategory("Restock Goods");
-      setPaymentMethod("TRANSFER");
-    } else if (type === "OWNER_WITHDRAWAL") {
-      setCategory("Owner Chop Money");
-      setPaymentMethod("CASH");
-    } else if (type === "STAFF_PAYMENT") {
-      setCategory("Staff Wage");
-      setPaymentMethod("CASH");
-    }
-  }, [type]);
 
   // Web Speech API Voice Recognition
   const toggleVoice = () => {
@@ -291,9 +285,13 @@ export function InstantRecordSheet({
         <div className="mt-4 grid grid-cols-5 gap-1.5 p-1 rounded-2xl bg-slate-100 border border-slate-200/80">
           <button
             type="button"
-            onClick={() => setType("SALE")}
-            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all ${
-              type === "SALE"
+            onClick={() => {
+              setType("SALE");
+              setPaymentMethod("CASH");
+              setCategory("Goods Sold");
+            }}
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
+              type === "SALE" && paymentMethod !== "CREDIT"
                 ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
                 : "text-slate-600 hover:text-slate-900"
             }`}
@@ -304,8 +302,12 @@ export function InstantRecordSheet({
 
           <button
             type="button"
-            onClick={() => setType("EXPENSE")}
-            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all ${
+            onClick={() => {
+              setType("EXPENSE");
+              setPaymentMethod("CASH");
+              setCategory("Shop Gen Fuel");
+            }}
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
               type === "EXPENSE"
                 ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
                 : "text-slate-600 hover:text-slate-900"
@@ -317,8 +319,12 @@ export function InstantRecordSheet({
 
           <button
             type="button"
-            onClick={() => setType("STOCK_PURCHASE")}
-            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all ${
+            onClick={() => {
+              setType("STOCK_PURCHASE");
+              setPaymentMethod("TRANSFER");
+              setCategory("Restock Goods");
+            }}
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
               type === "STOCK_PURCHASE"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
                 : "text-slate-600 hover:text-slate-900"
@@ -333,8 +339,9 @@ export function InstantRecordSheet({
             onClick={() => {
               setType("SALE");
               setPaymentMethod("CREDIT");
+              setCategory("Customer Credit");
             }}
-            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all ${
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
               type === "SALE" && paymentMethod === "CREDIT"
                 ? "bg-amber-500 text-white shadow-md shadow-amber-500/30"
                 : "text-slate-600 hover:text-slate-900"
@@ -346,8 +353,12 @@ export function InstantRecordSheet({
 
           <button
             type="button"
-            onClick={() => setType("OWNER_WITHDRAWAL")}
-            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all ${
+            onClick={() => {
+              setType("OWNER_WITHDRAWAL");
+              setPaymentMethod("CASH");
+              setCategory("Owner Chop Money");
+            }}
+            className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
               type === "OWNER_WITHDRAWAL"
                 ? "bg-purple-600 text-white shadow-md shadow-purple-600/30"
                 : "text-slate-600 hover:text-slate-900"
