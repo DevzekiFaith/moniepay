@@ -437,10 +437,35 @@ function LoginContent() {
           </form>
         </motion.div>
 
-        {/* Tagline Footer */}
-        <p className="text-[11px] text-slate-400 font-bold text-center tracking-widest uppercase">
-          KNOW YOUR SHOP • PROTECT YOUR PROFIT • GROW YOUR MONEY
-        </p>
+        {/* MoniePay Trader Motto / Value Proposition Card */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="clay-card p-4 text-center space-y-2.5 relative overflow-hidden"
+        >
+          <div className="space-y-0.5">
+            <h3 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
+              Understand your money well-well.{" "}
+              <span className="text-blue-700">No be just to write am down for book.</span>
+            </h3>
+            <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed">
+              Record wetin enter and wetin comot — MoniePay go explain wetin the money mean for your daily profit.
+            </p>
+          </div>
+
+          <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50/80 border border-blue-200/60 text-blue-950 text-[11px] font-black tracking-wide">
+            <span>Record am</span>
+            <span className="text-blue-400 font-bold">→</span>
+            <span>Understand am</span>
+            <span className="text-blue-400 font-bold">→</span>
+            <span className="text-blue-700">Decide sharp-sharp</span>
+          </div>
+
+          <p className="text-[10px] sm:text-[10.5px] text-slate-400 font-bold tracking-wider uppercase">
+            Your money • Your clear picture • Your smart decisions
+          </p>
+        </motion.div>
       </div>
     </div>
   );
