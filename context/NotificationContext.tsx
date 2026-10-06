@@ -331,7 +331,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       {children}
 
       {/* ── FLOATING GLASSMORPHIC TOAST NOTIFICATION STACK ── */}
-      <div className="fixed top-3 sm:top-5 inset-x-0 z-[99999] pointer-events-none flex flex-col items-center gap-2 px-3">
+      <div className="fixed top-4 sm:top-5 inset-x-0 z-[99999] pointer-events-none flex flex-col items-center gap-2 px-3">
         <AnimatePresence>
           {toasts.map((t) => (
             <motion.div
@@ -340,24 +340,24 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -16, scale: 0.94, transition: { duration: 0.15 } }}
               transition={{ type: "spring", stiffness: 480, damping: 32 }}
-              className="pointer-events-auto w-full max-w-sm rounded-2xl bg-[#022c22]/85 sm:bg-[#064e3b]/80 backdrop-blur-2xl border border-emerald-400/40 text-white shadow-[0_16px_40px_rgba(2,44,34,0.4),0_0_24px_rgba(16,185,129,0.15)] ring-1 ring-white/15 px-3.5 py-2.5 flex items-center gap-3 relative overflow-hidden"
+              className="pointer-events-auto w-full max-w-sm sm:max-w-md rounded-[26px] clay-card px-3.5 py-2.5 flex items-center gap-3 relative overflow-hidden text-slate-800"
             >
-              {/* Subtle top glass refraction highlight */}
-              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+              {/* Soft ambient refraction highlight */}
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/80 to-transparent" />
 
-              <div className="flex h-7.5 w-7.5 items-center justify-center rounded-xl bg-white/15 border border-white/20 shadow-inner shrink-0">
-                {t.type === "success" && <CheckCircle2 className="h-4 w-4 text-emerald-300" />}
-                {t.type === "error" && <AlertCircle className="h-4 w-4 text-rose-300" />}
-                {t.type === "warning" && <AlertTriangle className="h-4 w-4 text-amber-300" />}
-                {t.type === "info" && <Info className="h-4 w-4 text-emerald-200" />}
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl clay-icon-box shrink-0">
+                {t.type === "success" && <CheckCircle2 className="h-4.5 w-4.5 text-emerald-600 stroke-[2.5]" />}
+                {t.type === "error" && <AlertCircle className="h-4.5 w-4.5 text-rose-600 stroke-[2.5]" />}
+                {t.type === "warning" && <AlertTriangle className="h-4.5 w-4.5 text-amber-600 stroke-[2.5]" />}
+                {t.type === "info" && <Info className="h-4.5 w-4.5 text-blue-600 stroke-[2.5]" />}
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-black text-white leading-tight tracking-tight truncate">
+                <p className="text-xs font-black text-slate-900 leading-tight tracking-tight truncate">
                   {t.title}
                 </p>
                 {t.message && (
-                  <p className="text-[10.5px] font-medium text-emerald-100/90 leading-tight truncate mt-0.5">
+                  <p className="text-[11px] font-semibold text-slate-600 leading-tight truncate mt-0.5">
                     {t.message}
                   </p>
                 )}
@@ -366,10 +366,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               <button
                 type="button"
                 onClick={() => dismissToast(t.id)}
-                className="p-1 rounded-lg text-emerald-200/70 hover:text-white hover:bg-white/15 transition-all shrink-0 cursor-pointer"
+                className="p-1 rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100/80 transition-all shrink-0 cursor-pointer"
                 aria-label="Close notification"
               >
-                <X className="h-3.5 w-3.5" />
+                <X className="h-4 w-4" />
               </button>
             </motion.div>
           ))}
