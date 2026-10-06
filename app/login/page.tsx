@@ -248,7 +248,7 @@ function LoginContent() {
             {/* Offline-ready indicator */}
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-400/20 text-[10px] font-bold text-emerald-300">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Offline-Ready</span>
+              <span>Offline-Ready (No Data Needed)</span>
             </div>
           </motion.div>
 
@@ -260,11 +260,11 @@ function LoginContent() {
           >
             <h1 className="text-2xl sm:text-3xl font-black text-white leading-tight tracking-tight">
               Your shop.<br />
-              <span className="text-emerald-300">Your money.</span><br />
-              In your hands.
+              <span className="text-emerald-300">Your moni.</span><br />
+              Dey your hand.
             </h1>
             <p className="mt-2 text-xs sm:text-sm text-emerald-100/90 leading-relaxed max-w-xs font-medium">
-              Built for Nigeria's market traders. Know what happened in your shop today.
+              We build am for Nigerian market traders. Know wetin happen inside your shop today sharp-sharp.
             </p>
           </motion.div>
 
@@ -300,19 +300,19 @@ function LoginContent() {
             <div className="min-w-0">
               <div className="flex items-center gap-1.5 text-[10px] text-emerald-300 font-black">
                 <ShieldCheck className="h-3.5 w-3.5 text-emerald-300 shrink-0" />
-                <span className="text-white uppercase tracking-wider">Verified Shop Rating</span>
+                <span className="text-white uppercase tracking-wider">Original Market Traders</span>
               </div>
               <p className="text-[11px] font-bold text-emerald-100 truncate">
-                Scannable Barcode &amp; QR Code Reviews
+                Real shop rating with QR &amp; Barcode stand
               </p>
             </div>
           </motion.div>
 
           {/* Floating stat bubbles */}
           <div className="mt-4 flex flex-wrap gap-2">
-            <StatBubble label="Today's Sales" value="₦340,500" color="bg-emerald-400" delay={0.25} />
-            <StatBubble label="Customers Owe" value="₦85,000" color="bg-amber-400" delay={0.35} />
-            <StatBubble label="Position" value="95 • Thriving" color="bg-teal-300" delay={0.45} />
+            <StatBubble label="Moni Wey Enter" value="₦340,500" color="bg-emerald-400" delay={0.25} />
+            <StatBubble label="Customer Gbese" value="₦85,000" color="bg-amber-400" delay={0.35} />
+            <StatBubble label="Shop Health" value="95 • Body Sweet" color="bg-teal-300" delay={0.45} />
           </div>
         </div>
       </div>
@@ -632,7 +632,7 @@ function LoginContent() {
               {/* 1-Tap Quick Demo for Testing */}
               {mode === "signin" && (
                 <div className="pt-3 border-t border-slate-100 text-center">
-                  <p className="text-[11px] text-slate-400 font-medium mb-2">Want to explore first without password?</p>
+                  <p className="text-[11px] text-slate-400 font-medium mb-2">You wan test am first without password?</p>
                   <button
                     type="button"
                     onClick={handleQuickDemo}
@@ -648,7 +648,7 @@ function LoginContent() {
                           alt="Mama Chidi"
                           className="h-4 w-4 rounded-full object-cover"
                         />
-                        <span>Explore Mama Chidi's Demo Shop</span>
+                        <span>Check Mama Chidi Demo Shop</span>
                       </>
                     )}
                   </button>
@@ -660,7 +660,7 @@ function LoginContent() {
           {/* Privacy & offline security note */}
           <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400 font-semibold text-center">
             <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-            <span>Encrypted • Operates seamlessly offline in busy markets</span>
+            <span>Safe &amp; Sealed • E dey work sharp-sharp inside busy market even without network</span>
           </div>
         </div>
       </div>
