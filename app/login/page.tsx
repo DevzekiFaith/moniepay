@@ -202,12 +202,12 @@ function LoginContent() {
 
           <div className="space-y-1 pt-1">
             <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
-              {mode === "signin" ? "Welcome Back" : "Register Your Shop"}
+              {mode === "signin" ? "Welcome Back O!" : "Open Your Shop Sharp-Sharp"}
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 font-medium">
               {mode === "signin"
-                ? "Sign in to manage your shop & track your money"
-                : "Open your digital record book in 30 seconds"}
+                ? "Enter your shop make you see how your money dey go today"
+                : "Open your digital record book in 30 seconds, no shaking"}
             </p>
           </div>
         </motion.div>
@@ -230,7 +230,7 @@ function LoginContent() {
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
-              Sign In
+              Enter Shop
             </button>
             <button
               type="button"
@@ -241,7 +241,7 @@ function LoginContent() {
                   : "text-slate-500 hover:text-slate-800"
               }`}
             >
-              Register Shop
+              Register New Shop
             </button>
           </div>
 
@@ -293,7 +293,7 @@ function LoginContent() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-bold text-slate-900 truncate">Shop Photo / Logo</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Upload stall picture or preset</p>
+                    <p className="text-[10px] text-slate-500 font-medium">Snap your stall or upload photo</p>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -331,7 +331,7 @@ function LoginContent() {
                     type="text"
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
-                    placeholder="Shop Name (e.g. Mama Chidi Provisions)"
+                    placeholder="Shop Name (e.g. Mama Chidi Super Store)"
                     className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
                   />
                 </div>
@@ -343,7 +343,7 @@ function LoginContent() {
                     type="text"
                     value={marketLocation}
                     onChange={(e) => setMarketLocation(e.target.value)}
-                    placeholder="Market Location (e.g. Balogun Market)"
+                    placeholder="Market Location (e.g. Balogun Market, Lagos)"
                     className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
                   />
                 </div>
@@ -357,7 +357,7 @@ function LoginContent() {
                 type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
-                placeholder="Username or Email / Phone"
+                placeholder="Your Phone Number or Email"
                 required
                 className="w-full pl-11 pr-4 py-3.5 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
               />
@@ -370,7 +370,7 @@ function LoginContent() {
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="Password"
+                placeholder="Your Secret Password"
                 required
                 className="w-full pl-11 pr-11 py-3.5 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
               />
@@ -392,7 +392,7 @@ function LoginContent() {
                   onChange={(e) => setRememberMe(e.target.checked)}
                   className="h-4 w-4 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer"
                 />
-                <span>Remember Me</span>
+                <span>Keep me signed in</span>
               </label>
 
               <button
@@ -400,7 +400,7 @@ function LoginContent() {
                 onClick={() => setErrorMessage("Password reset link sent to your registered email/phone.")}
                 className="text-blue-600 hover:text-blue-800 font-bold transition-colors cursor-pointer"
               >
-                Forgot Password?
+                Forget Password?
               </button>
             </div>
 
@@ -414,7 +414,7 @@ function LoginContent() {
                 <Loader2 className="h-4 w-4 text-white animate-spin" />
               ) : (
                 <>
-                  <span>{mode === "signin" ? "Login" : "Register Shop"}</span>
+                  <span>{mode === "signin" ? "Enter Shop Now" : "Open Shop Now"}</span>
                   <div className="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
                     <ArrowRight className="h-3.5 w-3.5 text-white" />
                   </div>
@@ -426,7 +426,7 @@ function LoginContent() {
 
         {/* Tagline Footer */}
         <p className="text-[11px] text-slate-400 font-bold text-center tracking-widest uppercase">
-          KNOW YOUR SHOP • PROTECT YOUR PROFIT • GROW TOGETHER
+          KNOW YOUR SHOP • PROTECT YOUR PROFIT • GROW YOUR MONEY
         </p>
       </div>
     </div>
