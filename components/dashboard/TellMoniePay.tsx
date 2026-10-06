@@ -300,21 +300,21 @@ export function TellMoniePay({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="clay-card p-5 space-y-3.5 relative overflow-hidden"
+      className="clay-card p-3.5 sm:p-5 space-y-3 sm:space-y-3.5 relative overflow-hidden"
     >
       {/* Decorative ambient glass light */}
       <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-blue-400/15 blur-2xl" />
       <div className="pointer-events-none absolute -left-8 -bottom-8 h-28 w-28 rounded-full bg-sky-300/15 blur-2xl" />
 
-      {/* Header */}
-      <div className="flex items-center justify-between px-1">
-        <div className="flex items-center gap-2.5">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-blue-600 animate-pulse shadow-xs shadow-blue-500/50" />
-          <h2 className="text-xs font-black uppercase tracking-wider text-slate-800">
+      {/* Header: Fluid Mobile Wrap */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 px-1">
+        <div className="flex items-center gap-2">
+          <span className="flex h-2.5 w-2.5 rounded-full bg-blue-600 animate-pulse shadow-xs shadow-blue-500/50 shrink-0" />
+          <h2 className="text-xs sm:text-[13px] font-black uppercase tracking-wider text-slate-800 leading-tight">
             Tell MoniePay Wetin Happen For Shop
           </h2>
         </div>
-        <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-blue-50/80 text-blue-700 border border-blue-200/60 shadow-xs">
+        <span className="self-start sm:self-auto text-[9.5px] sm:text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-blue-50/90 text-blue-700 border border-blue-200/60 shadow-xs">
           Sharp-Sharp • Talk am or Type am
         </span>
       </div>
@@ -327,14 +327,14 @@ export function TellMoniePay({
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="Talk or type: e.g. Sell 45k, Chidi pay 15k, Buy market 20k..."
-            className="clay-input w-full pl-4 pr-11 py-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
+            className="clay-input w-full pl-3.5 sm:pl-4 pr-10 sm:pr-11 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
           />
           {inputVal && (
             <motion.button
               type="submit"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white flex items-center justify-center cursor-pointer shadow-md shadow-blue-600/30 border-t border-white/30"
+              className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-7.5 w-7.5 sm:h-8 sm:w-8 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white flex items-center justify-center cursor-pointer shadow-md shadow-blue-600/30 border-t border-white/30"
               title="Record to MoniePay"
             >
               <Send className="h-3.5 w-3.5" />
@@ -350,16 +350,16 @@ export function TellMoniePay({
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.94 }}
               onClick={toggleListening}
-              className={`h-11 w-11 rounded-2xl flex items-center justify-center cursor-pointer transition-all shrink-0 ${
+              className={`h-10 w-10 sm:h-11 sm:w-11 rounded-2xl flex items-center justify-center cursor-pointer transition-all shrink-0 ${
                 isListening
                   ? "bg-rose-600 text-white animate-pulse shadow-lg shadow-rose-500/40"
                   : "clay-card-sm text-blue-700 hover:text-blue-900"
               }`}
             >
               {isListening ? (
-                <MicOff className="h-5 w-5" />
+                <MicOff className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               ) : (
-                <Mic className="h-5 w-5" />
+                <Mic className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               )}
             </motion.button>
           </TooltipTrigger>
@@ -369,7 +369,7 @@ export function TellMoniePay({
         </Tooltip>
       </form>
 
-      {/* Quick 1-Tap Example Phrases */}
+      {/* Quick 1-Tap Example Phrases with Horizontal Scroll */}
       <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
         {quickExamples.map((item, idx) => (
           <Tooltip key={idx}>
@@ -382,7 +382,7 @@ export function TellMoniePay({
                   setInputVal(item.text);
                   processTraderInput(item.text);
                 }}
-                className="px-3 py-1.5 rounded-xl clay-card-sm text-slate-700 hover:text-blue-700 text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0"
+                className="px-2.5 sm:px-3 py-1.5 rounded-xl clay-card-sm text-slate-700 hover:text-blue-700 text-[11px] sm:text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0"
               >
                 {item.label}
               </motion.button>
