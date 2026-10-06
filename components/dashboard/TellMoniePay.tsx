@@ -16,6 +16,7 @@ import {
   TrendingUp,
   AlertCircle,
   HelpCircle,
+  Volume2,
 } from "lucide-react";
 import {
   Tooltip,
@@ -25,6 +26,29 @@ import {
 } from "@/components/ui/tooltip";
 import type { TransactionType, PaymentMethod } from "@/types/moniepay.types";
 import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";
+
+// Natural Nigerian Voice Audio Playback for traders
+export function speakTraderAudioFeedback(text: string) {
+  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+  try {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-NG";
+    utterance.rate = 1.02;
+    utterance.pitch = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    const voice = voices.find(
+      (v) =>
+        v.lang.includes("en-NG") ||
+        v.lang.includes("en-GB") ||
+        v.name.toLowerCase().includes("nigeria") ||
+        v.name.toLowerCase().includes("english")
+    );
+    if (voice) utterance.voice = voice;
+    window.speechSynthesis.speak(utterance);
+  } catch {}
+}
 
 interface TellMoniePayProps {
   onOpenDetailedSheet: (type: TransactionType) => void;
@@ -256,6 +280,9 @@ export function TellMoniePay({
       whatToDoNext,
     });
     onActivityRecorded();
+
+    // Natural audio voice readout confirming the record
+    speakTraderAudioFeedback(`${typeLabel}: ${whatChanged} ${whatToDoNext}`);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
@@ -384,13 +411,28 @@ export function TellMoniePay({
                   Recorded ✓ ₦{feedback.amount.toLocaleString()} ({feedback.typeLabel})
                 </span>
               </div>
-              <button
-                type="button"
-                onClick={() => setFeedback(null)}
-                className="text-[11px] font-bold text-emerald-300 hover:text-white cursor-pointer"
-              >
-                Dismiss
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    speakTraderAudioFeedback(
+                      `${feedback.typeLabel}: ${feedback.whatChanged} ${feedback.whatToDoNext}`
+                    )
+                  }
+                  className="flex items-center gap-1 text-[11px] font-bold text-emerald-200 hover:text-white bg-white/15 hover:bg-white/25 px-2 py-0.5 rounded-md transition-all cursor-pointer backdrop-blur-sm"
+                  title="Listen to voice confirmation again"
+                >
+                  <Volume2 className="h-3 w-3" />
+                  <span>Listen</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFeedback(null)}
+                  className="text-[11px] font-bold text-emerald-300 hover:text-white cursor-pointer"
+                >
+                  Dismiss
+                </button>
+              </div>
             </div>
 
             {/* 3 Core Value Items */}
