@@ -178,31 +178,31 @@ export function NotificationBellDrawer() {
               onClick={() => setIsDrawerOpen(false)}
             />
 
-            {/* Slide-over Drawer / Bottom Sheet Container */}
+            {/* Slide-over Drawer / Bottom Sheet Container with 3D Frosted Glassmorphism */}
             <motion.div
               initial={{ y: "100%", opacity: 0.9 }}
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "100%", opacity: 0.9 }}
               transition={{ type: "spring", stiffness: 380, damping: 34 }}
-              className="relative w-full sm:max-w-md bg-white h-[90vh] sm:h-full rounded-t-[32px] sm:rounded-none sm:rounded-l-[32px] shadow-[0_-12px_45px_rgba(0,0,0,0.35)] sm:shadow-2xl flex flex-col z-20 overflow-hidden text-slate-900 border-t sm:border-t-0 sm:border-l border-emerald-900/10"
+              className="relative w-full sm:max-w-md h-[90vh] sm:h-full rounded-t-[36px] sm:rounded-none sm:rounded-l-[36px] clay-card p-0 flex flex-col z-20 overflow-hidden text-slate-800 shadow-[0_24px_60px_rgba(154,180,214,0.6)] border border-white/90 backdrop-blur-2xl bg-white/90"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile Drag Handle */}
-              <div className="flex sm:hidden justify-center pt-2.5 pb-1 bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950">
+              <div className="flex sm:hidden justify-center pt-2.5 pb-1 bg-gradient-to-r from-blue-950 via-indigo-950 to-slate-950">
                 <span className="h-1.5 w-12 rounded-full bg-white/30" />
               </div>
 
-              {/* Drawer Top Luxury Header */}
-              <div className="bg-gradient-to-r from-emerald-950 via-emerald-900 to-teal-950 px-5 py-4 text-white flex items-center justify-between border-b border-white/10 shrink-0">
+              {/* Drawer Top Sapphire Glass Header */}
+              <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-950 px-5 py-4 text-white flex items-center justify-between border-b border-white/10 shrink-0">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md border border-white/20 shadow-inner">
-                    <BellRing className="h-5 w-5 text-emerald-200" />
+                  <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-inner">
+                    <BellRing className="h-5 w-5 text-blue-200" />
                   </div>
                   <div>
                     <h3 id="drawer-title" className="text-base font-black tracking-tight leading-none text-white">
-                      Wetin Dey Happen (Alerts)
+                      Wetin Dey Happen (Shop Alerts)
                     </h3>
-                    <p className="text-[11px] text-emerald-200 font-semibold mt-1">
+                    <p className="text-[11px] text-blue-200 font-semibold mt-1">
                       Real-time market &amp; customer debt updates
                     </p>
                   </div>
@@ -212,9 +212,9 @@ export function NotificationBellDrawer() {
                   type="button"
                   onClick={() => setIsDrawerOpen(false)}
                   aria-label="Close notification drawer"
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all cursor-pointer backdrop-blur-md border border-white/20 active:scale-95"
+                  className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white/15 hover:bg-white/25 text-white transition-all cursor-pointer backdrop-blur-md border border-white/20 active:scale-95"
                 >
-                  <X className="h-5 w-5" />
+                  <X className="h-4.5 w-4.5" />
                 </button>
               </div>
 
@@ -230,7 +230,7 @@ export function NotificationBellDrawer() {
                   <button
                     type="button"
                     onClick={requestPermission}
-                    className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-black shrink-0 shadow-xs cursor-pointer active:scale-95 transition-all"
+                    className="px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[11px] font-black shrink-0 shadow-sm cursor-pointer active:scale-95 transition-all"
                   >
                     Enable
                   </button>
@@ -238,7 +238,7 @@ export function NotificationBellDrawer() {
               )}
 
               {/* Filter Tabs & Quick Actions */}
-              <div className="p-3 border-b border-slate-200 bg-slate-50 flex items-center justify-between gap-2 shrink-0">
+              <div className="p-3 border-b border-slate-200/80 bg-slate-50/70 backdrop-blur-md flex items-center justify-between gap-2 shrink-0">
                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
                   {[
                     { id: "all", label: "Everything", count: unreadCount },
@@ -252,8 +252,8 @@ export function NotificationBellDrawer() {
                       onClick={() => setActiveFilter(tab.id as any)}
                       className={`px-3 py-1.5 text-xs font-black rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
                         activeFilter === tab.id
-                          ? "bg-emerald-800 text-white shadow-xs"
-                          : "text-slate-700 hover:text-slate-900 bg-white border border-slate-200"
+                          ? "bg-blue-600 text-white shadow-sm"
+                          : "text-slate-600 hover:text-slate-900 clay-card-sm"
                       }`}
                     >
                       <span>{tab.label}</span>
@@ -262,7 +262,7 @@ export function NotificationBellDrawer() {
                           className={`text-[9.5px] px-1.5 py-0.5 rounded-full font-bold ${
                             activeFilter === tab.id
                               ? "bg-white/25 text-white"
-                              : "bg-emerald-100 text-emerald-900"
+                              : "bg-blue-100 text-blue-900"
                           }`}
                         >
                           {tab.count}
@@ -276,7 +276,7 @@ export function NotificationBellDrawer() {
                   <button
                     type="button"
                     onClick={markAllAsRead}
-                    className="text-xs font-bold text-emerald-800 hover:text-emerald-950 shrink-0 cursor-pointer flex items-center gap-1 bg-emerald-100 hover:bg-emerald-200 px-2.5 py-1.5 rounded-lg transition-colors"
+                    className="text-xs font-bold text-blue-700 hover:text-blue-900 shrink-0 cursor-pointer flex items-center gap-1 bg-blue-50 hover:bg-blue-100 px-2.5 py-1.5 rounded-xl border border-blue-200/60 transition-colors"
                   >
                     <Check className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Mark all</span>
@@ -284,8 +284,8 @@ export function NotificationBellDrawer() {
                 )}
               </div>
 
-              {/* Notification List Body */}
-              <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3 min-h-0 bg-slate-50/50">
+              {/* Notification List Body with 3D Frosted Cards */}
+              <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3 min-h-0 bg-[#edf3fb]/50">
                 {filteredNotifications.length > 0 ? (
                   filteredNotifications.map((n) => (
                     <motion.div
@@ -293,26 +293,26 @@ export function NotificationBellDrawer() {
                       initial={{ opacity: 0, y: 6 }}
                       animate={{ opacity: 1, y: 0 }}
                       onClick={() => markAsRead(n.id)}
-                      className={`p-3.5 sm:p-4 rounded-2xl border transition-all cursor-pointer relative ${
+                      className={`p-3.5 sm:p-4 rounded-2xl transition-all cursor-pointer relative ${
                         n.read
-                          ? "bg-white border-slate-200 text-slate-700 hover:border-slate-300"
-                          : "bg-emerald-50/90 border-emerald-300 text-slate-900 shadow-sm hover:bg-emerald-50"
+                          ? "clay-card-sm text-slate-700 opacity-85 hover:opacity-100"
+                          : "clay-card text-slate-900 ring-2 ring-blue-400/40"
                       }`}
                     >
                       {!n.read && (
-                        <span className="absolute top-3.5 right-3.5 h-2.5 w-2.5 rounded-full bg-emerald-600 ring-4 ring-emerald-200" />
+                        <span className="absolute top-3.5 right-3.5 h-2.5 w-2.5 rounded-full bg-blue-600 ring-4 ring-blue-200 animate-pulse" />
                       )}
 
                       <div className="flex items-start gap-3">
                         <div
-                          className={`p-2.5 rounded-xl border shrink-0 mt-0.5 ${
+                          className={`p-2.5 rounded-2xl clay-icon-box shrink-0 mt-0.5 ${
                             n.type === "debt_reminder"
-                              ? "bg-amber-50 border-amber-200 text-amber-700"
+                              ? "text-amber-600"
                               : n.type === "price_alert"
-                              ? "bg-rose-50 border-rose-200 text-rose-700"
+                              ? "text-rose-600"
                               : n.type === "sales_milestone"
-                              ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                              : "bg-amber-50 border-amber-200 text-amber-600"
+                              ? "text-emerald-600"
+                              : "text-amber-500"
                           }`}
                         >
                           {getNotificationIcon(n.type)}
@@ -333,7 +333,7 @@ export function NotificationBellDrawer() {
                             </span>
 
                             {n.amount && (
-                              <span className="text-xs font-black text-emerald-950 bg-emerald-100 border border-emerald-200 px-2 py-0.5 rounded-md font-mono">
+                              <span className="text-xs font-black text-blue-900 bg-blue-50 border border-blue-200/80 px-2.5 py-0.5 rounded-xl font-mono shadow-xs">
                                 {n.amount}
                               </span>
                             )}
@@ -345,10 +345,10 @@ export function NotificationBellDrawer() {
                               <button
                                 type="button"
                                 onClick={(e) => handleActionClick(n, e)}
-                                className="text-xs font-black text-emerald-900 hover:text-emerald-950 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-200/80 hover:bg-emerald-300 active:scale-95 transition-all cursor-pointer shadow-2xs"
+                                className="text-xs font-black text-white inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl clay-btn-primary active:scale-95 transition-all cursor-pointer"
                               >
                                 <span>{n.actionLabel}</span>
-                                <ArrowRight className="h-3.5 w-3.5 text-emerald-800" />
+                                <ArrowRight className="h-3.5 w-3.5 text-white" />
                               </button>
                             </div>
                           )}
@@ -358,7 +358,7 @@ export function NotificationBellDrawer() {
                   ))
                 ) : (
                   <div className="text-center py-16 space-y-3">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-slate-100 text-slate-400 mx-auto">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl clay-icon-box text-slate-400 mx-auto">
                       <Bell className="h-6 w-6" />
                     </div>
                     <div>
@@ -372,20 +372,20 @@ export function NotificationBellDrawer() {
               </div>
 
               {/* Drawer Footer Actions */}
-              <div className="p-3 sm:p-4 bg-white border-t border-slate-200 flex items-center justify-between gap-2 shrink-0">
+              <div className="p-3 sm:p-4 clay-card rounded-none border-t border-white/80 flex items-center justify-between gap-2 shrink-0">
                 <button
                   type="button"
                   onClick={handleSendTestPush}
-                  className="px-3.5 py-2.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-800 text-xs font-black hover:bg-slate-200 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                  className="px-3.5 py-2.5 rounded-2xl clay-btn-secondary text-slate-800 text-xs font-black active:scale-95 transition-all cursor-pointer flex items-center gap-2"
                 >
-                  <BellRing className={`h-4 w-4 text-emerald-600 ${testSent ? "animate-bounce" : ""}`} />
+                  <BellRing className={`h-4 w-4 text-blue-600 ${testSent ? "animate-bounce" : ""}`} />
                   <span>{testSent ? "Alert Sent! 🔔" : "Test Alert Sound & Ping"}</span>
                 </button>
 
                 <button
                   type="button"
                   onClick={clearNotifications}
-                  className="p-2.5 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 text-xs font-bold cursor-pointer transition-colors"
+                  className="p-2.5 rounded-2xl clay-card-sm text-slate-400 hover:text-rose-600 text-xs font-bold cursor-pointer transition-colors"
                   title="Clear all alerts"
                 >
                   <Trash2 className="h-4 w-4" />

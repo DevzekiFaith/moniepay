@@ -242,9 +242,6 @@ export function InstantRecordSheet({
     setJustRecorded(label);
     if (onSuccess) onSuccess(newTx);
 
-    // Speak natural audio confirmation
-    speakTraderAudioFeedback(`${label}. ₦${numAmount.toLocaleString()} saved safe.`);
-
     setTimeout(() => {
       setJustRecorded(null);
       setAmount("");

@@ -280,9 +280,6 @@ export function TellMoniePay({
       whatToDoNext,
     });
     onActivityRecorded();
-
-    // Natural audio voice readout confirming the record in Nigerian English
-    speakTraderAudioFeedback(`${typeLabel}: ${whatChanged} ${whatToDoNext}`);
   };
 
   const handleFormSubmit = (e: React.FormEvent) => {
