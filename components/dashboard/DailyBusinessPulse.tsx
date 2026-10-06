@@ -33,7 +33,7 @@ export function DailyBusinessPulse({
         <h2 className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-emerald-950/60 truncate">
           Shop Pulse (Wetin Dey Enter)
         </h2>
-        <InfoTooltip content="Shop financial health score (0-100)">
+        <InfoTooltip content="Condition of your shop moni (0-100)">
           <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-emerald-500/10 backdrop-blur-md border border-emerald-600/20 text-emerald-950 text-[10.5px] sm:text-xs font-black shadow-2xs cursor-help shrink-0">
             <Activity className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-emerald-700" />
             <span className="sm:hidden">{metrics.healthScore >= 75 ? "Health: Body Dey Sweet" : "Health: Small Adjustment"} ({metrics.healthScore}/100)</span>
@@ -45,7 +45,7 @@ export function DailyBusinessPulse({
       {/* 4 Core Scannable Metric Cards with Tooltips */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
         {/* 1. TODAY'S SALES */}
-        <InfoTooltip content="Total sales recorded today">
+        <InfoTooltip content="All moni wey enter shop today">
           <motion.div
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -72,7 +72,7 @@ export function DailyBusinessPulse({
         </InfoTooltip>
 
         {/* 2. MONEY OUT */}
-        <InfoTooltip content="All expenses & market restock today">
+        <InfoTooltip content="Moni wey comot for goods & shop bills">
           <motion.div
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -99,7 +99,7 @@ export function DailyBusinessPulse({
         </InfoTooltip>
 
         {/* 3. MONEY AVAILABLE */}
-        <InfoTooltip content="Real liquid cash in drawer & bank">
+        <InfoTooltip content="Cash wey dey drawer & bank account">
           <motion.div
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -126,7 +126,7 @@ export function DailyBusinessPulse({
         </InfoTooltip>
 
         {/* 4. CUSTOMERS OWING */}
-        <InfoTooltip content="Customer debt to collect">
+        <InfoTooltip content="Customer gbese wey dey outside to collect">
           <motion.div
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
