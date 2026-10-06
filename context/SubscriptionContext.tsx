@@ -58,11 +58,12 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   // 1. Fetch Subscription Status from Server
   const refreshSubscription = useCallback(async () => {
     try {
-      // Local fast-cache check
-      const cached = localStorage.getItem("moniepay_subscription");
-      if (cached && !subscription) {
+      // Local fast-cache check on initial load
+      const cached = typeof window !== "undefined" ? localStorage.getItem("moniepay_subscription") : null;
+      if (cached) {
         try {
-          setSubscription(JSON.parse(cached));
+          const parsed = JSON.parse(cached);
+          setSubscription((prev) => prev || parsed);
         } catch {}
       }
 
@@ -71,7 +72,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         const data = await res.json();
         if (data?.success && data?.subscription) {
           setSubscription(data.subscription);
-          localStorage.setItem("moniepay_subscription", JSON.stringify(data.subscription));
+          if (typeof window !== "undefined") {
+            localStorage.setItem("moniepay_subscription", JSON.stringify(data.subscription));
+          }
           return;
         }
       }
@@ -82,11 +85,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     }
 
     // Default to 7-day trial if offline/cached
-    if (!subscription) {
-      setSubscription(DEFAULT_SUBSCRIPTION);
-      setIsLoading(false);
-    }
-  }, [subscription]);
+    setSubscription((prev) => prev || DEFAULT_SUBSCRIPTION);
+    setIsLoading(false);
+  }, []);
 
   useEffect(() => {
     refreshSubscription();
@@ -103,7 +104,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
   }, []);
 
   // 2. Initialize Flutterwave Checkout
-  const initializePayment = async (phone?: string) => {
+  const initializePayment = useCallback(async (phone?: string) => {
     try {
       const res = await fetch("/api/subscription/initialize", {
         method: "POST",
@@ -125,10 +126,10 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     } catch (err: any) {
       return { success: false, error: err?.message || "Network error." };
     }
-  };
+  }, [user?.id, user?.email, user?.name]);
 
   // 3. Verify Payment
-  const verifyPayment = async (transactionId: string | number, txRef?: string) => {
+  const verifyPayment = useCallback(async (transactionId: string | number, txRef?: string) => {
     try {
       const res = await fetch(
         `/api/subscription/verify?transaction_id=${transactionId}${txRef ? `&tx_ref=${txRef}` : ""}`,
@@ -138,7 +139,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       const data = await res.json();
       if (data?.success && data?.subscription) {
         setSubscription(data.subscription);
-        localStorage.setItem("moniepay_subscription", JSON.stringify(data.subscription));
+        if (typeof window !== "undefined") {
+          localStorage.setItem("moniepay_subscription", JSON.stringify(data.subscription));
+        }
         toast("Subscription Activated! 🎉", "Welcome to MoniePay Plus. All features unlocked!", {
           type: "success",
         });
@@ -149,7 +152,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     } catch (err: any) {
       return { success: false, message: err?.message || "Verification failed." };
     }
-  };
+  }, [toast]);
 
   // 4. Feature Gate Helper
   // Allows existing records to ALWAYS be viewed, but gates creation if expired
@@ -170,11 +173,11 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       );
       return false;
     },
-    [subscription, openUpgradeModal]
+    [subscription?.canAccessFullFeatures, openUpgradeModal]
   );
 
   // 5. Simulate Test Payment for Developer / Demo Mode
-  const simulateTestPayment = async (action: "activate" | "expire_trial" | "reset_trial" = "activate") => {
+  const simulateTestPayment = useCallback(async (action: "activate" | "expire_trial" | "reset_trial" = "activate") => {
     try {
       const res = await fetch("/api/subscription/simulate-test", {
         method: "POST",
@@ -184,7 +187,9 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       const data = await res.json();
       if (data?.success && data?.subscription) {
         setSubscription(data.subscription);
-        localStorage.setItem("moniepay_subscription", JSON.stringify(data.subscription));
+        if (typeof window !== "undefined") {
+          localStorage.setItem("moniepay_subscription", JSON.stringify(data.subscription));
+        }
         toast(
           action === "activate"
             ? "MoniePay Plus Activated! ⭐"
@@ -198,7 +203,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     } catch (err) {
       console.warn("Simulate test error:", err);
     }
-  };
+  }, [user?.id, toast]);
 
   const currentSub = subscription || DEFAULT_SUBSCRIPTION;
   const isTrialActive = currentSub.isTrialActive;

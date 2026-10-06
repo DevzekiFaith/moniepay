@@ -51,6 +51,7 @@ function UpgradeContent() {
   const [verifyingStatus, setVerifyingStatus] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const verifiedOnceRef = React.useRef(false);
 
   // Handle Flutterwave return callback
   useEffect(() => {
@@ -58,7 +59,8 @@ function UpgradeContent() {
     const transactionId = searchParams?.get("transaction_id") || searchParams?.get("id");
     const statusParam = searchParams?.get("status");
 
-    if (transactionId || (statusParam === "successful" && txRef)) {
+    if ((transactionId || (statusParam === "successful" && txRef)) && !verifiedOnceRef.current) {
+      verifiedOnceRef.current = true;
       const handleVerify = async () => {
         setVerifyingStatus("Verifying your payment with Flutterwave…");
         setIsProcessing(true);
