@@ -17,7 +17,7 @@ import {
   Layers,
   HelpCircle,
   PhoneCall,
-  Crown,
+  BadgeCheck,
 } from "lucide-react";
 import type { DeterministicMetrics, Debt } from "@/types/moniepay.types";
 import { diagnoseFourQuestions } from "@/lib/intelligence/deterministicEngine";
@@ -103,7 +103,7 @@ export function FourQuestionsCard({
         <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-inner shrink-0">
-              <Crown className="h-5 w-5 text-amber-300 fill-amber-300/30" />
+              <BadgeCheck className="h-6 w-6 text-sky-300" />
             </div>
             <div>
               <div className="flex items-center gap-2">

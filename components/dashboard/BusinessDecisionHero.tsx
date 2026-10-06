@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Crown,
+  BadgeCheck,
   ArrowRight,
   CheckCircle2,
   AlertTriangle,
@@ -92,7 +92,7 @@ export function BusinessDecisionHero({
             <div className="flex-1 pr-0 sm:pr-4">
               {/* Badge */}
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-600/10 text-emerald-800 text-xs font-bold tracking-tight mb-2.5">
-                <Crown className="h-3.5 w-3.5 text-amber-500 fill-amber-500/20" />
+                <BadgeCheck className="h-3.5 w-3.5 text-emerald-600" />
                 <span>What to do next today</span>
               </div>
 

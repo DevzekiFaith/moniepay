@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import React from "react";
-import { Crown, Sparkles, Clock, AlertTriangle } from "lucide-react";
+import { BadgeCheck, AlertTriangle } from "lucide-react";
 import { useSubscription } from "@/context/SubscriptionContext";
 
 export function SubscriptionStatusPill() {
@@ -23,10 +23,10 @@ export function SubscriptionStatusPill() {
       <button
         type="button"
         onClick={() => openUpgradeModal()}
-        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-gradient-to-r from-amber-400/20 via-blue-500/15 to-indigo-500/20 border border-amber-400/30 text-amber-900 text-[11px] font-black shadow-2xs hover:opacity-90 active:scale-95 transition-all cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-blue-500/20 border border-blue-400/40 text-blue-100 text-[11px] font-black shadow-2xs hover:opacity-90 active:scale-95 transition-all cursor-pointer backdrop-blur-md"
         title="MoniePay Plus Active"
       >
-        <Crown className="h-3.5 w-3.5 text-amber-600 fill-amber-400" />
+        <BadgeCheck className="h-3.5 w-3.5 text-blue-300" />
         <span className="hidden sm:inline">MoniePay Plus</span>
         <span className="sm:hidden">Plus</span>
       </button>

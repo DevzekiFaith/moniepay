@@ -8,7 +8,7 @@ import {
   CheckCircle2,
   TrendingUp,
   Clock,
-  Crown,
+  BadgeCheck,
   Award,
   Users,
   Calendar,
@@ -104,7 +104,7 @@ export function DecisionTrackerSheet({
           {/* Learned Business Insights */}
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2.5 flex items-center gap-1.5">
-              <Crown className="h-3.5 w-3.5 text-amber-500 fill-amber-500/20" />
+              <BadgeCheck className="h-3.5 w-3.5 text-emerald-600" />
               <span>What MoniePay Has Learned About Your Business</span>
             </h4>
             <div className="space-y-2.5">

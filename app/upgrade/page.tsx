@@ -9,7 +9,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
-  Crown,
+  BadgeCheck,
   CheckCircle2,
   Zap,
   TrendingUp,
@@ -20,7 +20,7 @@ import {
   Loader2,
   AlertCircle,
   Clock,
-  Sparkles,
+  BarChart3,
   ArrowLeft,
   Store,
   Receipt,
@@ -130,7 +130,7 @@ function UpgradeContent() {
           <div className="flex items-center gap-3.5">
             <div className="flex h-14 w-14 items-center justify-center rounded-[22px] clay-icon-box p-1 shrink-0 shadow-[0_10px_25px_rgba(154,180,214,0.45)]">
               <div className="h-full w-full rounded-[18px] bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white">
-                <Crown className="h-7 w-7 text-amber-300" />
+                <BadgeCheck className="h-7 w-7 text-sky-300" />
               </div>
             </div>
 
@@ -243,7 +243,7 @@ function UpgradeContent() {
                   desc: "Collect pending money from customers fast with respectful, one-tap WhatsApp messages.",
                 },
                 {
-                  icon: <Crown className="h-4 w-4 text-indigo-600" />,
+                  icon: <BarChart3 className="h-4 w-4 text-indigo-600" />,
                   title: "7 Market Decisions & Wholesaler Price Alerts",
                   desc: "Know whether to buy stock today or wait, with real-time price trend alerts.",
                 },

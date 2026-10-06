@@ -10,13 +10,12 @@ import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Crown,
   CheckCircle2,
   Zap,
   ShieldCheck,
   TrendingUp,
   MessageSquare,
-  Sparkles,
+  BadgeCheck,
   Lock,
   X,
   CreditCard,
@@ -120,10 +119,10 @@ export function UpgradeModal() {
 
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-inner shrink-0">
-                  <Crown className="h-6 w-6 text-amber-300" />
+                  <ShieldCheck className="h-6 w-6 text-sky-300" />
                 </div>
                 <div>
-                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400/20 border border-amber-400/30 text-amber-200 text-[10px] font-black uppercase tracking-wider">
+                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-400/20 border border-blue-400/30 text-blue-200 text-[10px] font-black uppercase tracking-wider">
                     <span>Trader Power Plan</span>
                   </div>
                   <h3 id="upgrade-modal-title" className="text-base sm:text-lg font-black tracking-tight leading-tight text-white mt-0.5">
@@ -161,7 +160,7 @@ export function UpgradeModal() {
                   <div>
                     <p className="text-xs font-black text-slate-900">
                       {isSubscribed
-                        ? "MoniePay Plus Active ⭐"
+                        ? "MoniePay Plus Active"
                         : isTrialActive
                         ? `7-Day Free Trial (${trialDaysLeft} days left)`
                         : "7-Day Free Trial Don Expire"}
@@ -186,7 +185,7 @@ export function UpgradeModal() {
               {/* Price Hero Card */}
               <div className="clay-card p-4 sm:p-5 text-center space-y-2 relative overflow-hidden">
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100/70 border border-blue-200 text-blue-900 text-[11px] font-black">
-                  <Sparkles className="h-3.5 w-3.5 text-blue-600" />
+                  <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
                   <span>Simple Flat Price • No Hidden Charges</span>
                 </div>
 
@@ -228,7 +227,7 @@ export function UpgradeModal() {
                       desc: "Send polite automated WhatsApp reminders to customers who owe you money.",
                     },
                     {
-                      icon: <Crown className="h-4 w-4 text-indigo-600" />,
+                      icon: <TrendingUp className="h-4 w-4 text-indigo-600" />,
                       title: "7 Market Decisions & Wholesaler Price Alerts",
                       desc: "Get real-time market price movements and clear advice on when to buy stock.",
                     },
