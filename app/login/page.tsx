@@ -13,7 +13,6 @@ import {
   Eye,
   EyeOff,
   ShieldCheck,
-  Crown,
   CheckCircle2,
   AlertCircle,
   Loader2,
@@ -225,36 +224,41 @@ function LoginContent() {
               type="button"
               onClick={handleQuickDemo}
               disabled={isDemoLoading || isSubmitting}
-              className="group w-full relative overflow-hidden rounded-[22px] bg-gradient-to-br from-emerald-600 to-teal-600 p-[1px] shadow-[0_6px_24px_rgba(5,150,105,0.35)] active:scale-[0.98] transition-all cursor-pointer disabled:opacity-80"
+              className="group w-full relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#047857] p-[1px] shadow-[0_8px_26px_rgba(4,120,87,0.3)] active:scale-[0.98] transition-all cursor-pointer disabled:opacity-80"
             >
-              <div className="rounded-[21px] bg-gradient-to-br from-emerald-600 to-teal-600 px-5 py-4 flex items-center gap-4">
-                {/* Avatar badge */}
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/20 border border-white/30 shrink-0">
-                  <Crown className="h-5 w-5 text-amber-300 fill-amber-300/40" />
+              <div className="rounded-[23px] bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#047857] px-4 sm:px-5 py-3.5 sm:py-4 flex items-center gap-3.5">
+                {/* Local market headshot avatar */}
+                <div className="relative h-13 w-13 rounded-2xl overflow-hidden border-2 border-emerald-400/40 shrink-0 shadow-md">
+                  <img
+                    src="/images/traders/mama_chidi.jpg"
+                    alt="Mama Chidi - Balogun Market Trader"
+                    className="h-full w-full object-cover object-center"
+                  />
+                  <span className="absolute bottom-0.5 right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-emerald-950 animate-pulse" />
                 </div>
 
-                <div className="flex-1 text-left">
+                <div className="flex-1 text-left min-w-0">
                   <div className="flex items-center gap-1.5 mb-0.5">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-200">
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">
                       Try Demo Shop
                     </span>
-                    <span className="px-1.5 py-0.5 rounded-full bg-white/20 text-[9px] font-black text-white uppercase tracking-wider">
-                      Free
+                    <span className="px-1.5 py-0.5 rounded-full bg-emerald-400/20 text-[9px] font-black text-emerald-200 uppercase tracking-wider border border-emerald-400/30">
+                      1-Tap Free
                     </span>
                   </div>
-                  <p className="text-sm font-black text-white leading-tight">
+                  <p className="text-sm sm:text-base font-black text-white leading-tight truncate">
                     Mama Chidi's Provisions
                   </p>
-                  <p className="text-[11px] text-emerald-100/80 font-medium mt-0.5">
-                    Balogun Market, Lagos • No sign up needed
+                  <p className="text-[11px] text-emerald-100/80 font-medium mt-0.5 truncate">
+                    Balogun Market, Lagos • No password needed
                   </p>
                 </div>
 
                 <div className="shrink-0">
                   {isDemoLoading ? (
-                    <Loader2 className="h-5 w-5 text-white animate-spin" />
+                    <Loader2 className="h-5 w-5 text-emerald-200 animate-spin" />
                   ) : (
-                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/20 border border-white/25 group-hover:bg-white/30 transition-all">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 border border-white/25 group-hover:bg-white/25 transition-all">
                       <ArrowRight className="h-4 w-4 text-white" />
                     </div>
                   )}
