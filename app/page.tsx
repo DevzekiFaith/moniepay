@@ -3,11 +3,22 @@
 // ─────────────────────────────────────────────────────────────────
 // MoniePay — Business Decision Intelligence OS
 // “Tell MoniePay what happened. MoniePay helps you decide what to do next.”
-// Daylight Fluid Architecture • Single Green Market Theme
+// Daylight Fluid Architecture • Single Green Market Theme • Framer Motion
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Plus } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Plus,
+  Sparkles,
+  HelpCircle,
+  Clock,
+  Home,
+  CheckCircle2,
+  Users,
+  Wallet,
+  ArrowRight,
+} from "lucide-react";
 
 // Types
 import type {
@@ -54,10 +65,12 @@ import { SafeWithdrawalModal } from "@/components/dashboard/SafeWithdrawalModal"
 import { FloatingActionDock } from "@/components/dashboard/FloatingActionDock";
 
 type Period = "today" | "this_week" | "this_month";
+type MainTab = "today" | "decisions" | "activity";
 
 export default function MoniePayDashboard() {
   const [business, setBusiness] = useState<Business>(DEFAULT_BUSINESS);
   const [period, setPeriod] = useState<Period>("this_week");
+  const [activeTab, setActiveTab] = useState<MainTab>("today");
   const [isOnline, setIsOnline] = useState<boolean>(true);
   const [isSyncing, setIsSyncing] = useState<boolean>(false);
 
@@ -74,7 +87,7 @@ export default function MoniePayDashboard() {
   const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false);
   const [safeWithdrawalAmount, setSafeWithdrawalAmount] = useState(40000);
 
-  // 1. Initial State Hydration (Cache-first for instant cold start)
+  // 1. Initial State Hydration
   useEffect(() => {
     setIsOnline(typeof navigator !== "undefined" ? navigator.onLine : true);
 
@@ -183,7 +196,7 @@ export default function MoniePayDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-44 sm:pb-36 selection:bg-emerald-500/20 selection:text-emerald-950 overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 sm:pb-32 selection:bg-emerald-500/20 selection:text-emerald-950 overflow-x-hidden">
       {/* ── TOP HEADER (Unified Emerald Theme) ── */}
       <DaylightHeader
         business={business}
@@ -195,81 +208,187 @@ export default function MoniePayDashboard() {
         onChangePeriod={setPeriod}
       />
 
-      {/* ── DAYLIGHT MAIN CONTENT (Fluid Mobile Container) ── */}
-      <main className="relative -mt-6 rounded-t-[36px] bg-slate-50 pt-5 px-3.5 sm:px-6 md:px-8 w-full max-w-4xl mx-auto space-y-5 sm:space-y-6">
-        {/* Soft Organic Pill Handle */}
-        <div className="mx-auto h-1.5 w-12 rounded-full bg-slate-300/80 mb-2" />
+      {/* ── DAYLIGHT MAIN CONTAINER (Fluid Mobile Frame) ── */}
+      <main className="relative -mt-4 rounded-t-[32px] bg-slate-50 pt-3 px-3 sm:px-5 md:px-8 w-full max-w-3xl mx-auto space-y-4">
+        {/* Soft Drag Handle */}
+        <div className="mx-auto h-1 w-10 rounded-full bg-slate-300 mb-1" />
 
-        {/* ── 1. TELL MONIEPAY (Conversational & 1-Tap Capture) ── */}
-        <TellMoniePay
-          onOpenDetailedSheet={handleOpenRecord}
-          onActivityRecorded={refreshTxs}
-        />
+        {/* ── INTERACTIVE TAB SWITCHER (Reduces steps & organizes views) ── */}
+        <div className="flex rounded-2xl bg-white border border-emerald-900/10 p-1 shadow-xs">
+          <button
+            type="button"
+            onClick={() => setActiveTab("today")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              activeTab === "today"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Sparkles className="h-3.5 w-3.5" />
+            <span>Today's View</span>
+          </button>
 
-        {/* ── 2. YOUR NEXT MOVE (The Star Intelligence Recommendation) ── */}
-        <NextMoveCard
-          metrics={metrics}
-          debts={debts}
-          recommendations={recommendations}
-          businessName={business.name}
-          onOpenGbeseBook={() => setIsGbeseOpen(true)}
-          onOpenWithdrawal={(safeAmt) => {
-            setSafeWithdrawalAmount(safeAmt);
-            setIsWithdrawalOpen(true);
-          }}
-        />
+          <button
+            type="button"
+            onClick={() => setActiveTab("decisions")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              activeTab === "decisions"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <HelpCircle className="h-3.5 w-3.5" />
+            <span>7 Decisions</span>
+          </button>
 
-        {/* ── 3. DAILY BUSINESS VIEW (Today's Sales, Money Out, Money Available, Customers Owing) ── */}
-        <DailyBusinessPulse
-          metrics={metrics}
-          onOpenGbeseBook={() => setIsGbeseOpen(true)}
-          onOpenWithdrawal={() => {
-            setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
-            setIsWithdrawalOpen(true);
-          }}
-          onOpenSales={() => handleOpenRecord("SALE")}
-          onOpenCosts={() => handleOpenRecord("EXPENSE")}
-        />
+          <button
+            type="button"
+            onClick={() => setActiveTab("activity")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              activeTab === "activity"
+                ? "bg-emerald-700 text-white shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            <Clock className="h-3.5 w-3.5" />
+            <span>Activity Log</span>
+          </button>
+        </div>
 
-        {/* ── 4. DECISIONS YOU CAN MAKE RIGHT NOW (7 Natural Entry Points) ── */}
-        <QuickDecisionsGrid
-          metrics={metrics}
-          debts={debts}
-          onOpenWithdrawal={() => {
-            setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
-            setIsWithdrawalOpen(true);
-          }}
-          onOpenRestock={() => handleOpenRecord("STOCK_PURCHASE")}
-          onOpenGbeseBook={() => setIsGbeseOpen(true)}
-          onOpenProfitDetail={() => handleOpenRecord("SALE")}
-        />
-
-        {/* ── 5. DECISION MEMORY & LEARNING ── */}
-        <DecisionMemoryCard />
-
-        {/* ── 6. LIVE BUSINESS ACTIVITY ── */}
-        <section className="pt-3 border-t border-slate-200/80">
-          <div className="flex items-center justify-between pb-3 px-1">
-            <div>
-              <h2 className="text-xs font-black uppercase tracking-wider text-slate-500">
-                Recent Business Activity
-              </h2>
-            </div>
-
-            <button
-              onClick={() => handleOpenRecord("SALE")}
-              className="px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black shadow-sm active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
+        {/* ── TAB CONTENT WITH FRAMER MOTION TRANSITIONS ── */}
+        <AnimatePresence mode="wait">
+          {activeTab === "today" && (
+            <motion.div
+              key="tab-today"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+              className="space-y-4"
             >
-              <Plus className="h-3.5 w-3.5" />
-              <span>Record Sale</span>
-            </button>
-          </div>
+              {/* 1. TELL MONIEPAY (Voice, Text & Instant Feedback) */}
+              <TellMoniePay
+                onOpenDetailedSheet={handleOpenRecord}
+                onActivityRecorded={refreshTxs}
+              />
 
-          <RecentActivityList
-            transactions={filteredTransactions}
-            onOpenRecordModal={() => handleOpenRecord("SALE")}
-          />
-        </section>
+              {/* 2. YOUR NEXT MOVE (The Single Star Recommendation) */}
+              <NextMoveCard
+                metrics={metrics}
+                debts={debts}
+                recommendations={recommendations}
+                businessName={business.name}
+                onOpenGbeseBook={() => setIsGbeseOpen(true)}
+                onOpenWithdrawal={(safeAmt) => {
+                  setSafeWithdrawalAmount(safeAmt);
+                  setIsWithdrawalOpen(true);
+                }}
+              />
+
+              {/* 3. DAILY BUSINESS VIEW (Today's Sales, Money Out, Money Available, Customers Owing) */}
+              <DailyBusinessPulse
+                metrics={metrics}
+                onOpenGbeseBook={() => setIsGbeseOpen(true)}
+                onOpenWithdrawal={() => {
+                  setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
+                  setIsWithdrawalOpen(true);
+                }}
+                onOpenSales={() => handleOpenRecord("SALE")}
+                onOpenCosts={() => handleOpenRecord("EXPENSE")}
+              />
+
+              {/* Quick Actions Row */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => handleOpenRecord("SALE")}
+                  className="py-3 px-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-sm"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span>+ Record Sale</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsGbeseOpen(true)}
+                  className="py-3 px-3 rounded-2xl bg-white border border-emerald-900/10 hover:border-emerald-600 text-slate-800 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs"
+                >
+                  <Users className="h-4 w-4 text-emerald-700" />
+                  <span>Gbese Book ({debts.filter(d => d.status !== "SETTLED").length})</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
+                    setIsWithdrawalOpen(true);
+                  }}
+                  className="col-span-2 sm:col-span-1 py-3 px-3 rounded-2xl bg-white border border-emerald-900/10 hover:border-emerald-600 text-slate-800 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs"
+                >
+                  <Wallet className="h-4 w-4 text-emerald-700" />
+                  <span>Take Chop Money</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+
+          {activeTab === "decisions" && (
+            <motion.div
+              key="tab-decisions"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+              className="space-y-4"
+            >
+              {/* 7 Core Trader Decisions */}
+              <QuickDecisionsGrid
+                metrics={metrics}
+                debts={debts}
+                onOpenWithdrawal={() => {
+                  setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
+                  setIsWithdrawalOpen(true);
+                }}
+                onOpenRestock={() => handleOpenRecord("STOCK_PURCHASE")}
+                onOpenGbeseBook={() => setIsGbeseOpen(true)}
+                onOpenProfitDetail={() => handleOpenRecord("SALE")}
+              />
+
+              {/* Decision Memory Tracking */}
+              <DecisionMemoryCard />
+            </motion.div>
+          )}
+
+          {activeTab === "activity" && (
+            <motion.div
+              key="tab-activity"
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.18 }}
+              className="space-y-3"
+            >
+              <div className="flex items-center justify-between px-1">
+                <h2 className="text-xs font-black uppercase tracking-wider text-slate-500">
+                  Live Business Activity
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => handleOpenRecord("SALE")}
+                  className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black flex items-center gap-1 cursor-pointer active:scale-95 transition-all shadow-xs"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  <span>Add Transaction</span>
+                </button>
+              </div>
+
+              <RecentActivityList
+                transactions={filteredTransactions}
+                onOpenRecordModal={() => handleOpenRecord("SALE")}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* ── FLOATING DAYLIGHT ACTION DOCK ── */}
@@ -280,10 +399,11 @@ export default function MoniePayDashboard() {
           setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
           setIsWithdrawalOpen(true);
         }}
-        onOpenTracker={() => setIsTrackerOpen(true)}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as MainTab)}
       />
 
-      {/* ── INTERACTIVE BOTTOM SHEETS ── */}
+      {/* ── INTERACTIVE MODALS & BOTTOM SHEETS ── */}
       <InstantRecordSheet
         isOpen={isRecordOpen}
         onClose={() => setIsRecordOpen(false)}
