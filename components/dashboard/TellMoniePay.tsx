@@ -303,18 +303,22 @@ export function TellMoniePay({
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="rounded-[28px] bg-white/80 backdrop-blur-md border border-emerald-950/[0.08] p-4 sm:p-5 shadow-[0_8px_32px_rgba(4,120,87,0.04)] space-y-3"
+      className="clay-card p-5 space-y-3.5 relative overflow-hidden"
     >
+      {/* Decorative ambient glass light */}
+      <div className="pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-blue-400/15 blur-2xl" />
+      <div className="pointer-events-none absolute -left-8 -bottom-8 h-28 w-28 rounded-full bg-sky-300/15 blur-2xl" />
+
       {/* Header */}
       <div className="flex items-center justify-between px-1">
-        <div className="flex items-center gap-2">
-          <span className="flex h-2.5 w-2.5 rounded-full bg-emerald-600 animate-pulse" />
-          <h2 className="text-xs font-black uppercase tracking-wider text-emerald-950">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-2.5 w-2.5 rounded-full bg-blue-600 animate-pulse shadow-xs shadow-blue-500/50" />
+          <h2 className="text-xs font-black uppercase tracking-wider text-slate-800">
             Tell MoniePay Wetin Happen For Shop
           </h2>
         </div>
-        <span className="text-[11px] font-bold text-emerald-700">
-          Instant • Voice &amp; No-Internet
+        <span className="text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-blue-50/80 text-blue-700 border border-blue-200/60 shadow-xs">
+          Instant • Voice &amp; Offline
         </span>
       </div>
 
@@ -326,14 +330,14 @@ export function TellMoniePay({
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="Talk or type: e.g. Sold 45k, Chidi pay 15k, Buy stock 20k..."
-            className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-50/90 backdrop-blur-xs border border-slate-200/90 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-all"
+            className="clay-input w-full pl-4 pr-11 py-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
           />
           {inputVal && (
             <motion.button
               type="submit"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center cursor-pointer shadow-sm"
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white flex items-center justify-center cursor-pointer shadow-md shadow-blue-600/30 border-t border-white/30"
               title="Record to MoniePay"
             >
               <Send className="h-3.5 w-3.5" />
@@ -351,8 +355,8 @@ export function TellMoniePay({
               onClick={toggleListening}
               className={`h-11 w-11 rounded-2xl flex items-center justify-center cursor-pointer transition-all shrink-0 ${
                 isListening
-                  ? "bg-rose-600 text-white animate-pulse shadow-md shadow-rose-500/30"
-                  : "bg-emerald-50/90 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-2xs backdrop-blur-xs"
+                  ? "bg-rose-600 text-white animate-pulse shadow-lg shadow-rose-500/40"
+                  : "clay-card-sm text-blue-700 hover:text-blue-900"
               }`}
             >
               {isListening ? (
@@ -381,7 +385,7 @@ export function TellMoniePay({
                   setInputVal(item.text);
                   processTraderInput(item.text);
                 }}
-                className="px-3 py-1.5 rounded-xl bg-emerald-50/80 hover:bg-emerald-100 border border-emerald-200/70 text-emerald-950 text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0 backdrop-blur-xs"
+                className="px-3 py-1.5 rounded-xl clay-card-sm text-slate-700 hover:text-blue-700 text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0"
               >
                 {item.label}
               </motion.button>
@@ -393,22 +397,28 @@ export function TellMoniePay({
         ))}
       </div>
 
-      {/* Value Feedback Card: What Changed? Why It Matters? What To Do Next? */}
+      {/* Value Feedback Card: Frosted Glassmorphism with What Changed? Why It Matters? Next Move: */}
       <AnimatePresence>
         {feedback && (
           <motion.div
-            initial={{ opacity: 0, y: -6, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: "auto" }}
-            exit={{ opacity: 0, y: -6, height: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            className="rounded-2xl bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#047857] text-white p-4 space-y-2.5 shadow-lg shadow-emerald-950/20 border border-emerald-600/40 relative overflow-hidden"
+            initial={{ opacity: 0, y: -6, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.97 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
+            className="rounded-2xl backdrop-blur-2xl bg-gradient-to-br from-white/95 via-blue-50/70 to-white/90 border border-white/90 shadow-[0_12px_36px_rgba(37,99,235,0.12),-6px_-6px_20px_rgba(255,255,255,0.95)] p-4 sm:p-5 space-y-3 relative overflow-hidden"
           >
+            {/* Ambient glass flare effect */}
+            <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-blue-500/15 blur-xl" />
+            <div className="pointer-events-none absolute -left-6 -bottom-6 h-24 w-24 rounded-full bg-emerald-500/10 blur-xl" />
+
             {/* Header: Recorded ✓ */}
-            <div className="flex items-center justify-between pb-2 border-b border-emerald-700/60">
+            <div className="flex items-center justify-between pb-2.5 border-b border-blue-100/80">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
-                <span className="text-xs font-black text-emerald-100 tracking-wide uppercase">
-                  Recorded ✓ ₦{feedback.amount.toLocaleString()} ({feedback.typeLabel})
+                <div className="h-6 w-6 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
+                  <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                </div>
+                <span className="text-xs font-black text-slate-900 tracking-tight">
+                  Recorded ✓ ₦{feedback.amount.toLocaleString()} <span className="text-blue-700">({feedback.typeLabel})</span>
                 </span>
               </div>
               <div className="flex items-center gap-2">
@@ -419,16 +429,16 @@ export function TellMoniePay({
                       `${feedback.typeLabel}: ${feedback.whatChanged} ${feedback.whatToDoNext}`
                     )
                   }
-                  className="flex items-center gap-1 text-[11px] font-bold text-emerald-200 hover:text-white bg-white/15 hover:bg-white/25 px-2 py-0.5 rounded-md transition-all cursor-pointer backdrop-blur-sm"
+                  className="flex items-center gap-1 text-[11px] font-bold text-blue-700 hover:text-blue-900 bg-blue-50/90 hover:bg-blue-100/90 border border-blue-200/70 px-2.5 py-1 rounded-xl transition-all cursor-pointer shadow-xs active:scale-95"
                   title="Listen to voice confirmation again"
                 >
-                  <Volume2 className="h-3 w-3" />
+                  <Volume2 className="h-3.5 w-3.5 text-blue-600" />
                   <span>Listen</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setFeedback(null)}
-                  className="text-[11px] font-bold text-emerald-300 hover:text-white cursor-pointer"
+                  className="text-[11px] font-bold text-slate-400 hover:text-slate-700 px-2 py-1 rounded-lg hover:bg-slate-100/70 transition-colors cursor-pointer"
                 >
                   Dismiss
                 </button>
@@ -436,30 +446,30 @@ export function TellMoniePay({
             </div>
 
             {/* 3 Core Value Items */}
-            <div className="space-y-1.5 text-xs">
-              <div className="flex items-start gap-2">
-                <span className="font-black text-emerald-300 shrink-0 min-w-[85px]">
+            <div className="space-y-2 text-xs">
+              <div className="flex items-start gap-2.5">
+                <span className="font-black text-blue-700 shrink-0 min-w-[90px]">
                   What changed?
                 </span>
-                <span className="text-emerald-100 font-medium leading-tight">
+                <span className="text-slate-800 font-bold leading-relaxed">
                   {feedback.whatChanged}
                 </span>
               </div>
 
-              <div className="flex items-start gap-2">
-                <span className="font-black text-emerald-300 shrink-0 min-w-[85px]">
+              <div className="flex items-start gap-2.5">
+                <span className="font-black text-indigo-600 shrink-0 min-w-[90px]">
                   Why it matters?
                 </span>
-                <span className="text-emerald-200 font-medium leading-tight">
+                <span className="text-slate-700 font-semibold leading-relaxed">
                   {feedback.whyItMatters}
                 </span>
               </div>
 
-              <div className="flex items-start gap-2 pt-1 border-t border-emerald-700/60">
-                <span className="font-black text-white shrink-0 min-w-[85px]">
+              <div className="flex items-start gap-2.5 p-2.5 rounded-xl bg-gradient-to-r from-blue-600/10 via-sky-500/10 to-transparent border-l-4 border-blue-600 shadow-xs">
+                <span className="font-black text-blue-800 shrink-0 min-w-[90px]">
                   Next move:
                 </span>
-                <span className="text-white font-black leading-tight">
+                <span className="text-blue-950 font-black leading-relaxed">
                   {feedback.whatToDoNext}
                 </span>
               </div>

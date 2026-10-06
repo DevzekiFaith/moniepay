@@ -93,25 +93,25 @@ export function FourQuestionsCard({
   ];
 
   return (
-    <section className="relative overflow-hidden rounded-[30px] bg-gradient-to-b from-white via-slate-50/50 to-white border border-slate-200/90 shadow-[0_12px_36px_-6px_rgba(15,23,42,0.08),0_4px_16px_rgba(15,23,42,0.03)] transition-all">
-      {/* ── TOP HERO HEADER: SLEEK EMERALD GLASS WITH HEALTH PULSE ── */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 p-5 sm:p-6 text-white">
+    <section className="clay-card overflow-hidden">
+      {/* ── TOP HERO HEADER: SLEEK SAPPHIRE & COBALT GLASS WITH HEALTH PULSE ── */}
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-950 p-5 sm:p-6 text-white border-b border-white/10">
         {/* Subtle decorative glow */}
-        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-emerald-400/25 blur-2xl" />
-        <div className="pointer-events-none absolute left-1/3 bottom-0 h-28 w-28 rounded-full bg-teal-300/15 blur-xl" />
+        <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-blue-500/25 blur-2xl" />
+        <div className="pointer-events-none absolute left-1/3 bottom-0 h-28 w-28 rounded-full bg-sky-400/15 blur-xl" />
 
         <div className="relative flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-inner shrink-0">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/25 shadow-inner shrink-0">
               <Crown className="h-5 w-5 text-amber-300 fill-amber-300/30" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-black uppercase tracking-widest text-emerald-300">
-                  Business Operating System
+                <span className="text-[10px] font-black uppercase tracking-widest text-blue-300">
+                  Business Decision Intelligence
                 </span>
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-400/20 border border-emerald-300/30 text-[9.5px] font-black text-emerald-200">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-300 animate-pulse" />
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-400/20 border border-blue-300/30 text-[9.5px] font-black text-blue-200 backdrop-blur-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-300 animate-pulse" />
                   Live Advisor
                 </span>
               </div>
@@ -122,10 +122,10 @@ export function FourQuestionsCard({
           </div>
 
           {/* Quick Health Vitality Pill */}
-          <div className="flex items-center gap-2.5 self-start sm:self-auto bg-black/25 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-white/15">
-            <Activity className="h-4 w-4 text-emerald-300" />
+          <div className="flex items-center gap-2.5 self-start sm:self-auto bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-2xl border border-white/15 shadow-sm">
+            <Activity className="h-4 w-4 text-emerald-400" />
             <div>
-              <span className="text-[9px] font-extrabold uppercase tracking-wider text-emerald-200/80 block leading-none">
+              <span className="text-[9px] font-extrabold uppercase tracking-wider text-blue-200/90 block leading-none">
                 Vitality Index
               </span>
               <span className="text-xs font-black text-white leading-tight">
@@ -146,8 +146,8 @@ export function FourQuestionsCard({
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`relative px-3.5 py-2 rounded-xl text-xs font-black shrink-0 transition-all cursor-pointer flex items-center gap-1.5 ${
                   isActive
-                    ? "bg-white text-emerald-950 shadow-md shadow-black/10 scale-[1.02]"
-                    : "bg-white/10 text-emerald-100/90 hover:bg-white/15"
+                    ? "bg-white text-blue-950 shadow-md shadow-black/20 scale-[1.02]"
+                    : "bg-white/10 text-white/90 hover:bg-white/15"
                 }`}
               >
                 <span>{tab.label}</span>
@@ -155,7 +155,7 @@ export function FourQuestionsCard({
                   className={`text-[9.5px] font-black px-1.5 py-0.5 rounded-md ${
                     isActive
                       ? tab.isPrimary
-                        ? "bg-emerald-700 text-white"
+                        ? "bg-blue-600 text-white shadow-xs"
                         : "bg-slate-200 text-slate-800"
                       : "bg-white/15 text-white"
                   }`}
