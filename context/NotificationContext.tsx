@@ -24,6 +24,16 @@ export interface ToastItem {
   duration?: number;
 }
 
+export interface DebtReminderParams {
+  personName: string;
+  amount: number;
+  dueDate?: string;
+  phone?: string;
+  notes?: string;
+  debtType?: "CUSTOMER_CREDIT" | "SUPPLIER_OBLIGATION";
+  isOverdue?: boolean;
+}
+
 interface NotificationContextType {
   notifications: MarketNotification[];
   unreadCount: number;
@@ -39,6 +49,7 @@ interface NotificationContextType {
     actionLabel?: string;
     amount?: string;
   }) => void;
+  sendDebtReminderNotification: (params: DebtReminderParams) => void;
   notify: (title: string, message?: string, type?: any) => void;
   error: (title: string, message?: string) => void;
   success: (title: string, message?: string) => void;
@@ -295,6 +306,54 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     [sendPushNotification]
   );
 
+  const sendDebtReminderNotification = useCallback(
+    (params: DebtReminderParams) => {
+      const { personName, amount, dueDate, phone, notes, debtType, isOverdue } = params;
+      const isSupplier = debtType === "SUPPLIER_OBLIGATION";
+      const cleanPhone = (phone || "").replace(/[^0-9]/g, "");
+
+      const title = isSupplier
+        ? isOverdue
+          ? "⚠️ Overdue Supplier Payment Due"
+          : "⏰ Supplier Payment Due"
+        : isOverdue
+        ? "🚨 Overdue Customer Gbese Due"
+        : "🔔 Customer Gbese Reminder Due";
+
+      const formattedAmount = `₦${Number(amount || 0).toLocaleString()}`;
+
+      const message = isSupplier
+        ? `You owe ${personName} ${formattedAmount}${notes ? ` (${notes})` : ""}${dueDate ? ` due ${dueDate}` : ""}. Pay on time make goods keep flowing.`
+        : `${personName} owes your shop ${formattedAmount}${notes ? ` for ${notes}` : ""}${dueDate ? ` (promised ${dueDate})` : ""}. Tap to send WhatsApp reminder now.`;
+
+      const actionLabel = isSupplier ? "Record Supplier Payment" : "Send WhatsApp Nudge";
+      
+      const actionUrl = isSupplier
+        ? "/accounts"
+        : cleanPhone
+        ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
+            `Good day ${personName}, hope work is going well. Friendly reminder from the shop regarding the ${formattedAmount} balance. Kindly arrange payment today so we can balance accounts. Thank you!`
+          )}`
+        : undefined;
+
+      sendPushNotification({
+        title,
+        message,
+        type: "debt_reminder",
+        amount: formattedAmount,
+        actionLabel,
+        actionUrl,
+      });
+
+      toast(
+        isSupplier ? "Supplier Alert Scheduled ⏰" : "Customer Gbese Alert Created 🔔",
+        `Reminder set for ${personName} (${formattedAmount})`,
+        { type: "warning", duration: 4000 }
+      );
+    },
+    [sendPushNotification, toast]
+  );
+
   const warning = useCallback(
     (title: string, message?: string) => {
       sendPushNotification({
@@ -318,6 +377,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         setIsDrawerOpen,
         requestPermission,
         sendPushNotification,
+        sendDebtReminderNotification,
         notify,
         error,
         success,

@@ -62,6 +62,7 @@ export function NotificationBellDrawer() {
     setIsDrawerOpen,
     requestPermission,
     sendPushNotification,
+    sendDebtReminderNotification,
     markAsRead,
     markAllAsRead,
     clearNotifications,
@@ -124,13 +125,39 @@ export function NotificationBellDrawer() {
     setTimeout(() => setTestSent(false), 2200);
   };
 
+  const handleTriggerDebtReminder = () => {
+    playChime();
+    sendDebtReminderNotification({
+      personName: "Mama Chidi",
+      amount: 25000,
+      dueDate: "Today",
+      phone: "08031234567",
+      notes: "Provisions carton purchase",
+      debtType: "CUSTOMER_CREDIT",
+      isOverdue: true,
+    });
+    setTestSent(true);
+    setTimeout(() => setTestSent(false), 2200);
+  };
+
   const handleActionClick = (n: MarketNotification, e: React.MouseEvent) => {
     e.stopPropagation();
     markAsRead(n.id);
 
+    if (n.actionUrl) {
+      if (n.actionUrl.startsWith("http")) {
+        window.open(n.actionUrl, "_blank");
+        return;
+      } else if (n.actionUrl.startsWith("/")) {
+        setIsDrawerOpen(false);
+        window.location.href = n.actionUrl;
+        return;
+      }
+    }
+
     if (n.type === "debt_reminder") {
       const waMsg = encodeURIComponent(
-        `Good day, friendly reminder from Mama Chidi provisions about the ${n.amount || "pending balance"} due today. Thank you so much!`
+        `Good day, friendly reminder from the shop about the ${n.amount || "pending balance"} due today. Thank you so much!`
       );
       window.open(`https://wa.me/?text=${waMsg}`, "_blank");
     } else if (n.type === "price_alert") {
@@ -373,14 +400,25 @@ export function NotificationBellDrawer() {
 
               {/* Drawer Footer Actions */}
               <div className="p-3 sm:p-4 bg-[#edf3fb]/50 backdrop-blur-md border-t border-white/40 flex items-center justify-between gap-2 shrink-0">
-                <button
-                  type="button"
-                  onClick={handleSendTestPush}
-                  className="px-3.5 py-2.5 rounded-2xl bg-white/40 border border-white/60 hover:bg-white/60 text-slate-800 text-xs font-black active:scale-95 transition-all cursor-pointer flex items-center gap-2 shadow-2xs"
-                >
-                  <BellRing className={`h-4 w-4 text-blue-600 ${testSent ? "animate-bounce" : ""}`} />
-                  <span>{testSent ? "Alert Sent! 🔔" : "Test Alert Sound & Ping"}</span>
-                </button>
+                <div className="flex items-center gap-2 flex-1 overflow-x-auto">
+                  <button
+                    type="button"
+                    onClick={handleTriggerDebtReminder}
+                    className="px-3 py-2 rounded-2xl bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-900 text-[11.5px] font-black active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
+                  >
+                    <BellRing className={`h-3.5 w-3.5 text-amber-700 ${testSent ? "animate-bounce" : ""}`} />
+                    <span>Ping Due Debt 🔔</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleSendTestPush}
+                    className="px-3 py-2 rounded-2xl bg-white/40 border border-white/60 hover:bg-white/60 text-slate-800 text-[11.5px] font-black active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
+                  >
+                    <Volume2 className="h-3.5 w-3.5 text-blue-600" />
+                    <span>Test Chime</span>
+                  </button>
+                </div>
 
                 <button
                   type="button"

@@ -13,9 +13,12 @@ import {
   ArrowRight,
   Phone,
   ShieldAlert,
+  BellRing,
+  Bell,
 } from "lucide-react";
 import type { Debt } from "@/types/moniepay.types";
 import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";
+import { useNotifications } from "@/context/NotificationContext";
 
 interface GbeseDebtSheetProps {
   isOpen: boolean;
@@ -34,8 +37,10 @@ export function GbeseDebtSheet({
   businessId,
   onDebtSettled,
 }: GbeseDebtSheetProps) {
+  const { sendDebtReminderNotification, toast } = useNotifications();
   const [tab, setTab] = useState<"CUSTOMERS" | "SUPPLIERS">("CUSTOMERS");
   const [settlingId, setSettlingId] = useState<string | null>(null);
+  const [remindedDebtIds, setRemindedDebtIds] = useState<Record<string, boolean>>({});
 
   if (!isOpen) return null;
 
@@ -48,6 +53,46 @@ export function GbeseDebtSheet({
 
   const totalCustomerDebt = customerDebts.reduce((sum, d) => sum + Number(d.balance_due), 0);
   const totalSupplierDebt = supplierDebts.reduce((sum, d) => sum + Number(d.balance_due), 0);
+
+  const handleScheduleReminder = (debt: Debt) => {
+    sendDebtReminderNotification({
+      personName: debt.person_name,
+      amount: Number(debt.balance_due),
+      dueDate: debt.due_date ? new Date(debt.due_date).toLocaleDateString() : undefined,
+      phone: debt.phone,
+      notes: debt.notes,
+      debtType: debt.debt_type,
+      isOverdue: debt.status === "OVERDUE" || (debt.due_date ? new Date(debt.due_date) < new Date() : false),
+    });
+
+    setRemindedDebtIds((prev) => ({ ...prev, [debt.id]: true }));
+    setTimeout(() => {
+      setRemindedDebtIds((prev) => ({ ...prev, [debt.id]: false }));
+    }, 3000);
+  };
+
+  const handleRemindAllOverdue = () => {
+    const targetList = tab === "CUSTOMERS" ? customerDebts : supplierDebts;
+    if (targetList.length === 0) return;
+
+    targetList.forEach((d) => {
+      sendDebtReminderNotification({
+        personName: d.person_name,
+        amount: Number(d.balance_due),
+        dueDate: d.due_date ? new Date(d.due_date).toLocaleDateString() : undefined,
+        phone: d.phone,
+        notes: d.notes,
+        debtType: d.debt_type,
+        isOverdue: d.status === "OVERDUE" || (d.due_date ? new Date(d.due_date) < new Date() : false),
+      });
+    });
+
+    toast(
+      "All Debt Reminders Scheduled 🔔",
+      `Created alerts for ${targetList.length} ${tab === "CUSTOMERS" ? "customer debts" : "supplier payments"}.`,
+      { type: "success" }
+    );
+  };
 
   const handleSendReminder = (debt: Debt) => {
     const phone = (debt.phone || "").replace(/[^0-9]/g, "");
@@ -95,7 +140,7 @@ export function GbeseDebtSheet({
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-100"
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-100 cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -105,7 +150,7 @@ export function GbeseDebtSheet({
         <div className="mt-3.5 flex rounded-2xl bg-slate-100 p-1 border border-slate-200/80 shrink-0">
           <button
             onClick={() => setTab("CUSTOMERS")}
-            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
               tab === "CUSTOMERS"
                 ? "bg-amber-500 text-white shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
@@ -115,7 +160,7 @@ export function GbeseDebtSheet({
           </button>
           <button
             onClick={() => setTab("SUPPLIERS")}
-            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all ${
+            className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all cursor-pointer ${
               tab === "SUPPLIERS"
                 ? "bg-blue-600 text-white shadow-sm"
                 : "text-slate-600 hover:text-slate-900"
@@ -125,15 +170,120 @@ export function GbeseDebtSheet({
           </button>
         </div>
 
+        {/* Remind All Banner */}
+        {((tab === "CUSTOMERS" && customerDebts.length > 0) ||
+          (tab === "SUPPLIERS" && supplierDebts.length > 0)) && (
+          <div className="mt-3 flex items-center justify-between p-2.5 rounded-2xl bg-amber-50/90 border border-amber-200/80 text-amber-950 text-xs font-semibold shrink-0">
+            <div className="flex items-center gap-2">
+              <BellRing className="h-4 w-4 text-amber-700 shrink-0" />
+              <span>Send push & in-app reminder for all due debts?</span>
+            </div>
+            <button
+              onClick={handleRemindAllOverdue}
+              className="px-3 py-1 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-[11px] shrink-0 active:scale-95 transition-all cursor-pointer shadow-2xs"
+            >
+              Alert All
+            </button>
+          </div>
+        )}
+
         {/* List */}
-        <div className="mt-4 overflow-y-auto space-y-3 flex-1 pr-1">
+        <div className="mt-3 overflow-y-auto space-y-3 flex-1 pr-1">
           {tab === "CUSTOMERS" ? (
             customerDebts.length === 0 ? (
               <div className="py-12 text-center text-slate-400 text-sm">
                 No active customer debts! All customers have paid.
               </div>
             ) : (
-              customerDebts.map((d) => (
+              customerDebts.map((d) => {
+                const isReminded = remindedDebtIds[d.id];
+                return (
+                  <div
+                    key={d.id}
+                    className="rounded-[20px] bg-slate-50/70 border border-slate-200/80 p-3.5 space-y-2.5"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="text-sm font-bold text-slate-900">{d.person_name}</h4>
+                        {d.notes && <p className="text-xs text-slate-500 mt-0.5">{d.notes}</p>}
+                        <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
+                          {d.due_date && (
+                            <span
+                              className={
+                                new Date(d.due_date) < new Date()
+                                  ? "text-rose-600 font-bold"
+                                  : "text-slate-500"
+                              }
+                            >
+                              Due: {new Date(d.due_date).toLocaleDateString()}
+                            </span>
+                          )}
+                          {d.status === "OVERDUE" && (
+                            <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold text-[10px]">
+                              Overdue
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-base font-black text-amber-900">
+                          ₦{Number(d.balance_due).toLocaleString()}
+                        </div>
+                        <span className="text-[10px] text-slate-400">
+                          Original: ₦{Number(d.original_amount).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-200/60">
+                      {/* 1. Schedule In-App & Push Reminder Notification */}
+                      <button
+                        type="button"
+                        onClick={() => handleScheduleReminder(d)}
+                        className={`py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                          isReminded
+                            ? "bg-amber-100 text-amber-900 border border-amber-300 font-black scale-95"
+                            : "bg-white hover:bg-amber-50 border border-slate-200 text-slate-700 hover:text-amber-800"
+                        }`}
+                        title="Set in-app reminder alert for this debt"
+                      >
+                        <BellRing className={`h-3.5 w-3.5 ${isReminded ? "text-amber-600 animate-bounce" : "text-amber-600"}`} />
+                        <span>{isReminded ? "Alerted 🔔" : "Remind Me"}</span>
+                      </button>
+
+                      {/* 2. Send WhatsApp Nudge */}
+                      <button
+                        type="button"
+                        onClick={() => handleSendReminder(d)}
+                        className="py-2 px-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <Send className="h-3.5 w-3.5 text-emerald-600" />
+                        <span>WhatsApp</span>
+                      </button>
+
+                      {/* 3. Mark as Paid */}
+                      <button
+                        type="button"
+                        onClick={() => handleSettle(d)}
+                        disabled={settlingId === d.id}
+                        className="py-2 px-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                      >
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                        <span>{settlingId === d.id ? "Paying..." : "Paid"}</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })
+            )
+          ) : supplierDebts.length === 0 ? (
+            <div className="py-12 text-center text-slate-400 text-sm">
+              No supplier debts outstanding. You are clean with suppliers!
+            </div>
+          ) : (
+            supplierDebts.map((d) => {
+              const isReminded = remindedDebtIds[d.id];
+              return (
                 <div
                   key={d.id}
                   className="rounded-[20px] bg-slate-50/70 border border-slate-200/80 p-3.5 space-y-2.5"
@@ -142,95 +292,46 @@ export function GbeseDebtSheet({
                     <div>
                       <h4 className="text-sm font-bold text-slate-900">{d.person_name}</h4>
                       {d.notes && <p className="text-xs text-slate-500 mt-0.5">{d.notes}</p>}
-                      <div className="mt-1 flex items-center gap-2 text-[11px] text-slate-500">
-                        {d.due_date && (
-                          <span
-                            className={
-                              new Date(d.due_date) < new Date()
-                                ? "text-rose-600 font-bold"
-                                : "text-slate-500"
-                            }
-                          >
-                            Due: {new Date(d.due_date).toLocaleDateString()}
-                          </span>
-                        )}
-                        {d.status === "OVERDUE" && (
-                          <span className="px-2 py-0.5 rounded-full bg-rose-100 text-rose-700 font-bold text-[10px]">
-                            Overdue
-                          </span>
-                        )}
-                      </div>
+                      {d.due_date && (
+                        <span className="text-[11px] text-blue-700 font-semibold mt-1 block">
+                          Payment Promised: {new Date(d.due_date).toLocaleDateString()}
+                        </span>
+                      )}
                     </div>
                     <div className="text-right">
-                      <div className="text-base font-black text-amber-900">
+                      <div className="text-base font-black text-slate-900">
                         ₦{Number(d.balance_due).toLocaleString()}
                       </div>
-                      <span className="text-[10px] text-slate-400">
-                        Original: ₦{Number(d.original_amount).toLocaleString()}
-                      </span>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 pt-2 border-t border-slate-200/60">
                     <button
-                      onClick={() => handleSendReminder(d)}
-                      className="flex-1 py-2 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      type="button"
+                      onClick={() => handleScheduleReminder(d)}
+                      className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                        isReminded
+                          ? "bg-amber-100 text-amber-900 border border-amber-300 font-black scale-95"
+                          : "bg-white hover:bg-amber-50 border border-slate-200 text-slate-700 hover:text-amber-800"
+                      }`}
                     >
-                      <Send className="h-3.5 w-3.5 text-emerald-600" />
-                      <span>WhatsApp Nudge</span>
+                      <BellRing className={`h-3.5 w-3.5 ${isReminded ? "text-amber-600 animate-bounce" : "text-amber-600"}`} />
+                      <span>{isReminded ? "Alert Scheduled ⏰" : "Remind Me When Due"}</span>
                     </button>
 
                     <button
+                      type="button"
                       onClick={() => handleSettle(d)}
                       disabled={settlingId === d.id}
-                      className="flex-1 py-2 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      className="flex-1 py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer"
                     >
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                      <span>{settlingId === d.id ? "Settling..." : "Mark as Paid"}</span>
+                      <CheckCircle2 className="h-3.5 w-3.5" />
+                      <span>{settlingId === d.id ? "Paying..." : "Record Payment"}</span>
                     </button>
                   </div>
                 </div>
-              ))
-            )
-          ) : supplierDebts.length === 0 ? (
-            <div className="py-12 text-center text-slate-400 text-sm">
-              No supplier debts outstanding. You are clean with suppliers!
-            </div>
-          ) : (
-            supplierDebts.map((d) => (
-              <div
-                key={d.id}
-                className="rounded-[20px] bg-slate-50/70 border border-slate-200/80 p-3.5 space-y-2.5"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <h4 className="text-sm font-bold text-slate-900">{d.person_name}</h4>
-                    {d.notes && <p className="text-xs text-slate-500 mt-0.5">{d.notes}</p>}
-                    {d.due_date && (
-                      <span className="text-[11px] text-blue-700 font-semibold mt-1 block">
-                        Payment Promised: {new Date(d.due_date).toLocaleDateString()}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-right">
-                    <div className="text-base font-black text-slate-900">
-                      ₦{Number(d.balance_due).toLocaleString()}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 border-t border-slate-200/60">
-                  <button
-                    onClick={() => handleSettle(d)}
-                    disabled={settlingId === d.id}
-                    className="w-full py-2 px-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold flex items-center justify-center gap-1.5"
-                  >
-                    <CheckCircle2 className="h-3.5 w-3.5" />
-                    <span>{settlingId === d.id ? "Paying..." : "Record Payment to Supplier"}</span>
-                  </button>
-                </div>
-              </div>
-            ))
+              );
+            })
           )}
         </div>
       </motion.div>
