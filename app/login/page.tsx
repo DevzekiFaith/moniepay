@@ -437,34 +437,77 @@ function LoginContent() {
           </form>
         </motion.div>
 
-        {/* MoniePay Trader Motto / Value Proposition Card */}
+        {/* MoniePay Trader Motto / Value Proposition Card (Organized 3-Step Process) */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
-          className="clay-card p-4 text-center space-y-2.5 relative overflow-hidden"
+          className="clay-card p-4 sm:p-5 space-y-3.5 relative overflow-hidden"
         >
-          <div className="space-y-0.5">
-            <h3 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
-              Understand your money well-well.{" "}
-              <span className="text-blue-700">No be just to write am down for book.</span>
+          {/* Header & Explanation */}
+          <div className="text-center space-y-1">
+            <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-700 text-[10px] font-black tracking-widest uppercase">
+              How MoniePay Dey Help You
+            </span>
+            <h3 className="text-sm sm:text-base font-black text-slate-900 tracking-tight leading-snug">
+              Understand your money well-well.
             </h3>
-            <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-relaxed">
+            <p className="text-xs font-black text-blue-700">
+              No be just to write am down for book.
+            </p>
+            <p className="text-[11.5px] text-slate-600 font-medium leading-relaxed max-w-xs mx-auto pt-0.5">
               Record wetin enter and wetin comot — MoniePay go explain wetin the money mean for your daily profit.
             </p>
           </div>
 
-          <div className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50/80 border border-blue-200/60 text-blue-950 text-[11px] font-black tracking-wide">
-            <span>Record am</span>
-            <span className="text-blue-400 font-bold">→</span>
-            <span>Understand am</span>
-            <span className="text-blue-400 font-bold">→</span>
-            <span className="text-blue-700">Decide sharp-sharp</span>
+          {/* 3-Step Process Cards */}
+          <div className="grid grid-cols-3 gap-1.5 sm:gap-2 pt-1 items-stretch">
+            {/* Step 1 */}
+            <div className="p-2 sm:p-2.5 rounded-2xl bg-white/60 border border-white/80 shadow-2xs text-center flex flex-col items-center justify-center">
+              <span className="text-[9px] font-black text-blue-600 bg-blue-100/70 px-1.5 py-0.5 rounded-md uppercase tracking-wider mb-1">
+                Step 1
+              </span>
+              <p className="text-[11px] sm:text-xs font-black text-slate-900 leading-tight">
+                Record am
+              </p>
+              <p className="text-[9.5px] text-slate-500 font-semibold leading-tight mt-0.5">
+                Sales &amp; Gbese
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="p-2 sm:p-2.5 rounded-2xl bg-white/60 border border-white/80 shadow-2xs text-center flex flex-col items-center justify-center">
+              <span className="text-[9px] font-black text-indigo-600 bg-indigo-100/70 px-1.5 py-0.5 rounded-md uppercase tracking-wider mb-1">
+                Step 2
+              </span>
+              <p className="text-[11px] sm:text-xs font-black text-slate-900 leading-tight">
+                Understand am
+              </p>
+              <p className="text-[9.5px] text-slate-500 font-semibold leading-tight mt-0.5">
+                See Position
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="p-2 sm:p-2.5 rounded-2xl bg-white/80 border border-blue-300/70 shadow-xs text-center flex flex-col items-center justify-center ring-1 ring-blue-400/30">
+              <span className="text-[9px] font-black text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded-md uppercase tracking-wider mb-1">
+                Step 3
+              </span>
+              <p className="text-[11px] sm:text-xs font-black text-blue-900 leading-tight">
+                Decide sharp-sharp
+              </p>
+              <p className="text-[9.5px] text-blue-600 font-bold leading-tight mt-0.5">
+                Protect Profit
+              </p>
+            </div>
           </div>
 
-          <p className="text-[10px] sm:text-[10.5px] text-slate-400 font-bold tracking-wider uppercase">
-            Your money • Your clear picture • Your smart decisions
-          </p>
+          {/* Bottom Motto */}
+          <div className="pt-2 border-t border-slate-200/60 text-center">
+            <p className="text-[10px] sm:text-[10.5px] text-slate-500 font-bold tracking-wider uppercase">
+              Your money <span className="text-blue-500 font-black">•</span> Your picture <span className="text-blue-500 font-black">•</span> Your decisions
+            </p>
+          </div>
         </motion.div>
       </div>
     </div>
