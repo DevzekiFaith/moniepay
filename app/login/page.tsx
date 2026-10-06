@@ -165,19 +165,22 @@ function LoginContent() {
 
       {/* ── MAIN 3D SOFT GLASS AUTH CONTAINER ── */}
       <div className="relative w-full max-w-sm sm:max-w-md my-6 z-10 space-y-5">
-        {/* 3D User Profile Photo & Brand Header */}
+        {/* 3D User Profile & Welcoming Hero (Flex Presentation with Bold Text Hierarchy) */}
         <motion.div
-          initial={{ opacity: 0, y: -16 }}
+          initial={{ opacity: 0, y: -14 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="flex flex-col items-center text-center space-y-3"
+          className="clay-card p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left relative overflow-hidden"
         >
-          {/* 3D Soft Profile Avatar Container */}
-          <div className="relative flex h-24 w-24 items-center justify-center rounded-[32px] clay-icon-box p-1.5 shadow-[0_12px_32px_rgba(154,180,214,0.5)] group">
-            <div className="relative h-full w-full rounded-[24px] overflow-hidden bg-slate-100 border border-white/80">
+          {/* Ambient refraction top line */}
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-sky-400 opacity-90" />
+
+          {/* 3D Profile Avatar */}
+          <div className="relative flex h-20 w-20 sm:h-22 sm:w-22 items-center justify-center rounded-[28px] clay-icon-box p-1 shrink-0 shadow-[0_10px_25px_rgba(154,180,214,0.45)] group">
+            <div className="relative h-full w-full rounded-[22px] overflow-hidden bg-slate-100 border border-white/80">
               <img
                 src={avatarUrl}
-                alt="User Profile"
+                alt="Trader Profile"
                 className="h-full w-full object-cover object-center"
                 onError={(e) => {
                   e.currentTarget.src = "/images/traders/mama_chidi.jpg";
@@ -200,14 +203,24 @@ function LoginContent() {
             <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
           </div>
 
-          <div className="space-y-1 pt-1">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
+          {/* Text Hierarchy */}
+          <div className="flex-1 min-w-0 space-y-1.5">
+            {/* Micro Tag / Category */}
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-700 text-[10.5px] font-black tracking-wide uppercase">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
+              <span>Trader Shop Portal</span>
+            </div>
+
+            {/* Main Headline - Bold & Prominent */}
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
               {mode === "signin" ? "Welcome Back O!" : "Open Your Shop Sharp-Sharp"}
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium">
+
+            {/* Descriptive Body - Structured & Legible */}
+            <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
               {mode === "signin"
-                ? "Enter your shop make you see how your money dey go today"
-                : "Open your digital record book in 30 seconds, no shaking"}
+                ? "Enter your shop make you see how your money dey move today. Check your daily profit, track who dey owe you gbese, and see wetin you suppose do next for market."
+                : "Open your digital record book in 30 seconds. Track sales, debts & restock alerts with zero stress."}
             </p>
           </div>
         </motion.div>
