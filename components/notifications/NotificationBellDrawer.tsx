@@ -23,7 +23,6 @@ import {
   Radio,
   ExternalLink,
   Store,
-  Volume2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNotifications, MarketNotification } from "@/context/NotificationContext";
@@ -113,17 +112,6 @@ export function NotificationBellDrawer() {
     return true;
   });
 
-  const handleSendTestPush = () => {
-    playChime();
-    sendPushNotification({
-      title: "₦45,000 Sale Recorded 🎉",
-      message: "Customer pay via instant bank transfer at Balogun Market. Restock money safe.",
-      type: "sales_milestone",
-      amount: "₦45,000",
-    });
-    setTestSent(true);
-    setTimeout(() => setTestSent(false), 2200);
-  };
 
   const handleTriggerDebtReminder = () => {
     playChime();
@@ -400,25 +388,14 @@ export function NotificationBellDrawer() {
 
               {/* Drawer Footer Actions */}
               <div className="p-3 sm:p-4 bg-[#edf3fb]/50 backdrop-blur-md border-t border-white/40 flex items-center justify-between gap-2 shrink-0">
-                <div className="flex items-center gap-2 flex-1 overflow-x-auto">
-                  <button
-                    type="button"
-                    onClick={handleTriggerDebtReminder}
-                    className="px-3 py-2 rounded-2xl bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-900 text-[11.5px] font-black active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
-                  >
-                    <BellRing className={`h-3.5 w-3.5 text-amber-700 ${testSent ? "animate-bounce" : ""}`} />
-                    <span>Ping Due Debt 🔔</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleSendTestPush}
-                    className="px-3 py-2 rounded-2xl bg-white/40 border border-white/60 hover:bg-white/60 text-slate-800 text-[11.5px] font-black active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs shrink-0"
-                  >
-                    <Volume2 className="h-3.5 w-3.5 text-blue-600" />
-                    <span>Test Chime</span>
-                  </button>
-                </div>
+                <button
+                  type="button"
+                  onClick={handleTriggerDebtReminder}
+                  className="px-3.5 py-2.5 rounded-2xl bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-900 text-xs font-black active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shadow-2xs"
+                >
+                  <BellRing className={`h-4 w-4 text-amber-700 ${testSent ? "animate-bounce" : ""}`} />
+                  <span>Ping Due Debt 🔔</span>
+                </button>
 
                 <button
                   type="button"
