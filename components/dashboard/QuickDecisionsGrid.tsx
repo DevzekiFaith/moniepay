@@ -1,5 +1,10 @@
 "use client";
 
+// ─────────────────────────────────────────────────────────────────
+// MoniePay — 7 Core Decisions Grid Component
+// Spring Tactile Cards • Deep Emerald Answer Drawer
+// ─────────────────────────────────────────────────────────────────
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -15,6 +20,7 @@ import {
   X,
   CreditCard,
   ShieldCheck,
+  Compass,
 } from "lucide-react";
 import type { DeterministicMetrics, Debt } from "@/types/moniepay.types";
 
@@ -60,8 +66,8 @@ export function QuickDecisionsGrid({
       question: "Can I withdraw this money?",
       verdict: `YES — ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe`,
       statusType: "safe",
-      explanation: "Restock capital and shop expenses are protected. This portion is safe chop money.",
-      nextStep: "Withdraw only this amount so you don't eat into tomorrow's goods capital.",
+      explanation: "Restock capital and shop running costs are protected. This portion is safe chop money.",
+      nextStep: "Withdraw only this amount so you don't eat into tomorrow's inventory capital.",
       buttonLabel: `Take ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe Chop Money`,
       onAction: () => {
         setActiveDecision(null);
@@ -73,7 +79,7 @@ export function QuickDecisionsGrid({
       question: "Can I restock?",
       verdict: `READY — ₦${Math.max(0, metrics.liquidCash - metrics.safeWithdrawalAmount).toLocaleString()} Available`,
       statusType: "safe",
-      explanation: "You have working cash ready for inventory purchase without needing high-interest loans.",
+      explanation: "You have working cash ready for inventory purchase without taking high-interest loans.",
       nextStep: "Target fast-moving items with margins above 20% to maximize turnover.",
       buttonLabel: "Plan Restock Purchase",
       onAction: () => {
@@ -88,7 +94,7 @@ export function QuickDecisionsGrid({
       statusType: supplierTotal > 0 ? "action_needed" : "safe",
       explanation: supplierTotal > 0
         ? `You owe suppliers ₦${supplierTotal.toLocaleString()}. Clearing this protects wholesale credit terms.`
-        : "You have zero pending supplier debt. Your credit rating with wholesalers is pristine.",
+        : "You have zero pending supplier debt. Your wholesale reputation is pristine.",
       nextStep: supplierTotal > 0 ? "Pay supplier today to keep your supply line open." : "Maintain this clean record.",
       buttonLabel: supplierTotal > 0 ? "Settle Supplier Gbese" : "Close",
       onAction: () => {
@@ -125,9 +131,9 @@ export function QuickDecisionsGrid({
     {
       id: "losing_money",
       question: "Where am I losing money?",
-      verdict: metrics.trends?.stockCostGrowthPercent > 0 ? `Stock Costs Up +${metrics.trends.stockCostGrowthPercent}%` : "Low Cost Leakage",
+      verdict: (metrics.trends?.stockCostGrowthPercent || 0) > 0 ? `Stock Costs Up +${metrics.trends.stockCostGrowthPercent}%` : "Low Cost Leakage",
       statusType: (metrics.trends?.stockCostGrowthPercent || 0) > 10 ? "warning" : "safe",
-      explanation: "Supplier price inflation and untracked small transport/pos charges are your primary cost leakages.",
+      explanation: "Supplier price inflation and untracked transport/POS charges are your primary cost leakages.",
       nextStep: "Check wholesale unit prices when buying in bulk and review POS slip reconciliations.",
       buttonLabel: "Review Leakage Diagnostics",
       onAction: () => {
@@ -139,8 +145,8 @@ export function QuickDecisionsGrid({
       question: "What to do with today's cash?",
       verdict: `Keep ₦${Math.round(metrics.liquidCash * 0.7).toLocaleString()} in Drawer`,
       statusType: "safe",
-      explanation: `Rule of thumb for your market: 70% for stock replenishment, 15% for bills/wages, 15% safe withdrawal.`,
-      nextStep: "Lock restock money in bank or safe drawer before taking personal money home.",
+      explanation: `Rule of thumb: 70% for stock replenishment, 15% for bills/wages, 15% safe withdrawal.`,
+      nextStep: "Lock restock money in safe drawer or bank before taking personal money home.",
       buttonLabel: "Set Aside Restock Capital",
       onAction: () => {
         setActiveDecision(null);
@@ -151,57 +157,60 @@ export function QuickDecisionsGrid({
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-xs font-black uppercase tracking-wider text-slate-500">
+        <h2 className="text-xs font-black uppercase tracking-wider text-slate-400">
           Decisions You Can Make Right Now
         </h2>
-        <span className="text-[11px] font-bold text-emerald-700">Tap to answer</span>
+        <span className="text-[11px] font-bold text-emerald-800">Tap to answer</span>
       </div>
 
       {/* Decision Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2.5">
         {decisions.map((d) => (
-          <button
+          <motion.button
             key={d.id}
             type="button"
+            whileHover={{ y: -2, scale: 1.01 }}
+            whileTap={{ scale: 0.97 }}
             onClick={() => setActiveDecision(d)}
-            className="rounded-[22px] bg-white border border-emerald-900/10 p-3.5 sm:p-4 text-left shadow-[0_3px_12px_rgba(5,150,105,0.04)] hover:border-emerald-500 hover:shadow-md cursor-pointer active:scale-[0.98] transition-all flex flex-col justify-between"
+            className="rounded-[24px] bg-white border border-emerald-950/[0.08] p-3.5 sm:p-4 text-left shadow-[0_4px_16px_rgba(15,23,42,0.03)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
           >
-            <div>
-              <span className="text-[11px] font-bold text-slate-500 block leading-tight">
+            <div className="min-w-0">
+              <span className="text-[11px] font-bold text-slate-500 block leading-tight truncate">
                 {d.question}
               </span>
-              <span className="text-xs sm:text-sm font-black text-slate-900 mt-2 block leading-snug">
+              <span className="text-xs sm:text-sm font-black text-slate-900 mt-2 block leading-snug truncate">
                 {d.verdict}
               </span>
             </div>
             <div className="mt-3 flex items-center justify-between pt-2 border-t border-slate-100">
-              <span className="text-[10px] font-black text-emerald-700">See Action</span>
+              <span className="text-[10px] font-black text-emerald-800">See Action</span>
               <ArrowRight className="h-3 w-3 text-emerald-700" />
             </div>
-          </button>
+          </motion.button>
         ))}
       </div>
 
       {/* Interactive Decision Answer Modal */}
       <AnimatePresence>
         {activeDecision && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-xs">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
+              initial={{ opacity: 0, scale: 0.95, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="w-full max-w-md rounded-[28px] bg-white border border-emerald-900/10 p-5 sm:p-6 shadow-2xl space-y-4 relative"
+              exit={{ opacity: 0, scale: 0.95, y: 12 }}
+              transition={{ duration: 0.2, ease: "easeOut" }}
+              className="w-full max-w-md rounded-[28px] bg-white border border-emerald-900/10 p-5 sm:p-6 shadow-2xl space-y-4 relative overflow-hidden"
             >
               <button
                 type="button"
                 onClick={() => setActiveDecision(null)}
-                className="absolute right-4 top-4 h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 cursor-pointer"
+                className="absolute right-4 top-4 h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 cursor-pointer transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
 
               <div>
-                <span className="text-xs font-black uppercase tracking-wider text-emerald-800">
+                <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800">
                   Business Decision Intelligence
                 </span>
                 <h3 className="text-base sm:text-lg font-black text-slate-900 mt-1">
@@ -209,12 +218,12 @@ export function QuickDecisionsGrid({
                 </h3>
               </div>
 
-              {/* Big Verdict Pill */}
-              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950">
-                <span className="text-[11px] font-black uppercase tracking-wider text-emerald-700 block mb-0.5">
+              {/* Big Deep Emerald Verdict Pill */}
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#047857] text-white shadow-md">
+                <span className="text-[10.5px] font-black uppercase tracking-widest text-emerald-300 block mb-0.5">
                   MoniePay Verdict
                 </span>
-                <p className="text-base font-black text-emerald-900">
+                <p className="text-base sm:text-lg font-black text-white">
                   {activeDecision.verdict}
                 </p>
               </div>
@@ -223,26 +232,28 @@ export function QuickDecisionsGrid({
               <div className="space-y-2 text-xs">
                 <div>
                   <span className="font-extrabold text-slate-700 block">Why:</span>
-                  <p className="text-slate-600 font-medium leading-relaxed">
+                  <p className="text-slate-600 font-medium leading-relaxed mt-0.5">
                     {activeDecision.explanation}
                   </p>
                 </div>
                 <div className="pt-2 border-t border-slate-100">
                   <span className="font-extrabold text-emerald-900 block">Next move:</span>
-                  <p className="text-slate-800 font-bold leading-relaxed">
+                  <p className="text-slate-800 font-black leading-relaxed mt-0.5">
                     {activeDecision.nextStep}
                   </p>
                 </div>
               </div>
 
               {/* Action Button */}
-              <button
+              <motion.button
                 type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.96 }}
                 onClick={activeDecision.onAction}
-                className="w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm cursor-pointer active:scale-95 transition-all shadow-md shadow-emerald-900/20"
+                className="w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm cursor-pointer shadow-md shadow-emerald-900/20"
               >
                 {activeDecision.buttonLabel}
-              </button>
+              </motion.button>
             </motion.div>
           </div>
         )}

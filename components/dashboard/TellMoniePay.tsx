@@ -1,5 +1,10 @@
 "use client";
 
+// ─────────────────────────────────────────────────────────────────
+// MoniePay — Tell MoniePay Component
+// Fluid Voice/Text Capture • Spring Transitions • Deep Emerald Feedback
+// ─────────────────────────────────────────────────────────────────
+
 import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -76,7 +81,6 @@ export function TellMoniePay({
 
   const toggleListening = () => {
     if (!recognitionRef.current) {
-      // Fallback if browser doesn't support Web Speech API
       const samples = [
         "Sold 45k today",
         "Bought materials for 20k",
@@ -107,7 +111,6 @@ export function TellMoniePay({
     const text = rawText.trim();
     if (!text) return;
 
-    // Parse amount: "45k" -> 45,000; "₦20,000" -> 20,000; "80 000" -> 80,000
     let amount = 0;
     const matchK = text.match(/(\d+(?:\.\d+)?)\s*k\b/i);
     const matchNum = text.match(/(?:₦|ngn)?\s*(\d[\d,]*)/i);
@@ -144,17 +147,17 @@ export function TellMoniePay({
       if (lower.includes("supplier") || lower.includes("wholesaler")) {
         type = "SUPPLIER_PAYMENT";
         category = "Supplier Debt";
-        typeLabel = "Supplier Debt Recorded";
-        whatChanged = `₦${amount.toLocaleString()} supplier debt logged.`;
-        whyItMatters = "You need to clear this before supplier restock cut-off.";
-        whatToDoNext = "Plan repayment from tomorrow's morning cash collections.";
+        typeLabel = "Supplier Debt Logged";
+        whatChanged = `₦${amount.toLocaleString()} supplier debt recorded.`;
+        whyItMatters = "Clear before wholesale cut-off to protect credit rating.";
+        whatToDoNext = "Plan repayment from tomorrow's morning sales.";
       } else {
         type = "SALE";
         paymentMethod = "CREDIT";
         category = "Customer Credit";
         typeLabel = "Customer Credit (Owing)";
-        whatChanged = `₦${amount.toLocaleString()} sales made on credit.`;
-        whyItMatters = "This money is trapped with the customer and not in your cash drawer.";
+        whatChanged = `₦${amount.toLocaleString()} goods given on credit.`;
+        whyItMatters = "Money is trapped outside your cash drawer.";
         whatToDoNext = "Send a WhatsApp reminder before Friday restock.";
       }
     }
@@ -170,10 +173,10 @@ export function TellMoniePay({
       category = "Materials & Stock";
       typeLabel = "Stock Purchase";
       whatChanged = `Spent ₦${amount.toLocaleString()} on new business stock.`;
-      whyItMatters = "Restock pool decreased, but you now have fresh inventory to sell.";
-      whatToDoNext = "Mark up goods with at least 25% margin to protect your profit.";
+      whyItMatters = "Restock pool converted to physical inventory.";
+      whatToDoNext = "Mark up goods with at least 25% margin to protect profit.";
     }
-    // 3. Customer Paid / Repaid (Chidi paid me...)
+    // 3. Customer Paid
     else if (
       lower.includes("paid me") ||
       lower.includes("chidi paid") ||
@@ -184,11 +187,11 @@ export function TellMoniePay({
       type = "DEBT_COLLECTION";
       category = "Customer Debt Recovered";
       typeLabel = "Debt Collected";
-      whatChanged = `₦${amount.toLocaleString()} recovered into your cash drawer.`;
-      whyItMatters = "Locked capital has returned to active working cash.";
-      whatToDoNext = "Safe to allocate toward tomorrow's restock order.";
+      whatChanged = `₦${amount.toLocaleString()} recovered into cash drawer.`;
+      whyItMatters = "Locked capital returned to working cash.";
+      whatToDoNext = "Safe to allocate toward tomorrow's restock.";
     }
-    // 4. Owner Withdrawal / Chop Money
+    // 4. Chop Money
     else if (
       lower.includes("withdrew") ||
       lower.includes("withdraw") ||
@@ -199,9 +202,9 @@ export function TellMoniePay({
       type = "OWNER_WITHDRAWAL";
       category = "Chop Money";
       typeLabel = "Chop Money Taken";
-      whatChanged = `₦${amount.toLocaleString()} withdrawn for personal living expenses.`;
+      whatChanged = `₦${amount.toLocaleString()} taken out for personal expenses.`;
       whyItMatters = "Personal money separated from shop business capital.";
-      whatToDoNext = "Your restock buffer remains safely protected.";
+      whatToDoNext = "Restock capital remains protected.";
     }
     // 5. Staff payment
     else if (
@@ -224,8 +227,8 @@ export function TellMoniePay({
       category = "General Sales";
       typeLabel = "Sales Recorded";
       whatChanged = `Today's sales up by ₦${amount.toLocaleString()}.`;
-      whyItMatters = "Drawer cash healthy; profit margin on this sale is ~24%.";
-      whatToDoNext = "Keep at least 70% for supplier restock.";
+      whyItMatters = "Drawer cash healthy; ~24% profit margin.";
+      whatToDoNext = "Keep 70% in drawer for restock.";
     }
 
     recordOptimisticTransaction({
@@ -263,7 +266,12 @@ export function TellMoniePay({
   ];
 
   return (
-    <div className="rounded-[28px] bg-white border border-emerald-900/10 p-4 sm:p-5 shadow-[0_8px_30px_rgba(5,150,105,0.06)] space-y-3.5">
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2 }}
+      className="rounded-[28px] bg-white border border-emerald-950/[0.08] p-4 sm:p-5 shadow-[0_8px_30px_rgba(4,120,87,0.04)] space-y-3"
+    >
       {/* Header */}
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
@@ -285,27 +293,31 @@ export function TellMoniePay({
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="Tell MoniePay: e.g. Sold 45k, Chidi paid 15k, Bought stock 20k..."
-            className="w-full pl-4 pr-10 py-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-all"
+            className="w-full pl-4 pr-10 py-3 rounded-2xl bg-slate-50/80 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-emerald-600 focus:ring-2 focus:ring-emerald-600/15 transition-all"
           />
           {inputVal && (
-            <button
+            <motion.button
               type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center cursor-pointer active:scale-95 transition-all shadow-sm"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white flex items-center justify-center cursor-pointer shadow-sm"
               title="Send to MoniePay"
             >
               <Send className="h-3.5 w-3.5" />
-            </button>
+            </motion.button>
           )}
         </div>
 
         {/* Voice Trigger Button */}
-        <button
+        <motion.button
           type="button"
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.94 }}
           onClick={toggleListening}
-          className={`h-11 w-11 rounded-2xl flex items-center justify-center cursor-pointer transition-all shrink-0 active:scale-95 ${
+          className={`h-11 w-11 rounded-2xl flex items-center justify-center cursor-pointer transition-all shrink-0 ${
             isListening
-              ? "bg-red-600 text-white animate-pulse shadow-md shadow-red-500/30"
-              : "bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-sm"
+              ? "bg-rose-600 text-white animate-pulse shadow-md shadow-rose-500/30"
+              : "bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 shadow-2xs"
           }`}
           title={isListening ? "Listening... Speak now" : "Speak to MoniePay (Voice)"}
         >
@@ -314,23 +326,25 @@ export function TellMoniePay({
           ) : (
             <Mic className="h-5 w-5" />
           )}
-        </button>
+        </motion.button>
       </form>
 
       {/* Quick 1-Tap Example Phrases */}
       <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
         {quickExamples.map((item, idx) => (
-          <button
+          <motion.button
             key={idx}
             type="button"
+            whileHover={{ y: -1, scale: 1.02 }}
+            whileTap={{ scale: 0.96 }}
             onClick={() => {
               setInputVal(item.text);
               processTraderInput(item.text);
             }}
-            className="px-3 py-1.5 rounded-xl bg-emerald-50/70 hover:bg-emerald-100 border border-emerald-200/60 text-emerald-950 text-xs font-bold whitespace-nowrap cursor-pointer active:scale-95 transition-all"
+            className="px-3 py-1.5 rounded-xl bg-emerald-50/70 hover:bg-emerald-100/90 border border-emerald-200/60 text-emerald-950 text-xs font-bold whitespace-nowrap cursor-pointer transition-all"
           >
             {item.label}
-          </button>
+          </motion.button>
         ))}
       </div>
 
@@ -341,12 +355,13 @@ export function TellMoniePay({
             initial={{ opacity: 0, y: -6, height: 0 }}
             animate={{ opacity: 1, y: 0, height: "auto" }}
             exit={{ opacity: 0, y: -6, height: 0 }}
-            className="rounded-2xl bg-gradient-to-br from-emerald-900 to-emerald-950 text-white p-4 space-y-3 shadow-lg shadow-emerald-950/20 border border-emerald-700/50"
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="rounded-2xl bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#047857] text-white p-4 space-y-2.5 shadow-lg shadow-emerald-950/20 border border-emerald-600/40 relative overflow-hidden"
           >
             {/* Header: Recorded ✓ */}
-            <div className="flex items-center justify-between pb-2 border-b border-emerald-800">
+            <div className="flex items-center justify-between pb-2 border-b border-emerald-700/60">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
                 <span className="text-xs font-black text-emerald-100 tracking-wide uppercase">
                   Recorded ✓ ₦{feedback.amount.toLocaleString()} ({feedback.typeLabel})
                 </span>
@@ -361,9 +376,9 @@ export function TellMoniePay({
             </div>
 
             {/* 3 Core Value Items */}
-            <div className="space-y-2 text-xs">
+            <div className="space-y-1.5 text-xs">
               <div className="flex items-start gap-2">
-                <span className="font-black text-emerald-400 shrink-0 min-w-[90px]">
+                <span className="font-black text-emerald-300 shrink-0 min-w-[85px]">
                   What changed?
                 </span>
                 <span className="text-emerald-100 font-medium leading-tight">
@@ -372,7 +387,7 @@ export function TellMoniePay({
               </div>
 
               <div className="flex items-start gap-2">
-                <span className="font-black text-emerald-400 shrink-0 min-w-[90px]">
+                <span className="font-black text-emerald-300 shrink-0 min-w-[85px]">
                   Why it matters?
                 </span>
                 <span className="text-emerald-200 font-medium leading-tight">
@@ -380,8 +395,8 @@ export function TellMoniePay({
                 </span>
               </div>
 
-              <div className="flex items-start gap-2 pt-1 border-t border-emerald-800/80">
-                <span className="font-black text-white shrink-0 min-w-[90px]">
+              <div className="flex items-start gap-2 pt-1 border-t border-emerald-700/60">
+                <span className="font-black text-white shrink-0 min-w-[85px]">
                   Next move:
                 </span>
                 <span className="text-white font-black leading-tight">
@@ -392,6 +407,6 @@ export function TellMoniePay({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }

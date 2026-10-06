@@ -1,5 +1,10 @@
 "use client";
 
+// ─────────────────────────────────────────────────────────────────
+// MoniePay — YOUR NEXT MOVE Component
+// Deep Emerald Gradient • Fluid Spring Animations
+// ─────────────────────────────────────────────────────────────────
+
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -11,6 +16,7 @@ import {
   Tag,
   Users,
   ShieldCheck,
+  Sparkles,
 } from "lucide-react";
 import type { DeterministicMetrics, Debt, Recommendation } from "@/types/moniepay.types";
 import { recordDecisionAction } from "@/lib/intelligence/decisionMemory";
@@ -33,7 +39,6 @@ export function NextMoveCard({
   onOpenWithdrawal,
 }: NextMoveCardProps) {
   const [isDone, setIsDone] = useState<string | null>(null);
-  const primaryRec = recommendations[0];
 
   const activeCustomerDebts = debts.filter(
     (d) => d.debt_type === "CUSTOMER_CREDIT" && d.status !== "SETTLED" && d.balance_due > 0
@@ -92,54 +97,64 @@ export function NextMoveCard({
   };
 
   return (
-    <section className="rounded-[28px] bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-900 p-5 sm:p-6 text-white shadow-[0_12px_32px_rgba(4,120,87,0.22)] relative overflow-hidden">
-      {/* Decorative ambient light */}
-      <div className="pointer-events-none absolute -right-8 -top-8 h-44 w-44 rounded-full bg-emerald-400/20 blur-2xl" />
+    <motion.section
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.25, ease: "easeOut" }}
+      className="rounded-[28px] bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#047857] p-5 sm:p-6 text-white shadow-[0_16px_36px_-6px_rgba(4,120,87,0.3)] border border-emerald-500/20 relative overflow-hidden"
+    >
+      {/* Decorative ambient light orbs */}
+      <div className="pointer-events-none absolute -right-8 -top-8 h-48 w-48 rounded-full bg-emerald-400/20 blur-3xl" />
+      <div className="pointer-events-none absolute -left-12 -bottom-12 h-44 w-44 rounded-full bg-teal-400/15 blur-2xl" />
 
       {/* Header Tag */}
-      <div className="flex items-center justify-between gap-2 mb-3">
+      <div className="flex items-center justify-between gap-2 mb-3 relative z-10">
         <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-white/20 backdrop-blur-md border border-white/25">
-            <Compass className="h-4 w-4 text-emerald-200" />
+          <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md border border-white/20 shadow-inner">
+            <Compass className="h-4 w-4 text-emerald-300" />
           </div>
           <span className="text-[11px] font-black uppercase tracking-widest text-emerald-200">
             Your Next Move
           </span>
         </div>
-        <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/20 text-emerald-100 border border-white/25">
+        <span className="text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-emerald-400/20 text-emerald-200 border border-emerald-400/30 backdrop-blur-xs">
           Priority 1
         </span>
       </div>
 
-      {/* Core Directive Headline (Concise, zero wordiness!) */}
-      <h3 className="text-base sm:text-lg font-black text-white leading-tight tracking-tight">
+      {/* Core Directive Headline */}
+      <h3 className="text-base sm:text-lg font-black text-white leading-snug tracking-tight relative z-10">
         {title}
       </h3>
 
       {/* Single-Sentence Root Cause */}
-      <p className="text-xs sm:text-[13px] text-emerald-100/90 font-medium mt-2 leading-relaxed">
+      <p className="text-xs sm:text-[13px] text-emerald-100/90 font-medium mt-1.5 leading-relaxed relative z-10">
         {reason}
       </p>
 
       {/* 1-Tap Action Button */}
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <button
+      <div className="mt-4 flex flex-wrap items-center gap-2.5 relative z-10">
+        <motion.button
           type="button"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.97 }}
           onClick={handleAction}
-          className="px-5 py-3 rounded-2xl bg-white hover:bg-slate-50 text-emerald-950 font-black text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
+          className="px-5 py-3 rounded-2xl bg-white hover:bg-emerald-50 text-emerald-950 font-black text-xs sm:text-sm shadow-md active:scale-95 transition-all flex items-center gap-2 cursor-pointer"
         >
           <span>{actionLabel}</span>
           <ArrowRight className="h-4 w-4 text-emerald-800" />
-        </button>
+        </motion.button>
 
         {onOpenGbeseBook && actionType === "COLLECT_DEBT" && (
-          <button
+          <motion.button
             type="button"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
             onClick={onOpenGbeseBook}
-            className="px-4 py-3 rounded-2xl bg-white/15 hover:bg-white/20 text-white font-bold text-xs backdrop-blur-md border border-white/20 active:scale-95 transition-all cursor-pointer"
+            className="px-4 py-3 rounded-2xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs backdrop-blur-md border border-white/20 active:scale-95 transition-all cursor-pointer"
           >
             View All Debts
-          </button>
+          </motion.button>
         )}
       </div>
 
@@ -149,13 +164,13 @@ export function NextMoveCard({
             initial={{ opacity: 0, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="mt-3.5 flex items-center gap-2 text-xs font-bold text-emerald-200 bg-black/25 p-2.5 rounded-xl border border-white/15"
+            className="mt-3.5 flex items-center gap-2 text-xs font-bold text-emerald-200 bg-black/30 p-2.5 rounded-xl border border-white/15 relative z-10 backdrop-blur-md"
           >
             <CheckCircle2 className="h-4 w-4 text-emerald-300 shrink-0" />
             <span>{isDone}</span>
           </motion.div>
         )}
       </AnimatePresence>
-    </section>
+    </motion.section>
   );
 }

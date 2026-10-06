@@ -213,46 +213,39 @@ export default function MoniePayDashboard() {
         {/* Soft Drag Handle */}
         <div className="mx-auto h-1 w-10 rounded-full bg-slate-300 mb-1" />
 
-        {/* ── INTERACTIVE TAB SWITCHER (Reduces steps & organizes views) ── */}
-        <div className="flex rounded-2xl bg-white border border-emerald-900/10 p-1 shadow-xs">
-          <button
-            type="button"
-            onClick={() => setActiveTab("today")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
-              activeTab === "today"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Store className="h-3.5 w-3.5" />
-            <span>Today's View</span>
-          </button>
+        {/* ── INTERACTIVE TAB SWITCHER (Sliding Framer Motion Pill) ── */}
+        <div className="flex rounded-2xl bg-white border border-emerald-950/[0.08] p-1 shadow-[0_4px_16px_rgba(15,23,42,0.03)] relative">
+          {(
+            [
+              { id: "today", label: "Today's View", icon: Store },
+              { id: "decisions", label: "7 Decisions", icon: HelpCircle },
+              { id: "activity", label: "Activity Log", icon: Clock },
+            ] as const
+          ).map((tab) => {
+            const isActive = activeTab === tab.id;
+            const Icon = tab.icon;
 
-          <button
-            type="button"
-            onClick={() => setActiveTab("decisions")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
-              activeTab === "decisions"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <HelpCircle className="h-3.5 w-3.5" />
-            <span>7 Decisions</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("activity")}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
-              activeTab === "activity"
-                ? "bg-emerald-700 text-white shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            <Clock className="h-3.5 w-3.5" />
-            <span>Activity Log</span>
-          </button>
+            return (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => setActiveTab(tab.id)}
+                className={`relative flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs sm:text-sm font-black transition-colors cursor-pointer z-10 ${
+                  isActive ? "text-white" : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTabPill"
+                    transition={{ type: "spring", stiffness: 450, damping: 32 }}
+                    className="absolute inset-0 rounded-xl bg-emerald-700 shadow-sm z-[-1]"
+                  />
+                )}
+                <Icon className="h-3.5 w-3.5" />
+                <span>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* ── TAB CONTENT WITH FRAMER MOTION TRANSITIONS ── */}
@@ -299,35 +292,41 @@ export default function MoniePayDashboard() {
 
               {/* Quick Actions Row */}
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
-                <button
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => handleOpenRecord("SALE")}
-                  className="py-3 px-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-sm"
+                  className="py-3 px-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer shadow-sm"
                 >
                   <Plus className="h-4 w-4" />
                   <span>+ Record Sale</span>
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => setIsGbeseOpen(true)}
-                  className="py-3 px-3 rounded-2xl bg-white border border-emerald-900/10 hover:border-emerald-600 text-slate-800 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs"
+                  className="py-3 px-3 rounded-2xl bg-white border border-emerald-950/[0.08] hover:border-emerald-600 text-slate-800 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Users className="h-4 w-4 text-emerald-700" />
                   <span>Gbese Book ({debts.filter(d => d.status !== "SETTLED").length})</span>
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => {
                     setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
                     setIsWithdrawalOpen(true);
                   }}
-                  className="col-span-2 sm:col-span-1 py-3 px-3 rounded-2xl bg-white border border-emerald-900/10 hover:border-emerald-600 text-slate-800 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 transition-all shadow-xs"
+                  className="col-span-2 sm:col-span-1 py-3 px-3 rounded-2xl bg-white border border-emerald-950/[0.08] hover:border-emerald-600 text-slate-800 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                 >
                   <Wallet className="h-4 w-4 text-emerald-700" />
                   <span>Take Chop Money</span>
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           )}
