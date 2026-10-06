@@ -1,8 +1,8 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// AJO — Logout Transition Screen
-// Clean Session Termination
+// MoniePay — Logout Transition Screen
+// Clean Session Termination • Daylight Theme
 // ─────────────────────────────────────────────────────────────────
 
 import { useEffect } from "react";
@@ -19,56 +19,29 @@ export default function LogoutPage() {
   useEffect(() => {
     const timer = setTimeout(() => {
       logout();
-    }, 800);
+    }, 600);
     return () => clearTimeout(timer);
   }, [logout]);
 
   return (
-    <div
-      style={{
-        minHeight: "100dvh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        background: "#050505",
-        padding: "1.5rem",
-      }}
-    >
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-900 p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.96 }}
         animate={{ opacity: 1, scale: 1 }}
-        style={{
-          width: "100%",
-          maxWidth: "360px",
-          background: "#0D0D0D",
-          border: "1px solid #1F1F1F",
-          borderRadius: "16px",
-          padding: "2.5rem 2rem",
-          boxShadow: "0 20px 40px rgba(0, 0, 0, 0.7)",
-          textAlign: "center",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "1.25rem",
-        }}
+        className="w-full max-w-sm rounded-[28px] bg-white border border-emerald-900/10 p-6 sm:p-8 shadow-xl text-center flex flex-col items-center gap-4"
       >
-        <AjoLogo size={36} variant="icon" theme="dark" />
+        <AjoLogo size={36} variant="icon" />
 
         <div>
-          <h2 style={{ fontSize: "17px", fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.02em" }}>
-            Signing Out of AJO…
+          <h2 className="text-base font-black text-slate-900">
+            Signing Out of MoniePay…
           </h2>
-          <p style={{ fontSize: "12.5px", color: "#71717A", marginTop: "4px" }}>
-            Securing your session.
+          <p className="text-xs text-slate-500 mt-1">
+            Securing your local shop records.
           </p>
         </div>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "0.25rem" }}>
-          <Loader2 size={16} className="animate-spin" color="#A1A1AA" />
-          <span style={{ fontSize: "12px", color: "#52525B" }}>
-            Redirecting to sign in…
-          </span>
-        </div>
+        <Loader2 className="h-6 w-6 text-emerald-700 animate-spin" />
       </motion.div>
     </div>
   );

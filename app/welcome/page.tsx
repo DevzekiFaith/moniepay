@@ -1,364 +1,109 @@
-﻿"use client";
+"use client";
 
-import { useEffect, useState } from "react";
+// ─────────────────────────────────────────────────────────────────
+// MoniePay — Welcome / Onboarding Landing Page
+// Daylight Fluid Architecture • Single Green Market Theme
+// ─────────────────────────────────────────────────────────────────
+
+import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ArrowRight, ShieldCheck, Zap, BarChart3, Lock, Globe, ChevronDown } from "lucide-react";
-
-function FeaturePill({ icon: Icon, text }: { icon: React.ElementType; text: string }) {
-  return (
-    <div
-      style={{
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "6px",
-        padding: "6px 14px",
-        borderRadius: "999px",
-        border: "1px solid rgba(255,255,255,0.08)",
-        background: "rgba(255,255,255,0.04)",
-        fontSize: "12px",
-        color: "#A1A1AA",
-        letterSpacing: "0.01em",
-        backdropFilter: "blur(6px)",
-      }}
-    >
-      <Icon size={12} color="#71717A" />
-      {text}
-    </div>
-  );
-}
-
-function FloatingCard({
-  delay,
-  x,
-  y,
-  rotate,
-  children,
-}: {
-  delay: number;
-  x: string;
-  y: string;
-  rotate: number;
-  children: React.ReactNode;
-}) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.85, rotate: rotate - 4 }}
-      animate={{ opacity: 1, scale: 1, rotate }}
-      transition={{ delay, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-      style={{
-        position: "absolute",
-        left: x,
-        top: y,
-        width: "200px",
-        background: "rgba(13,13,13,0.9)",
-        border: "1px solid rgba(255,255,255,0.08)",
-        borderRadius: "16px",
-        padding: "16px",
-        backdropFilter: "blur(20px)",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
-        pointerEvents: "none",
-        zIndex: 1,
-      }}
-    >
-      {children}
-    </motion.div>
-  );
-}
+import {
+  ArrowRight,
+  ShieldCheck,
+  Zap,
+  Store,
+  Wallet,
+  Users,
+  Compass,
+  CheckCircle2,
+} from "lucide-react";
+import { AjoLogo } from "@/components/ui/AjoLogo";
 
 export default function WelcomePage() {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => { setMounted(true); }, []);
-
   return (
-    <div
-      style={{
-        minHeight: "100dvh",
-        background: "#050505",
-        color: "#FFFFFF",
-        fontFamily: "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-        overflowX: "hidden",
-        position: "relative",
-      }}
-    >
-      {/* Ambient gradients */}
-      <div style={{ position: "fixed", inset: 0, pointerEvents: "none", zIndex: 0 }}>
-        <div style={{ position: "absolute", top: "-20%", left: "50%", transform: "translateX(-50%)", width: "900px", height: "600px", background: "radial-gradient(ellipse, rgba(255,255,255,0.03) 0%, transparent 70%)" }} />
-        <div style={{ position: "absolute", bottom: "10%", right: "-10%", width: "500px", height: "500px", background: "radial-gradient(circle, rgba(120,100,255,0.04) 0%, transparent 60%)" }} />
-        <div style={{ position: "absolute", top: "40%", left: "-5%", width: "400px", height: "400px", background: "radial-gradient(circle, rgba(0,200,150,0.03) 0%, transparent 60%)" }} />
-      </div>
-
-      {/* Nav */}
-      <motion.nav
-        initial={{ opacity: 0, y: -16 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        style={{
-          position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "16px 24px",
-          borderBottom: "1px solid rgba(255,255,255,0.04)",
-          background: "rgba(5,5,5,0.85)",
-          backdropFilter: "blur(20px)",
-        }}
-      >
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <div style={{ width: "28px", height: "28px", background: "#FFFFFF", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: "13px", fontWeight: 900, color: "#050505", letterSpacing: "-0.04em" }}>A</span>
-          </div>
-          <span style={{ fontSize: "15px", fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.03em" }}>AJO</span>
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <Link href="/login" style={{ fontSize: "13px", color: "#A1A1AA", textDecoration: "none", padding: "8px 16px", borderRadius: "8px" }}>Sign In</Link>
-          <Link href="/login?register=1" style={{ fontSize: "13px", fontWeight: 600, color: "#050505", background: "#FFFFFF", textDecoration: "none", padding: "8px 16px", borderRadius: "8px" }}>Get Started</Link>
-        </div>
-      </motion.nav>
-
-      {/* Hero */}
-      <section style={{ position: "relative", zIndex: 1, minHeight: "100dvh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "120px 24px 80px", textAlign: "center", overflow: "hidden" }}>
-        
-        {/* Floating cards - desktop only */}
-        {mounted && (
-          <div className="welcome-cards" style={{ position: "absolute", inset: 0, pointerEvents: "none" }}>
-            <FloatingCard delay={0.6} x="5%" y="20%" rotate={-4}>
-              <div style={{ fontSize: "10px", color: "#52525B", marginBottom: "6px" }}>Total Balance</div>
-              <div style={{ fontSize: "22px", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.04em" }}>₦2,450,000</div>
-              <div style={{ display: "flex", alignItems: "center", gap: "4px", marginTop: "6px", fontSize: "11px", color: "#22C55E" }}>
-                <span>↑ +12.4%</span><span style={{ color: "#3F3F46" }}>this month</span>
-              </div>
-            </FloatingCard>
-
-            <FloatingCard delay={0.8} x="72%" y="15%" rotate={3}>
-              <div style={{ fontSize: "10px", color: "#52525B", marginBottom: "8px" }}>Recent Activity</div>
-              {[
-                { name: "OPay Transfer", amount: "-₦15,000", color: "#EF4444" },
-                { name: "Salary Credit", amount: "+₦350,000", color: "#22C55E" },
-                { name: "Data Purchase", amount: "-₦3,000", color: "#EF4444" },
-              ].map((tx) => (
-                <div key={tx.name} style={{ display: "flex", justifyContent: "space-between", fontSize: "11px", marginBottom: "6px" }}>
-                  <span style={{ color: "#A1A1AA" }}>{tx.name}</span>
-                  <span style={{ color: tx.color, fontWeight: 600 }}>{tx.amount}</span>
-                </div>
-              ))}
-            </FloatingCard>
-
-            <FloatingCard delay={1.0} x="68%" y="60%" rotate={-2}>
-              <div style={{ fontSize: "10px", color: "#52525B", marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.06em" }}>💡 Money Story</div>
-              <p style={{ fontSize: "11px", color: "#A1A1AA", lineHeight: 1.5 }}>
-                You've saved <span style={{ color: "#FFFFFF", fontWeight: 600 }}>₦42,000</span> more than last month!
-              </p>
-            </FloatingCard>
-
-            <FloatingCard delay={1.2} x="3%" y="62%" rotate={2}>
-              <div style={{ fontSize: "10px", color: "#52525B", marginBottom: "8px" }}>By Category</div>
-              {[{ label: "Food", pct: 38 }, { label: "Transport", pct: 22 }, { label: "Bills", pct: 40 }].map((c) => (
-                <div key={c.label} style={{ marginBottom: "8px" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: "10px", color: "#71717A", marginBottom: "3px" }}>
-                    <span>{c.label}</span><span>{c.pct}%</span>
-                  </div>
-                  <div style={{ height: "3px", borderRadius: "2px", background: "rgba(255,255,255,0.06)", overflow: "hidden" }}>
-                    <div style={{ height: "100%", width: `${c.pct}%`, background: "rgba(255,255,255,0.3)", borderRadius: "2px" }} />
-                  </div>
-                </div>
-              ))}
-            </FloatingCard>
-          </div>
-        )}
-
-        {/* Badge */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.1 }}
-          style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "5px 14px", borderRadius: "999px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", fontSize: "11.5px", color: "#A1A1AA", marginBottom: "24px", backdropFilter: "blur(8px)" }}
-        >
-          <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#22C55E", display: "inline-block" }} />
-          Now live with Mono Connect
-        </motion.div>
-
-        {/* Headline */}
-        <motion.h1
-          initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          style={{ fontSize: "clamp(40px, 8vw, 80px)", fontWeight: 900, letterSpacing: "-0.04em", lineHeight: 1.05, color: "#FFFFFF", maxWidth: "800px", margin: "0 auto 20px" }}
-        >
-          Your money.<br />
-          <span style={{ background: "linear-gradient(135deg, #FFFFFF 30%, rgba(255,255,255,0.4) 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
-            Understood.
-          </span>
-        </motion.h1>
-
-        {/* Subheadline */}
-        <motion.p
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.35 }}
-          style={{ fontSize: "clamp(15px, 2.5vw, 18px)", color: "#71717A", maxWidth: "520px", lineHeight: 1.7, margin: "0 auto 36px" }}
-        >
-          AJO connects to your bank via Mono, automatically tracks every naira, and tells you exactly what&apos;s happening with your money — in plain language.
-        </motion.p>
-
-        {/* CTAs */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
-          style={{ display: "flex", flexWrap: "wrap", gap: "12px", justifyContent: "center", marginBottom: "40px" }}
-        >
-          <Link
-            href="/login?register=1"
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "12px", background: "#FFFFFF", color: "#050505", fontSize: "14px", fontWeight: 700, textDecoration: "none", letterSpacing: "-0.01em", boxShadow: "0 8px 32px rgba(255,255,255,0.08)" }}
-          >
-            Create Free Account <ArrowRight size={15} />
-          </Link>
+    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-emerald-500/20 flex flex-col justify-between overflow-x-hidden">
+      {/* Top Navbar */}
+      <header className="w-full border-b border-emerald-900/10 bg-white/90 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5">
+        <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <AjoLogo size={32} showTagline={false} />
           <Link
             href="/login"
-            style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "14px 28px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.04)", color: "#A1A1AA", fontSize: "14px", fontWeight: 600, textDecoration: "none", backdropFilter: "blur(8px)" }}
+            className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm cursor-pointer active:scale-95 transition-all shadow-xs"
           >
-            Sign In
+            Open Shop
           </Link>
-        </motion.div>
+        </div>
+      </header>
 
-        {/* Feature pills */}
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
-          style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center" }}
-        >
-          <FeaturePill icon={ShieldCheck} text="Bank-grade security" />
-          <FeaturePill icon={Zap} text="Instant sync via Mono" />
-          <FeaturePill icon={BarChart3} text="AI money insights" />
-          <FeaturePill icon={Lock} text="End-to-end encrypted" />
-          <FeaturePill icon={Globe} text="All Nigerian banks" />
-        </motion.div>
+      {/* Hero Section */}
+      <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-16 text-center space-y-6">
+        {/* Market Badge */}
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-black">
+          <Store className="h-3.5 w-3.5 text-emerald-700" />
+          <span>Informal Business Operating Layer</span>
+        </div>
 
-        {/* Scroll cue */}
-        <motion.div
-          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.2 }}
-          style={{ position: "absolute", bottom: "32px", left: "50%", transform: "translateX(-50%)", display: "flex", flexDirection: "column", alignItems: "center", gap: "4px", color: "#3F3F46", fontSize: "10px", letterSpacing: "0.08em", textTransform: "uppercase" }}
-        >
-          <span>Scroll</span>
-          <motion.div animate={{ y: [0, 4, 0] }} transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}>
-            <ChevronDown size={14} />
-          </motion.div>
-        </motion.div>
-      </section>
+        {/* Big Headline */}
+        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-[1.15]">
+          You run your shop. <br />
+          <span className="text-emerald-700">MoniePay does the thinking.</span>
+        </h1>
 
-      {/* Stats */}
-      <motion.section
-        initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.4 }} transition={{ duration: 0.7 }}
-        style={{ position: "relative", zIndex: 1, padding: "80px 24px", borderTop: "1px solid rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.04)", background: "rgba(255,255,255,0.01)" }}
-      >
-        <div style={{ maxWidth: "900px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "40px", textAlign: "center" }}>
-          {[
-            { value: "50+", label: "Banks supported" },
-            { value: "10k+", label: "Transactions synced daily" },
-            { value: "3×", label: "Security audits passed" },
-            { value: "2 min", label: "Avg. setup time" },
-          ].map((s) => (
-            <div key={s.label}>
-              <div style={{ fontSize: "26px", fontWeight: 800, color: "#FFFFFF", letterSpacing: "-0.04em" }}>{s.value}</div>
-              <div style={{ fontSize: "11px", color: "#52525B", marginTop: "4px" }}>{s.label}</div>
+        {/* Subtitle */}
+        <p className="text-sm sm:text-base text-slate-600 font-medium max-w-xl mx-auto leading-relaxed">
+          Tell MoniePay what happened in plain words. Get instant answers on safe chop money, restocking funds, customer debt collection, and profit margins.
+        </p>
+
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <Link
+            href="/login"
+            className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all shadow-lg shadow-emerald-900/20"
+          >
+            <span>Start Using MoniePay</span>
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        {/* 3 Core Value Props Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-8 text-left">
+          <div className="rounded-[22px] bg-white border border-emerald-900/10 p-4 sm:p-5 shadow-xs space-y-2">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <Zap className="h-5 w-5" />
             </div>
-          ))}
-        </div>
-      </motion.section>
+            <h3 className="text-sm font-black text-slate-900">Tell MoniePay</h3>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+              Type or speak “Sold 45k” or “Bought stock 20k”. No bookkeeping software to learn.
+            </p>
+          </div>
 
-      {/* Features grid */}
-      <section style={{ position: "relative", zIndex: 1, padding: "100px 24px", maxWidth: "1000px", margin: "0 auto" }}>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.6 }}
-          style={{ textAlign: "center", marginBottom: "60px" }}
-        >
-          <h2 style={{ fontSize: "clamp(28px, 5vw, 44px)", fontWeight: 800, letterSpacing: "-0.04em", color: "#FFFFFF", marginBottom: "12px" }}>
-            Everything your money needs
-          </h2>
-          <p style={{ fontSize: "15px", color: "#52525B", maxWidth: "480px", margin: "0 auto" }}>
-            One place to see, understand, and act on your complete financial picture.
-          </p>
-        </motion.div>
+          <div className="rounded-[22px] bg-white border border-emerald-900/10 p-4 sm:p-5 shadow-xs space-y-2">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <Compass className="h-5 w-5" />
+            </div>
+            <h3 className="text-sm font-black text-slate-900">Your Next Move</h3>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+              Get the single highest-leverage decision every day so you never run out of restock capital.
+            </p>
+          </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
-          {[
-            { icon: "⚡", title: "Real-time Sync", desc: "Connect OPay, GTBank, Access Bank or any Nigerian bank. Transactions appear instantly via Mono." },
-            { icon: "💡", title: "Money Stories", desc: "Plain-English summaries of your spending. No charts to decode — just clear, human language." },
-            { icon: "📊", title: "Spending Intelligence", desc: "Automatic categorisation of every transaction. See exactly where your money goes." },
-            { icon: "🔒", title: "Read-Only Access", desc: "AJO only reads your transactions. It cannot move money. Your credentials never leave Mono." },
-            { icon: "📈", title: "Trend Analysis", desc: "Daily, weekly, and monthly trends so you know if you're on track or overspending." },
-            { icon: "🎯", title: "Activity Tracking", desc: "Log and categorise your own financial activities to build a complete money picture." },
-          ].map((f, i) => (
-            <motion.div
-              key={f.title}
-              initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.5, delay: i * 0.07 }}
-              style={{ padding: "24px", borderRadius: "16px", border: "1px solid rgba(255,255,255,0.05)", background: "rgba(255,255,255,0.02)", cursor: "default" }}
-            >
-              <div style={{ fontSize: "24px", marginBottom: "12px" }}>{f.icon}</div>
-              <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.02em", marginBottom: "8px" }}>{f.title}</h3>
-              <p style={{ fontSize: "13px", color: "#52525B", lineHeight: 1.6 }}>{f.desc}</p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* How it works */}
-      <motion.section
-        initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true, amount: 0.2 }} transition={{ duration: 0.6 }}
-        style={{ position: "relative", zIndex: 1, padding: "80px 24px", background: "rgba(255,255,255,0.015)", borderTop: "1px solid rgba(255,255,255,0.04)", borderBottom: "1px solid rgba(255,255,255,0.04)" }}
-      >
-        <div style={{ maxWidth: "760px", margin: "0 auto", textAlign: "center" }}>
-          <h2 style={{ fontSize: "clamp(26px, 4vw, 38px)", fontWeight: 800, letterSpacing: "-0.04em", color: "#FFFFFF", marginBottom: "48px" }}>
-            Up and running in minutes
-          </h2>
-          <div style={{ display: "flex", flexDirection: "column" }}>
-            {[
-              { step: "01", title: "Create your account", desc: "Sign up with your email. No credit card, no KYC forms." },
-              { step: "02", title: "Connect your bank via Mono", desc: "Securely link your OPay or bank account. Takes 30 seconds." },
-              { step: "03", title: "Watch your money story unfold", desc: "AJO syncs transactions and gives you instant intelligence." },
-            ].map((item, i) => (
-              <motion.div
-                key={item.step}
-                initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.15 }}
-                style={{ display: "flex", gap: "24px", textAlign: "left", padding: "24px 0", borderBottom: i < 2 ? "1px solid rgba(255,255,255,0.04)" : "none" }}
-              >
-                <div style={{ fontSize: "11px", fontWeight: 700, color: "#3F3F46", letterSpacing: "0.06em", minWidth: "24px", paddingTop: "2px" }}>{item.step}</div>
-                <div>
-                  <div style={{ fontSize: "15px", fontWeight: 700, color: "#FFFFFF", letterSpacing: "-0.02em", marginBottom: "4px" }}>{item.title}</div>
-                  <div style={{ fontSize: "13px", color: "#52525B" }}>{item.desc}</div>
-                </div>
-              </motion.div>
-            ))}
+          <div className="rounded-[22px] bg-white border border-emerald-900/10 p-4 sm:p-5 shadow-xs space-y-2">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+              <Users className="h-5 w-5" />
+            </div>
+            <h3 className="text-sm font-black text-slate-900">Gbese Book</h3>
+            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+              1-tap WhatsApp reminders for customers who owe you money before your weekend stock buy.
+            </p>
           </div>
         </div>
-      </motion.section>
-
-      {/* Final CTA */}
-      <motion.section
-        initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: 0.7 }}
-        style={{ position: "relative", zIndex: 1, padding: "120px 24px", textAlign: "center" }}
-      >
-        <div style={{ maxWidth: "560px", margin: "0 auto" }}>
-          <h2 style={{ fontSize: "clamp(32px, 6vw, 56px)", fontWeight: 900, letterSpacing: "-0.04em", color: "#FFFFFF", marginBottom: "16px", lineHeight: 1.08 }}>
-            Start understanding your money today.
-          </h2>
-          <p style={{ fontSize: "15px", color: "#52525B", marginBottom: "36px", lineHeight: 1.6 }}>Free forever. No subscriptions, no hidden fees.</p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "12px", justifyContent: "center" }}>
-            <Link href="/login?register=1" style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "16px 32px", borderRadius: "12px", background: "#FFFFFF", color: "#050505", fontSize: "15px", fontWeight: 700, textDecoration: "none", letterSpacing: "-0.02em", boxShadow: "0 8px 32px rgba(255,255,255,0.08)" }}>
-              Create Free Account <ArrowRight size={16} />
-            </Link>
-            <Link href="/login" style={{ display: "inline-flex", alignItems: "center", gap: "8px", padding: "16px 32px", borderRadius: "12px", border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "#71717A", fontSize: "15px", fontWeight: 600, textDecoration: "none" }}>
-              Sign In
-            </Link>
-          </div>
-        </div>
-      </motion.section>
+      </main>
 
       {/* Footer */}
-      <footer style={{ position: "relative", zIndex: 1, padding: "32px 24px", borderTop: "1px solid rgba(255,255,255,0.04)", display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <div style={{ width: "20px", height: "20px", background: "#FFFFFF", borderRadius: "5px", display: "flex", alignItems: "center", justifyContent: "center" }}>
-            <span style={{ fontSize: "10px", fontWeight: 900, color: "#050505" }}>A</span>
-          </div>
-          <span style={{ fontSize: "12px", color: "#3F3F46" }}>AJO — Personal Money Intelligence</span>
-        </div>
-        <span style={{ fontSize: "11px", color: "#27272A" }}>Powered by Mono Connect · © {new Date().getFullYear()}</span>
+      <footer className="w-full border-t border-slate-200/80 py-6 px-4 text-center text-xs text-slate-400 font-medium">
+        MoniePay • Built for Nigeria's Informal Economy
       </footer>
-
-      <style jsx global>{`
-        @media (max-width: 768px) { .welcome-cards { display: none !important; } }
-      `}</style>
     </div>
   );
 }
-

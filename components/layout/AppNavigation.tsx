@@ -1,12 +1,11 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// AJO — Responsive Navigation Architecture
-// Desktop Sidebar + Mobile Header + Mobile Dock
-// Minimalist, black, white, neutral aesthetics.
+// MoniePay — Responsive Navigation Architecture
+// Unified Single Emerald Theme • Fully Responsive
 // ─────────────────────────────────────────────────────────────────
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AjoLogo } from "@/components/ui/AjoLogo";
@@ -19,10 +18,10 @@ import {
   Building2,
   SlidersHorizontal,
   LogOut,
-  LogIn,
   User,
   ShieldCheck,
   ChevronRight,
+  Store,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -36,14 +35,14 @@ export const NAV_SECTIONS = [
     title: "Intelligence",
     items: [
       { label: "Activity", href: "/activity", icon: ArrowLeftRight, description: "Live Business Activity" },
-      { label: "Diagnostics", href: "/insights", icon: BrainCircuit, description: "Business Health & Leak Diagnosis" },
-      { label: "Cash & POS", href: "/accounts", icon: Building2, description: "Cash Drawer, POS & Bank Accounts" },
+      { label: "Diagnostics", href: "/insights", icon: BrainCircuit, description: "Business Health & Leaks" },
+      { label: "Cash & Accounts", href: "/accounts", icon: Building2, description: "Cash Drawer & Bank Accounts" },
     ],
   },
   {
     title: "Settings",
     items: [
-      { label: "Business Profile", href: "/profile", icon: SlidersHorizontal, description: "Shop Info & Target" },
+      { label: "Shop Profile", href: "/profile", icon: SlidersHorizontal, description: "Shop Info & Target" },
     ],
   },
 ];
@@ -53,124 +52,44 @@ export const MOBILE_NAV_ITEMS = [
   { label: "Decisions", href: "/", icon: Home },
   { label: "Activity", href: "/activity", icon: ArrowLeftRight },
   { label: "Diagnostics", href: "/insights", icon: BrainCircuit },
-  { label: "Cash & POS", href: "/accounts", icon: Building2 },
+  { label: "Accounts", href: "/accounts", icon: Building2 },
   { label: "Profile", href: "/profile", icon: User },
 ];
 
 // ── Mobile Header ─────────────────────────────────────────────────
 export function AppMobileHeader() {
   const pathname = usePathname();
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
 
   return (
     <>
-      <header
-        className="mobile-only"
-        style={{
-          height: "56px",
-          background: "rgba(8, 8, 8, 0.95)",
-          backdropFilter: "blur(16px)",
-          borderBottom: "1px solid #171717",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 1.25rem",
-          position: "sticky",
-          top: 0,
-          zIndex: 45,
-          width: "100%",
-          display: "flex",
-        }}
-      >
-        <Link href="/" style={{ textDecoration: "none" }}>
-          <AjoLogo size={28} showTagline={false} />
+      <header className="md:hidden sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-emerald-900/10 bg-white/95 px-3.5 sm:px-4 backdrop-blur-md">
+        <Link href="/" className="flex items-center gap-2">
+          <AjoLogo size={26} showTagline={false} />
         </Link>
 
-        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div className="flex items-center gap-2">
           {user ? (
-            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-              <Link
-                href="/profile"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "6px",
-                  padding: "4px 8px",
-                  borderRadius: "6px",
-                  background: "#141414",
-                  border: "1px solid #222222",
-                  color: "#EDEDED",
-                  fontSize: "12px",
-                  textDecoration: "none",
-                }}
-              >
-                <div
-                  style={{
-                    width: "18px",
-                    height: "18px",
-                    borderRadius: "4px",
-                    background: "#222222",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    fontSize: "10px",
-                    fontWeight: 700,
-                  }}
-                >
-                  {user.avatarLetter || "A"}
-                </div>
-                <span style={{ maxWidth: "80px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {user.name?.split(" ")[0] || "Profile"}
-                </span>
-              </Link>
-
-              <button
-                type="button"
-                onClick={() => setIsLogoutOpen(true)}
-                style={{
-                  background: "#141414",
-                  border: "1px solid #222222",
-                  borderRadius: "6px",
-                  padding: "5px 7px",
-                  color: "#71717A",
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-                title="Sign out"
-              >
-                <LogOut size={13} />
-              </button>
-            </div>
+            <Link
+              href="/profile"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-emerald-50 border border-emerald-200/80 text-emerald-950 text-xs font-bold"
+            >
+              <div className="h-5 w-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px] font-black">
+                {(user.name?.[0] || "M").toUpperCase()}
+              </div>
+              <span className="max-w-[90px] truncate">{user.name?.split(" ")[0]}</span>
+            </Link>
           ) : (
             <Link
               href="/login"
-              style={{
-                background: "#FFFFFF",
-                color: "#050505",
-                borderRadius: "6px",
-                padding: "5px 12px",
-                fontSize: "12px",
-                fontWeight: 600,
-                textDecoration: "none",
-              }}
+              className="px-3 py-1.5 rounded-xl bg-emerald-700 text-white text-xs font-bold"
             >
               Sign In
             </Link>
           )}
         </div>
       </header>
-
-      <LogoutModal
-        isOpen={isLogoutOpen}
-        onClose={() => setIsLogoutOpen(false)}
-        onConfirm={() => {
-          setIsLogoutOpen(false);
-          logout();
-        }}
-        userName={user?.name}
-      />
     </>
   );
 }
@@ -183,302 +102,78 @@ export function AppSidebar() {
 
   return (
     <>
-      <aside
-        style={{
-          width: "256px",
-          height: "100dvh",
-          background: "#070707",
-          borderRight: "1px solid #141414",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          padding: "1.5rem 1.125rem 1.25rem",
-          position: "sticky",
-          top: 0,
-          flexShrink: 0,
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column", gap: "1.75rem" }}>
-          {/* Brand Header */}
-          <div style={{ paddingLeft: "6px", display: "flex", flexDirection: "column", gap: "0.75rem" }}>
-            <Link href="/" style={{ textDecoration: "none" }}>
-              <AjoLogo size={32} showTagline={true} />
-            </Link>
-
-            {/* Read-Only Status Indicator */}
-            <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "6px",
-                padding: "3px 8px",
-                borderRadius: "6px",
-                background: "#0F0F0F",
-                border: "1px solid #1A1A1A",
-                width: "fit-content",
-              }}
-            >
-              <span
-                style={{
-                  width: "5px",
-                  height: "5px",
-                  borderRadius: "50%",
-                  background: "#10B981",
-                  boxShadow: "0 0 8px rgba(16, 185, 129, 0.6)",
-                }}
-              />
-              <span style={{ fontSize: "10.5px", fontWeight: 500, color: "#71717A" }}>
-                Read-Only Feed Active
-              </span>
-            </div>
+      <aside className="hidden md:flex flex-col justify-between w-64 border-r border-emerald-900/10 bg-white min-h-screen p-4 sticky top-0">
+        <div className="space-y-6">
+          {/* Logo */}
+          <div className="px-2 py-2">
+            <AjoLogo size={32} showTagline={true} />
           </div>
 
-          {/* Grouped Navigation Sections */}
-          <nav style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
-            {/* 1. Overview */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#52525B", paddingLeft: "10px", marginBottom: "4px" }}>
-                Overview
-              </span>
-              <Link
-                href="/"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "8px 10px",
-                  borderRadius: "8px",
-                  fontSize: "13px",
-                  fontWeight: pathname === "/" ? 600 : 500,
-                  color: pathname === "/" ? "#FFFFFF" : "#A1A1AA",
-                  background: pathname === "/" ? "#141414" : "transparent",
-                  border: pathname === "/" ? "1px solid #222222" : "1px solid transparent",
-                  textDecoration: "none",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <Home size={15} color={pathname === "/" ? "#FFFFFF" : "#71717A"} strokeWidth={pathname === "/" ? 2.2 : 1.8} />
-                  <span>Home</span>
-                </div>
-                {pathname === "/" && <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#FFFFFF" }} />}
-              </Link>
-            </div>
-
-            {/* 2. Intelligence */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
-              <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#52525B", paddingLeft: "10px", marginBottom: "4px" }}>
-                Intelligence
-              </span>
-              {[
-                { label: "Activity", href: "/activity", icon: ArrowLeftRight },
-                { label: "Insights", href: "/insights", icon: BrainCircuit },
-                { label: "Accounts", href: "/accounts", icon: Building2 },
-              ].map((item) => {
-                const isActive = pathname === item.href;
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "8px 10px",
-                      borderRadius: "8px",
-                      fontSize: "13px",
-                      fontWeight: isActive ? 600 : 500,
-                      color: isActive ? "#FFFFFF" : "#A1A1AA",
-                      background: isActive ? "#141414" : "transparent",
-                      border: isActive ? "1px solid #222222" : "1px solid transparent",
-                      textDecoration: "none",
-                      transition: "all 0.15s ease",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                      <Icon size={15} color={isActive ? "#FFFFFF" : "#71717A"} strokeWidth={isActive ? 2.2 : 1.8} />
-                      <span>{item.label}</span>
-                    </div>
-                    {isActive && <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#FFFFFF" }} />}
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* 3. Profile Reference & Actions */}
-            <div style={{ display: "flex", flexDirection: "column", gap: "4px" }}>
-              <span style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: "#52525B", paddingLeft: "10px", marginBottom: "4px" }}>
-                Profile &amp; Settings
-              </span>
-
-              {/* Profile Link Button */}
-              <Link
-                href="/profile"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  padding: "8px 10px",
-                  borderRadius: "8px",
-                  fontSize: "13px",
-                  fontWeight: pathname === "/profile" ? 600 : 500,
-                  color: pathname === "/profile" ? "#FFFFFF" : "#A1A1AA",
-                  background: pathname === "/profile" ? "#141414" : "transparent",
-                  border: pathname === "/profile" ? "1px solid #222222" : "1px solid transparent",
-                  textDecoration: "none",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                  <User size={15} color={pathname === "/profile" ? "#FFFFFF" : "#71717A"} strokeWidth={pathname === "/profile" ? 2.2 : 1.8} />
-                  <span>Profile &amp; Preferences</span>
-                </div>
-                {pathname === "/profile" && <div style={{ width: "4px", height: "4px", borderRadius: "50%", background: "#FFFFFF" }} />}
-              </Link>
-
-              {/* Sign In & User Actions placed directly under Profile Reference */}
-              {user ? (
-                <div
-                  style={{
-                    marginTop: "4px",
-                    background: "#0D0D0D",
-                    border: "1px solid #1A1A1A",
-                    borderRadius: "10px",
-                    padding: "8px 10px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    gap: "8px",
-                  }}
-                >
-                  <Link
-                    href="/profile"
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                      minWidth: 0,
-                      flex: 1,
-                      textDecoration: "none",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "28px",
-                        height: "28px",
-                        borderRadius: "6px",
-                        background: "#1C1C1E",
-                        border: "1px solid #27272A",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        color: "#FFFFFF",
-                        fontWeight: 700,
-                        fontSize: "11px",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {user.avatarLetter || "A"}
-                    </div>
-
-                    <div style={{ minWidth: 0, flex: 1 }}>
-                      <p
-                        style={{
-                          fontSize: "12px",
-                          fontWeight: 600,
-                          color: "#EDEDED",
-                          lineHeight: 1.2,
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
+          {/* Navigation Items */}
+          <nav className="space-y-5">
+            {NAV_SECTIONS.map((section) => (
+              <div key={section.title} className="space-y-1">
+                <span className="px-3 text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
+                  {section.title}
+                </span>
+                <div className="space-y-0.5 mt-1">
+                  {section.items.map((item) => {
+                    const isActive = pathname === item.href;
+                    const Icon = item.icon;
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={`flex items-center justify-between px-3 py-2.5 rounded-2xl text-xs font-bold transition-all ${
+                          isActive
+                            ? "bg-emerald-700 text-white shadow-sm"
+                            : "text-slate-600 hover:bg-emerald-50 hover:text-emerald-950"
+                        }`}
                       >
-                        {user.name || "Member"}
-                      </p>
-                      <span
-                        style={{
-                          fontSize: "10px",
-                          color: "#71717A",
-                          display: "block",
-                          marginTop: "1px",
-                          whiteSpace: "nowrap",
-                          overflow: "hidden",
-                          textOverflow: "ellipsis",
-                        }}
-                      >
-                        {user.email}
-                      </span>
-                    </div>
-                  </Link>
-
-                  <button
-                    type="button"
-                    onClick={() => setIsLogoutOpen(true)}
-                    title="Sign out of AJO"
-                    style={{
-                      width: "26px",
-                      height: "26px",
-                      borderRadius: "6px",
-                      background: "transparent",
-                      border: "1px solid transparent",
-                      color: "#71717A",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      cursor: "pointer",
-                      flexShrink: 0,
-                    }}
-                  >
-                    <LogOut size={13} />
-                  </button>
+                        <div className="flex items-center gap-2.5">
+                          <Icon className={`h-4 w-4 ${isActive ? "text-white" : "text-emerald-800"}`} />
+                          <span>{item.label}</span>
+                        </div>
+                        {isActive && <ChevronRight className="h-3.5 w-3.5 text-emerald-200" />}
+                      </Link>
+                    );
+                  })}
                 </div>
-              ) : (
-                <Link
-                  href="/login"
-                  style={{
-                    marginTop: "6px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    gap: "8px",
-                    padding: "8px 12px",
-                    background: "#FFFFFF",
-                    color: "#050505",
-                    borderRadius: "8px",
-                    fontSize: "12.5px",
-                    fontWeight: 600,
-                    textDecoration: "none",
-                    transition: "opacity 0.15s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.opacity = "0.9")}
-                  onMouseLeave={(e) => (e.currentTarget.style.opacity = "1")}
-                >
-                  <LogIn size={13} />
-                  <span>Sign In to AJO</span>
-                </Link>
-              )}
-            </div>
+              </div>
+            ))}
           </nav>
         </div>
 
-        {/* Footer: Security Guarantee */}
-        <div style={{ borderTop: "1px solid #141414", paddingTop: "0.875rem" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#52525B", fontSize: "11px", paddingLeft: "6px" }}>
-            <ShieldCheck size={13} color="#10B981" />
-            <span>256-Bit Read-Only Security</span>
-          </div>
+        {/* Footer / Account */}
+        <div className="pt-4 border-t border-slate-100 space-y-2">
+          {user && (
+            <div className="flex items-center justify-between p-2 rounded-2xl bg-emerald-50/70 border border-emerald-100">
+              <div className="min-w-0">
+                <p className="text-xs font-black text-slate-900 truncate">{user.name}</p>
+                <p className="text-[10.5px] font-medium text-emerald-800 truncate">{user.businessName || "Shop Owner"}</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsLogoutOpen(true)}
+                className="p-1.5 rounded-xl hover:bg-emerald-100 text-slate-500 hover:text-slate-900 cursor-pointer"
+                title="Sign Out"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </div>
+          )}
         </div>
       </aside>
 
       <LogoutModal
         isOpen={isLogoutOpen}
         onClose={() => setIsLogoutOpen(false)}
-        onConfirm={() => {
+        userName={user?.name || "Trader"}
+        businessName={user?.businessName || "Shop"}
+        onConfirm={async () => {
           setIsLogoutOpen(false);
-          logout();
+          await logout();
         }}
-        userName={user?.name}
       />
     </>
   );
@@ -489,53 +184,20 @@ export function AppBottomBar() {
   const pathname = usePathname();
 
   return (
-    <nav
-      style={{
-        position: "fixed",
-        bottom: "max(12px, env(safe-area-inset-bottom, 12px))",
-        left: "12px",
-        right: "12px",
-        maxWidth: "460px",
-        margin: "0 auto",
-        height: "54px",
-        background: "rgba(10, 10, 10, 0.96)",
-        backdropFilter: "blur(20px)",
-        border: "1px solid #1F1F1F",
-        borderRadius: "14px",
-        boxShadow: "0 10px 30px rgba(0, 0, 0, 0.8)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-around",
-        zIndex: 50,
-      }}
-    >
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-emerald-900/10 backdrop-blur-md px-2 py-1.5 flex items-center justify-around shadow-lg">
       {MOBILE_NAV_ITEMS.map((item) => {
         const isActive = pathname === item.href;
         const Icon = item.icon;
-
         return (
           <Link
             key={item.href}
             href={item.href}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: "2px",
-              padding: "6px 10px",
-              color: isActive ? "#FFFFFF" : "#71717A",
-              textDecoration: "none",
-              transition: "all 0.15s ease",
-            }}
+            className={`flex flex-col items-center justify-center py-1 px-2 rounded-xl text-[10px] font-bold transition-all ${
+              isActive ? "text-emerald-800 font-black" : "text-slate-400 hover:text-slate-700"
+            }`}
           >
-            <Icon
-              size={16}
-              color={isActive ? "#FFFFFF" : "#71717A"}
-              strokeWidth={isActive ? 2.2 : 1.8}
-            />
-            <span style={{ fontSize: "10px", fontWeight: isActive ? 700 : 500 }}>
-              {item.label}
-            </span>
+            <Icon className={`h-5 w-5 ${isActive ? "text-emerald-700 stroke-[2.5]" : "text-slate-400"}`} />
+            <span className="mt-0.5">{item.label}</span>
           </Link>
         );
       })}
