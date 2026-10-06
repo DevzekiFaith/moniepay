@@ -229,11 +229,50 @@ function LoginContent() {
           </div>
         </motion.div>
 
-        {/* ── 3D SOFT GLASS CARD ── */}
+        {/* ── 2ND POSITION: MONIEPAY TRADER MOTTO & 3-STEP FLOW ── */}
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, delay: 0.08 }}
+          className="clay-card p-4 space-y-3 relative overflow-hidden text-center"
+        >
+          <div className="space-y-0.5">
+            <h3 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
+              Understand your money, <span className="text-blue-700">no be just to record am.</span>
+            </h3>
+            <p className="text-[11px] text-slate-500 font-medium">
+              Know where your profit dey go every single day.
+            </p>
+          </div>
+
+          {/* 3 Concise Steps */}
+          <div className="grid grid-cols-3 gap-1.5 pt-0.5">
+            <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
+              <p className="text-xs font-black text-slate-900">1. Record</p>
+              <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Sales &amp; Gbese</p>
+            </div>
+
+            <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
+              <p className="text-xs font-black text-slate-900">2. Understand</p>
+              <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Real Profit</p>
+            </div>
+
+            <div className="p-2 rounded-xl bg-white/80 border border-blue-300/70 shadow-xs ring-1 ring-blue-400/30">
+              <p className="text-xs font-black text-blue-900">3. Decide</p>
+              <p className="text-[9.5px] text-blue-600 font-bold mt-0.5">Sharp-Sharp</p>
+            </div>
+          </div>
+
+          <p className="text-[9.5px] sm:text-[10px] text-slate-400 font-bold tracking-wider uppercase pt-1 border-t border-slate-200/50">
+            Your Money • Your Picture • Your Decisions
+          </p>
+        </motion.div>
+
+        {/* ── 3RD POSITION: 3D SOFT GLASS AUTH FORM CARD ── */}
         <motion.div
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.45, delay: 0.1 }}
+          transition={{ duration: 0.45, delay: 0.15 }}
           className="clay-card p-5 sm:p-7 space-y-4"
         >
           {/* Mode Switcher Pill */}
@@ -441,44 +480,10 @@ function LoginContent() {
           </form>
         </motion.div>
 
-        {/* MoniePay Trader Motto Card (Clean, Minimal, Punchy) */}
-        <motion.div
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.2 }}
-          className="clay-card p-4 space-y-3 relative overflow-hidden text-center"
-        >
-          <div className="space-y-0.5">
-            <h3 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
-              Understand your money, <span className="text-blue-700">no be just to record am.</span>
-            </h3>
-            <p className="text-[11px] text-slate-500 font-medium">
-              Know where your profit dey go every single day.
-            </p>
-          </div>
-
-          {/* 3 Concise Steps */}
-          <div className="grid grid-cols-3 gap-1.5 pt-0.5">
-            <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
-              <p className="text-xs font-black text-slate-900">1. Record</p>
-              <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Sales &amp; Gbese</p>
-            </div>
-
-            <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
-              <p className="text-xs font-black text-slate-900">2. Understand</p>
-              <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Real Profit</p>
-            </div>
-
-            <div className="p-2 rounded-xl bg-white/80 border border-blue-300/70 shadow-xs ring-1 ring-blue-400/30">
-              <p className="text-xs font-black text-blue-900">3. Decide</p>
-              <p className="text-[9.5px] text-blue-600 font-bold mt-0.5">Sharp-Sharp</p>
-            </div>
-          </div>
-
-          <p className="text-[9.5px] sm:text-[10px] text-slate-400 font-bold tracking-wider uppercase pt-1 border-t border-slate-200/50">
-            Your Money • Your Picture • Your Decisions
-          </p>
-        </motion.div>
+        {/* Minimal Footer Brand Line */}
+        <p className="text-[10px] sm:text-[11px] text-slate-400 font-bold text-center tracking-widest uppercase">
+          MONIEPAY • BALOGUN MARKET PORTAL
+        </p>
       </div>
     </div>
   );
