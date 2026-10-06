@@ -72,6 +72,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           try {
             const parsed = JSON.parse(cached);
             if (parsed?.id && isMounted) {
+              if (!parsed.avatarUrl) {
+                parsed.avatarUrl = "/images/traders/mama_chidi.jpg";
+              }
               setUser(parsed);
               setIsLoading(false);
             }
@@ -94,6 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 marketLocation: data.business?.market_location || "Balogun Market, Lagos",
                 role: "Shop Owner",
                 avatarLetter: (data.user.name?.[0] || "M").toUpperCase(),
+                avatarUrl: data.user.avatarUrl || "/images/traders/mama_chidi.jpg",
                 lastLoginAt: "Verified Active",
               };
               setUser(verifiedUser);
@@ -125,6 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               marketLocation: sbUser.user_metadata?.market_location || "Lagos, Nigeria",
               role: "Shop Owner",
               avatarLetter: (displayName[0] || "M").toUpperCase(),
+              avatarUrl: sbUser.user_metadata?.avatar_url || "/images/traders/mama_chidi.jpg",
               lastLoginAt: "Active now",
             };
 
@@ -162,6 +167,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               marketLocation: sbUser.user_metadata?.market_location || "Balogun Market",
               role: "Shop Owner",
               avatarLetter: (displayName[0] || "M").toUpperCase(),
+              avatarUrl: sbUser.user_metadata?.avatar_url || "/images/traders/mama_chidi.jpg",
               lastLoginAt: "Just now",
             };
             setUser(authUser);

@@ -15,6 +15,7 @@ interface LogoutModalProps {
   onConfirm: () => void;
   userName?: string;
   businessName?: string;
+  avatarUrl?: string;
 }
 
 export function LogoutModal({
@@ -23,6 +24,7 @@ export function LogoutModal({
   onConfirm,
   userName = "Shop Owner",
   businessName = "Mama Chidi Super Provisions",
+  avatarUrl = "/images/traders/mama_chidi.jpg",
 }: LogoutModalProps) {
   if (!isOpen) return null;
 
@@ -49,13 +51,29 @@ export function LogoutModal({
             <X className="h-5 w-5" />
           </button>
 
-          {/* Icon Badge */}
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 border border-amber-200 text-amber-600 mb-4 shadow-sm">
-            <ShieldAlert className="h-6 w-6 stroke-[2.2]" />
+          {/* Profile Image & Status Badge */}
+          <div className="flex items-center gap-3 mb-4">
+            <div className="relative h-13 w-13 rounded-2xl overflow-hidden border-2 border-emerald-600 shadow-sm shrink-0 bg-slate-100">
+              <img
+                src={avatarUrl}
+                alt={userName}
+                className="h-full w-full object-cover object-center"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/traders/mama_chidi.jpg";
+                }}
+              />
+              <span className="absolute bottom-0.5 right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border border-white" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 inline-block mb-0.5">
+                Active Shop
+              </span>
+              <p className="text-sm font-black text-slate-900 truncate">{userName}</p>
+            </div>
           </div>
 
           {/* Heading */}
-          <h3 className="text-lg font-black text-slate-900 leading-tight">
+          <h3 className="text-base font-black text-slate-900 leading-tight">
             Sign Out of {businessName}?
           </h3>
 

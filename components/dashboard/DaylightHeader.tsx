@@ -39,7 +39,7 @@ export function DaylightHeader({
   const [isRatingStandOpen, setIsRatingStandOpen] = useState(false);
 
   const displayName = user?.name || "Mama Chidi";
-  const avatarLetter = (displayName[0] || "M").toUpperCase();
+  const profilePhoto = user?.avatarUrl || "/images/traders/mama_chidi.jpg";
 
   return (
     <>
@@ -51,25 +51,22 @@ export function DaylightHeader({
           {/* Top Bar with Avatar, Greeting & Actions */}
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2.5 min-w-0">
-              {/* Avatar Pill */}
+              {/* Profile Image Avatar Button */}
               <button
                 type="button"
                 onClick={() => setIsLogoutOpen(true)}
-                title="Account details & Sign Out"
-                className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-2xl overflow-hidden bg-white/20 hover:bg-white/30 text-white font-black text-lg shadow-inner backdrop-blur-md border border-white/30 shrink-0 cursor-pointer active:scale-95 transition-all"
+                title="Account profile & Sign Out"
+                className="relative h-11 w-11 sm:h-12 sm:w-12 rounded-2xl overflow-hidden border-2 border-emerald-300/80 shadow-[0_2px_12px_rgba(0,0,0,0.25)] shrink-0 cursor-pointer active:scale-95 transition-all bg-emerald-950"
               >
-                {user?.avatarUrl ? (
-                  <img
-                    src={user.avatarUrl}
-                    alt={displayName}
-                    className="h-full w-full object-cover object-center"
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center">
-                    <span>{avatarLetter}</span>
-                  </div>
-                )}
-                <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-emerald-900" />
+                <img
+                  src={profilePhoto}
+                  alt={displayName}
+                  className="h-full w-full object-cover object-center"
+                  onError={(e) => {
+                    e.currentTarget.src = "/images/traders/mama_chidi.jpg";
+                  }}
+                />
+                <span className="absolute bottom-0.5 right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-emerald-950 shadow-xs" />
               </button>
 
               <div className="min-w-0">
@@ -176,6 +173,7 @@ export function DaylightHeader({
         onClose={() => setIsLogoutOpen(false)}
         userName={displayName}
         businessName={user?.businessName || business.name}
+        avatarUrl={profilePhoto}
         onConfirm={async () => {
           setIsLogoutOpen(false);
           await logout();
