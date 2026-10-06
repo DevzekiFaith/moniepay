@@ -217,11 +217,20 @@ function LoginContent() {
             </h1>
 
             {/* Descriptive Body - Structured & Legible */}
-            <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed">
-              {mode === "signin"
-                ? "Enter your shop make you see how your money dey move today. Check your daily profit, track who dey owe you gbese, and see wetin you suppose do next for market."
-                : "Open your digital record book in 30 seconds. Track sales, debts & restock alerts with zero stress."}
-            </p>
+            {mode === "signin" ? (
+              <div className="space-y-1 pt-0.5">
+                <p className="text-xs sm:text-[13px] text-slate-700 font-semibold leading-snug">
+                  Enter your shop make you see how your money dey move today.
+                </p>
+                <p className="text-[11px] sm:text-xs text-slate-500 font-medium leading-snug">
+                  Check daily profit • Track customer gbese • Know wetin to do next
+                </p>
+              </div>
+            ) : (
+              <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-relaxed pt-0.5">
+                Open your digital record book in 30 seconds. Track sales, debts &amp; restock alerts with zero stress.
+              </p>
+            )}
           </div>
         </motion.div>
 
