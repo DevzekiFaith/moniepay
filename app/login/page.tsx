@@ -22,8 +22,6 @@ import {
   AlertCircle,
   Loader2,
   Camera,
-  Fingerprint,
-  Phone,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -167,22 +165,39 @@ function LoginContent() {
 
       {/* ── MAIN 3D SOFT GLASS AUTH CONTAINER ── */}
       <div className="relative w-full max-w-sm sm:max-w-md my-6 z-10 space-y-5">
-        {/* 3D Emblems & Brand Badge */}
+        {/* 3D User Profile Photo & Brand Header */}
         <motion.div
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center text-center space-y-3"
         >
-          {/* 3D Soft App Icon Container */}
-          <div className="relative flex h-20 w-20 sm:h-22 sm:w-22 items-center justify-center rounded-[28px] clay-icon-box">
-            {/* 3D Gradient Ribbon Emblem */}
-            <div className="relative flex items-center justify-center">
-              <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-2xl bg-gradient-to-tr from-[#1d4ed8] via-[#2563eb] to-[#60a5fa] shadow-[0_8px_20px_rgba(37,99,235,0.45)] flex items-center justify-center transform rotate-6">
-                <Store className="h-5 w-5 sm:h-6 sm:w-6 text-white -rotate-6" />
-              </div>
-              <div className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-sky-300/90 border border-white shadow-xs" />
+          {/* 3D Soft Profile Avatar Container */}
+          <div className="relative flex h-24 w-24 items-center justify-center rounded-[32px] clay-icon-box p-1.5 shadow-[0_12px_32px_rgba(154,180,214,0.5)] group">
+            <div className="relative h-full w-full rounded-[24px] overflow-hidden bg-slate-100 border border-white/80">
+              <img
+                src={avatarUrl}
+                alt="User Profile"
+                className="h-full w-full object-cover object-center"
+                onError={(e) => {
+                  e.currentTarget.src = "/images/traders/mama_chidi.jpg";
+                }}
+              />
+              {mode === "register" && (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  title="Upload profile photo"
+                >
+                  <Camera className="h-5 w-5" />
+                  <span className="text-[9px] font-bold mt-0.5">Change</span>
+                </button>
+              )}
             </div>
+
+            {/* Active / Verified Online Dot */}
+            <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
           </div>
 
           <div className="space-y-1 pt-1">
@@ -407,70 +422,6 @@ function LoginContent() {
               )}
             </button>
           </form>
-
-          {/* ── OR CONTINUE WITH SINGLE-USER AUTHENTICATION (3D SOFT SQUARES) ── */}
-          <div className="pt-2 space-y-3.5">
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-px bg-slate-200/80" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                Or Continue With
-              </span>
-              <div className="flex-1 h-px bg-slate-200/80" />
-            </div>
-
-            {/* 3 Soft 3D Frosted Square Icon Tiles */}
-            <div className="flex items-center justify-center gap-4">
-              {/* Google */}
-              <button
-                type="button"
-                onClick={() => handleQuickDemo("mama_chidi")}
-                disabled={isDemoLoading}
-                className="clay-icon-box h-12 w-12 rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group"
-                title="Continue with Google"
-              >
-                <svg className="h-5 w-5" viewBox="0 0 24 24">
-                  <path
-                    fill="#EA4335"
-                    d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-                  />
-                  <path
-                    fill="#4285F4"
-                    d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15s.7 5.3 1.9 7.7l3.7-2.9z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16C3.7 19.7 7.5 22.3 12 23z"
-                  />
-                </svg>
-              </button>
-
-              {/* Phone / WhatsApp PIN */}
-              <button
-                type="button"
-                onClick={() => handleQuickDemo("mama_chidi")}
-                disabled={isDemoLoading}
-                className="clay-icon-box h-12 w-12 rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group text-emerald-600"
-                title="Continue with Phone OTP"
-              >
-                <Phone className="h-5 w-5 text-emerald-600" />
-              </button>
-
-              {/* Biometric Passkey / Fingerprint */}
-              <button
-                type="button"
-                onClick={() => handleQuickDemo("mama_chidi")}
-                disabled={isDemoLoading}
-                className="clay-icon-box h-12 w-12 rounded-2xl flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer group text-blue-600"
-                title="Continue with Biometric Passkey"
-              >
-                <Fingerprint className="h-5 w-5 text-blue-600" />
-              </button>
-            </div>
-          </div>
         </motion.div>
 
         {/* Tagline Footer */}
