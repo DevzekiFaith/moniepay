@@ -7,6 +7,7 @@ import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { UpgradeModal } from "@/components/subscription/UpgradeModal";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -58,6 +59,7 @@ export default function RootLayout({
                 {children}
                 <UpgradeModal />
                 <ServiceWorkerRegister />
+                <SpeedInsights />
               </TooltipProvider>
             </SubscriptionProvider>
           </NotificationProvider>
