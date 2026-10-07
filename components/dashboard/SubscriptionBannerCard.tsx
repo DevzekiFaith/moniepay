@@ -14,7 +14,7 @@ import React from "react";
 import {
   ShieldCheck,
   Zap,
-  Sparkles,
+  Store,
   Clock,
   CheckCircle2,
   ArrowRight,
@@ -86,7 +86,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
               ) : isGracePeriodActive ? (
                 <Clock className="h-5 w-5 animate-pulse" />
               ) : isTrialActive ? (
-                <Sparkles className="h-5 w-5 text-sky-200" />
+                <Store className="h-5 w-5 text-sky-200" />
               ) : (
                 <AlertTriangle className="h-5 w-5" />
               )}

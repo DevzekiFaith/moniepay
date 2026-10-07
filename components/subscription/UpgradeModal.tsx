@@ -25,7 +25,7 @@ import {
   Clock,
   Radio,
   ExternalLink,
-  Sparkles,
+  Store,
   Calendar,
   AlertTriangle,
 } from "lucide-react";

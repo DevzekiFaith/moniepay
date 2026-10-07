@@ -410,7 +410,7 @@ _Powered by MoniePay_`;
 
         <main className="w-full max-w-2xl mx-auto px-3 sm:px-6 py-3.5 sm:py-6 space-y-3.5 sm:space-y-4">
           {/* Top Back Navigation Bar */}
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
             <button
               type="button"
               onClick={() => router.back()}
@@ -421,7 +421,7 @@ _Powered by MoniePay_`;
               <span className="inline min-[380px]:hidden">Back</span>
             </button>
 
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap sm:flex-nowrap">
               <SubscriptionStatusPill />
 
               <button

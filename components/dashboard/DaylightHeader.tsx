@@ -104,7 +104,7 @@ export function DaylightHeader({
             </div>
 
             {/* Right: Actions Cluster (Subscription Pill, Bell, Install App, Rating QR, Memory, Logout) */}
-            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 flex-wrap justify-end">
               {/* MoniePay Plus / Free Trial Status Pill */}
               <SubscriptionStatusPill />
 
