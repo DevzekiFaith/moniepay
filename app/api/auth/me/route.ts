@@ -13,8 +13,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Attempt to fetch business details if available
-    let business = null;
+    // Attempt to fetch business details if available in Supabase
+    let businessName = user.businessName;
+    let marketLocation = user.marketLocation;
+
     try {
       const supabase = await createSupabaseServerClient();
       if (supabase && user.id) {
@@ -24,11 +26,17 @@ export async function GET(request: NextRequest) {
           .eq("owner_id", user.id)
           .maybeSingle();
 
-        business = bData;
+        if (bData) {
+          businessName = bData.name || businessName;
+          marketLocation = bData.market_location || marketLocation;
+        }
       }
     } catch {
       // Offline or local dev fallback
     }
+
+    const finalBusinessName = businessName || `${user.name || "My"}'s Business`;
+    const finalLocation = marketLocation || "Balogun Market, Lagos";
 
     return NextResponse.json({
       authenticated: true,
@@ -36,13 +44,15 @@ export async function GET(request: NextRequest) {
         id: user.id,
         email: user.email,
         name: user.name || "Business Owner",
+        businessName: finalBusinessName,
+        marketLocation: finalLocation,
         role: "Business Owner",
       },
-      business: business || {
-        id: "biz_default_01",
-        name: "Mama Chidi Super Provisions",
-        market_location: "Shop 14, Balogun Market, Lagos",
-        category: "Provisions & Groceries",
+      business: {
+        id: `biz_${user.id}`,
+        name: finalBusinessName,
+        market_location: finalLocation,
+        category: "General Retail & Provisions",
       },
     });
   } catch (error) {

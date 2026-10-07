@@ -98,7 +98,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 /**
  * Unified authenticated user resolver using Supabase and session cookies.
  */
-export async function getSessionUser(): Promise<{ id: string; email: string; name?: string | null } | null> {
+export async function getSessionUser(): Promise<{
+  id: string;
+  email: string;
+  name?: string | null;
+  businessName?: string;
+  marketLocation?: string;
+} | null> {
   try {
     // 1. Check Supabase server session
     try {
@@ -109,7 +115,9 @@ export async function getSessionUser(): Promise<{ id: string; email: string; nam
           return {
             id: user.id,
             email: user.email || "",
-            name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Business Owner",
+            name: user.user_metadata?.full_name || user.user_metadata?.name || user.email?.split("@")[0] || "Business Owner",
+            businessName: user.user_metadata?.business_name,
+            marketLocation: user.user_metadata?.market_location,
           };
         }
       }
@@ -127,28 +135,100 @@ export async function getSessionUser(): Promise<{ id: string; email: string; nam
       };
     }
 
-    // 3. Check MoniePay session cookie
+    // 3. Check MoniePay secure session cookie
     try {
       const { cookies } = await import("next/headers");
       const cookieStore = await cookies();
-      const sessionUserId = cookieStore.get("ajo_session")?.value || cookieStore.get("moniepay_session")?.value;
-      if (sessionUserId) {
+      const rawCookie =
+        cookieStore.get("moniepay_session")?.value ||
+        cookieStore.get("ajo_session")?.value;
+
+      if (rawCookie) {
+        // A. If cookie is base64 encoded JSON
+        if (rawCookie.startsWith("eyJ") || rawCookie.startsWith("ey")) {
+          try {
+            const decoded = JSON.parse(Buffer.from(rawCookie, "base64").toString("utf-8"));
+            if (decoded?.id && decoded?.name) {
+              return {
+                id: decoded.id,
+                email: decoded.email || "",
+                name: decoded.name,
+                businessName: decoded.businessName,
+                marketLocation: decoded.marketLocation,
+              };
+            }
+          } catch {}
+        }
+
+        // B. If cookie is direct JSON string
+        if (rawCookie.startsWith("{")) {
+          try {
+            const parsed = JSON.parse(rawCookie);
+            if (parsed?.id && parsed?.name) {
+              return {
+                id: parsed.id,
+                email: parsed.email || "",
+                name: parsed.name,
+                businessName: parsed.businessName,
+                marketLocation: parsed.marketLocation,
+              };
+            }
+          } catch {}
+        }
+
+        // C. Demo preset user IDs
+        if (rawCookie === "user_owner_01" || rawCookie === "demo") {
+          return {
+            id: "user_owner_01",
+            email: "demo@moniepay.app",
+            name: "Mama Chidi",
+            businessName: "Mama Chidi Super Provisions",
+            marketLocation: "Shop 14, Balogun Market, Lagos",
+          };
+        }
+
+        if (rawCookie === "user_owner_02") {
+          return {
+            id: "user_owner_02",
+            email: "garba@moniepay.app",
+            name: "Alhaji Garba",
+            businessName: "Alhaji Garba Grains & Foodstuff",
+            marketLocation: "Mile 12 Market, Lagos",
+          };
+        }
+
+        if (rawCookie === "user_owner_03") {
+          return {
+            id: "user_owner_03",
+            email: "emeka@moniepay.app",
+            name: "Emeka Okonkwo",
+            businessName: "Emeka Mobile & Electronics Hub",
+            marketLocation: "Alaba Int. Market, Lagos",
+          };
+        }
+
+        if (rawCookie === "user_owner_04") {
+          return {
+            id: "user_owner_04",
+            email: "blessing@moniepay.app",
+            name: "Blessing Adebayo",
+            businessName: "Blessing Fabrics & Lace",
+            marketLocation: "Tejuosho Market, Yaba",
+          };
+        }
+
+        // Plain ID fallback
         return {
-          id: sessionUserId,
+          id: rawCookie,
           email: "owner@moniepay.app",
-          name: "Mama Chidi",
+          name: "Shop Owner",
         };
       }
     } catch {
       // Cookie context not available
     }
 
-    // Default business owner fallback in local dev
-    return {
-      id: "user_owner_01",
-      email: "demo@monielite.app",
-      name: "Mama Chidi",
-    };
+    return null;
   } catch (err) {
     console.error("getSessionUser resolution error:", err);
     return null;

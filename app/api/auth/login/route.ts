@@ -52,8 +52,10 @@ export async function POST(request: NextRequest) {
             user: userObj,
           });
 
+          const sessionToken = Buffer.from(JSON.stringify(userObj)).toString("base64");
+
           // Set secure session cookie
-          response.cookies.set("moniepay_session", data.user.id, {
+          response.cookies.set("moniepay_session", sessionToken, {
             path: "/",
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -91,7 +93,9 @@ export async function POST(request: NextRequest) {
           isDemo: true,
         });
 
-        response.cookies.set("moniepay_session", "user_owner_01", {
+        const demoSessionToken = Buffer.from(JSON.stringify(demoUser)).toString("base64");
+
+        response.cookies.set("moniepay_session", demoSessionToken, {
           path: "/",
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
@@ -120,7 +124,9 @@ export async function POST(request: NextRequest) {
         user: offlineUser,
       });
 
-      response.cookies.set("moniepay_session", offlineUser.id, {
+      const offlineSessionToken = Buffer.from(JSON.stringify(offlineUser)).toString("base64");
+
+      response.cookies.set("moniepay_session", offlineSessionToken, {
         path: "/",
         httpOnly: true,
         secure: process.env.NODE_ENV === "production",

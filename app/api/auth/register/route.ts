@@ -103,8 +103,18 @@ export async function POST(request: NextRequest) {
             { status: 201 }
           );
 
+          const sessionToken = Buffer.from(
+            JSON.stringify({
+              id: userId,
+              email: normalizedEmail,
+              name,
+              businessName: finalBusinessName,
+              marketLocation: finalLocation,
+            })
+          ).toString("base64");
+
           // Set secure session cookie
-          response.cookies.set("moniepay_session", userId, {
+          response.cookies.set("moniepay_session", sessionToken, {
             path: "/",
             httpOnly: true,
             secure: process.env.NODE_ENV === "production",
@@ -137,7 +147,9 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
 
-    response.cookies.set("moniepay_session", generatedId, {
+    const localSessionToken = Buffer.from(JSON.stringify(localUser)).toString("base64");
+
+    response.cookies.set("moniepay_session", localSessionToken, {
       path: "/",
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

@@ -66,6 +66,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const initSession = async () => {
       try {
+        let activeCachedUser: AuthUser | null = null;
+
         // A. Check local fast-cache first for instant rendering
         const cached = localStorage.getItem("moniepay_session") || localStorage.getItem("ajo_session");
         if (cached) {
@@ -75,6 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               if (!parsed.avatarUrl) {
                 parsed.avatarUrl = "/images/traders/mama_chidi.jpg";
               }
+              activeCachedUser = parsed;
               setUser(parsed);
               setIsLoading(false);
             }
@@ -89,15 +92,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (res.ok) {
             const data = await res.json();
             if (data?.authenticated && data?.user && isMounted) {
+              // Preserve client cached registered business name and custom name if server is generic
+              const finalName =
+                (data.user.name && data.user.name !== "Business Owner" && data.user.name !== "Mama Chidi")
+                  ? data.user.name
+                  : activeCachedUser?.name || data.user.name || "Shop Owner";
+
+              const finalBusinessName =
+                (data.business?.name && data.business?.name !== "Mama Chidi Super Provisions" && data.business?.name !== "My Business")
+                  ? data.business.name
+                  : activeCachedUser?.businessName || data.business?.name || `${finalName}'s Store`;
+
+              const finalLocation =
+                (data.business?.market_location && data.business?.market_location !== "Shop 14, Balogun Market, Lagos")
+                  ? data.business.market_location
+                  : activeCachedUser?.marketLocation || data.business?.market_location || "Balogun Market, Lagos";
+
               const verifiedUser: AuthUser = {
-                id: data.user.id,
-                email: data.user.email,
-                name: data.user.name,
-                businessName: data.business?.name || "My Business",
-                marketLocation: data.business?.market_location || "Balogun Market, Lagos",
+                id: data.user.id || activeCachedUser?.id || "user_01",
+                email: data.user.email || activeCachedUser?.email || "",
+                name: finalName,
+                businessName: finalBusinessName,
+                marketLocation: finalLocation,
                 role: "Shop Owner",
-                avatarLetter: (data.user.name?.[0] || "M").toUpperCase(),
-                avatarUrl: data.user.avatarUrl || "/images/traders/mama_chidi.jpg",
+                avatarLetter: (finalName[0] || "M").toUpperCase(),
+                avatarUrl: activeCachedUser?.avatarUrl || data.user.avatarUrl || "/images/traders/mama_chidi.jpg",
                 lastLoginAt: "Verified Active",
               };
               setUser(verifiedUser);
@@ -118,6 +137,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             const displayName =
               sbUser.user_metadata?.full_name ||
               sbUser.user_metadata?.name ||
+              activeCachedUser?.name ||
               sbUser.email?.split("@")[0] ||
               "Shop Owner";
 
@@ -125,11 +145,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               id: sbUser.id,
               email: sbUser.email || "",
               name: displayName,
-              businessName: sbUser.user_metadata?.business_name || "My Business",
-              marketLocation: sbUser.user_metadata?.market_location || "Lagos, Nigeria",
+              businessName: sbUser.user_metadata?.business_name || activeCachedUser?.businessName || `${displayName}'s Store`,
+              marketLocation: sbUser.user_metadata?.market_location || activeCachedUser?.marketLocation || "Lagos, Nigeria",
               role: "Shop Owner",
               avatarLetter: (displayName[0] || "M").toUpperCase(),
-              avatarUrl: sbUser.user_metadata?.avatar_url || "/images/traders/mama_chidi.jpg",
+              avatarUrl: sbUser.user_metadata?.avatar_url || activeCachedUser?.avatarUrl || "/images/traders/mama_chidi.jpg",
               lastLoginAt: "Active now",
             };
 

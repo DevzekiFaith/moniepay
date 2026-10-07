@@ -68,14 +68,27 @@ import { SafeWithdrawalModal } from "@/components/dashboard/SafeWithdrawalModal"
 import { FloatingActionDock } from "@/components/dashboard/FloatingActionDock";
 import { useToast } from "@/context/NotificationContext";
 import { useSubscription } from "@/context/SubscriptionContext";
+import { useAuth } from "@/context/AuthContext";
 
 type Period = "today" | "this_week" | "this_month";
 type MainTab = "today" | "decisions" | "activity";
 
 export default function MoniePayDashboard() {
+  const { user } = useAuth();
   const { toast } = useToast();
   const { requireSubscription } = useSubscription();
   const [business, setBusiness] = useState<Business>(DEFAULT_BUSINESS);
+
+  // Synchronize business with authenticated user profile
+  useEffect(() => {
+    if (user?.businessName || user?.name) {
+      setBusiness((prev) => ({
+        ...prev,
+        name: user.businessName || (user.name ? `${user.name} Provisions` : prev.name),
+        market_location: user.marketLocation || prev.market_location,
+      }));
+    }
+  }, [user]);
   const [period, setPeriod] = useState<Period>("this_week");
   const [activeTab, setActiveTab] = useState<MainTab>("today");
   const [isOnline, setIsOnline] = useState<boolean>(true);
