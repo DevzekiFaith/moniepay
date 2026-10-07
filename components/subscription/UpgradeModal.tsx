@@ -297,20 +297,11 @@ export function UpgradeModal() {
                 )}
               </button>
 
-              <div className="flex items-center justify-between text-[11px] px-1 text-slate-500 font-medium">
+              <div className="flex items-center justify-center text-[11px] px-1 text-slate-500 font-medium">
                 <span className="flex items-center gap-1">
                   <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-                  Secured by Flutterwave
+                  Secured by Flutterwave (256-bit Encryption)
                 </span>
-
-                {/* Developer Simulation Toggle */}
-                <button
-                  type="button"
-                  onClick={() => simulateTestPayment("activate")}
-                  className="text-blue-700 font-bold hover:underline cursor-pointer"
-                >
-                  [Simulate Test Pay]
-                </button>
               </div>
             </div>
           </motion.div>
