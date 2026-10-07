@@ -233,7 +233,7 @@ function LoginContent() {
                 onClick={() => setShowIntro(true)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white/70 hover:bg-white border border-white/80 text-xs font-black text-blue-700 shadow-2xs backdrop-blur-md active:scale-95 transition-all cursor-pointer"
               >
-                <span>✨ Watch Intro Tour</span>
+                <span>🎬 Watch Intro Tour</span>
               </button>
 
               <span className="text-[11px] font-bold text-slate-500">

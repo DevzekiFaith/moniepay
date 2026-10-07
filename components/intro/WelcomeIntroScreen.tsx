@@ -16,7 +16,6 @@ import {
   TrendingUp,
   ShieldCheck,
   ArrowRight,
-  Sparkles,
   ChevronRight,
   CheckCircle2,
   Wallet,
@@ -285,7 +284,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             </div>
 
             <div className="p-2 rounded-xl bg-slate-50 border border-slate-200/80 flex items-center gap-2 text-[10.5px] font-semibold text-slate-700">
-              <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+              <Zap className="h-3.5 w-3.5 text-amber-500 shrink-0" />
               <span>Restock Sugar: Price drops by ₦1,200 tomorrow!</span>
             </div>
           </motion.div>
@@ -354,7 +353,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
               <span
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black border shadow-2xs ${current.badgeColor}`}
               >
-                <Sparkles className="h-3.5 w-3.5" />
+                <Store className="h-3.5 w-3.5" />
                 <span>{current.badge}</span>
               </span>
             </div>
