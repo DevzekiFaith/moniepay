@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/context/ThemeContext";
 import { NotificationProvider } from "@/context/NotificationContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
@@ -50,23 +51,25 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className="min-h-full bg-slate-50 text-slate-900 antialiased selection:bg-blue-500/20 selection:text-blue-950"
+        className="min-h-full bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 antialiased selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white"
         suppressHydrationWarning
         style={{ fontFamily: "var(--font-sans, system-ui, sans-serif)" }}
       >
-        <AuthProvider>
-          <NotificationProvider>
-            <SubscriptionProvider>
-              <TooltipProvider delayDuration={150}>
-                {children}
-                <UpgradeModal />
-                <InstallAppBanner />
-                <ServiceWorkerRegister />
-                <SpeedInsights />
-              </TooltipProvider>
-            </SubscriptionProvider>
-          </NotificationProvider>
-        </AuthProvider>
+        <ThemeProvider>
+          <AuthProvider>
+            <NotificationProvider>
+              <SubscriptionProvider>
+                <TooltipProvider delayDuration={150}>
+                  {children}
+                  <UpgradeModal />
+                  <InstallAppBanner />
+                  <ServiceWorkerRegister />
+                  <SpeedInsights />
+                </TooltipProvider>
+              </SubscriptionProvider>
+            </NotificationProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

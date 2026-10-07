@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────
 // MoniePay — Business Decision Intelligence & Diagnostics Page
 // “Know what is happening in your business. Know what to do next.”
-// Daylight Fluid Architecture • Single Green Market Theme
+// Light & Dark Mode • Modern Navigation Architecture
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState, useEffect } from "react";
@@ -57,10 +57,10 @@ export default function InsightsPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 selection:bg-emerald-500/20">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20 transition-colors">
       <AppSidebar />
 
-      <div className="flex-1 flex flex-col min-w-0 pb-20 md:pb-10">
+      <div className="flex-1 flex flex-col min-w-0 pb-24 md:pb-12">
         <AppMobileHeader />
 
         <main className="w-full max-w-3xl mx-auto px-3.5 sm:px-6 py-4 sm:py-6 space-y-4">
@@ -70,21 +70,21 @@ export default function InsightsPage() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/"
-                  className="inline-flex md:hidden p-1.5 rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900"
+                  className="inline-flex md:hidden p-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Link>
-                <h1 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
+                <h1 className="text-lg sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                   Business Diagnostics
                 </h1>
               </div>
-              <p className="text-xs text-slate-500 mt-0.5">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Understand where your money is going and what to do next.
               </p>
             </div>
 
             {metrics && (
-              <div className="px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-900 text-xs font-black">
+              <div className="px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950/80 border border-blue-200/80 dark:border-blue-800 text-blue-900 dark:text-blue-300 text-xs font-black">
                 {metrics.healthStatus} ({metrics.healthScore}/100)
               </div>
             )}
@@ -92,24 +92,25 @@ export default function InsightsPage() {
 
           {/* Health Overview Card */}
           {metrics && (
-            <div className="rounded-[26px] bg-gradient-to-br from-emerald-800 via-emerald-700 to-teal-900 p-5 text-white shadow-md space-y-3">
+            <div className="rounded-[28px] bg-gradient-to-br from-[#1e3a8a] via-[#1d4ed8] to-[#2563eb] p-5 sm:p-6 text-white shadow-lg space-y-3 relative overflow-hidden">
+              <div className="pointer-events-none absolute -right-6 -top-6 h-36 w-36 rounded-full bg-sky-300/20 blur-xl" />
               <div className="flex items-center gap-2">
-                <Compass className="h-5 w-5 text-emerald-200" />
-                <span className="text-xs font-black uppercase tracking-wider text-emerald-200">
+                <Compass className="h-5 w-5 text-sky-200" />
+                <span className="text-xs font-black uppercase tracking-wider text-sky-200">
                   Living Business Condition
                 </span>
               </div>
-              <p className="text-sm sm:text-base font-black leading-snug">
+              <p className="text-base sm:text-lg font-black leading-snug">
                 {metrics.healthMessage}
               </p>
-              <div className="pt-2 border-t border-emerald-600/60 grid grid-cols-2 gap-2 text-xs">
-                <div>
-                  <span className="text-emerald-200 text-[11px] block">Safe Chop Money</span>
-                  <span className="font-black text-sm">₦{metrics.safeWithdrawalAmount.toLocaleString()}</span>
+              <div className="pt-3 border-t border-white/20 grid grid-cols-2 gap-3 text-xs">
+                <div className="p-2.5 rounded-2xl bg-white/10 backdrop-blur-xs">
+                  <span className="text-sky-200 text-[11px] block">Safe Chop Money</span>
+                  <span className="font-black text-base sm:text-lg">₦{metrics.safeWithdrawalAmount.toLocaleString()}</span>
                 </div>
-                <div>
-                  <span className="text-emerald-200 text-[11px] block">Profit Margin</span>
-                  <span className="font-black text-sm">{metrics.profitMarginPercent}%</span>
+                <div className="p-2.5 rounded-2xl bg-white/10 backdrop-blur-xs">
+                  <span className="text-sky-200 text-[11px] block">Profit Margin</span>
+                  <span className="font-black text-base sm:text-lg">{metrics.profitMarginPercent}%</span>
                 </div>
               </div>
             </div>
@@ -117,37 +118,37 @@ export default function InsightsPage() {
 
           {/* Recommendations List */}
           <div className="space-y-3">
-            <h2 className="text-xs font-black uppercase tracking-wider text-slate-500 px-1">
+            <h2 className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 px-1">
               Active Intelligence Actions ({recommendations.length})
             </h2>
 
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {recommendations.map((rec) => (
                 <div
                   key={rec.id}
-                  className="rounded-[22px] bg-white border border-emerald-900/10 p-4 shadow-xs space-y-2 hover:border-emerald-500 transition-all"
+                  className="rounded-[24px] bg-white dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-xs space-y-2.5 hover:border-blue-500/50 dark:hover:border-blue-500/50 transition-all"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-[10.5px] font-black uppercase tracking-wider text-emerald-800 px-2 py-0.5 rounded-full bg-emerald-50">
+                    <span className="text-[10.5px] font-black uppercase tracking-wider text-blue-700 dark:text-blue-300 px-2.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800">
                       Priority {rec.priority_rank}
                     </span>
-                    <span className="text-[10px] font-bold text-slate-400">Action Recommended</span>
+                    <span className="text-[10.5px] font-bold text-slate-400 dark:text-slate-500">Action Recommended</span>
                   </div>
 
-                  <h3 className="text-sm sm:text-base font-black text-slate-900 leading-snug">
+                  <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-snug">
                     {rec.title}
                   </h3>
-                  <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                  <p className="text-xs text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
                     {rec.description}
                   </p>
 
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
-                    <span className="text-[11px] font-bold text-emerald-800">
+                  <div className="pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <span className="text-[11.5px] font-bold text-blue-700 dark:text-blue-400">
                       {rec.impact_summary}
                     </span>
                     <Link
                       href="/"
-                      className="inline-flex items-center gap-1 text-xs font-black text-emerald-700 hover:text-emerald-900"
+                      className="inline-flex items-center gap-1 text-xs font-black text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-200 active:scale-95 transition-all"
                     >
                       <span>Take Action</span>
                       <ChevronRight className="h-3.5 w-3.5" />

@@ -201,7 +201,7 @@ export default function ActivityPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 selection:bg-emerald-500/20 overflow-x-hidden">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20 overflow-x-hidden transition-colors">
       <AppSidebar />
 
       <div className="flex-1 flex flex-col min-w-0 pb-24 md:pb-10">
@@ -211,10 +211,10 @@ export default function ActivityPage() {
           {/* ── HEADER ── */}
           <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-2.5">
             <div className="min-w-0 flex-1">
-              <h1 className="text-base sm:text-xl font-black text-slate-900 tracking-tight truncate">
+              <h1 className="text-base sm:text-xl font-black text-slate-900 dark:text-white tracking-tight truncate">
                 Live Market Activity & Receipts
               </h1>
-              <p className="text-[10.5px] sm:text-xs text-slate-500 mt-0.5 truncate">
+              <p className="text-[10.5px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                 Every cash sale, restock expense, and customer gbese record.
               </p>
             </div>
@@ -225,15 +225,15 @@ export default function ActivityPage() {
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
                 className={`px-2.5 py-1.5 sm:p-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                   showAdvancedFilters || hasActiveFilters
-                    ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
-                    : "bg-white border border-slate-200 text-slate-700 hover:text-slate-900"
+                    ? "bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 border border-blue-300 dark:border-blue-700"
+                    : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                 }`}
                 title="Toggle Filters"
               >
                 <SlidersHorizontal className="h-3.5 w-3.5" />
                 <span className="text-[11px] sm:text-xs">Filter</span>
                 {hasActiveFilters && (
-                  <span className="h-2 w-2 rounded-full bg-emerald-600" />
+                  <span className="h-2 w-2 rounded-full bg-blue-600" />
                 )}
               </button>
 

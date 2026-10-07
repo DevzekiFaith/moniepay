@@ -21,6 +21,7 @@ import { NotificationBellDrawer } from "@/components/notifications/NotificationB
 import { SubscriptionStatusPill } from "@/components/subscription/SubscriptionStatusPill";
 import { triggerInstallPrompt } from "@/components/pwa/InstallAppBanner";
 import { InfoTooltip } from "@/components/ui/tooltip";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface DaylightHeaderProps {
   business: Business;
@@ -107,6 +108,11 @@ export function DaylightHeader({
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0 flex-wrap justify-end">
               {/* MoniePay Plus / Free Trial Status Pill */}
               <SubscriptionStatusPill />
+
+              {/* Theme Toggle (Sun / Moon) */}
+              <InfoTooltip content="Switch between Daylight & Night Market Theme">
+                <ThemeToggle size="sm" />
+              </InfoTooltip>
 
               {/* Push Notification Bell & Drawer */}
               <NotificationBellDrawer />
