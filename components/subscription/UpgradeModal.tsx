@@ -158,10 +158,10 @@ export function UpgradeModal() {
                   <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-xs font-black text-rose-950">
-                      Your MoniePay Plus has expired.
+                      Your MoniePay Plus don expire.
                     </p>
                     <p className="text-[11.5px] font-semibold text-rose-800 mt-0.5 leading-relaxed">
-                      Renew for ₦1,500/month or ₦15,000/year to continue recording sales, tracking debt, and receiving smart advice.
+                      Renew for ₦1,500/month or ₦15,000/year make you continue to record sales, track customer debt (gbese), and receive sharp shop advice.
                     </p>
                   </div>
                 </div>
@@ -170,10 +170,10 @@ export function UpgradeModal() {
                   <Clock className="h-5 w-5 text-amber-700 shrink-0 mt-0.5" />
                   <div>
                     <p className="text-xs font-black text-amber-950">
-                      Grace Period Active: {graceDaysLeft} {graceDaysLeft === 1 ? "Day" : "Days"} Left
+                      Grace Period Dey Active: {graceDaysLeft} {graceDaysLeft === 1 ? "Day" : "Days"} Remain
                     </p>
                     <p className="text-[11.5px] font-semibold text-amber-900 mt-0.5 leading-relaxed">
-                      All your features remain open! Renew now to avoid any restriction after the 3-day grace period.
+                      All your shop features still dey open! Renew now before the 3-day grace period complete.
                     </p>
                   </div>
                 </div>
@@ -205,10 +205,10 @@ export function UpgradeModal() {
                       {isSubscribed
                         ? `${subscription?.planName || "MoniePay Plus Active"}`
                         : isGracePeriodActive
-                        ? `3-Day Grace Period (${graceDaysLeft} days left)`
+                        ? `3-Day Grace Period (${graceDaysLeft} days remain)`
                         : isTrialActive
-                        ? `7-Day Free Trial (${trialDaysLeft} days left)`
-                        : "Subscription Expired (Read-Only)"}
+                        ? `7-Day Free Test-Run (${trialDaysLeft} days remain)`
+                        : "Subscription Don Expire (Read-Only)"}
                     </p>
                     <p className="text-[11px] text-slate-500 font-medium">
                       {isSubscribed
@@ -222,9 +222,9 @@ export function UpgradeModal() {
                               : "Active"
                           }`
                         : isGracePeriodActive
-                        ? "Full access open for 3 days to renew."
+                        ? "Full shop access open for 3 days to renew."
                         : isTrialActive
-                        ? "Full MoniePay Plus access during your 7-day trial."
+                        ? "Full sharp-sharp shop access during your 7-day test-run."
                         : "Renew for ₦1,500/month or ₦15,000/year to continue."}
                     </p>
                   </div>
@@ -234,7 +234,7 @@ export function UpgradeModal() {
               {/* ── PLAN SELECTOR TABS (Monthly vs Annual) ── */}
               <div className="space-y-1.5">
                 <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider px-1">
-                  Choose Your Subscription Plan:
+                  Pick How You Wan Pay:
                 </label>
 
                 <div className="grid grid-cols-2 gap-2.5">
@@ -249,13 +249,13 @@ export function UpgradeModal() {
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-slate-900">Monthly</span>
+                      <span className="text-xs font-black text-slate-900">Monthly Plan</span>
                       {selectedPlan === "monthly" && (
                         <CheckCircle2 className="h-4 w-4 text-blue-600" />
                       )}
                     </div>
                     <p className="text-base font-black text-blue-900 mt-1">₦1,500</p>
-                    <p className="text-[10.5px] text-slate-500 font-medium">Renews every month</p>
+                    <p className="text-[10.5px] text-slate-500 font-medium">Dey renew every month</p>
                   </button>
 
                   {/* Annual Plan Card */}
@@ -269,16 +269,16 @@ export function UpgradeModal() {
                     }`}
                   >
                     <span className="absolute -top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black uppercase tracking-wider shadow-xs">
-                      Save ₦3,000
+                      Save ₦3,000 Cash
                     </span>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-slate-900">12 Months</span>
+                      <span className="text-xs font-black text-slate-900">1 Full Year</span>
                       {selectedPlan === "annual" && (
                         <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                       )}
                     </div>
                     <p className="text-base font-black text-emerald-900 mt-1">₦15,000</p>
-                    <p className="text-[10.5px] text-slate-500 font-medium">Renews every 12 months</p>
+                    <p className="text-[10.5px] text-slate-500 font-medium">Dey renew every 12 months</p>
                   </button>
                 </div>
               </div>
@@ -289,8 +289,8 @@ export function UpgradeModal() {
                   <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
                   <span>
                     {selectedPlan === "annual"
-                      ? "Annual Plan • 2 Months Free Included"
-                      : "Simple Flat Price • No Hidden Charges"}
+                      ? "Annual Plan • 2 Months Free Shop Access Dey Inside"
+                      : "Simple Flat Price • No Hidden Charges or Extra Fee"}
                   </span>
                 </div>
 
@@ -304,42 +304,42 @@ export function UpgradeModal() {
                 </div>
 
                 <p className="text-xs text-slate-600 font-medium max-w-sm mx-auto leading-relaxed">
-                  Protect your market profit, track customer credit (gbese), and receive intelligent shop advice.
+                  Protect your market profit, track all customer credit (gbese), and receive sharp shop advice everyday.
                 </p>
               </div>
 
               {/* Benefits Checklist */}
               <div className="space-y-2.5 pt-1">
                 <h4 className="text-xs font-black text-slate-700 tracking-wide uppercase px-1">
-                  Everything Included in MoniePay Plus:
+                  Everything Wey Dey Inside MoniePay Plus:
                 </h4>
 
                 <div className="space-y-2">
                   {[
                     {
                       icon: <Zap className="h-4 w-4 text-emerald-600" />,
-                      title: "Sharp-Sharp Recording (Voice & Text)",
-                      desc: "Record unlimited sales, operating expenses & restock purchases.",
+                      title: "Sharp-Sharp Recording (Voice & Type)",
+                      desc: "Record unlimited sales, daily shop expenses & restock purchases in seconds.",
                     },
                     {
                       icon: <TrendingUp className="h-4 w-4 text-blue-600" />,
-                      title: "Daily Business Pulse & Available Cash",
+                      title: "Daily Business Pulse & Chop Money",
                       desc: "Know your exact drawer cash, safe chop money allowance & true net profit.",
                     },
                     {
                       icon: <MessageSquare className="h-4 w-4 text-amber-600" />,
                       title: "One-Tap WhatsApp Debt Pings (Gbese Sheet)",
-                      desc: "Send polite automated WhatsApp reminders to customers owing you money.",
+                      desc: "Send polite automated WhatsApp reminders make customers pay fast.",
                     },
                     {
                       icon: <TrendingUp className="h-4 w-4 text-indigo-600" />,
-                      title: "7 Market Decisions & Wholesaler Price Alerts",
+                      title: "7 Market Decisions & Market Price Alerts",
                       desc: "Real-time wholesale price tracking and intelligent advice on when to buy stock.",
                     },
                     {
                       icon: <ShieldCheck className="h-4 w-4 text-slate-700" />,
-                      title: "Data Stays Safe Guarantee (Zero Deletion)",
-                      desc: "All transactions and account history stay stored safely forever even after expiry.",
+                      title: "Data Stays Safe Guarantee (Zero Loss)",
+                      desc: "All your sales records and customer balances stay stored safely forever even after expiry.",
                     },
                   ].map((item, idx) => (
                     <div
@@ -366,7 +366,7 @@ export function UpgradeModal() {
               <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-start gap-2.5">
                 <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0 mt-0.5" />
                 <p className="text-[11px] font-semibold text-emerald-950 leading-relaxed">
-                  <strong>Zero Data Deletion:</strong> We never delete your sales history, ledger records, or customer balances. When you pay, full access is instantly restored.
+                  <strong>Zero Data Deletion:</strong> We no dey ever delete your sales history, ledger records, or customer balance. Once you pay, full access dey restore immediately sharp-sharp.
                 </p>
               </div>
 

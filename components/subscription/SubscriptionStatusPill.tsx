@@ -53,8 +53,8 @@ export function SubscriptionStatusPill() {
         title={`${trialDaysLeft} days remaining on your 7-day free trial. Click to subscribe.`}
       >
         <span className="h-2 w-2 rounded-full bg-blue-600 animate-pulse shrink-0" />
-        <span className="hidden sm:inline">{trialDaysLeft}d Trial Left</span>
-        <span className="sm:hidden">{trialDaysLeft}d Trial</span>
+        <span className="hidden sm:inline">{trialDaysLeft}d Remain</span>
+        <span className="sm:hidden">{trialDaysLeft}d Left</span>
       </button>
     );
   }
@@ -63,12 +63,12 @@ export function SubscriptionStatusPill() {
     return (
       <button
         type="button"
-        onClick={() => openUpgradeModal("Grace period active. Renew your MoniePay Plus subscription to keep full access.")}
+        onClick={() => openUpgradeModal("Grace period dey active. Renew your MoniePay Plus subscription make you keep full access.")}
         className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 text-[10.5px] sm:text-[11px] font-black shadow-2xs active:scale-95 transition-all cursor-pointer animate-pulse shrink-0"
         title={`Grace period: ${graceDaysLeft} days remaining to renew MoniePay Plus.`}
       >
         <Clock className="h-3.5 w-3.5 text-amber-700 shrink-0" />
-        <span className="hidden sm:inline">Grace: {graceDaysLeft}d Left</span>
+        <span className="hidden sm:inline">Grace: {graceDaysLeft}d Remain</span>
         <span className="sm:hidden">{graceDaysLeft}d Grace</span>
       </button>
     );
@@ -78,9 +78,9 @@ export function SubscriptionStatusPill() {
   return (
     <button
       type="button"
-      onClick={() => openUpgradeModal("Your MoniePay Plus has expired. Renew for ₦1,500/month or ₦15,000/year to continue.")}
+      onClick={() => openUpgradeModal("Your MoniePay Plus don expire. Renew for ₦1,500/month or ₦15,000/year to continue.")}
       className="inline-flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1 rounded-xl bg-rose-50 hover:bg-rose-100 border border-rose-300 text-rose-900 text-[10.5px] sm:text-[11px] font-black shadow-2xs active:scale-95 transition-all cursor-pointer shrink-0"
-      title="MoniePay Plus Expired — Renew for ₦1,500/mo or ₦15,000/yr"
+      title="MoniePay Plus Don Expire — Renew for ₦1,500/mo or ₦15,000/yr"
     >
       <AlertTriangle className="h-3.5 w-3.5 text-rose-600 shrink-0" />
       <span>Renew</span>

@@ -1,14 +1,8 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoniePay — Subscription & Free Trial Banner Card Widget (Modern Design)
-// Features:
-// - 7-Day Free Trial Days Left / Grace Period / Active Status
-// - Sleek Segmented Capsule Progress Tracker
-// - Monthly (₦1,500/mo) vs Annual (₦15,000/yr) Pricing Highlights
-// - 1-Tap PWA Install App Button
-// - Solid MoniePay Sapphire Blue CTA (No Gradients)
-// - Zero Data Deletion Guarantee
+// MoniePay — Subscription & Free Trial Banner Card Widget (Modern Market Design)
+// Informal market language tailored for Nigerian merchants & traders
 // ─────────────────────────────────────────────────────────────────
 
 import React from "react";
@@ -20,7 +14,6 @@ import {
   ArrowRight,
   Download,
   AlertTriangle,
-  Sparkles,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSubscription } from "@/context/SubscriptionContext";
@@ -96,8 +89,8 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                     : isGracePeriodActive
                     ? "Grace Period Active"
                     : isTrialActive
-                    ? "7-Day Free Trial"
-                    : "Subscription Expired"}
+                    ? "7 Days Free Shop Test-Run"
+                    : "Subscription Don Expire"}
                 </span>
 
                 <span
@@ -112,23 +105,23 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                   }`}
                 >
                   {isSubscribed
-                    ? "Active Plus"
+                    ? "Plus Active"
                     : isGracePeriodActive
-                    ? `${graceDaysLeft}d Left`
+                    ? `${graceDaysLeft}d Grace Remain`
                     : isTrialActive
-                    ? `${trialDaysLeft}d Left`
-                    : "Renew Plan"}
+                    ? `${trialDaysLeft}d Remain`
+                    : "Renew Now"}
                 </span>
               </div>
 
               <p className="text-[11.5px] text-slate-500 font-medium mt-0.5 leading-snug">
                 {isSubscribed
-                  ? `All Plus features active • Renews on ${nextRenewalFormatted || "Active"}`
+                  ? `All Plus features dey active • Renews on ${nextRenewalFormatted || "Active"}`
                   : isGracePeriodActive
-                  ? "Full access open for 3 days. Renew now to avoid shop restriction."
+                  ? "Full access dey open for 3 days. Renew now so your shop record no go pause."
                   : isTrialActive
-                  ? `${trialDaysLeft} days remaining of full free shop intelligence access.`
-                  : "Renew for ₦1,500/month or ₦15,000/year to continue recording."}
+                  ? `You still get ${trialDaysLeft} days remaining of sharp-sharp shop intelligence access.`
+                  : "Renew for ₦1,500/month or ₦15,000/year make you continue recording."}
               </p>
             </div>
           </div>
@@ -151,10 +144,10 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
             <div className="flex items-center justify-between text-xs font-bold text-slate-700">
               <span className="flex items-center gap-1.5 text-slate-900 font-black text-[12px]">
                 <Clock className="h-3.5 w-3.5 text-[#1d4ed8]" />
-                {7 - trialDaysLeft + 1} of 7 Days Passed
+                Day {7 - trialDaysLeft + 1} of 7 don enter
               </span>
               <span className="text-[11px] font-black text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
-                {trialDaysLeft} {trialDaysLeft === 1 ? "Day" : "Days"} Left
+                {trialDaysLeft} {trialDaysLeft === 1 ? "Day" : "Days"} Dey Left
               </span>
             </div>
 
@@ -192,8 +185,8 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
             </div>
 
             <div className="flex items-center justify-between text-[10.5px] text-slate-500 font-medium pt-0.5 border-t border-slate-100">
-              <span>One-time trial per shop</span>
-              <span className="text-[#1d4ed8] font-bold">Cancel or upgrade anytime</span>
+              <span>One free trial per shop</span>
+              <span className="text-[#1d4ed8] font-bold">Upgrade anytime without wahala</span>
             </div>
           </div>
         )}
@@ -208,7 +201,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
             <span className="text-slate-400 font-bold">•</span>
             <span className="inline-flex items-center gap-1 text-slate-600 font-medium text-[11px]">
               <ShieldCheck className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-              <span>Zero data deletion</span>
+              <span>Zero data deletion (Record safe forever)</span>
             </span>
           </div>
 
@@ -218,13 +211,13 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
             onClick={() =>
               openUpgradeModal(
                 isExpired
-                  ? "Your MoniePay Plus has expired. Renew for ₦1,500/month or ₦15,000/year to continue."
+                  ? "Your MoniePay Plus don expire. Renew for ₦1,500/month or ₦15,000/year to continue recording."
                   : undefined
               )
             }
             className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-black text-xs tracking-wide flex items-center justify-center gap-2 cursor-pointer active:scale-95 shadow-[0_4px_14px_rgba(29,78,216,0.25)] transition-all shrink-0"
           >
-            <span>{isSubscribed ? "Manage Plan" : isExpired ? "Renew MoniePay Plus" : "Upgrade to Plus"}</span>
+            <span>{isSubscribed ? "Check Your Plan" : isExpired ? "Renew Your Plus" : "Upgrade to Plus"}</span>
             <ArrowRight className="h-3.5 w-3.5" />
           </button>
         </div>

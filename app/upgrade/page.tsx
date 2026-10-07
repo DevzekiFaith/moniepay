@@ -192,9 +192,9 @@ function UpgradeContent() {
             <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 text-xs flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-black text-rose-950">Your MoniePay Plus has expired.</p>
+                <p className="font-black text-rose-950">Your MoniePay Plus don expire.</p>
                 <p className="font-semibold text-rose-800 mt-0.5">
-                  Renew for ₦1,500/month or ₦15,000/year to continue recording sales and tracking debt.
+                  Renew for ₦1,500/month or ₦15,000/year make you continue recording sales and tracking customer debt (gbese).
                 </p>
               </div>
             </div>
@@ -202,9 +202,9 @@ function UpgradeContent() {
             <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-xs flex items-start gap-3">
               <Clock className="h-5 w-5 text-amber-700 shrink-0 mt-0.5" />
               <div>
-                <p className="font-black text-amber-950">Grace Period Active: {graceDaysLeft} Days Left</p>
+                <p className="font-black text-amber-950">Grace Period Dey Active: {graceDaysLeft} Days Remain</p>
                 <p className="font-semibold text-amber-800 mt-0.5">
-                  Full features are open for 3 days to renew your subscription.
+                  Full shop features still dey open for 3 days to renew your subscription.
                 </p>
               </div>
             </div>
@@ -225,8 +225,8 @@ function UpgradeContent() {
                     {isSubscribed
                       ? "Active MoniePay Plus Subscription"
                       : isTrialActive
-                      ? `7-Day Free Trial: ${trialDaysLeft} days left`
-                      : "Subscription Expired"}
+                      ? `7-Day Free Test-Run: ${trialDaysLeft} days remain`
+                      : "Subscription Don Expire"}
                   </p>
                   <p className="text-[11px] text-slate-500 font-medium">
                     {isSubscribed
@@ -240,8 +240,8 @@ function UpgradeContent() {
                             : "Active"
                         }`
                       : isTrialActive
-                      ? "Enjoying full shop intelligence during your 7-day trial."
-                      : "Renew for ₦1,500/mo or ₦15,000/yr to continue."}
+                      ? "Enjoying full sharp-sharp shop intelligence during your 7-day test-run."
+                      : "Renew for ₦1,500/mo or ₦15,000/yr make you continue."}
                   </p>
                 </div>
               </div>
@@ -251,7 +251,7 @@ function UpgradeContent() {
           {/* ── PLAN SELECTOR TABS (Monthly vs Annual) ── */}
           <div className="space-y-1.5 pt-1">
             <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider px-1">
-              Select Your Plan:
+              Pick How You Wan Pay:
             </label>
 
             <div className="grid grid-cols-2 gap-2.5">
@@ -270,7 +270,7 @@ function UpgradeContent() {
                   {selectedPlan === "monthly" && <CheckCircle2 className="h-4 w-4 text-blue-600" />}
                 </div>
                 <p className="text-base font-black text-blue-900 mt-1">₦1,500</p>
-                <p className="text-[10.5px] text-slate-500 font-medium">Renews every month</p>
+                <p className="text-[10.5px] text-slate-500 font-medium">Dey renew every month</p>
               </button>
 
               {/* Annual Plan */}
@@ -284,14 +284,14 @@ function UpgradeContent() {
                 }`}
               >
                 <span className="absolute -top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black uppercase tracking-wider shadow-xs">
-                  Save ₦3,000
+                  Save ₦3,000 Cash
                 </span>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black text-slate-900">Annual Plan</span>
+                  <span className="text-xs font-black text-slate-900">1 Full Year</span>
                   {selectedPlan === "annual" && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
                 </div>
                 <p className="text-base font-black text-emerald-900 mt-1">₦15,000</p>
-                <p className="text-[10.5px] text-slate-500 font-medium">Renews every 12 months</p>
+                <p className="text-[10.5px] text-slate-500 font-medium">Dey renew every 12 months</p>
               </button>
             </div>
           </div>
@@ -299,14 +299,14 @@ function UpgradeContent() {
           {/* Pricing Box (Solid Sapphire Blue) */}
           <div className="p-4 sm:p-5 rounded-3xl bg-[#1e3a8a] text-white shadow-md space-y-2 text-center relative overflow-hidden">
             <p className="text-[11px] text-blue-200 font-bold uppercase tracking-wider">
-              {selectedPlan === "annual" ? "Annual Plan • 2 Months Free" : "Monthly Plan • Cancel Anytime"}
+              {selectedPlan === "annual" ? "Annual Plan • 2 Months Free Shop Access Dey Inside" : "Monthly Plan • Cancel Anytime Without Wahala"}
             </p>
             <div className="flex items-baseline justify-center gap-1.5">
               <span className="text-4xl font-black text-white tracking-tight">{amountToPay}</span>
               <span className="text-sm font-bold text-blue-200">{planPeriodText}</span>
             </div>
             <p className="text-xs text-blue-100 max-w-sm mx-auto font-medium leading-relaxed">
-              No hidden deductions. Instant bank transfer, debit card, or USSD via Flutterwave.
+              No hidden deductions or extra charges. Instant bank transfer, debit card, or USSD via Flutterwave.
             </p>
           </div>
 
@@ -314,7 +314,7 @@ function UpgradeContent() {
           <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-start gap-2.5">
             <ShieldCheck className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
             <p className="text-xs font-semibold leading-relaxed">
-              <strong>Zero Data Deletion:</strong> Your past transactions, debt sheet, and drawer balance stay safe in your account. No data is ever deleted because of subscription expiry.
+              <strong>Zero Data Deletion:</strong> All your past sales transactions, debt records, and drawer balance dey safe inside your account forever. We no dey delete anything even if subscription expire.
             </p>
           </div>
 
@@ -343,7 +343,7 @@ function UpgradeContent() {
         {/* Feature Highlights Grid */}
         <div className="clay-card p-5 space-y-3">
           <h3 className="text-xs font-black text-slate-700 tracking-wide uppercase">
-            What MoniePay Plus Unlocks for Your Shop:
+            Everything Wey Dey Inside MoniePay Plus:
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
