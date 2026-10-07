@@ -25,6 +25,8 @@ import {
   ChevronRight,
   Wallet,
   Users,
+  Star,
+  MapPin,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -48,6 +50,23 @@ export const NAV_SECTIONS = [
         href: "/accounts",
         icon: Wallet,
         description: "Cash Box, POS Terminals & Banks",
+      },
+    ],
+  },
+  {
+    title: "Public Reviews & Discovery",
+    items: [
+      {
+        label: "Customer Reviews",
+        href: "/reviews",
+        icon: Star,
+        description: "Public Ratings, QR Links & Replies",
+      },
+      {
+        label: "Market Vendor Map",
+        href: "/map",
+        icon: MapPin,
+        description: "Public Discovery & Stall Landmarks",
       },
     ],
   },

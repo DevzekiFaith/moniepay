@@ -1,21 +1,38 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoniePay — Customer Rating & Verified Merchant Feedback Portal
-// Clean, Modern Minimalist UI Review Design
+// MoniePay — Public Customer Rating & Verified QR Feedback Portal
+// Clean, Fast, Mobile-First UI • Anti-Spam • Instant WhatsApp Sharing
 // ─────────────────────────────────────────────────────────────────
 
-import React, { useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Star } from "lucide-react";
-import { motion } from "framer-motion";
-
-interface RatingCriteria {
-  stockQuality: number;
-  priceFairness: number;
-  speedOfPayment: number;
-  customerService: number;
-}
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import {
+  Star,
+  CheckCircle2,
+  ShieldCheck,
+  Store,
+  MapPin,
+  ArrowRight,
+  Share2,
+  Copy,
+  Check,
+  MessageCircle,
+  Clock,
+  Sparkles,
+  AlertCircle,
+  ThumbsUp,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { MoniePayMark } from "@/components/ui/MoniePayLogo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import {
+  getVendor,
+  submitReview,
+  checkReviewCooldown,
+  getVendorShareLinks,
+} from "@/lib/reviews/vendorStore";
 
 const PRAISE_TAGS = [
   "Original Goods Only",
@@ -26,64 +43,19 @@ const PRAISE_TAGS = [
   "Always Has Change",
   "Clean Stall",
   "Fast Packaging",
+  "Quality Aso-Ebi",
+  "100% Genuine Tech",
 ];
-
-const MERCHANT_PROFILES: Record<
-  string,
-  {
-    name: string;
-    shop: string;
-    market: string;
-    image: string;
-    code: string;
-  }
-> = {
-  mama_chidi: {
-    name: "Mama Chidi",
-    shop: "Mama Chidi Super Provisions",
-    market: "Shop 14, Balogun Market, Lagos",
-    image: "/images/traders/mama_chidi.jpg",
-    code: "MP-BAL-84920",
-  },
-  alhaji_garba: {
-    name: "Alhaji Garba",
-    shop: "Alhaji Garba Grains & Foodstuff",
-    market: "Mile 12 Wholesale Market, Lagos",
-    image: "/images/traders/alhaji_garba.jpg",
-    code: "MP-M12-92140",
-  },
-  emeka: {
-    name: "Emeka Okonkwo",
-    shop: "Emeka Mobile & Electronics Hub",
-    market: "Alaba Int'l Market, Lagos",
-    image: "/images/traders/emeka_electronics.jpg",
-    code: "MP-ALA-73010",
-  },
-  blessing: {
-    name: "Blessing Adebayo",
-    shop: "Blessing Fabrics & Lace Store",
-    market: "Tejuosho Market, Yaba, Lagos",
-    image: "/images/traders/blessing_fabrics.jpg",
-    code: "MP-TEJ-61840",
-  },
-};
 
 function CustomerRatingContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const shopKey = searchParams?.get("shop") || "mama_chidi";
-  const merchant = MERCHANT_PROFILES[shopKey] || MERCHANT_PROFILES.mama_chidi;
+  const vendor = getVendor(shopKey);
 
-  // Rating State
+  // Rating Form State
   const [overallScore, setOverallScore] = useState<number>(5);
   const [hoverScore, setHoverScore] = useState<number | null>(null);
-
-  const [criteria, setCriteria] = useState<RatingCriteria>({
-    stockQuality: 5,
-    priceFairness: 5,
-    speedOfPayment: 5,
-    customerService: 5,
-  });
-
   const [selectedTags, setSelectedTags] = useState<string[]>([
     "Original Goods Only",
     "Fast Transfer Confirmation",
@@ -94,24 +66,36 @@ function CustomerRatingContent() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedReviewId, setSubmittedReviewId] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const activeStarRating = hoverScore !== null ? hoverScore : overallScore;
+
+  // Check cooldown on load
+  const [cooldownStatus, setCooldownStatus] = useState<{ canSubmit: boolean; message?: string }>({
+    canSubmit: true,
+  });
+
+  useEffect(() => {
+    const status = checkReviewCooldown(shopKey);
+    setCooldownStatus(status);
+  }, [shopKey]);
 
   const getStarLabel = (stars: number) => {
     switch (stars) {
       case 1:
-        return "1.0 • Poor Service / Disappointed";
+        return "1.0 • Poor Service / Issue Dey";
       case 2:
-        return "2.0 • Fair / Small Issue Dey";
+        return "2.0 • Fair / Small Wahala";
       case 3:
         return "3.0 • Good / Standard Market Buy";
       case 4:
-        return "4.0 • Very Good / Highly Reliable";
+        return "4.0 • Very Good / Reliable Trader";
       case 5:
-        return "5.0 • Top Notch / Correct Market Trader";
+        return "5.0 • Top Notch / 100% Correct!";
       default:
-        return "Tap to Rate";
+        return "Tap star to rate";
     }
   };
 
@@ -124,460 +108,338 @@ function CustomerRatingContent() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
+
     if (overallScore < 1) {
-      setErrorMsg("Please select an overall star rating.");
+      setErrorMsg("Please choose a star rating.");
       return;
     }
 
     setIsSubmitting(true);
 
-    const reviewData = {
-      id: `rev_${Date.now()}`,
+    const result = submitReview({
       shopKey,
-      shopName: merchant.shop,
-      overallScore,
-      criteria,
-      selectedTags,
+      rating: overallScore,
       comment: comment.trim(),
+      tags: selectedTags,
       customerName: customerName.trim() || "Market Customer",
       customerPhone: customerPhone.trim(),
-      createdAt: new Date().toISOString(),
-    };
+      isVerifiedCustomer: true, // QR interaction verified
+    });
 
-    try {
-      const existing = JSON.parse(
-        localStorage.getItem("moniepay_customer_ratings") || "[]"
-      );
-      existing.unshift(reviewData);
-      localStorage.setItem(
-        "moniepay_customer_ratings",
-        JSON.stringify(existing.slice(0, 50))
-      );
-    } catch {}
-
-    setTimeout(() => {
-      setIsSubmitting(false);
+    if (result.success && result.review) {
+      setSubmittedReviewId(result.review.id);
       setIsSubmitted(true);
-    }, 500);
+    } else {
+      setErrorMsg(result.error || "Failed to submit review. Please try again.");
+    }
+    setIsSubmitting(false);
+  };
+
+  const shareLinks = getVendorShareLinks(shopKey);
+
+  const handleCopyLink = () => {
+    if (typeof navigator !== "undefined") {
+      navigator.clipboard.writeText(shareLinks.reviewUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col items-center py-6 sm:py-10 px-3 sm:px-4 selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white transition-colors">
-      <div className="w-full max-w-lg space-y-4">
-        {/* ── 1. CLEAN MODERN HEADER ── */}
-        <div className="text-center space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-widest text-emerald-800 dark:text-emerald-400 block">
-            MoniePay Trust Network
-          </span>
-          <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-            Customer Review &amp; Rating
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto font-medium">
-            Verify transaction quality and build trusted business reputation for Nigerian traders.
-          </p>
-        </div>
-
-        {/* ── 2. MERCHANT PROFILE CARD ── */}
-        <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 p-4 sm:p-5 shadow-sm flex items-center justify-between gap-3.5">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="relative h-13 w-13 sm:h-14 sm:w-14 rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-slate-800 shrink-0">
-              <img
-                src={merchant.image}
-                alt={merchant.shop}
-                className="h-full w-full object-cover object-center"
-                onError={(e) => {
-                  e.currentTarget.src = "/images/traders/mama_chidi.jpg";
-                }}
-              />
-            </div>
-            <div className="min-w-0">
-              <div className="flex items-center gap-1.5 mb-0.5">
-                <span className="px-2 py-0.5 rounded-md bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[10px] font-bold border border-emerald-200/60 dark:border-emerald-800">
-                  Verified Trader
-                </span>
-                <span className="text-[10.5px] font-mono text-slate-400 dark:text-slate-500 font-semibold">
-                  {merchant.code}
-                </span>
-              </div>
-              <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight truncate">
-                {merchant.shop}
-              </h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
-                {merchant.market}
-              </p>
-            </div>
+    <div className="min-h-screen bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between py-4 sm:py-8 px-3 sm:px-6 transition-colors">
+      {/* ── HEADER ── */}
+      <header className="w-full max-w-lg mx-auto flex items-center justify-between pb-4 px-1">
+        <Link href={`/vendors/${shopKey}`} className="flex items-center gap-2 group cursor-pointer">
+          <MoniePayMark size={36} />
+          <div>
+            <span className="text-sm font-black text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
+              MoniePay
+            </span>
+            <span className="text-[10px] font-bold text-blue-600 dark:text-sky-400 block leading-none">
+              Verified Trader Review
+            </span>
           </div>
-        </div>
+        </Link>
 
-        {/* ── 3. MAIN FORM CARD ── */}
-        <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 p-5 sm:p-7 shadow-sm">
+        <div className="flex items-center gap-2">
+          <ThemeToggle />
+          <Link
+            href={`/vendors/${shopKey}`}
+            className="px-3 py-1.5 rounded-xl bg-white/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200/80 dark:border-white/10 shadow-2xs active:scale-95 transition-all"
+          >
+            View Shop Profile
+          </Link>
+        </div>
+      </header>
+
+      {/* ── MAIN CARD CONTAINER ── */}
+      <main className="w-full max-w-lg mx-auto my-auto py-2">
+        <AnimatePresence mode="wait">
           {!isSubmitted ? (
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {errorMsg && (
-                <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold">
-                  {errorMsg}
+            <motion.div
+              key="rating-form"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.35 }}
+              className="clay-card p-5 sm:p-7 space-y-5 bg-white/95 dark:bg-slate-900/95 border border-white/80 dark:border-white/10 shadow-2xl rounded-[32px]"
+            >
+              {/* Vendor Profile Header Banner */}
+              <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800">
+                <div className="relative h-14 w-14 rounded-2xl overflow-hidden bg-slate-200 border border-white/80 dark:border-white/20 shrink-0 shadow-xs">
+                  <img
+                    src={vendor?.image || "/images/traders/mama_chidi.jpg"}
+                    alt={vendor?.shopName || "Vendor"}
+                    className="h-full w-full object-cover"
+                  />
+                  <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-1 mb-0.5">
+                    <span className="text-[10px] font-black uppercase px-2 py-0.2 rounded-full bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                      {vendor?.category || "Trader"}
+                    </span>
+                    <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-300 flex items-center gap-0.5">
+                      <ShieldCheck className="h-3 w-3" />
+                      Verified
+                    </span>
+                  </div>
+                  <h1 className="text-base font-black text-slate-900 dark:text-white truncate">
+                    {vendor?.shopName}
+                  </h1>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-1 truncate">
+                    <MapPin className="h-3 w-3 text-slate-400 shrink-0" />
+                    <span>{vendor?.market}</span>
+                  </p>
+                </div>
+              </div>
+
+              {/* Notice Banner */}
+              <div className="p-3 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200 text-xs flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <p className="font-medium text-[11.5px] leading-snug">
+                  <strong>Verified QR Scan:</strong> Your review will appear publicly with a <strong>Verified Customer</strong> badge. Your phone number is kept 100% private.
+                </p>
+              </div>
+
+              {/* Cooldown Warning if recently submitted */}
+              {!cooldownStatus.canSubmit && (
+                <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/80 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+                  <p className="font-medium text-[11.5px] leading-relaxed">
+                    {cooldownStatus.message}
+                  </p>
                 </div>
               )}
 
-              {/* OVERALL STAR RATING */}
-              <div className="text-center py-2 space-y-2 border-b border-slate-100 dark:border-white/10 pb-5">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-300 block">
-                  How was your purchase today?
-                </span>
+              {errorMsg && (
+                <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs flex items-center gap-2 font-medium">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>{errorMsg}</span>
+                </div>
+              )}
 
-                <div className="flex items-center justify-center gap-2 py-1">
-                  {[1, 2, 3, 4, 5].map((star) => {
-                    const filled = star <= activeStarRating;
-                    return (
-                      <button
-                        key={star}
-                        type="button"
-                        onClick={() => setOverallScore(star)}
-                        onMouseEnter={() => setHoverScore(star)}
-                        onMouseLeave={() => setHoverScore(null)}
-                        className="p-1 rounded-xl transition-all cursor-pointer hover:scale-110 active:scale-95"
-                        aria-label={`Rate ${star} stars`}
-                      >
-                        <Star
-                          className={`h-8 w-8 sm:h-9 sm:w-9 transition-colors ${
-                            filled
-                              ? "fill-amber-400 text-amber-400"
-                              : "fill-transparent text-slate-300 dark:text-slate-600 stroke-[1.5]"
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {/* ── 1. STAR RATING SELECTOR ── */}
+                <div className="text-center space-y-2 pt-1 pb-2">
+                  <p className="text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">
+                    How was your market experience?
+                  </p>
+
+                  <div className="flex items-center justify-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => {
+                      const isFilled = star <= activeStarRating;
+                      return (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setOverallScore(star)}
+                          onMouseEnter={() => setHoverScore(star)}
+                          onMouseLeave={() => setHoverScore(null)}
+                          className="p-1 cursor-pointer active:scale-90 transition-transform focus:outline-none"
+                          aria-label={`Rate ${star} star`}
+                        >
+                          <Star
+                            className={`h-9 w-9 sm:h-10 sm:w-10 transition-colors ${
+                              isFilled
+                                ? "text-amber-400 fill-amber-400 drop-shadow-sm"
+                                : "text-slate-300 dark:text-slate-700"
+                            }`}
+                          />
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  <div className="inline-block px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/80 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs font-black">
+                    {getStarLabel(activeStarRating)}
+                  </div>
+                </div>
+
+                {/* ── 2. PRAISE TAGS PILLS ── */}
+                <div className="space-y-2">
+                  <label className="text-xs font-black text-slate-800 dark:text-slate-200 block">
+                    Wetin you like about this trader? (Tap tags)
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {PRAISE_TAGS.map((tag) => {
+                      const isSelected = selectedTags.includes(tag);
+                      return (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => toggleTag(tag)}
+                          className={`px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer border ${
+                            isSelected
+                              ? "bg-blue-600 dark:bg-blue-600 text-white border-blue-600 shadow-xs scale-100"
+                              : "bg-slate-100 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 border-slate-200/80 dark:border-white/10 hover:border-blue-400"
                           }`}
-                        />
-                      </button>
-                    );
-                  })}
+                        >
+                          {isSelected && "✓ "}
+                          {tag}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
 
-                <p className="text-xs font-bold text-emerald-900 dark:text-emerald-300 min-h-[1.2rem]">
-                  {getStarLabel(activeStarRating)}
-                </p>
-              </div>
-
-              {/* DETAILED CRITERIA */}
-              <div className="space-y-3">
-                <span className="text-xs font-bold text-slate-900 dark:text-white block">
-                  Market Reliability Criteria
-                </span>
-
-                <div className="space-y-2.5">
-                  {[
-                    {
-                      key: "stockQuality" as const,
-                      label: "Stock Quality",
-                      sublabel: "Original & fresh products",
-                    },
-                    {
-                      key: "priceFairness" as const,
-                      label: "Price Fairness",
-                      sublabel: "Honest market pricing",
-                    },
-                    {
-                      key: "speedOfPayment" as const,
-                      label: "Payment Speed",
-                      sublabel: "Quick transfer confirmation",
-                    },
-                    {
-                      key: "customerService" as const,
-                      label: "Customer Service",
-                      sublabel: "Polite & respectful attitude",
-                    },
-                  ].map((item) => {
-                    const currentVal = criteria[item.key];
-
-                    return (
-                      <div
-                        key={item.key}
-                        className="p-3 rounded-2xl bg-slate-50/70 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/10 flex items-center justify-between gap-3"
-                      >
-                        <div className="min-w-0">
-                          <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight truncate">
-                            {item.label}
-                          </p>
-                          <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium leading-tight truncate mt-0.5">
-                            {item.sublabel}
-                          </p>
-                        </div>
-
-                        {/* Minimalist Segmented 1-5 Control */}
-                        <div className="flex items-center gap-1 shrink-0 bg-white dark:bg-slate-900 p-1 rounded-xl border border-slate-200 dark:border-white/10">
-                          {[1, 2, 3, 4, 5].map((s) => {
-                            const isSelected = currentVal === s;
-                            const isAtOrBelow = currentVal >= s;
-                            return (
-                              <button
-                                key={s}
-                                type="button"
-                                onClick={() =>
-                                  setCriteria((prev) => ({
-                                    ...prev,
-                                    [item.key]: s,
-                                  }))
-                                }
-                                className={`h-6.5 w-6.5 rounded-lg text-[11px] font-bold transition-all cursor-pointer flex items-center justify-center ${
-                                  isSelected
-                                    ? "bg-emerald-800 dark:bg-emerald-600 text-white shadow-xs"
-                                    : isAtOrBelow
-                                    ? "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 font-bold"
-                                    : "text-slate-400 dark:text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
-                                }`}
-                              >
-                                {s}
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* HIGHLIGHTS (TAGS) */}
-              <div className="space-y-2">
-                <span className="text-xs font-bold text-slate-900 dark:text-white block">
-                  Highlights
-                </span>
-                <div className="flex flex-wrap gap-1.5">
-                  {PRAISE_TAGS.map((tag) => {
-                    const isSelected = selectedTags.includes(tag);
-                    return (
-                      <button
-                        key={tag}
-                        type="button"
-                        onClick={() => toggleTag(tag)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer active:scale-95 ${
-                          isSelected
-                            ? "bg-emerald-800 dark:bg-emerald-600 text-white border border-emerald-900 dark:border-emerald-500 shadow-xs"
-                            : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/60 dark:border-white/10"
-                        }`}
-                      >
-                        {tag}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* CUSTOMER FEEDBACK */}
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold text-slate-900 dark:text-white block">
-                  Your Feedback / Experience Details
-                </label>
-                <textarea
-                  rows={3}
-                  value={comment}
-                  onChange={(e) => setComment(e.target.value)}
-                  placeholder="e.g. Bought provisions from shop 14 today, fast service and complete measure."
-                  className="w-full p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all"
-                />
-              </div>
-
-              {/* CONTACT INPUTS */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 block">
-                    Your Name (Optional)
+                {/* ── 3. WRITTEN REVIEW / COMMENT ── */}
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black text-slate-800 dark:text-slate-200 block">
+                    Write small review (Optional)
                   </label>
-                  <input
-                    type="text"
-                    value={customerName}
-                    onChange={(e) => setCustomerName(e.target.value)}
-                    placeholder="e.g. Brother Segun"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all"
+                  <textarea
+                    rows={3}
+                    value={comment}
+                    onChange={(e) => setComment(e.target.value)}
+                    placeholder="E.g. She give me correct derica measure, rice clean well well..."
+                    className="w-full p-3 rounded-2xl clay-input text-xs sm:text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 focus:outline-none transition-all resize-none"
                   />
                 </div>
 
-                <div className="space-y-1">
-                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 block">
-                    Phone / WhatsApp (Optional)
-                  </label>
-                  <input
-                    type="tel"
-                    value={customerPhone}
-                    onChange={(e) => setCustomerPhone(e.target.value)}
-                    placeholder="e.g. 08031234567"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-700 focus:ring-1 focus:ring-emerald-700 transition-all"
-                  />
-                </div>
-              </div>
+                {/* ── 4. CUSTOMER NAME & PHONE ── */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                      Your Name
+                    </label>
+                    <input
+                      type="text"
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      placeholder="E.g. Chidinma Okafor"
+                      className="w-full px-3 py-2.5 rounded-xl clay-input text-xs font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 focus:outline-none"
+                    />
+                  </div>
 
-              {/* SUBMIT BUTTON */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full py-3.5 rounded-2xl bg-emerald-800 hover:bg-emerald-700 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm shadow-sm active:scale-95 transition-all cursor-pointer disabled:opacity-75"
-              >
-                {isSubmitting ? "Submitting Verified Rating…" : "Submit Verified Rating"}
-              </button>
-            </form>
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-bold text-slate-700 dark:text-slate-300 flex items-center justify-between">
+                      <span>Phone Number</span>
+                      <span className="text-[9.5px] text-slate-400 font-normal">Never shared publicly</span>
+                    </label>
+                    <input
+                      type="tel"
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      placeholder="0803 123 4567"
+                      className="w-full px-3 py-2.5 rounded-xl clay-input text-xs font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                {/* Submit Action */}
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !cooldownStatus.canSubmit}
+                  className="w-full py-4 rounded-2xl bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-sm tracking-wide flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-blue-600/30 active:scale-98 transition-all disabled:opacity-60 mt-3"
+                >
+                  <ThumbsUp className="h-4 w-4" />
+                  <span>Submit Verified Review</span>
+                </button>
+              </form>
+            </motion.div>
           ) : (
-            /* SUBMITTED STATE */
+            /* ── SUCCESS VIEW AFTER SUBMIT ── */
             <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center py-4 space-y-4"
+              key="success-card"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="clay-card p-6 sm:p-8 text-center space-y-5 bg-white/95 dark:bg-slate-900/95 border border-white/80 dark:border-white/10 shadow-2xl rounded-[32px]"
             >
+              <div className="h-16 w-16 mx-auto rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-xs">
+                <CheckCircle2 className="h-9 w-9" />
+              </div>
+
               <div className="space-y-1">
-                <span className="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[10.5px] font-bold border border-emerald-200 dark:border-emerald-800">
-                  Rating Logged
+                <span className="px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-xs font-black">
+                  Review Published Live 🎉
                 </span>
-                <h3 className="text-lg font-black text-slate-900 dark:text-white pt-2">
-                  Thank You for Your Feedback!
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-xs mx-auto font-medium">
-                  Your rating for <strong className="text-slate-900 dark:text-white">{merchant.shop}</strong> has been recorded.
+                <h2 className="text-xl font-black text-slate-900 dark:text-white pt-1">
+                  Thank You for Supporting {vendor?.shopName}!
+                </h2>
+                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium max-w-sm mx-auto leading-relaxed">
+                  Your verified review helps fellow market shoppers discover honest traders and builds market trust.
                 </p>
               </div>
 
-              <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-left space-y-2 text-xs">
-                <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Shop Code</span>
-                  <span className="font-mono font-bold text-slate-900 dark:text-white">{merchant.code}</span>
-                </div>
-                <div className="flex items-center justify-between border-b border-slate-200 dark:border-white/10 pb-2">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Your Rating</span>
-                  <span className="font-bold text-emerald-800 dark:text-emerald-300">{overallScore} / 5 Stars</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Selected Tags</span>
-                  <span className="font-semibold text-slate-700 dark:text-slate-300 truncate max-w-[200px]">
-                    {selectedTags.join(", ")}
-                  </span>
-                </div>
-              </div>
-
-              {/* Where to find this rating next time */}
-              <div className="p-3.5 rounded-2xl bg-emerald-50/60 dark:bg-emerald-950/60 border border-emerald-200/70 dark:border-emerald-800 text-left space-y-1 text-xs">
-                <p className="font-bold text-emerald-950 dark:text-emerald-200">
-                  Where to find this shop for your next market visit:
-                </p>
-                <p className="text-[11px] text-emerald-800 dark:text-emerald-300 leading-relaxed font-medium">
-                  • <strong>Physical Counter:</strong> Scan the MoniePay QR stand at {merchant.market}.<br />
-                  • <strong>Phone Link:</strong> Save this shop page to your phone or share it to your WhatsApp.
-                </p>
-              </div>
-
-              <div className="pt-2 space-y-2">
-                {/* 1-Tap WhatsApp Share & Save */}
+              {/* Action Buttons: WhatsApp Share + View Profile + Map */}
+              <div className="space-y-2.5 pt-2">
                 <a
-                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-                    `I just rated ${merchant.shop} (${merchant.market}) ${overallScore} stars on MoniePay! View their verified trust profile and ratings here: https://moniepay.vercel.app/rate?shop=${shopKey}`
-                  )}`}
+                  href={shareLinks.whatsappReviewLink}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-bold text-xs sm:text-sm active:scale-95 transition-all block shadow-xs"
+                  className="w-full py-3.5 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-md active:scale-98 transition-all cursor-pointer"
                 >
-                  Save &amp; Share Shop Link on WhatsApp
+                  <MessageCircle className="h-4 w-4" />
+                  <span>Share Review Link with Friends on WhatsApp</span>
                 </a>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsSubmitted(false);
-                    setComment("");
-                  }}
-                  className="w-full py-2.5 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs active:scale-95 transition-all cursor-pointer"
-                >
-                  Rate Another Transaction
-                </button>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={handleCopyLink}
+                    className="py-3 px-3 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-white/10 text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer active:scale-98 transition-all"
+                  >
+                    {copied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5" />}
+                    <span>{copied ? "Link Copied!" : "Copy Link"}</span>
+                  </button>
 
-                <a
-                  href="/"
-                  className="w-full py-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 font-bold text-xs active:scale-95 transition-all block text-center"
+                  <Link
+                    href={`/vendors/${shopKey}`}
+                    className="py-3 px-3 rounded-2xl bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 text-xs font-black flex items-center justify-center gap-1.5 active:scale-98 transition-all"
+                  >
+                    <Store className="h-3.5 w-3.5" />
+                    <span>View Shop</span>
+                  </Link>
+                </div>
+
+                <Link
+                  href={`/map?vendor=${shopKey}`}
+                  className="w-full py-3 rounded-2xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 transition-all"
                 >
-                  Return to Home
-                </a>
+                  <MapPin className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
+                  <span>See {vendor?.shopName} on Market Map</span>
+                </Link>
               </div>
             </motion.div>
           )}
-        </div>
+        </AnimatePresence>
+      </main>
 
-        {/* ── 4. RECENT VERIFIED MARKET REVIEWS FEED ── */}
-        <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 p-5 shadow-sm space-y-3">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-3">
-            <div>
-              <h3 className="text-xs font-bold text-slate-900 dark:text-white">
-                Verified Market Reviews
-              </h3>
-              <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">
-                Recent feedback from verified market buyers
-              </p>
-            </div>
-            <span className="px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold border border-emerald-200/60 dark:border-emerald-800">
-              4.9 ★ (128 reviews)
-            </span>
-          </div>
-
-          <div className="space-y-2.5">
-            {[
-              {
-                name: "Mama Ifeoma",
-                date: "Today",
-                rating: 5,
-                comment: "Original goods only, fast POS transfer confirmation and she always has clean change.",
-                tags: ["Original Goods", "Fast Transfer"],
-              },
-              {
-                name: "Alhaji Bello",
-                date: "Yesterday",
-                rating: 5,
-                comment: "Derica measure complete well-well, very polite mama.",
-                tags: ["Accurate Measure", "Polite & Respectful"],
-              },
-              {
-                name: "Chukwudi E.",
-                date: "2 days ago",
-                rating: 5,
-                comment: "Bought provisions in bulk, packaged sharp-sharp without delay.",
-                tags: ["Fast Packaging", "Fair Price"],
-              },
-            ].map((rev, idx) => (
-              <div
-                key={idx}
-                className="p-3 rounded-2xl bg-slate-50/70 dark:bg-slate-800/60 border border-slate-200/60 dark:border-white/10 space-y-1.5"
-              >
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-900 dark:text-white">{rev.name}</span>
-                  <span className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">{rev.date}</span>
-                </div>
-                <div className="text-amber-400 text-xs tracking-tighter">
-                  {"★".repeat(rev.rating)}
-                </div>
-                <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium leading-relaxed">
-                  "{rev.comment}"
-                </p>
-                <div className="flex flex-wrap gap-1 pt-0.5">
-                  {rev.tags.map((t) => (
-                    <span
-                      key={t}
-                      className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-[9.5px] font-medium text-slate-600 dark:text-slate-300"
-                    >
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* FOOTER */}
-        <p className="text-[11px] text-slate-400 dark:text-slate-500 font-medium text-center">
-          Encrypted Nigerian Merchant Trust Network • MoniePay
-        </p>
-      </div>
+      {/* ── FOOTER ── */}
+      <footer className="w-full max-w-lg mx-auto text-center pt-4 pb-2 text-[10.5px] text-slate-400 dark:text-slate-500 font-medium">
+        MoniePay Verified Review Network • Built for Nigerian Traders
+      </footer>
     </div>
   );
 }
 
-export default function RatePage() {
+export default function CustomerRatingPage() {
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-          <span className="text-xs font-bold text-emerald-800 dark:text-emerald-400">Loading Customer Rating Portal…</span>
+        <div className="min-h-screen flex items-center justify-center bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
         </div>
       }
     >

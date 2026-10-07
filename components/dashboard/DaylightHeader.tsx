@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
   WifiOff,
   MapPin,
@@ -11,6 +12,7 @@ import {
   Smartphone,
   AlertTriangle,
   Clock,
+  Star,
 } from "lucide-react";
 import type { Business } from "@/types/moniepay.types";
 import { useAuth } from "@/context/AuthContext";
@@ -134,25 +136,47 @@ export function DaylightHeader({
               {/* 3. Push Notification Bell & Drawer */}
               <NotificationBellDrawer />
 
-              {/* 4. Customer Rating QR & Barcode Stand */}
+              {/* 4. Customer Rating QR & Reviews Portal */}
+              <InfoTooltip content="Customer Reviews & QR Portal">
+                <Link
+                  href="/reviews"
+                  aria-label="Customer Reviews"
+                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
+                >
+                  <Star className="h-4 w-4 text-amber-300 fill-amber-300/30" />
+                </Link>
+              </InfoTooltip>
+
+              {/* 5. Vendor Market Map */}
+              <InfoTooltip content="Explore Market Vendor Map">
+                <Link
+                  href="/map"
+                  aria-label="Market Map"
+                  className="hidden xs:flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
+                >
+                  <MapPin className="h-4 w-4 text-sky-200" />
+                </Link>
+              </InfoTooltip>
+
+              {/* 6. Countertop QR & Barcode Stand */}
               <InfoTooltip content="Countertop QR & Barcode Stand">
                 <button
                   type="button"
                   onClick={() => setIsRatingStandOpen(true)}
                   aria-label="Customer Rating Stand"
-                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
+                  className="hidden sm:flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
                 >
                   <QrCode className="h-4 w-4 text-sky-200" />
                 </button>
               </InfoTooltip>
 
-              {/* 5. Install App Trigger */}
+              {/* 7. Install App Trigger */}
               <InfoTooltip content="Install MoniePay app to phone home screen">
                 <button
                   type="button"
                   onClick={triggerInstallPrompt}
                   aria-label="Install App"
-                  className="hidden sm:flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
+                  className="hidden md:flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
                 >
                   <Smartphone className="h-4 w-4 text-sky-200" />
                 </button>

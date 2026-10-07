@@ -23,6 +23,7 @@ import {
   Check,
   ChevronRight,
   X,
+  MessageCircle,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -31,6 +32,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { getVendorShareLinks } from "@/lib/reviews/vendorStore";
 
 interface MerchantRatingStandProps {
   isOpen: boolean;
@@ -323,24 +325,15 @@ export function MerchantRatingStand({
 
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (navigator.share) {
-                          navigator.share({
-                            title: `Rate ${shopName} on MoniePay`,
-                            text: `Scan our QR code or visit to leave a verified rating for ${shopName}`,
-                            url: ratingUrl,
-                          }).catch(() => {});
-                        } else {
-                          handleCopyLink();
-                        }
-                      }}
+                    <a
+                      href={getVendorShareLinks(shopId).whatsappReviewLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       className="py-2.5 rounded-xl bg-white dark:bg-slate-800/90 border border-slate-200/90 dark:border-white/10 hover:border-emerald-600 dark:hover:border-emerald-400 text-slate-800 dark:text-slate-200 text-xs font-bold active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
                     >
-                      <Share2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                      <span>Share via WhatsApp</span>
-                    </button>
+                      <MessageCircle className="h-3.5 w-3.5 text-[#25D366]" />
+                      <span>Share on WhatsApp</span>
+                    </a>
                   </TooltipTrigger>
                   <TooltipContent>Send direct rating invite to customers on WhatsApp</TooltipContent>
                 </Tooltip>
