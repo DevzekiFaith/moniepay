@@ -114,14 +114,14 @@ export function InstallAppBanner() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <p className="text-xs font-black text-slate-900 dark:text-white leading-tight truncate">
-                      Install MoniePay Lite
+                      Put MoniePay For Phone
                     </p>
                     <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-md bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">
-                      Offline OS
+                      No Data Needed
                     </span>
                   </div>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
-                    1-tap home screen access &amp; instant alerts
+                    Tap once to open shop from home screen
                   </p>
                 </div>
               </div>
@@ -133,7 +133,7 @@ export function InstallAppBanner() {
                   className="px-3 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center gap-1.5 cursor-pointer active:scale-95 shadow-sm transition-all"
                 >
                   <Smartphone className="h-3.5 w-3.5" />
-                  <span>Install</span>
+                  <span>Get App</span>
                 </button>
 
                 <button
@@ -168,13 +168,13 @@ export function InstallAppBanner() {
                   <div>
                     <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] font-black uppercase tracking-wider mb-0.5">
                       <ShieldCheck className="h-2.5 w-2.5" />
-                      <span>Official Trader OS</span>
+                      <span>Original Trader App</span>
                     </div>
                     <h3 className="font-black text-slate-900 dark:text-white text-base sm:text-lg leading-tight">
-                      Install MoniePay App
+                      Put MoniePay For Your Phone
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                      Fast, lightweight app on your home screen
+                      No need to open browser every time. 1-tap, market start!
                     </p>
                   </div>
                 </div>
@@ -196,10 +196,10 @@ export function InstallAppBanner() {
                   </div>
                   <div>
                     <p className="text-xs font-black text-emerald-950 dark:text-emerald-200">
-                      Zero Data Offline Mode
+                      Work Even When Data Finish
                     </p>
                     <p className="text-[11px] text-emerald-800 dark:text-emerald-300 font-medium">
-                      Record sales &amp; gbese without active internet or airtime.
+                      Record sales &amp; gbese anytime, even if network dey fail.
                     </p>
                   </div>
                 </div>
@@ -210,10 +210,10 @@ export function InstallAppBanner() {
                   </div>
                   <div>
                     <p className="text-xs font-black text-blue-950 dark:text-blue-200">
-                      Instant Debt Due Alerts
+                      Sharp-Sharp Gbese Alert
                     </p>
                     <p className="text-[11px] text-blue-800 dark:text-blue-300 font-medium">
-                      Direct phone reminders when customer payment is due.
+                      Get alert for phone when customer suppose pay you back.
                     </p>
                   </div>
                 </div>
@@ -224,10 +224,10 @@ export function InstallAppBanner() {
                   </div>
                   <div>
                     <p className="text-xs font-black text-purple-950 dark:text-purple-200">
-                      Instant 1-Tap Access
+                      Clean &amp; Fast Like Real App
                     </p>
                     <p className="text-[11px] text-purple-800 dark:text-purple-300 font-medium">
-                      Full-screen standalone view with no browser search bars.
+                      Opens full screen like WhatsApp with zero delay.
                     </p>
                   </div>
                 </div>
@@ -242,17 +242,17 @@ export function InstallAppBanner() {
                     className="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 active:scale-98 transition-all cursor-pointer"
                   >
                     <Smartphone className="h-4 w-4" />
-                    <span>Install MoniePay Now (1-Tap)</span>
+                    <span>Put MoniePay For My Phone (1-Tap)</span>
                     <ArrowRight className="h-4 w-4" />
                   </button>
                   <p className="text-[11px] text-center text-slate-400 font-medium">
-                    Takes 0 MB extra phone storage • Auto-updates
+                    No dey heavy your phone memory • 100% Free
                   </p>
                 </div>
               ) : isIos ? (
                 <div className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-200 dark:border-white/10">
                   <p className="text-[11.5px] font-black text-slate-900 dark:text-white mb-2">
-                    How to install on your iPhone / iPad (Safari):
+                    How to put am for your iPhone / iPad (Safari):
                   </p>
                   <div className="flex items-start gap-2.5">
                     <span className="h-5 w-5 rounded-full bg-blue-600 text-white text-[11px] font-black flex items-center justify-center shrink-0">
@@ -260,7 +260,7 @@ export function InstallAppBanner() {
                     </span>
                     <p className="font-medium text-slate-700 dark:text-slate-300">
                       Tap the <strong>Share</strong> button (
-                      <Share className="inline h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mx-0.5" />) in Safari.
+                      <Share className="inline h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mx-0.5" />) for bottom of Safari.
                     </p>
                   </div>
                   <div className="flex items-start gap-2.5">
@@ -268,7 +268,7 @@ export function InstallAppBanner() {
                       2
                     </span>
                     <p className="font-medium text-slate-700 dark:text-slate-300">
-                      Scroll down and tap <strong>Add to Home Screen</strong> (
+                      Scroll small and tap <strong>Add to Home Screen</strong> (
                       <PlusSquare className="inline h-3.5 w-3.5 text-blue-600 dark:text-blue-400 mx-0.5" />).
                     </p>
                   </div>
@@ -277,17 +277,17 @@ export function InstallAppBanner() {
                       3
                     </span>
                     <p className="font-medium text-slate-700 dark:text-slate-300">
-                      Tap <strong>Add</strong> at top right. MoniePay will appear on your home screen!
+                      Press <strong>Add</strong> for top right. MoniePay icon go appear for your screen immediately!
                     </p>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-2.5 text-xs text-slate-700 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/80 p-4 rounded-2xl border border-slate-200 dark:border-white/10">
                   <p className="text-[11.5px] font-black text-slate-900 dark:text-white mb-1.5">
-                    How to add to your phone:
+                    How to put am for your Android phone:
                   </p>
                   <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-                    Tap your browser menu (<strong>⋮</strong> or <strong>Share</strong>) and select <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>.
+                    Tap the 3 dots (<strong>⋮</strong>) or <strong>Share</strong> for top right of your browser, then press <strong>"Install app"</strong> or <strong>"Add to Home screen"</strong>. E set!
                   </p>
                 </div>
               )}
@@ -298,7 +298,7 @@ export function InstallAppBanner() {
                 onClick={() => setShowModal(false)}
                 className="w-full py-3 rounded-2xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs cursor-pointer active:scale-98 transition-all"
               >
-                {deferredPrompt ? "Maybe Later" : "Done / Close"}
+                {deferredPrompt ? "I go do am later" : "I don understand • Close"}
               </button>
             </motion.div>
           </div>
