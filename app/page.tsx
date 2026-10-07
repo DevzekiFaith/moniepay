@@ -417,27 +417,28 @@ export default function MoniePayDashboard() {
               className="space-y-3"
             >
               {/* Header & Quick Action */}
-              <div className="flex items-center justify-between px-1">
-                <div>
-                  <h2 className="text-xs font-black uppercase tracking-wider text-slate-900">
+              <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+                <div className="min-w-0 flex-1">
+                  <h2 className="text-xs font-black uppercase tracking-wider text-slate-900 truncate">
                     Live Market Activity
                   </h2>
-                  <p className="text-[10.5px] text-slate-500 font-medium">
+                  <p className="text-[10px] sm:text-[10.5px] text-slate-500 font-medium truncate">
                     Search and filter your shop transactions.
                   </p>
                 </div>
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 shrink-0">
                   <Link
                     href="/activity"
-                    className="px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold flex items-center gap-1 cursor-pointer shadow-2xs"
+                    className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold flex items-center gap-1 cursor-pointer shadow-2xs"
                   >
-                    <SlidersHorizontal className="h-3 w-3 text-emerald-700" />
-                    <span>All Filters</span>
+                    <SlidersHorizontal className="h-3 w-3 text-emerald-700 shrink-0" />
+                    <span className="hidden min-[360px]:inline">All Filters</span>
+                    <span className="inline min-[360px]:hidden">Filters</span>
                   </Link>
                   <button
                     type="button"
                     onClick={() => handleOpenRecord("SALE")}
-                    className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black flex items-center gap-1 cursor-pointer active:scale-95 transition-all shadow-xs"
+                    className="px-2.5 sm:px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black flex items-center gap-1 cursor-pointer active:scale-95 transition-all shadow-xs"
                   >
                     <Plus className="h-3.5 w-3.5" />
                     <span>Record</span>

@@ -209,21 +209,21 @@ export default function ActivityPage() {
 
         <main className="w-full max-w-3xl mx-auto px-3 sm:px-5 md:px-8 py-3.5 sm:py-6 space-y-3.5">
           {/* ── HEADER ── */}
-          <div className="flex items-center justify-between gap-2.5">
-            <div className="min-w-0">
+          <div className="flex flex-wrap sm:flex-nowrap items-center justify-between gap-2 sm:gap-2.5">
+            <div className="min-w-0 flex-1">
               <h1 className="text-base sm:text-xl font-black text-slate-900 tracking-tight truncate">
                 Live Market Activity & Receipts
               </h1>
-              <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 truncate">
+              <p className="text-[10.5px] sm:text-xs text-slate-500 mt-0.5 truncate">
                 Every cash sale, restock expense, and customer gbese record.
               </p>
             </div>
 
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               <button
                 type="button"
                 onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                className={`p-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
+                className={`px-2.5 py-1.5 sm:p-2 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer ${
                   showAdvancedFilters || hasActiveFilters
                     ? "bg-emerald-100 text-emerald-800 border border-emerald-300"
                     : "bg-white border border-slate-200 text-slate-700 hover:text-slate-900"
@@ -231,7 +231,7 @@ export default function ActivityPage() {
                 title="Toggle Filters"
               >
                 <SlidersHorizontal className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Filter By</span>
+                <span className="text-[11px] sm:text-xs">Filter</span>
                 {hasActiveFilters && (
                   <span className="h-2 w-2 rounded-full bg-emerald-600" />
                 )}
@@ -240,10 +240,11 @@ export default function ActivityPage() {
               <button
                 type="button"
                 onClick={() => handleOpenRecord("SALE")}
-                className="px-3 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs flex items-center gap-1 cursor-pointer active:scale-95 transition-all shadow-xs"
+                className="px-2.5 py-1.5 sm:px-3.5 sm:py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs flex items-center gap-1 cursor-pointer active:scale-95 transition-all shadow-xs"
               >
                 <Plus className="h-3.5 w-3.5" />
-                <span>Record Sale</span>
+                <span className="hidden min-[360px]:inline">Record Sale</span>
+                <span className="inline min-[360px]:hidden">Record</span>
               </button>
             </div>
           </div>
@@ -384,24 +385,25 @@ export default function ActivityPage() {
           </div>
 
           {/* ── FILTERED TOTALS SUMMARY BAR ── */}
-          <div className="flex items-center justify-between px-3 py-2 rounded-2xl bg-white border border-slate-200/90 text-xs shadow-2xs">
-            <div className="flex items-center gap-3">
-              <span className="text-slate-500 font-medium">
-                Found <strong className="text-slate-900 font-black">{filtered.length}</strong> shop records
+          <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 rounded-2xl bg-white border border-slate-200/90 text-xs shadow-2xs">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+              <span className="text-slate-500 font-medium whitespace-nowrap">
+                Found <strong className="text-slate-900 font-black">{filtered.length}</strong> records
               </span>
-              <span className="hidden sm:inline text-slate-300">•</span>
-              <div className="hidden sm:flex items-center gap-1 text-emerald-800 font-black">
-                <TrendingUp className="h-3.5 w-3.5 text-emerald-600" />
-                <span>+₦{totalInflow.toLocaleString()} In</span>
-              </div>
-              <div className="hidden sm:flex items-center gap-1 text-slate-700 font-black">
-                <TrendingDown className="h-3.5 w-3.5 text-rose-500" />
-                <span>-₦{totalOutflow.toLocaleString()} Out</span>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1 text-[11px] sm:text-xs text-emerald-800 font-black bg-emerald-50 px-2 py-0.5 rounded-lg border border-emerald-200/60 whitespace-nowrap">
+                  <TrendingUp className="h-3 w-3 text-emerald-600 shrink-0" />
+                  <span>+₦{totalInflow.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center gap-1 text-[11px] sm:text-xs text-slate-700 font-black bg-slate-100 px-2 py-0.5 rounded-lg border border-slate-200/80 whitespace-nowrap">
+                  <TrendingDown className="h-3 w-3 text-rose-500 shrink-0" />
+                  <span>-₦{totalOutflow.toLocaleString()}</span>
+                </div>
               </div>
             </div>
 
             {/* Page Size Selector */}
-            <div className="flex items-center gap-1.5 text-slate-500">
+            <div className="flex items-center gap-1.5 text-slate-500 shrink-0 ml-auto">
               <span className="text-[11px] font-bold">Show:</span>
               <select
                 value={pageSize}
@@ -440,21 +442,21 @@ export default function ActivityPage() {
                   <Link
                     key={txId}
                     href={`/activity/${txId}`}
-                    className="flex items-center justify-between p-3 sm:p-4 rounded-2xl bg-white border border-emerald-900/10 shadow-xs hover:border-emerald-500 hover:shadow-md active:scale-[0.99] transition-all min-w-0 gap-2.5 group cursor-pointer"
+                    className="flex items-center justify-between p-2.5 sm:p-4 rounded-2xl bg-white border border-emerald-900/10 shadow-xs hover:border-emerald-500 hover:shadow-md active:scale-[0.99] transition-all min-w-0 gap-2 sm:gap-2.5 group cursor-pointer"
                   >
                     {/* Left info */}
-                    <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
                       <div
-                        className={`h-9 w-9 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
+                        className={`h-8 w-8 sm:h-10 sm:w-10 rounded-xl flex items-center justify-center shrink-0 border transition-transform group-hover:scale-105 ${
                           isPositive
                             ? "bg-emerald-50 text-emerald-800 border-emerald-200/80"
                             : "bg-slate-50 text-slate-700 border-slate-200"
                         }`}
                       >
                         {isPositive ? (
-                          <ArrowDownLeft className="h-4 w-4" />
+                          <ArrowDownLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         ) : (
-                          <ArrowUpRight className="h-4 w-4" />
+                          <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                         )}
                       </div>
 
@@ -463,11 +465,11 @@ export default function ActivityPage() {
                           <span className="text-xs sm:text-sm font-black text-slate-900 truncate block group-hover:text-emerald-700 transition-colors">
                             {tx.description || tx.category}
                           </span>
-                          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0">
+                          <span className="text-[8.5px] sm:text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0">
                             {getPaymentBadge(tx.payment_method)}
                           </span>
                         </div>
-                        <div className="flex items-center gap-1.5 text-[10.5px] text-slate-400 mt-0.5 truncate">
+                        <div className="flex items-center gap-1 text-[10px] sm:text-[10.5px] text-slate-400 mt-0.5 truncate">
                           <span className="truncate">{tx.category}</span>
                           <span>•</span>
                           <span className="shrink-0 font-medium text-slate-500">
@@ -478,24 +480,24 @@ export default function ActivityPage() {
                     </div>
 
                     {/* Right amount */}
-                    <div className="text-right shrink-0 pl-1 flex items-center gap-2">
+                    <div className="text-right shrink-0 pl-1 flex items-center gap-1.5 sm:gap-2">
                       <div>
                         <div
-                          className={`text-xs sm:text-sm font-black tracking-tight ${
+                          className={`text-xs sm:text-sm font-black tracking-tight whitespace-nowrap ${
                             isPositive ? "text-emerald-800" : "text-slate-900"
                           }`}
                         >
                           {isPositive ? "+" : "-"}₦{Number(tx.amount).toLocaleString()}
                         </div>
 
-                        <div className="flex items-center justify-end gap-1 text-[10px] text-slate-400 mt-0.5">
-                          <span className="text-[10px] font-bold text-slate-400">
+                        <div className="flex items-center justify-end gap-1 text-[9.5px] sm:text-[10px] text-slate-400 mt-0.5">
+                          <span className="font-bold text-slate-400 truncate max-w-[90px] sm:max-w-[140px] block text-right">
                             {getMarketTypeBadge(tx.type, tx.payment_method)}
                           </span>
                         </div>
                       </div>
 
-                      <ChevronRight className="h-4 w-4 text-slate-300 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+                      <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-300 group-hover:text-emerald-600 group-hover:translate-x-0.5 transition-all shrink-0" />
                     </div>
                   </Link>
                 );
@@ -505,12 +507,12 @@ export default function ActivityPage() {
 
           {/* ── PAGINATION CONTROLS ── */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-between pt-2 pb-1 px-1">
-              <span className="text-[11px] font-bold text-slate-500">
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 pb-1 px-1">
+              <span className="text-[11px] font-bold text-slate-500 whitespace-nowrap">
                 Showing {startIndex + 1}–{endIndex} of {filtered.length}
               </span>
 
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1 shrink-0 ml-auto">
                 {/* Previous Button */}
                 <button
                   type="button"
@@ -522,7 +524,7 @@ export default function ActivityPage() {
                   <ChevronLeft className="h-4 w-4" />
                 </button>
 
-                {/* Page Number Pills */}
+                {/* Page Number Pills (Smart Responsive) */}
                 <div className="flex items-center gap-1">
                   {Array.from({ length: totalPages }, (_, i) => i + 1)
                     .filter((page) => {
@@ -539,8 +541,8 @@ export default function ActivityPage() {
                       return (
                         <div key={page} className="flex items-center gap-1">
                           {showEllipsis && (
-                            <span className="text-xs text-slate-400 px-1 font-bold">
-                              ...
+                            <span className="text-xs text-slate-400 px-0.5 font-bold">
+                              ..
                             </span>
                           )}
                           <button

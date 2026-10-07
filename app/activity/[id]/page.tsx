@@ -407,35 +407,39 @@ _Powered by MoniePay_`;
       <div className="flex-1 flex flex-col min-w-0 pb-24 md:pb-10">
         <AppMobileHeader />
 
-        <main className="w-full max-w-2xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+        <main className="w-full max-w-2xl mx-auto px-3 sm:px-6 py-3.5 sm:py-6 space-y-3.5 sm:space-y-4">
           {/* Top Back Navigation Bar */}
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center justify-between gap-2">
             <button
               type="button"
               onClick={() => router.back()}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              <span>Back to Activity Log</span>
+              <span className="hidden min-[380px]:inline">Back to Activity</span>
+              <span className="inline min-[380px]:hidden">Back</span>
             </button>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5 sm:gap-2">
               <button
                 type="button"
                 onClick={handleDownloadReceipt}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+                title="Download Receipt PNG"
               >
                 <Download className="h-3.5 w-3.5 text-emerald-700" />
                 <span className="hidden sm:inline">Download Slip</span>
+                <span className="inline sm:hidden text-[11px]">Save</span>
               </button>
 
               <button
                 type="button"
                 onClick={handleShareWhatsApp}
-                className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black shadow-sm active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black shadow-sm active:scale-95 transition-all cursor-pointer"
               >
                 <Share2 className="h-3.5 w-3.5" />
-                <span>Share Slip</span>
+                <span className="hidden min-[360px]:inline">Share Slip</span>
+                <span className="inline min-[360px]:hidden">Share</span>
               </button>
             </div>
           </div>
@@ -508,47 +512,47 @@ _Powered by MoniePay_`;
                   </div>
 
                   {/* Transaction Details Grid */}
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-4 sm:p-5 space-y-3.5">
+                  <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-3.5 sm:p-5 space-y-3 sm:space-y-3.5">
                     {/* Item Description */}
-                    <div className="flex items-start justify-between gap-3 text-xs sm:text-sm">
+                    <div className="flex items-start justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
                       <span className="text-slate-500 font-semibold flex items-center gap-1.5 shrink-0">
-                        <FileText className="h-4 w-4 text-slate-400" />
+                        <FileText className="h-4 w-4 text-slate-400 shrink-0" />
                         <span>Goods / Particulars</span>
                       </span>
-                      <span className="font-black text-slate-900 text-right">
+                      <span className="font-black text-slate-900 text-right break-words min-w-0 flex-1 pl-2">
                         {transaction.description || transaction.category}
                       </span>
                     </div>
 
                     {/* Category */}
-                    <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
+                    <div className="flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
                       <span className="text-slate-500 font-semibold flex items-center gap-1.5 shrink-0">
-                        <Tag className="h-4 w-4 text-slate-400" />
+                        <Tag className="h-4 w-4 text-slate-400 shrink-0" />
                         <span>Market Category</span>
                       </span>
-                      <span className="font-bold text-slate-800 text-right">
+                      <span className="font-bold text-slate-800 text-right truncate">
                         {transaction.category}
                       </span>
                     </div>
 
                     {/* Payment Method */}
-                    <div className="flex items-center justify-between gap-3 text-xs sm:text-sm">
+                    <div className="flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
                       <span className="text-slate-500 font-semibold flex items-center gap-1.5 shrink-0">
-                        <CreditCard className="h-4 w-4 text-slate-400" />
+                        <CreditCard className="h-4 w-4 text-slate-400 shrink-0" />
                         <span>Payment Way</span>
                       </span>
-                      <span className="px-2 py-0.5 rounded-lg bg-white border border-slate-200 font-black text-slate-900 text-xs shadow-2xs">
+                      <span className="px-2 py-0.5 rounded-lg bg-white border border-slate-200 font-black text-slate-900 text-[11px] sm:text-xs shadow-2xs text-right truncate">
                         {getMarketPaymentMethod(transaction.payment_method)}
                       </span>
                     </div>
 
                     {/* Exact Timestamp */}
-                    <div className="flex items-start justify-between gap-3 text-xs sm:text-sm">
+                    <div className="flex items-start justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
                       <span className="text-slate-500 font-semibold flex items-center gap-1.5 shrink-0">
-                        <Calendar className="h-4 w-4 text-slate-400" />
+                        <Calendar className="h-4 w-4 text-slate-400 shrink-0" />
                         <span>Market Time & Date</span>
                       </span>
-                      <span className="font-bold text-slate-900 text-right">
+                      <span className="font-bold text-slate-900 text-right text-[11px] sm:text-xs">
                         {formatFullDate(transaction.transaction_date)}
                       </span>
                     </div>
