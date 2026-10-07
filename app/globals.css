@@ -4,13 +4,15 @@
 
 /* ═══════════════════════════════════════════════════════════════
    MONIEPAY — HIGH-END FINTECH DESIGN SYSTEM (LIGHT & DARK MODE)
-   Porcelain Daylight • Obsidian Sapphire Night Market • 3D Glass
+   Daylight Porcelain • Obsidian Sapphire Night Market • 3D Glass
    ═══════════════════════════════════════════════════════════════ */
 
 :root {
   --font-sans: 'Plus Jakarta Sans', 'Inter', system-ui, -apple-system, sans-serif;
   --bg-canvas: #eef4fc;
-  --bg-canvas-card: rgba(255, 255, 255, 0.85);
+  --bg-body-gradient: radial-gradient(130% 100% at 50% 0%, #ffffff 0%, #eef4fc 40%, #e1ecfa 100%);
+  --bg-main: #edf3fb;
+  --bg-card: rgba(255, 255, 255, 0.85);
   --primary-blue: #2563eb;
   --primary-blue-deep: #1d4ed8;
   --primary-blue-glow: #3b82f6;
@@ -19,9 +21,14 @@
   --card-border: rgba(255, 255, 255, 0.9);
 }
 
-.dark {
+.dark,
+html.dark,
+body.dark,
+[data-theme="dark"] {
   --bg-canvas: #060b17;
-  --bg-canvas-card: rgba(13, 20, 38, 0.88);
+  --bg-body-gradient: radial-gradient(130% 100% at 50% 0%, #0d172e 0%, #060b17 45%, #020409 100%);
+  --bg-main: #0a1122;
+  --bg-card: rgba(13, 20, 38, 0.88);
   --primary-blue: #3b82f6;
   --primary-blue-deep: #2563eb;
   --primary-blue-glow: #60a5fa;
@@ -40,12 +47,14 @@ html {
   font-family: var(--font-sans);
   background-color: #eef4fc;
   color: #0f172a;
+  min-height: 100%;
   transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-html.dark {
-  background-color: #060b17;
-  color: #f8fafc;
+html.dark,
+[data-theme="dark"] {
+  background-color: #060b17 !important;
+  color: #f8fafc !important;
 }
 
 body {
@@ -56,8 +65,11 @@ body {
   transition: background 0.25s ease, color 0.25s ease;
 }
 
-html.dark body {
+html.dark body,
+body.dark,
+[data-theme="dark"] body {
   background: radial-gradient(130% 100% at 50% 0%, #0d172e 0%, #060b17 45%, #020409 100%) !important;
+  background-color: #060b17 !important;
   color: #f8fafc !important;
 }
 
@@ -77,10 +89,12 @@ html.dark body {
   background: #94b8e3;
 }
 
-html.dark ::-webkit-scrollbar-thumb {
+html.dark ::-webkit-scrollbar-thumb,
+.dark ::-webkit-scrollbar-thumb {
   background: #1e293b;
 }
-html.dark ::-webkit-scrollbar-thumb:hover {
+html.dark ::-webkit-scrollbar-thumb:hover,
+.dark ::-webkit-scrollbar-thumb:hover {
   background: #334155;
 }
 
@@ -100,7 +114,9 @@ html.dark ::-webkit-scrollbar-thumb:hover {
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-html.dark .clay-card {
+html.dark .clay-card,
+.dark .clay-card,
+[data-theme="dark"] .clay-card {
   background: rgba(13, 20, 38, 0.88) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: 
@@ -124,7 +140,9 @@ html.dark .clay-card {
   transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-html.dark .clay-card-sm {
+html.dark .clay-card-sm,
+.dark .clay-card-sm,
+[data-theme="dark"] .clay-card-sm {
   background: rgba(13, 20, 38, 0.9) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: 
@@ -142,7 +160,8 @@ html.dark .clay-card-sm {
     inset 0 1px 2px rgba(255, 255, 255, 0.95);
 }
 
-html.dark .clay-icon-box {
+html.dark .clay-icon-box,
+.dark .clay-icon-box {
   background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   box-shadow: 
@@ -160,7 +179,8 @@ html.dark .clay-icon-box {
   color: #0f172a;
 }
 
-html.dark .clay-input {
+html.dark .clay-input,
+.dark .clay-input {
   background: rgba(19, 29, 49, 0.85) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: 
@@ -177,7 +197,8 @@ html.dark .clay-input {
     inset 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-html.dark .clay-input:focus {
+html.dark .clay-input:focus,
+.dark .clay-input:focus {
   background: rgba(19, 29, 49, 0.98) !important;
   border-color: #60a5fa !important;
   box-shadow: 
@@ -193,7 +214,7 @@ html.dark .clay-input:focus {
     0 12px 28px rgba(37, 99, 235, 0.42),
     0 4px 10px rgba(37, 99, 235, 0.25),
     inset 0 1px 2px rgba(255, 255, 255, 0.45);
-  color: #ffffff;
+  color: #ffffff !important;
 }
 
 .clay-btn-primary:hover {
@@ -221,7 +242,8 @@ html.dark .clay-input:focus {
   color: #1e293b;
 }
 
-html.dark .clay-btn-secondary {
+html.dark .clay-btn-secondary,
+.dark .clay-btn-secondary {
   background: rgba(30, 41, 59, 0.85) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
   box-shadow: 
@@ -235,7 +257,8 @@ html.dark .clay-btn-secondary {
     0 8px 20px rgba(160, 185, 218, 0.3);
 }
 
-html.dark .clay-btn-secondary:hover {
+html.dark .clay-btn-secondary:hover,
+.dark .clay-btn-secondary:hover {
   background: rgba(51, 65, 85, 0.95) !important;
   box-shadow: 0 8px 22px rgba(0, 0, 0, 0.5) !important;
 }
@@ -245,30 +268,34 @@ html.dark .clay-btn-secondary:hover {
    Ensures 100% of pages, sheets, cards, text & modals turn Dark
    ═══════════════════════════════════════════════════════════════ */
 
-html.dark .text-slate-900 {
+/* Containers, Backgrounds, & Cards */
+.dark [class*="bg-[#edf3fb]"],
+.dark [class*="bg-[#f4f8fe]"],
+.dark [class*="bg-[#f0f4fc]"],
+.dark [class*="bg-[#edf4fd]"],
+html.dark [class*="bg-[#edf3fb]"],
+html.dark [class*="bg-[#f4f8fe]"],
+html.dark [class*="bg-[#f0f4fc]"],
+html.dark [class*="bg-[#edf4fd]"] {
+  background-color: rgba(10, 17, 34, 0.96) !important;
+}
+
+.dark main,
+html.dark main {
+  background-color: rgba(10, 17, 34, 0.96) !important;
   color: #f8fafc !important;
 }
 
-html.dark .text-slate-800 {
-  color: #f1f5f9 !important;
-}
-
-html.dark .text-slate-700 {
-  color: #e2e8f0 !important;
-}
-
-html.dark .text-slate-600 {
-  color: #cbd5e1 !important;
-}
-
-html.dark .text-slate-500 {
-  color: #94a3b8 !important;
-}
-
+.dark .bg-white,
 html.dark .bg-white {
-  background-color: rgba(15, 23, 42, 0.9) !important;
+  background-color: rgba(13, 20, 38, 0.92) !important;
 }
 
+.dark .bg-white\/95,
+.dark .bg-white\/90,
+.dark .bg-white\/80,
+.dark .bg-white\/70,
+.dark .bg-white\/60,
 html.dark .bg-white\/95,
 html.dark .bg-white\/90,
 html.dark .bg-white\/80,
@@ -277,63 +304,206 @@ html.dark .bg-white\/60 {
   background-color: rgba(13, 20, 38, 0.9) !important;
 }
 
+.dark .bg-slate-50,
 html.dark .bg-slate-50 {
-  background-color: rgba(15, 23, 42, 0.6) !important;
+  background-color: rgba(15, 23, 42, 0.7) !important;
 }
 
+.dark .bg-slate-100,
 html.dark .bg-slate-100 {
-  background-color: rgba(30, 41, 59, 0.7) !important;
+  background-color: rgba(30, 41, 59, 0.75) !important;
 }
 
+.dark .bg-slate-200,
+html.dark .bg-slate-200 {
+  background-color: rgba(51, 65, 85, 0.75) !important;
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200,
+.dark .border-slate-300,
+.dark .border-white\/90,
+.dark .border-white\/80,
+.dark .border-white\/70,
+.dark .border-white\/40,
 html.dark .border-slate-100,
 html.dark .border-slate-200,
 html.dark .border-slate-300,
 html.dark .border-white\/90,
 html.dark .border-white\/80,
-html.dark .border-white\/70 {
+html.dark .border-white\/70,
+html.dark .border-white\/40 {
   border-color: rgba(255, 255, 255, 0.09) !important;
 }
 
+/* ── HIGH-CONTRAST TYPOGRAPHY IN DARK MODE ── */
+.dark .text-slate-900,
+.dark .text-slate-800,
+.dark .text-slate-700,
+.dark .text-gray-900,
+.dark .text-gray-800,
+.dark .text-gray-700,
+.dark .text-zinc-900,
+.dark .text-zinc-800,
+.dark .text-neutral-900,
+.dark .text-neutral-800,
+.dark .text-black,
+html.dark .text-slate-900,
+html.dark .text-slate-800,
+html.dark .text-slate-700,
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-gray-700,
+html.dark .text-zinc-900,
+html.dark .text-zinc-800,
+html.dark .text-neutral-900,
+html.dark .text-neutral-800,
+html.dark .text-black {
+  color: #f8fafc !important;
+}
+
+.dark .text-slate-600,
+.dark .text-slate-500,
+.dark .text-gray-600,
+.dark .text-gray-500,
+.dark .text-zinc-600,
+.dark .text-zinc-500,
+html.dark .text-slate-600,
+html.dark .text-slate-500,
+html.dark .text-gray-600,
+html.dark .text-gray-500,
+html.dark .text-zinc-600,
+html.dark .text-zinc-500 {
+  color: #cbd5e1 !important;
+}
+
+.dark .text-slate-400,
+.dark .text-gray-400,
+.dark .text-zinc-400,
+html.dark .text-slate-400,
+html.dark .text-gray-400,
+html.dark .text-zinc-400 {
+  color: #94a3b8 !important;
+}
+
+/* ── COLOR ACCENT OVERRIDES IN DARK MODE ── */
+.dark .bg-blue-50,
 html.dark .bg-blue-50 {
   background-color: rgba(30, 58, 138, 0.35) !important;
 }
 
+.dark .text-blue-950,
+.dark .text-blue-900,
+.dark .text-blue-800,
+html.dark .text-blue-950,
 html.dark .text-blue-900,
-html.dark .text-blue-950 {
+html.dark .text-blue-800 {
   color: #93c5fd !important;
 }
 
-html.dark .text-blue-800,
-html.dark .text-blue-700 {
+.dark .text-blue-700,
+.dark .text-blue-600,
+html.dark .text-blue-700,
+html.dark .text-blue-600 {
   color: #60a5fa !important;
 }
 
+.dark .bg-emerald-50,
 html.dark .bg-emerald-50 {
   background-color: rgba(6, 78, 59, 0.35) !important;
 }
 
+.dark .text-emerald-950,
+.dark .text-emerald-900,
+.dark .text-emerald-800,
+html.dark .text-emerald-950,
 html.dark .text-emerald-900,
-html.dark .text-emerald-950 {
+html.dark .text-emerald-800 {
   color: #a7f3d0 !important;
 }
 
-html.dark .text-emerald-800,
-html.dark .text-emerald-700 {
+.dark .text-emerald-700,
+.dark .text-emerald-600,
+html.dark .text-emerald-700,
+html.dark .text-emerald-600 {
   color: #34d399 !important;
 }
 
+.dark .bg-amber-50,
 html.dark .bg-amber-50 {
   background-color: rgba(120, 53, 15, 0.35) !important;
 }
 
+.dark .text-amber-950,
+.dark .text-amber-900,
+.dark .text-amber-800,
+html.dark .text-amber-950,
 html.dark .text-amber-900,
-html.dark .text-amber-950 {
+html.dark .text-amber-800 {
   color: #fde68a !important;
 }
 
-html.dark .text-amber-800,
-html.dark .text-amber-700 {
+.dark .text-amber-700,
+.dark .text-amber-600,
+html.dark .text-amber-700,
+html.dark .text-amber-600 {
   color: #fbbf24 !important;
+}
+
+.dark .bg-rose-50,
+html.dark .bg-rose-50 {
+  background-color: rgba(136, 19, 55, 0.35) !important;
+}
+
+.dark .text-rose-950,
+.dark .text-rose-900,
+.dark .text-rose-800,
+html.dark .text-rose-950,
+html.dark .text-rose-900,
+html.dark .text-rose-800 {
+  color: #fecdd3 !important;
+}
+
+.dark .text-rose-700,
+.dark .text-rose-600,
+html.dark .text-rose-700,
+html.dark .text-rose-600 {
+  color: #f87171 !important;
+}
+
+.dark .text-teal-950,
+.dark .text-teal-900,
+.dark .text-teal-800,
+html.dark .text-teal-950,
+html.dark .text-teal-900,
+html.dark .text-teal-800 {
+  color: #99f6e4 !important;
+}
+
+.dark .text-teal-700,
+.dark .text-teal-600,
+html.dark .text-teal-700,
+html.dark .text-teal-600 {
+  color: #2dd4bf !important;
+}
+
+/* Form Inputs in Dark Mode */
+.dark input,
+.dark textarea,
+.dark select,
+html.dark input,
+html.dark textarea,
+html.dark select {
+  background-color: rgba(19, 29, 49, 0.95);
+  color: #f8fafc;
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder,
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: #64748b !important;
 }
 
 /* Ambient 3D Glowing Sphere Animation */

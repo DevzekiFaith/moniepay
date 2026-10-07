@@ -162,7 +162,7 @@ function CustomerRatingContent() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col items-center py-6 sm:py-10 px-3 sm:px-4 selection:bg-emerald-500/20">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col items-center py-6 sm:py-10 px-3 sm:px-4 selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white transition-colors">
       <div className="w-full max-w-lg space-y-4">
         {/* ── 1. CLEAN MODERN HEADER ── */}
         <div className="text-center space-y-1">

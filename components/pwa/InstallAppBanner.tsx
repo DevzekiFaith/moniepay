@@ -112,7 +112,7 @@ export function InstallAppBanner() {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 20 }}
-                className="relative w-full max-w-md bg-[#edf3fb] rounded-3xl p-5 sm:p-6 text-slate-800 shadow-2xl border border-white/80 space-y-4"
+                className="relative w-full max-w-md bg-[#edf3fb] dark:bg-slate-900 rounded-3xl p-5 sm:p-6 text-slate-800 dark:text-slate-100 shadow-2xl border border-white/80 dark:border-white/10 space-y-4"
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
@@ -194,7 +194,7 @@ export function InstallAppBanner() {
             exit={{ opacity: 0, y: 60 }}
             className="fixed bottom-20 sm:bottom-6 inset-x-3 sm:inset-x-auto sm:right-6 sm:max-w-md z-40"
           >
-            <div className="clay-card p-3.5 sm:p-4 bg-[#edf3fb]/95 backdrop-blur-xl border border-white/90 shadow-[0_16px_36px_rgba(154,180,214,0.45)] rounded-3xl flex items-center justify-between gap-3">
+            <div className="clay-card p-3.5 sm:p-4 bg-[#edf3fb]/95 dark:bg-slate-900/95 backdrop-blur-xl border border-white/90 dark:border-white/10 shadow-[0_16px_36px_rgba(154,180,214,0.45)] rounded-3xl flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="h-11 w-11 rounded-2xl overflow-hidden shadow-sm border border-white shrink-0 bg-blue-950">
                   <img
@@ -245,7 +245,7 @@ export function InstallAppBanner() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 20 }}
-              className="relative w-full max-w-md bg-[#edf3fb] rounded-3xl p-5 sm:p-6 text-slate-800 shadow-2xl border border-white/80 space-y-4"
+              className="relative w-full max-w-md bg-[#edf3fb] dark:bg-slate-900 rounded-3xl p-5 sm:p-6 text-slate-800 dark:text-slate-100 shadow-2xl border border-white/80 dark:border-white/10 space-y-4"
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2.5">

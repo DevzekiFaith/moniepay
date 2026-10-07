@@ -22,7 +22,7 @@ import { AjoLogo } from "@/components/ui/AjoLogo";
 
 export default function WelcomePage() {
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-emerald-500/20 flex flex-col justify-between overflow-x-hidden">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white flex flex-col justify-between overflow-x-hidden transition-colors">
       {/* Top Navbar */}
       <header className="w-full border-b border-emerald-900/10 bg-white/90 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5">
         <div className="max-w-5xl mx-auto flex items-center justify-between">

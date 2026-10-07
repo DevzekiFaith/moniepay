@@ -310,7 +310,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
   };
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-between p-4 sm:p-6 overflow-hidden bg-[#edf3fb] selection:bg-blue-500/20 text-slate-900">
+    <div className="min-h-screen relative flex flex-col items-center justify-between p-4 sm:p-6 overflow-hidden bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white transition-colors">
       {/* ── AMBIENT 3D BACKGROUND GLOWS ── */}
       <div className="pointer-events-none absolute -top-28 -left-28 h-96 w-96 rounded-full bg-gradient-to-br from-blue-300/30 to-indigo-200/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-28 -right-28 h-96 w-96 rounded-full bg-gradient-to-tl from-blue-400/25 to-sky-200/20 blur-3xl" />

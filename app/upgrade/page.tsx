@@ -108,7 +108,7 @@ function UpgradeContent() {
   const planPeriodText = selectedPlan === "annual" ? "/ 12 months" : "/ month";
 
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden bg-[#edf3fb] selection:bg-blue-500/20">
+    <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white transition-colors">
       {/* ── AMBIENT 3D BACKGROUND ORBS ── */}
       <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-gradient-to-br from-blue-300/30 to-indigo-200/20 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-gradient-to-tl from-blue-400/25 to-sky-200/20 blur-3xl" />
@@ -390,7 +390,7 @@ export default function UpgradePage() {
   return (
     <React.Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#edf3fb]">
+        <div className="min-h-screen flex items-center justify-center bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
           <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
         </div>
       }

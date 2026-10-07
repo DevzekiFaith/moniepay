@@ -259,8 +259,8 @@ export default function MoniePayDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 pb-28 sm:pb-32 selection:bg-emerald-500/20 selection:text-emerald-950 overflow-x-hidden">
-      {/* ── TOP HEADER (Unified Emerald Theme) ── */}
+    <div className="min-h-screen bg-transparent text-slate-900 dark:text-slate-100 pb-28 sm:pb-32 selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white overflow-x-hidden transition-colors">
+      {/* ── TOP HEADER (Daylight vs. Night Market Theme) ── */}
       <DaylightHeader
         business={business}
         isOnline={isOnline}
@@ -272,9 +272,9 @@ export default function MoniePayDashboard() {
       />
 
       {/* ── DAYLIGHT MAIN CONTAINER (Fluid Mobile Frame) ── */}
-      <main className="relative -mt-4 rounded-t-[32px] bg-[#edf3fb] pt-3 px-3 sm:px-5 md:px-8 w-full max-w-3xl mx-auto space-y-4">
+      <main className="relative -mt-4 rounded-t-[32px] bg-[#edf3fb] dark:bg-slate-900/95 pt-3 px-3 sm:px-5 md:px-8 w-full max-w-3xl mx-auto space-y-4 border-t border-transparent dark:border-white/10 transition-colors">
         {/* Soft Drag Handle */}
-        <div className="mx-auto h-1 w-10 rounded-full bg-slate-300 mb-1" />
+        <div className="mx-auto h-1 w-10 rounded-full bg-slate-300 dark:bg-slate-700 mb-1" />
 
         {/* ── INTERACTIVE TAB SWITCHER (3D Soft Glass Sliding Pill) ── */}
         <div className="flex rounded-2xl clay-card-sm p-1 relative">

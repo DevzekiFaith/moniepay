@@ -182,7 +182,7 @@ export function NotificationBellDrawer() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: "100%", opacity: 0.9 }}
               transition={{ type: "spring", stiffness: 380, damping: 34 }}
-              className="relative w-full sm:max-w-md h-[90vh] sm:h-full rounded-t-[36px] sm:rounded-none sm:rounded-l-[36px] p-0 flex flex-col z-20 overflow-hidden text-slate-800 shadow-[0_20px_50px_rgba(154,180,214,0.3)] border-t sm:border-t-0 sm:border-l border-white/40 backdrop-blur-2xl bg-[#edf3fb]/65 sm:bg-[#edf3fb]/75"
+              className="relative w-full sm:max-w-md h-[90vh] sm:h-full rounded-t-[36px] sm:rounded-none sm:rounded-l-[36px] p-0 flex flex-col z-20 overflow-hidden text-slate-800 dark:text-slate-100 shadow-[0_20px_50px_rgba(154,180,214,0.3)] dark:shadow-2xl border-t sm:border-t-0 sm:border-l border-white/40 dark:border-white/10 backdrop-blur-2xl bg-[#edf3fb]/65 sm:bg-[#edf3fb]/75 dark:bg-slate-900/95"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Mobile Drag Handle */}
@@ -236,7 +236,7 @@ export function NotificationBellDrawer() {
               )}
 
               {/* Filter Tabs & Quick Actions */}
-              <div className="p-3 border-b border-white/40 bg-[#edf3fb]/40 backdrop-blur-md flex items-center justify-between gap-2 shrink-0">
+              <div className="p-3 border-b border-white/40 dark:border-white/10 bg-[#edf3fb]/40 dark:bg-slate-900/40 backdrop-blur-md flex items-center justify-between gap-2 shrink-0">
                 <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
                   {[
                     { id: "all", label: "Everything", count: unreadCount },
@@ -283,7 +283,7 @@ export function NotificationBellDrawer() {
               </div>
 
               {/* Notification List Body with Translucent Frosted Cards */}
-              <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3 min-h-0 bg-[#edf3fb]/20">
+              <div className="flex-1 overflow-y-auto p-3.5 sm:p-4 space-y-3 min-h-0 bg-[#edf3fb]/20 dark:bg-slate-950/40">
                 {filteredNotifications.length > 0 ? (
                   filteredNotifications.map((n) => (
                     <motion.div
@@ -370,7 +370,7 @@ export function NotificationBellDrawer() {
               </div>
 
               {/* Drawer Footer Actions */}
-              <div className="p-3.5 sm:p-4 bg-[#edf3fb]/60 backdrop-blur-md border-t border-white/40 flex items-center justify-between gap-2 shrink-0">
+              <div className="p-3.5 sm:p-4 bg-[#edf3fb]/60 dark:bg-slate-900/60 backdrop-blur-md border-t border-white/40 dark:border-white/10 flex items-center justify-between gap-2 shrink-0">
                 <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span>Due debt & market alerts sync automatically</span>

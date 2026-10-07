@@ -402,7 +402,7 @@ _Powered by MoniePay_`;
   };
 
   return (
-    <div className="flex min-h-screen bg-slate-50 text-slate-900 selection:bg-emerald-500/20 overflow-x-hidden">
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white overflow-x-hidden transition-colors">
       <AppSidebar />
 
       <div className="flex-1 flex flex-col min-w-0 pb-24 md:pb-10">
