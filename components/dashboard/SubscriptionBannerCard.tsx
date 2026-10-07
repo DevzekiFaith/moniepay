@@ -7,6 +7,7 @@
 // - Visual countdown progress bar
 // - Monthly (₦1,500/mo) vs Annual (₦15,000/yr) upgrade triggers
 // - 1-Tap PWA Install App button
+// - Solid MoniePay Sapphire Blue (no gradients)
 // - Zero Data Deletion Guarantee
 // ─────────────────────────────────────────────────────────────────
 
@@ -42,13 +43,6 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
     openUpgradeModal,
   } = useSubscription();
 
-  // Compute trial progress (out of 7 days)
-  const trialProgressPercent = isTrialActive
-    ? Math.max(14, Math.round(((7 - trialDaysLeft) / 7) * 100))
-    : isSubscribed
-    ? 100
-    : 100;
-
   const nextRenewalFormatted = subscription?.subscriptionEndsAt
     ? new Date(subscription.subscriptionEndsAt).toLocaleDateString("en-NG", {
         year: "numeric",
@@ -61,14 +55,11 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
     <motion.section
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="clay-card-sm p-4 sm:p-5 relative overflow-hidden bg-gradient-to-br from-white/90 via-blue-50/40 to-slate-50 border border-white/90 shadow-sm rounded-3xl"
+      className="clay-card-sm p-4 sm:p-5 relative overflow-hidden bg-white border border-slate-200/80 shadow-xs rounded-3xl"
     >
-      {/* Decorative ambient background orb */}
-      <div className="pointer-events-none absolute -right-6 -bottom-6 h-28 w-28 rounded-full bg-blue-400/10 blur-xl" />
-
       <div className="space-y-3.5 relative z-10">
         {/* Header Row */}
-        <div className="flex items-center justify-between gap-2 flex-wrap">
+        <div className="flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap">
           <div className="flex items-center gap-2.5">
             <div
               className={`h-9 w-9 rounded-2xl flex items-center justify-center shrink-0 shadow-2xs ${
@@ -77,7 +68,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                   : isGracePeriodActive
                   ? "bg-amber-500 text-white"
                   : isTrialActive
-                  ? "bg-gradient-to-br from-blue-600 to-indigo-700 text-white"
+                  ? "bg-[#1d4ed8] text-white"
                   : "bg-rose-600 text-white"
               }`}
             >
@@ -86,7 +77,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
               ) : isGracePeriodActive ? (
                 <Clock className="h-5 w-5 animate-pulse" />
               ) : isTrialActive ? (
-                <Store className="h-5 w-5 text-sky-200" />
+                <Store className="h-5 w-5 text-white" />
               ) : (
                 <AlertTriangle className="h-5 w-5" />
               )}
@@ -111,7 +102,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                       : isGracePeriodActive
                       ? "bg-amber-100 text-amber-900 border border-amber-300 animate-pulse"
                       : isTrialActive
-                      ? "bg-blue-100 text-blue-900 border border-blue-200"
+                      ? "bg-blue-50 text-blue-900 border border-blue-200"
                       : "bg-rose-100 text-rose-900 border border-rose-300"
                   }`}
                 >
@@ -141,20 +132,20 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
           <button
             type="button"
             onClick={triggerInstallPrompt}
-            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-white hover:bg-slate-50 border border-slate-200/80 text-[11px] font-black text-slate-700 active:scale-95 transition-all shadow-2xs cursor-pointer"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-[11px] font-black text-slate-700 active:scale-95 transition-all shadow-2xs cursor-pointer shrink-0"
             title="Install MoniePay as a standalone app on your phone"
           >
-            <Download className="h-3.5 w-3.5 text-blue-600" />
+            <Download className="h-3.5 w-3.5 text-[#1d4ed8]" />
             <span>Install App 📲</span>
           </button>
         </div>
 
         {/* Visual Progress Bar for Trial / Grace */}
         {isTrialActive && (
-          <div className="space-y-1.5 bg-white/70 p-3 rounded-2xl border border-white">
+          <div className="space-y-1.5 bg-slate-50 p-3 rounded-2xl border border-slate-200/80">
             <div className="flex items-center justify-between text-[11px] font-bold text-slate-600">
-              <span className="flex items-center gap-1 text-blue-950 font-black">
-                <Clock className="h-3.5 w-3.5 text-blue-600" />
+              <span className="flex items-center gap-1 text-slate-900 font-black">
+                <Clock className="h-3.5 w-3.5 text-[#1d4ed8]" />
                 {trialDaysLeft} of 7 Days Remaining
               </span>
               <span className="text-slate-500 text-[10.5px]">One-time trial per shop</span>
@@ -173,8 +164,8 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                       isPassed
                         ? "bg-slate-300"
                         : isCurrent
-                        ? "bg-blue-600 animate-pulse shadow-xs"
-                        : "bg-blue-400"
+                        ? "bg-[#1d4ed8] animate-pulse shadow-xs"
+                        : "bg-[#3b82f6]"
                     }`}
                     title={`Day ${dayNum}`}
                   />
@@ -195,6 +186,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
             <span className="text-slate-500 text-[11px]">Zero data deletion</span>
           </div>
 
+          {/* Solid MoniePay Blue Button (No Gradient) */}
           <button
             type="button"
             onClick={() =>
@@ -204,7 +196,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                   : undefined
               )
             }
-            className="w-full sm:w-auto px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-sm transition-all"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-sm transition-all"
           >
             <span>{isSubscribed ? "Manage Plan" : isExpired ? "Renew MoniePay Plus" : "Upgrade to Plus"}</span>
             <ArrowRight className="h-3.5 w-3.5" />

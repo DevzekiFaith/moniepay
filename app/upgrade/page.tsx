@@ -296,8 +296,8 @@ function UpgradeContent() {
             </div>
           </div>
 
-          {/* Pricing Box */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-950 text-white shadow-[0_12px_32px_rgba(30,58,138,0.3)] space-y-2 text-center relative overflow-hidden">
+          {/* Pricing Box (Solid Sapphire Blue) */}
+          <div className="p-4 sm:p-5 rounded-3xl bg-[#1e3a8a] text-white shadow-md space-y-2 text-center relative overflow-hidden">
             <p className="text-[11px] text-blue-200 font-bold uppercase tracking-wider">
               {selectedPlan === "annual" ? "Annual Plan • 2 Months Free" : "Monthly Plan • Cancel Anytime"}
             </p>
@@ -318,12 +318,12 @@ function UpgradeContent() {
             </p>
           </div>
 
-          {/* Primary Action Button */}
+          {/* Primary Action Button (Solid Blue) */}
           <button
             type="button"
             onClick={handleCheckout}
             disabled={isProcessing}
-            className="w-full py-4 rounded-2xl clay-btn-primary font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 shadow-[0_12px_28px_rgba(37,99,235,0.35)]"
+            className="w-full py-4 rounded-2xl bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 shadow-md active:scale-98"
           >
             {isProcessing ? (
               <>

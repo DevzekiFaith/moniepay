@@ -124,11 +124,8 @@ export function UpgradeModal() {
             className="relative w-full sm:max-w-lg max-h-[94vh] sm:max-h-[92vh] rounded-t-[36px] sm:rounded-[36px] overflow-hidden flex flex-col z-20 shadow-[0_24px_60px_rgba(154,180,214,0.45)] border-t sm:border border-white/70 backdrop-blur-2xl bg-[#edf3fb]/95 text-slate-800"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Top Electric Sapphire Glass Banner */}
-            <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-950 px-5 sm:px-6 py-4 sm:py-5 text-white flex items-center justify-between border-b border-white/10 shrink-0 relative overflow-hidden">
-              {/* Ambient light glow */}
-              <div className="pointer-events-none absolute -right-6 -top-6 h-28 w-28 rounded-full bg-blue-500/25 blur-2xl" />
-
+            {/* Top Sapphire Banner (Solid Blue) */}
+            <div className="bg-[#1e3a8a] px-5 sm:px-6 py-4 sm:py-5 text-white flex items-center justify-between border-b border-white/10 shrink-0 relative overflow-hidden">
               <div className="flex items-center gap-3">
                 <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-inner shrink-0">
                   <ShieldCheck className="h-6 w-6 text-sky-300" />
@@ -397,7 +394,7 @@ export function UpgradeModal() {
                 type="button"
                 onClick={handlePay}
                 disabled={isProcessing}
-                className="w-full py-4 rounded-2xl clay-btn-primary font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 shadow-[0_12px_28px_rgba(37,99,235,0.35)]"
+                className="w-full py-4 rounded-2xl bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 shadow-md active:scale-98"
               >
                 {isProcessing ? (
                   <>
