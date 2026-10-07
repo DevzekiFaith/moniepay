@@ -261,31 +261,55 @@ export default function VendorReviewsManagementPage() {
         </div>
 
         {/* ── 2. ADMIN MODERATION BAR (Demo Switch) ── */}
-        <div className="flex items-center justify-between px-2 text-xs">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-700 dark:text-slate-300">
-              Customer Reviews ({filteredReviews.length})
-            </span>
-            {filterRating && (
-              <button
-                type="button"
-                onClick={() => setFilterRating(null)}
-                className="text-[11px] font-bold text-blue-600 dark:text-sky-400 hover:underline cursor-pointer"
-              >
-                Clear Filter ({filterRating} ★)
-              </button>
-            )}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between px-1 text-xs">
+            <div className="flex items-center gap-2">
+              <span className="font-extrabold text-slate-800 dark:text-slate-100">
+                Customer Reviews ({filteredReviews.length})
+              </span>
+              {filterRating && (
+                <button
+                  type="button"
+                  onClick={() => setFilterRating(null)}
+                  className="text-[11px] font-extrabold text-blue-600 dark:text-sky-300 hover:underline cursor-pointer"
+                >
+                  Clear Filter ({filterRating} ★)
+                </button>
+              )}
+            </div>
+
+            <label className={`flex items-center gap-2 px-2.5 py-1 rounded-xl transition-all cursor-pointer text-[11px] font-bold ${
+              adminMode
+                ? "bg-amber-400/20 dark:bg-amber-500/25 text-amber-900 dark:text-amber-200 border border-amber-400/50 shadow-xs"
+                : "text-slate-600 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700"
+            }`}>
+              <input
+                type="checkbox"
+                checked={adminMode}
+                onChange={(e) => setAdminMode(e.target.checked)}
+                className="h-3.5 w-3.5 rounded text-amber-500 focus:ring-0 accent-amber-500 cursor-pointer"
+              />
+              <span className="font-bold">Admin Moderation Mode</span>
+            </label>
           </div>
 
-          <label className="flex items-center gap-1.5 cursor-pointer text-slate-500 hover:text-slate-800 text-[11px] font-semibold">
-            <input
-              type="checkbox"
-              checked={adminMode}
-              onChange={(e) => setAdminMode(e.target.checked)}
-              className="h-3.5 w-3.5 rounded text-blue-600 focus:ring-0 accent-blue-600 cursor-pointer"
-            />
-            <span>Admin Moderation Queue Mode</span>
-          </label>
+          {/* Bright Admin Mode Info Banner */}
+          {adminMode && (
+            <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/50 border border-amber-300 dark:border-amber-400/40 text-slate-900 dark:text-amber-100 text-xs flex items-center justify-between gap-2 shadow-xs backdrop-blur-md">
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-amber-300 shrink-0" />
+                <div>
+                  <span className="font-black text-slate-900 dark:text-white">Admin Queue Active: </span>
+                  <span className="text-slate-700 dark:text-amber-200/90 font-medium">
+                    Showing all customer submissions and reported reviews with Approve/Hide controls.
+                  </span>
+                </div>
+              </div>
+              <span className="px-2 py-0.5 rounded-lg bg-amber-400 dark:bg-amber-300 text-blue-950 font-black text-[10px] shrink-0 uppercase tracking-wider">
+                Admin
+              </span>
+            </div>
+          )}
         </div>
 
         {/* ── 3. REVIEWS LIST WITH REPLY & REPORT ACTIONS ── */}
@@ -303,16 +327,16 @@ export default function VendorReviewsManagementPage() {
                 key={rev.id}
                 className={`clay-card p-4 sm:p-5 space-y-3 bg-white/95 dark:bg-slate-900/95 border shadow-xs rounded-[24px] ${
                   rev.isReported
-                    ? "border-amber-400/80 bg-amber-50/30 dark:bg-amber-950/20"
+                    ? "border-amber-400/80 bg-amber-50/40 dark:bg-amber-950/30"
                     : rev.moderationStatus === "hidden"
-                    ? "border-rose-400/80 bg-rose-50/30 dark:bg-rose-950/20 opacity-75"
+                    ? "border-rose-400/80 bg-rose-50/40 dark:bg-rose-950/30"
                     : "border-white/80 dark:border-white/10"
                 }`}
               >
                 {/* Review Header */}
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 flex items-center justify-center font-black text-xs">
+                    <div className="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-sky-200 flex items-center justify-center font-black text-xs border border-blue-200 dark:border-blue-700">
                       {rev.customerName.charAt(0)}
                     </div>
                     <div>
@@ -321,25 +345,25 @@ export default function VendorReviewsManagementPage() {
                           {rev.customerName}
                         </span>
                         {rev.isVerifiedCustomer && (
-                          <span className="px-1.5 py-0.2 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-0.5">
+                          <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-0.5 border border-emerald-300 dark:border-emerald-700">
                             <ShieldCheck className="h-2.5 w-2.5" />
                             Verified Customer
                           </span>
                         )}
                         {rev.isReported && (
-                          <span className="px-1.5 py-0.2 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-800 dark:text-amber-300 text-[9px] font-bold inline-flex items-center gap-0.5">
-                            <AlertTriangle className="h-2.5 w-2.5" />
+                          <span className="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/80 text-amber-900 dark:text-amber-100 text-[10px] font-black inline-flex items-center gap-1 border border-amber-300 dark:border-amber-500 shadow-xs">
+                            <AlertTriangle className="h-3 w-3 text-amber-600 dark:text-amber-300" />
                             Under Admin Moderation ({rev.reportReason})
                           </span>
                         )}
                         {rev.moderationStatus === "hidden" && (
-                          <span className="px-1.5 py-0.2 rounded-md bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300 text-[9px] font-bold inline-flex items-center gap-0.5">
-                            <EyeOff className="h-2.5 w-2.5" />
+                          <span className="px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-900/80 text-rose-900 dark:text-rose-100 text-[10px] font-black inline-flex items-center gap-1 border border-rose-300 dark:border-rose-500 shadow-xs">
+                            <EyeOff className="h-3 w-3 text-rose-600 dark:text-rose-300" />
                             Hidden by Admin
                           </span>
                         )}
                       </div>
-                      <p className="text-[10px] text-slate-400 font-medium">
+                      <p className="text-[10.5px] text-slate-500 dark:text-slate-300 font-medium">
                         {new Date(rev.createdAt).toLocaleDateString("en-NG", {
                           month: "short",
                           day: "numeric",
@@ -350,7 +374,7 @@ export default function VendorReviewsManagementPage() {
                   </div>
 
                   {/* Star Rating Badge */}
-                  <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 font-black text-xs border border-amber-200/80 dark:border-amber-800">
+                  <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/80 text-amber-800 dark:text-amber-200 font-black text-xs border border-amber-200/80 dark:border-amber-700">
                     <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
                     <span>{rev.rating}.0</span>
                   </div>
@@ -362,7 +386,7 @@ export default function VendorReviewsManagementPage() {
                     {rev.tags.map((t) => (
                       <span
                         key={t}
-                        className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[9.5px] font-semibold"
+                        className="px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-100 text-[9.5px] font-bold border border-slate-200/60 dark:border-slate-700"
                       >
                         {t}
                       </span>
@@ -372,27 +396,27 @@ export default function VendorReviewsManagementPage() {
 
                 {/* Review Body */}
                 {rev.comment && (
-                  <p className="text-xs text-slate-700 dark:text-slate-200 font-medium leading-relaxed">
+                  <p className="text-xs text-slate-800 dark:text-slate-100 font-medium leading-relaxed">
                     "{rev.comment}"
                   </p>
                 )}
 
                 {/* Existing Official Merchant Reply */}
                 {rev.reply && (
-                  <div className="p-3 rounded-2xl bg-blue-50/70 dark:bg-blue-950/50 border border-blue-200/70 dark:border-blue-800 space-y-1">
+                  <div className="p-3 rounded-2xl bg-blue-50/80 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-700/80 space-y-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10.5px] font-black text-blue-900 dark:text-blue-200 flex items-center gap-1">
+                      <span className="text-[10.5px] font-black text-blue-950 dark:text-sky-200 flex items-center gap-1">
                         <Store className="h-3 w-3 text-blue-600 dark:text-blue-400" />
                         <span>{rev.reply.authorName}</span>
                       </span>
-                      <span className="text-[9px] text-blue-600 dark:text-blue-400 font-medium">
+                      <span className="text-[9.5px] text-blue-700 dark:text-sky-300 font-medium">
                         {new Date(rev.reply.createdAt).toLocaleDateString("en-NG", {
                           month: "short",
                           day: "numeric",
                         })}
                       </span>
                     </div>
-                    <p className="text-xs text-blue-950 dark:text-blue-100 font-medium leading-relaxed">
+                    <p className="text-xs text-blue-950 dark:text-slate-100 font-medium leading-relaxed">
                       {rev.reply.text}
                     </p>
                   </div>
@@ -407,7 +431,7 @@ export default function VendorReviewsManagementPage() {
                         setReplyingReview(rev);
                         setReplyText(rev.reply?.text || "");
                       }}
-                      className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 text-blue-700 dark:text-blue-300 text-[11px] font-bold flex items-center gap-1 cursor-pointer active:scale-95 transition-all"
+                      className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 text-blue-700 dark:text-sky-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer active:scale-95 transition-all border border-blue-200 dark:border-blue-800"
                     >
                       <Reply className="h-3 w-3" />
                       <span>{rev.reply ? "Edit Reply" : "Reply As Shop Owner"}</span>
@@ -417,7 +441,7 @@ export default function VendorReviewsManagementPage() {
                       <button
                         type="button"
                         onClick={() => setReportingReview(rev)}
-                        className="px-2.5 py-1.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/80 text-slate-400 hover:text-rose-600 text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
+                        className="px-2.5 py-1.5 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/80 text-slate-500 dark:text-slate-300 hover:text-rose-600 dark:hover:text-rose-400 text-[11px] font-semibold flex items-center gap-1 cursor-pointer transition-colors"
                         title="Report inappropriate / spam review"
                       >
                         <Flag className="h-3 w-3" />
@@ -432,16 +456,18 @@ export default function VendorReviewsManagementPage() {
                       <button
                         type="button"
                         onClick={() => handleAdminAction(rev.id, "approve")}
-                        className="px-2 py-1 rounded-lg bg-emerald-100 text-emerald-800 text-[10px] font-black cursor-pointer"
+                        className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10.5px] font-black cursor-pointer shadow-xs active:scale-95 transition-all flex items-center gap-1"
                       >
-                        Approve
+                        <CheckCircle2 className="h-3 w-3" />
+                        <span>Approve</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleAdminAction(rev.id, "hide")}
-                        className="px-2 py-1 rounded-lg bg-rose-100 text-rose-800 text-[10px] font-black cursor-pointer"
+                        className="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[10.5px] font-black cursor-pointer shadow-xs active:scale-95 transition-all flex items-center gap-1"
                       >
-                        Hide
+                        <EyeOff className="h-3 w-3" />
+                        <span>Hide</span>
                       </button>
                     </div>
                   )}
