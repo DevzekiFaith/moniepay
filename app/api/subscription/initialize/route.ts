@@ -13,6 +13,7 @@ export async function POST(request: NextRequest) {
     const email = body.email || user?.email || "trader@moniepay.app";
     const name = body.name || user?.name || "Shop Trader";
     const phone = body.phone || "08000000000";
+    const planType: "monthly" | "annual" = body.planType === "annual" ? "annual" : "monthly";
 
     // Determine absolute origin redirect URL
     const origin =
@@ -30,6 +31,7 @@ export async function POST(request: NextRequest) {
       email,
       name,
       phone,
+      planType,
       redirectUrl,
     });
 
@@ -38,6 +40,8 @@ export async function POST(request: NextRequest) {
         success: true,
         paymentLink: result.paymentLink,
         txRef: result.txRef,
+        amount: result.amount,
+        planType: result.planType,
       });
     }
 

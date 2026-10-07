@@ -8,13 +8,18 @@ import {
   Store,
   LogOut,
   QrCode,
+  Download,
+  AlertTriangle,
+  Clock,
 } from "lucide-react";
 import type { Business } from "@/types/moniepay.types";
 import { useAuth } from "@/context/AuthContext";
+import { useSubscription } from "@/context/SubscriptionContext";
 import { LogoutModal } from "@/components/ui/LogoutModal";
 import { MerchantRatingStand } from "@/components/rating/MerchantRatingStand";
 import { NotificationBellDrawer } from "@/components/notifications/NotificationBellDrawer";
 import { SubscriptionStatusPill } from "@/components/subscription/SubscriptionStatusPill";
+import { triggerInstallPrompt } from "@/components/pwa/InstallAppBanner";
 import { InfoTooltip } from "@/components/ui/tooltip";
 
 interface DaylightHeaderProps {
@@ -37,6 +42,7 @@ export function DaylightHeader({
   onChangePeriod,
 }: DaylightHeaderProps) {
   const { user, logout } = useAuth();
+  const { isGracePeriodActive, graceDaysLeft, isExpired, openUpgradeModal } = useSubscription();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isRatingStandOpen, setIsRatingStandOpen] = useState(false);
 
@@ -50,7 +56,7 @@ export function DaylightHeader({
         <div className="pointer-events-none absolute -right-8 -top-8 h-48 w-48 rounded-full bg-sky-300/25 blur-2xl" />
         <div className="pointer-events-none absolute -left-8 -bottom-8 h-40 w-40 rounded-full bg-blue-300/20 blur-xl" />
 
-        <div className="relative mx-auto w-full max-w-4xl space-y-3.5 sm:space-y-4">
+        <div className="relative mx-auto w-full max-w-4xl space-y-3 sm:space-y-3.5">
           {/* ── ROW 1: TOP UTILITY BAR (Avatar + Quick Action Controls) ── */}
           <div className="flex items-center justify-between gap-2">
             {/* Left: Avatar + Sync Badge */}
@@ -97,13 +103,26 @@ export function DaylightHeader({
               </InfoTooltip>
             </div>
 
-            {/* Right: Actions Cluster (Subscription Pill, Bell, Rating QR, Memory, Logout) */}
+            {/* Right: Actions Cluster (Subscription Pill, Bell, Install App, Rating QR, Memory, Logout) */}
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               {/* MoniePay Plus / Free Trial Status Pill */}
               <SubscriptionStatusPill />
 
               {/* Push Notification Bell & Drawer */}
               <NotificationBellDrawer />
+
+              {/* Install App Trigger Button with Tooltip */}
+              <InfoTooltip content="Install MoniePay app to your phone home screen for fast offline recording">
+                <button
+                  type="button"
+                  onClick={triggerInstallPrompt}
+                  aria-label="Install MoniePay App on phone"
+                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-auto sm:gap-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer shadow-xs"
+                >
+                  <Download className="h-3.5 w-3.5 text-sky-200" />
+                  <span className="hidden lg:inline">Install App</span>
+                </button>
+              </InfoTooltip>
 
               {/* Rating Barcode & QR Stand Button with Tooltip */}
               <InfoTooltip content="Show customer QR & Barcode stand for your shop counter">
@@ -163,6 +182,35 @@ export function DaylightHeader({
             </div>
           </div>
 
+          {/* ── GRACE PERIOD / EXPIRY NOTIFICATION STRIP ── */}
+          {isGracePeriodActive ? (
+            <div
+              onClick={() => openUpgradeModal("Grace period active. Renew your MoniePay Plus subscription to keep full access.")}
+              className="p-2.5 rounded-xl bg-amber-400/20 hover:bg-amber-400/25 border border-amber-300/40 text-amber-100 text-xs flex items-center justify-between gap-2 cursor-pointer transition-all backdrop-blur-md"
+            >
+              <div className="flex items-center gap-2">
+                <Clock className="h-4 w-4 text-amber-300 shrink-0 animate-pulse" />
+                <span className="font-bold">
+                  Grace Period: {graceDaysLeft} {graceDaysLeft === 1 ? "day" : "days"} left to renew your subscription.
+                </span>
+              </div>
+              <span className="underline font-black text-[11px] shrink-0 text-white">Renew ₦1,500 &rarr;</span>
+            </div>
+          ) : isExpired ? (
+            <div
+              onClick={() => openUpgradeModal("Your MoniePay Plus has expired. Renew for ₦1,500/month or ₦15,000/year to continue.")}
+              className="p-2.5 rounded-xl bg-rose-500/25 hover:bg-rose-500/30 border border-rose-400/50 text-rose-100 text-xs flex items-center justify-between gap-2 cursor-pointer transition-all backdrop-blur-md"
+            >
+              <div className="flex items-center gap-2">
+                <AlertTriangle className="h-4 w-4 text-rose-300 shrink-0 animate-bounce" />
+                <span className="font-bold">
+                  Your MoniePay Plus has expired. Renew to continue recording.
+                </span>
+              </div>
+              <span className="underline font-black text-[11px] shrink-0 text-white">Renew Now &rarr;</span>
+            </div>
+          ) : null}
+
           {/* ── ROW 3: MARKET TIMELINE SWITCHER STRIP ── */}
           <div className="pt-1 flex items-center justify-between">
             <div className="flex rounded-xl bg-black/25 p-0.5 border border-white/15 backdrop-blur-md">
@@ -198,24 +246,20 @@ export function DaylightHeader({
       <LogoutModal
         isOpen={isLogoutOpen}
         onClose={() => setIsLogoutOpen(false)}
+        onConfirm={logout}
         userName={displayName}
         businessName={user?.businessName || business.name}
         avatarUrl={profilePhoto}
-        onConfirm={async () => {
-          setIsLogoutOpen(false);
-          await logout();
-        }}
       />
 
-      {/* Customer Rating Barcode & QR Code Counter Stand */}
+      {/* Countertop Merchant Rating Stand (QR & Barcode Modal) */}
       <MerchantRatingStand
         isOpen={isRatingStandOpen}
         onClose={() => setIsRatingStandOpen(false)}
         shopName={user?.businessName || business.name}
         traderName={displayName}
-        marketLocation={user?.marketLocation || business.market_location || "Balogun Market, Lagos"}
-        shopId={user?.id || "mama_chidi"}
-        avatarUrl={user?.avatarUrl || "/images/traders/mama_chidi.jpg"}
+        marketLocation={user?.marketLocation || business.market_location}
+        avatarUrl={profilePhoto}
       />
     </>
   );

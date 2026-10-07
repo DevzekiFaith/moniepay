@@ -69,6 +69,7 @@ export async function POST(request: NextRequest) {
         flwRef: flwVerified.flwRef || data?.flw_ref,
         amount: flwVerified.amount,
         paymentType: flwVerified.paymentType || data?.payment_type,
+        planType: flwVerified.planType || (flwVerified.amount >= 10000 ? "annual" : "monthly"),
         customerEmail,
         customerName: flwVerified.customer?.name || data?.customer?.name,
         customerPhone: flwVerified.customer?.phone || data?.customer?.phone_number,

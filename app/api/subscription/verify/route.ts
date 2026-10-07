@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
 
       // Extract metadata
       const user = await getSessionUser();
-      const userId = flwResult.meta?.userId || user?.id || "user_owner_01";
+      const userId = (flwResult as any).meta?.userId || user?.id || "user_owner_01";
 
       // 2. Activate subscription in database (Server-Verified)
       const activation = await activateUserSubscription({
@@ -46,10 +46,11 @@ export async function GET(request: NextRequest) {
         flwRef: flwResult.flwRef,
         amount: flwResult.amount,
         paymentType: flwResult.paymentType || "Card/Transfer",
+        planType: flwResult.planType || (flwResult.amount >= 10000 ? "annual" : "monthly"),
         customerEmail: flwResult.customer?.email || user?.email || "trader@moniepay.app",
         customerName: flwResult.customer?.name || user?.name,
         customerPhone: flwResult.customer?.phone,
-        rawPayload: flwResult.raw,
+        rawPayload: (flwResult as any).rawPayload,
       });
 
       if (activation.success) {
@@ -107,7 +108,7 @@ export async function POST(request: NextRequest) {
     }
 
     const user = await getSessionUser();
-    const userId = flwResult.meta?.userId || body.userId || user?.id || "user_owner_01";
+    const userId = (flwResult as any).meta?.userId || body.userId || user?.id || "user_owner_01";
 
     const activation = await activateUserSubscription({
       userId,
@@ -116,10 +117,11 @@ export async function POST(request: NextRequest) {
       flwRef: flwResult.flwRef,
       amount: flwResult.amount,
       paymentType: flwResult.paymentType || "Card/Transfer",
+      planType: flwResult.planType || (flwResult.amount >= 10000 ? "annual" : "monthly"),
       customerEmail: flwResult.customer?.email || user?.email || "trader@moniepay.app",
       customerName: flwResult.customer?.name || user?.name,
       customerPhone: flwResult.customer?.phone,
-      rawPayload: flwResult.raw,
+      rawPayload: (flwResult as any).rawPayload,
     });
 
     return NextResponse.json({

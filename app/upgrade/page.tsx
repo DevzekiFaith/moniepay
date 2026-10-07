@@ -2,7 +2,8 @@
 
 // ─────────────────────────────────────────────────────────────────
 // MoniePay Plus — Dedicated Upgrade & Subscription Screen
-// 7-day Free Trial • ₦1,500/Month Flutterwave Integration
+// 7-day Free Trial • ₦1,500/Month or ₦15,000/Year
+// 3-day Grace Period • Zero Data Deletion Guarantee
 // Soft 3D Frosted Ice-Glass Aesthetics
 // ─────────────────────────────────────────────────────────────────
 
@@ -25,10 +26,14 @@ import {
   Store,
   Receipt,
   HelpCircle,
+  Download,
+  AlertTriangle,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/context/AuthContext";
+import { triggerInstallPrompt } from "@/components/pwa/InstallAppBanner";
+import { BillingCycle } from "@/types/subscription.types";
 import Link from "next/link";
 
 function UpgradeContent() {
@@ -37,9 +42,13 @@ function UpgradeContent() {
   const { user } = useAuth();
   const {
     subscription,
+    selectedPlan,
+    setSelectedPlan,
     trialDaysLeft,
+    graceDaysLeft,
     isTrialActive,
     isSubscribed,
+    isGracePeriodActive,
     isExpired,
     initializePayment,
     verifyPayment,
@@ -86,7 +95,7 @@ function UpgradeContent() {
     setIsProcessing(true);
     setErrorMessage(null);
 
-    const res = await initializePayment();
+    const res = await initializePayment(undefined, selectedPlan);
     if (res.success && res.paymentLink) {
       window.location.href = res.paymentLink;
     } else {
@@ -94,6 +103,9 @@ function UpgradeContent() {
       setIsProcessing(false);
     }
   };
+
+  const amountToPay = selectedPlan === "annual" ? "₦15,000" : "₦1,500";
+  const planPeriodText = selectedPlan === "annual" ? "/ 12 months" : "/ month";
 
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden bg-[#edf3fb] selection:bg-blue-500/20">
@@ -114,9 +126,14 @@ function UpgradeContent() {
             <span>Back to Shop</span>
           </Link>
 
-          <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-            MoniePay Subscription
-          </span>
+          <button
+            type="button"
+            onClick={triggerInstallPrompt}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-xs font-black text-blue-900 transition-all shadow-2xs cursor-pointer"
+          >
+            <Download className="h-3.5 w-3.5 text-blue-600" />
+            <span>Install App 📲</span>
+          </button>
         </div>
 
         {/* ── HERO BANNER CARD ── */}
@@ -141,7 +158,7 @@ function UpgradeContent() {
                 <span>Shop Intelligence Plan</span>
               </div>
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight mt-0.5">
-                MoniePay Plus — ₦1,500/Month
+                MoniePay Plus
               </h1>
             </div>
           </div>
@@ -171,6 +188,26 @@ function UpgradeContent() {
               <AlertCircle className="h-5 w-5 text-rose-600 shrink-0" />
               <span>{errorMessage}</span>
             </div>
+          ) : isExpired ? (
+            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 text-xs flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-black text-rose-950">Your MoniePay Plus has expired.</p>
+                <p className="font-semibold text-rose-800 mt-0.5">
+                  Renew for ₦1,500/month or ₦15,000/year to continue recording sales and tracking debt.
+                </p>
+              </div>
+            </div>
+          ) : isGracePeriodActive ? (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-xs flex items-start gap-3">
+              <Clock className="h-5 w-5 text-amber-700 shrink-0 mt-0.5" />
+              <div>
+                <p className="font-black text-amber-950">Grace Period Active: {graceDaysLeft} Days Left</p>
+                <p className="font-semibold text-amber-800 mt-0.5">
+                  Full features are open for 3 days to renew your subscription.
+                </p>
+              </div>
+            </div>
           ) : (
             <div className="p-3.5 rounded-2xl bg-white/70 border border-white/90 shadow-2xs flex items-center justify-between gap-2">
               <div className="flex items-center gap-2.5">
@@ -189,135 +226,161 @@ function UpgradeContent() {
                       ? "Active MoniePay Plus Subscription"
                       : isTrialActive
                       ? `7-Day Free Trial: ${trialDaysLeft} days left`
-                      : "Your 7-Day Free Trial Don Finish"}
+                      : "Subscription Expired"}
                   </p>
                   <p className="text-[11px] text-slate-500 font-medium">
                     {isSubscribed
-                      ? "Full access unlocked. Thank you for supporting MoniePay!"
+                      ? `Renews: ${
+                          subscription?.subscriptionEndsAt
+                            ? new Date(subscription.subscriptionEndsAt).toLocaleDateString("en-NG", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                              })
+                            : "Active"
+                        }`
                       : isTrialActive
-                      ? "Enjoying full shop intelligence during your trial period."
-                      : "Subscribe now to keep recording & protecting your profit."}
+                      ? "Enjoying full shop intelligence during your 7-day trial."
+                      : "Renew for ₦1,500/mo or ₦15,000/yr to continue."}
                   </p>
                 </div>
               </div>
-
-              <span className="text-xs font-black text-blue-900 bg-blue-100/70 border border-blue-200 px-2.5 py-1 rounded-xl">
-                ₦1,500 / mo
-              </span>
             </div>
           )}
+
+          {/* ── PLAN SELECTOR TABS (Monthly vs Annual) ── */}
+          <div className="space-y-1.5 pt-1">
+            <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider px-1">
+              Select Your Plan:
+            </label>
+
+            <div className="grid grid-cols-2 gap-2.5">
+              {/* Monthly Plan */}
+              <button
+                type="button"
+                onClick={() => setSelectedPlan("monthly")}
+                className={`p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
+                  selectedPlan === "monthly"
+                    ? "bg-white border-blue-600 shadow-[0_8px_20px_rgba(37,99,235,0.15)] ring-2 ring-blue-600/30"
+                    : "bg-white/60 border-white/80 hover:bg-white/80"
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-900">Monthly Plan</span>
+                  {selectedPlan === "monthly" && <CheckCircle2 className="h-4 w-4 text-blue-600" />}
+                </div>
+                <p className="text-base font-black text-blue-900 mt-1">₦1,500</p>
+                <p className="text-[10.5px] text-slate-500 font-medium">Renews every month</p>
+              </button>
+
+              {/* Annual Plan */}
+              <button
+                type="button"
+                onClick={() => setSelectedPlan("annual")}
+                className={`p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
+                  selectedPlan === "annual"
+                    ? "bg-white border-emerald-600 shadow-[0_8px_20px_rgba(5,150,105,0.15)] ring-2 ring-emerald-600/30"
+                    : "bg-white/60 border-white/80 hover:bg-white/80"
+                }`}
+              >
+                <span className="absolute -top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black uppercase tracking-wider shadow-xs">
+                  Save ₦3,000
+                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-slate-900">Annual Plan</span>
+                  {selectedPlan === "annual" && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+                </div>
+                <p className="text-base font-black text-emerald-900 mt-1">₦15,000</p>
+                <p className="text-[10.5px] text-slate-500 font-medium">Renews every 12 months</p>
+              </button>
+            </div>
+          </div>
 
           {/* Pricing Box */}
           <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-blue-900 via-indigo-900 to-slate-950 text-white shadow-[0_12px_32px_rgba(30,58,138,0.3)] space-y-2 text-center relative overflow-hidden">
             <p className="text-[11px] text-blue-200 font-bold uppercase tracking-wider">
-              Unlimited Shop Power • All Features Included
+              {selectedPlan === "annual" ? "Annual Plan • 2 Months Free" : "Monthly Plan • Cancel Anytime"}
             </p>
             <div className="flex items-baseline justify-center gap-1.5">
-              <span className="text-4xl font-black text-white tracking-tight">₦1,500</span>
-              <span className="text-sm font-bold text-blue-200">/ 30 days</span>
+              <span className="text-4xl font-black text-white tracking-tight">{amountToPay}</span>
+              <span className="text-sm font-bold text-blue-200">{planPeriodText}</span>
             </div>
             <p className="text-xs text-blue-100 max-w-sm mx-auto font-medium leading-relaxed">
-              No contracts, no hidden deductions. Securely processed by Flutterwave.
+              No hidden deductions. Instant bank transfer, debit card, or USSD via Flutterwave.
             </p>
           </div>
 
-          {/* Feature List */}
-          <div className="space-y-2.5 pt-1">
-            <h3 className="text-xs font-black text-slate-700 tracking-wider uppercase px-1">
-              Everything Included in MoniePay Plus:
-            </h3>
-
-            <div className="space-y-2">
-              {[
-                {
-                  icon: <Zap className="h-4 w-4 text-emerald-600" />,
-                  title: "Sharp-Sharp Recording (Voice & Text)",
-                  desc: "Unlimited recording of daily cash in/out, shop expenses & supplier restock.",
-                },
-                {
-                  icon: <TrendingUp className="h-4 w-4 text-blue-600" />,
-                  title: "Real Daily Profit & Available Cash Calculation",
-                  desc: "Clear daily position: know your drawer cash, safe personal chop money & true profit.",
-                },
-                {
-                  icon: <MessageSquare className="h-4 w-4 text-amber-600" />,
-                  title: "Automated WhatsApp Debt Reminders (Gbese Ping)",
-                  desc: "Collect pending money from customers fast with respectful, one-tap WhatsApp messages.",
-                },
-                {
-                  icon: <BarChart3 className="h-4 w-4 text-indigo-600" />,
-                  title: "7 Market Decisions & Wholesaler Price Alerts",
-                  desc: "Know whether to buy stock today or wait, with real-time price trend alerts.",
-                },
-                {
-                  icon: <ShieldCheck className="h-4 w-4 text-slate-700" />,
-                  title: "100% Data Protection Guarantee",
-                  desc: "Your records are never deleted. You always retain access to all past transactions.",
-                },
-              ].map((item, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 rounded-2xl bg-white/60 border border-white/80 shadow-2xs flex items-start gap-3"
-                >
-                  <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-white/90 border border-white shadow-2xs shrink-0 mt-0.5">
-                    {item.icon}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-black text-slate-900 leading-tight">{item.title}</p>
-                    <p className="text-[11px] text-slate-600 font-medium leading-relaxed mt-0.5">
-                      {item.desc}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Payment Methods Supported */}
-          <div className="p-3.5 rounded-2xl bg-white/60 border border-white/80 text-center space-y-1.5">
-            <p className="text-[11px] font-black text-slate-700 uppercase tracking-wider">
-              Pay with your preferred Nigerian payment method:
-            </p>
-            <p className="text-xs font-semibold text-slate-600">
-              💳 Debit Card (Mastercard, Visa, Verve) • 🏦 Bank Transfer • 📱 USSD • 👛 Barter
+          {/* Zero Data Deletion Guarantee */}
+          <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-start gap-2.5">
+            <ShieldCheck className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
+            <p className="text-xs font-semibold leading-relaxed">
+              <strong>Zero Data Deletion:</strong> Your past transactions, debt sheet, and drawer balance stay safe in your account. No data is ever deleted because of subscription expiry.
             </p>
           </div>
 
           {/* Primary Action Button */}
-          <div className="space-y-2 pt-2">
-            <button
-              type="button"
-              onClick={handleCheckout}
-              disabled={isProcessing}
-              className="w-full py-4 rounded-2xl clay-btn-primary font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 shadow-[0_12px_28px_rgba(37,99,235,0.35)]"
-            >
-              {isProcessing ? (
-                <>
-                  <Loader2 className="h-4 w-4 text-white animate-spin" />
-                  <span>Connecting to Flutterwave…</span>
-                </>
-              ) : (
-                <>
-                  <CreditCard className="h-4 w-4 text-white" />
-                  <span>Pay ₦1,500 with Flutterwave</span>
-                  <ArrowRight className="h-4 w-4 text-white" />
-                </>
-              )}
-            </button>
-
-            <div className="flex items-center justify-center text-[11px] px-1 text-slate-500 font-medium">
-              <span className="flex items-center gap-1">
-                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-                Secured by Flutterwave (256-bit Encryption)
-              </span>
-            </div>
-          </div>
+          <button
+            type="button"
+            onClick={handleCheckout}
+            disabled={isProcessing}
+            className="w-full py-4 rounded-2xl clay-btn-primary font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 shadow-[0_12px_28px_rgba(37,99,235,0.35)]"
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="h-4 w-4 text-white animate-spin" />
+                <span>Opening Flutterwave…</span>
+              </>
+            ) : (
+              <>
+                <CreditCard className="h-4 w-4 text-white" />
+                <span>Pay {amountToPay} with Flutterwave</span>
+                <ArrowRight className="h-4 w-4 text-white" />
+              </>
+            )}
+          </button>
         </motion.div>
 
-        {/* Minimal Footer */}
-        <p className="text-[10.5px] text-slate-400 font-bold text-center tracking-widest uppercase">
-          MONIEPAY PLUS • EMPOWERING NIGERIAN TRADERS
-        </p>
+        {/* Feature Highlights Grid */}
+        <div className="clay-card p-5 space-y-3">
+          <h3 className="text-xs font-black text-slate-700 tracking-wide uppercase">
+            What MoniePay Plus Unlocks for Your Shop:
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {[
+              {
+                icon: <Zap className="h-4 w-4 text-emerald-600" />,
+                title: "Sharp-Sharp Recording",
+                desc: "Record all transactions with voice & typing in seconds.",
+              },
+              {
+                icon: <TrendingUp className="h-4 w-4 text-blue-600" />,
+                title: "Daily Pulse & Net Profit",
+                desc: "Calculate safe personal withdrawals & true profits.",
+              },
+              {
+                icon: <MessageSquare className="h-4 w-4 text-amber-600" />,
+                title: "Gbese Debt Reminders",
+                desc: "Auto-generate polite WhatsApp recovery messages.",
+              },
+              {
+                icon: <BarChart3 className="h-4 w-4 text-indigo-600" />,
+                title: "7 Market Decisions",
+                desc: "Wholesale restock advice and price movement alerts.",
+              },
+            ].map((f, i) => (
+              <div key={i} className="p-3 rounded-2xl bg-white/70 border border-white/90 shadow-2xs space-y-1">
+                <div className="flex items-center gap-2">
+                  <div className="h-6 w-6 rounded-lg bg-white shadow-2xs flex items-center justify-center shrink-0">
+                    {f.icon}
+                  </div>
+                  <h4 className="text-xs font-black text-slate-900">{f.title}</h4>
+                </div>
+                <p className="text-[11px] text-slate-600 font-medium">{f.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -328,7 +391,7 @@ export default function UpgradePage() {
     <React.Suspense
       fallback={
         <div className="min-h-screen flex items-center justify-center bg-[#edf3fb]">
-          <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
+          <Loader2 className="h-8 w-8 text-blue-600 animate-spin" />
         </div>
       }
     >

@@ -1,6 +1,7 @@
 // ─────────────────────────────────────────────────────────────────
 // MoniePay — Flutterwave API Service & Signature Verifier
 // Server-side Flutterwave Checkout & Transaction Verification
+// 7-day Free Trial • ₦1,500/Month or ₦15,000/Year Plans
 // ─────────────────────────────────────────────────────────────────
 
 export const FLUTTERWAVE_CONFIG = {
@@ -11,9 +12,11 @@ export const FLUTTERWAVE_CONFIG = {
   SECRET_KEY: process.env.FLUTTERWAVE_SECRET_KEY || "",
   SECRET_HASH: process.env.FLUTTERWAVE_SECRET_HASH || "moniepay_flw_secure_secret_hash",
   BASE_URL: "https://api.flutterwave.com/v3",
-  SUBSCRIPTION_AMOUNT: 1500, // ₦1,500 / month
+  MONTHLY_AMOUNT: 1500, // ₦1,500 / month
+  ANNUAL_AMOUNT: 15000, // ₦15,000 / year (save ₦3,000)
   CURRENCY: "NGN",
-  PLAN_NAME: "MoniePay Plus Monthly",
+  PLAN_NAME_MONTHLY: "MoniePay Plus Monthly",
+  PLAN_NAME_ANNUAL: "MoniePay Plus Annual",
 };
 
 export interface InitPaymentParams {
@@ -21,20 +24,35 @@ export interface InitPaymentParams {
   email: string;
   name: string;
   phone?: string;
+  planType?: "monthly" | "annual";
   redirectUrl?: string;
   customTxRef?: string;
+}
+
+/**
+ * Verifies Flutterwave webhook verif-hash signature
+ */
+export function verifyFlutterwaveWebhookSignature(signatureHeader: string | null): boolean {
+  if (!signatureHeader) return false;
+  return signatureHeader === FLUTTERWAVE_CONFIG.SECRET_HASH;
 }
 
 /**
  * Initialize standard hosted Flutterwave Checkout session
  */
 export async function initializeFlutterwaveCheckout(params: InitPaymentParams) {
-  const { userId, email, name, phone, redirectUrl, customTxRef } = params;
-  const txRef = customTxRef || `mp_sub_${userId.substring(0, 8)}_${Date.now()}`;
+  const { userId, email, name, phone, planType = "monthly", redirectUrl, customTxRef } = params;
+  const isAnnual = planType === "annual";
+  const amount = isAnnual ? FLUTTERWAVE_CONFIG.ANNUAL_AMOUNT : FLUTTERWAVE_CONFIG.MONTHLY_AMOUNT;
+  const durationDays = isAnnual ? 365 : 30;
+  const planTitle = isAnnual ? "MoniePay Plus Annual (1 Year)" : "MoniePay Plus Monthly (1 Month)";
+  const planDesc = isAnnual ? "12 Months Full Shop Decision Intelligence (₦15,000/yr)" : "1 Month Full Shop Decision Intelligence (₦1,500/mo)";
+
+  const txRef = customTxRef || `mp_${isAnnual ? "ann" : "sub"}_${userId.substring(0, 8)}_${Date.now()}`;
 
   const payload = {
     tx_ref: txRef,
-    amount: FLUTTERWAVE_CONFIG.SUBSCRIPTION_AMOUNT,
+    amount,
     currency: FLUTTERWAVE_CONFIG.CURRENCY,
     redirect_url: redirectUrl,
     payment_options: "card,banktransfer,ussd,account,qr,credit",
@@ -44,14 +62,15 @@ export async function initializeFlutterwaveCheckout(params: InitPaymentParams) {
       phonenumber: phone || "08000000000",
     },
     customizations: {
-      title: "MoniePay Plus Subscription",
-      description: "1 Month Shop Decision Intelligence (₦1,500/mo)",
+      title: planTitle,
+      description: planDesc,
       logo: "https://moniepay.app/images/logo.png",
     },
     meta: {
       userId,
-      plan: "MONIEPAY_PLUS_MONTHLY",
-      duration_days: 30,
+      plan: isAnnual ? "MONIEPAY_PLUS_ANNUAL" : "MONIEPAY_PLUS_MONTHLY",
+      planType: isAnnual ? "annual" : "monthly",
+      duration_days: durationDays,
       appName: "MoniePay",
     },
   };
@@ -73,6 +92,8 @@ export async function initializeFlutterwaveCheckout(params: InitPaymentParams) {
         success: true,
         paymentLink: data.data.link as string,
         txRef,
+        amount,
+        planType: isAnnual ? "annual" : "monthly",
       };
     }
 
@@ -122,45 +143,46 @@ export async function verifyFlutterwaveTransaction(transactionId: string | numbe
       const isSuccessful =
         data.status === "successful" &&
         data.currency === FLUTTERWAVE_CONFIG.CURRENCY &&
-        data.amount >= FLUTTERWAVE_CONFIG.SUBSCRIPTION_AMOUNT;
+        data.amount >= 1400; // Allow ₦1,500 monthly or ₦15,000 annual
+
+      const isAnnual = data.amount >= 10000;
 
       return {
         success: isSuccessful,
         status: data.status as "successful" | "failed" | "pending",
         txRef: data.tx_ref,
         flwRef: data.flw_ref,
-        transactionId: String(data.id),
         amount: data.amount,
         currency: data.currency,
-        paymentType: data.payment_type,
+        paymentType: data.payment_type || "Card/Transfer",
+        planType: (isAnnual ? "annual" : "monthly") as "monthly" | "annual",
         customer: {
           email: data.customer?.email,
           name: data.customer?.name,
           phone: data.customer?.phone_number,
         },
-        meta: data.meta,
-        raw: data,
+        meta: data.meta || {},
+        rawPayload: data,
       };
     }
 
     return {
       success: false,
       status: (result?.data?.status || "failed") as "successful" | "failed" | "pending",
-      error: result?.message || "Transaction verification failed on Flutterwave.",
+      txRef: result?.data?.tx_ref || "",
+      amount: result?.data?.amount || 0,
+      currency: "NGN",
+      error: result?.message || "Transaction not found or unverified.",
     };
   } catch (err: any) {
     console.error("Flutterwave verification error:", err);
     return {
       success: false,
-      error: err?.message || "Network error verifying transaction.",
+      status: "failed" as const,
+      txRef: "",
+      amount: 0,
+      currency: "NGN",
+      error: err?.message || "Network error during verification.",
     };
   }
-}
-
-/**
- * Verifies the incoming webhook signature header against secret hash
- */
-export function verifyFlutterwaveWebhookSignature(signatureHeader: string | null): boolean {
-  if (!signatureHeader) return false;
-  return signatureHeader === FLUTTERWAVE_CONFIG.SECRET_HASH;
 }

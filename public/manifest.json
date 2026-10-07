@@ -4,8 +4,8 @@
   "description": "Business Operating System for Nigeria's Informal and Micro-Business Economy",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#09090b",
-  "theme_color": "#09090b",
+  "background_color": "#edf3fb",
+  "theme_color": "#1d4ed8",
   "orientation": "portrait",
   "icons": [
     {

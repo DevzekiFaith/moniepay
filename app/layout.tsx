@@ -6,6 +6,7 @@ import { AuthProvider } from "@/context/AuthContext";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { UpgradeModal } from "@/components/subscription/UpgradeModal";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { InstallAppBanner } from "@/components/pwa/InstallAppBanner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
@@ -14,10 +15,11 @@ const inter = Inter({
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-inter",
   display: "swap",
+  fallback: ["system-ui", "sans-serif"],
 });
 
 export const viewport: Viewport = {
-  themeColor: "#059669",
+  themeColor: "#1d4ed8",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -48,7 +50,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body
-        className="min-h-full bg-slate-50 text-slate-900 antialiased selection:bg-emerald-500/20 selection:text-emerald-900"
+        className="min-h-full bg-slate-50 text-slate-900 antialiased selection:bg-blue-500/20 selection:text-blue-950"
         suppressHydrationWarning
         style={{ fontFamily: "var(--font-sans, system-ui, sans-serif)" }}
       >
@@ -58,6 +60,7 @@ export default function RootLayout({
               <TooltipProvider delayDuration={150}>
                 {children}
                 <UpgradeModal />
+                <InstallAppBanner />
                 <ServiceWorkerRegister />
                 <SpeedInsights />
               </TooltipProvider>
