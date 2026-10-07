@@ -97,9 +97,9 @@ export function GbeseDebtSheet({
   const handleSendReminder = (debt: Debt) => {
     const phone = (debt.phone || "").replace(/[^0-9]/g, "");
     const msg = encodeURIComponent(
-      `Good day ${debt.person_name}, hope work is going well. Kindly remember your balance of ₦${Number(
+      `Good day ${debt.person_name}, hope work dey go well. Abeg kindly remember your balance of ₦${Number(
         debt.balance_due
-      ).toLocaleString()} with ${businessName}. We are doing restock today and need to balance accounts. Thank you!`
+      ).toLocaleString()} with ${businessName}. We need am for fresh market restock today. Thank you and God bless your hustle!`
     );
     window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
   };

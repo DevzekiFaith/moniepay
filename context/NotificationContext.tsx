@@ -179,7 +179,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               ? "/accounts"
               : cleanPhone
               ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-                  `Good day ${debt.person_name}, hope work is going well. Friendly reminder regarding your balance of ${formattedAmount} with MoniePay shop. Kindly arrange payment today. Thank you!`
+                  `Good day ${debt.person_name}, hope work dey go well. Abeg kindly remember your balance of ${formattedAmount} with our shop. We need am for fresh market restock today. Thank you and God bless your hustle!`
                 )}`
               : undefined;
 
@@ -435,7 +435,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         ? "/accounts"
         : cleanPhone
         ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-            `Good day ${personName}, hope work is going well. Friendly reminder from the shop regarding the ${formattedAmount} balance. Kindly arrange payment today so we can balance accounts. Thank you!`
+            `Good day ${personName}, hope work dey go well. Abeg kindly remember your balance of ${formattedAmount} with our shop. We need am for fresh market restock today. Thank you and God bless your hustle!`
           )}`
         : undefined;
 

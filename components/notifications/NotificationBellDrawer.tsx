@@ -128,7 +128,7 @@ export function NotificationBellDrawer() {
 
     if (n.type === "debt_reminder") {
       const waMsg = encodeURIComponent(
-        `Good day, friendly reminder from the shop about the ${n.amount || "pending balance"} due today. Thank you so much!`
+        `Good day, hope work dey go well. Abeg friendly reminder from our shop about the ${n.amount || "pending balance"} due today. We need am for market restock. Thank you and God bless your hustle!`
       );
       window.open(`https://wa.me/?text=${waMsg}`, "_blank");
     } else if (n.type === "price_alert") {
