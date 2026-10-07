@@ -67,7 +67,7 @@ export function NextMoveCard({
       if (topDebtor?.phone) {
         const cleanPhone = topDebtor.phone.replace(/[^0-9]/g, "");
         const waMsg = encodeURIComponent(
-          `Good day ${topDebtor.person_name}, kindly remember your balance of ₦${topDebtor.balance_due.toLocaleString()} with ${businessName}. Thank you!`
+          `Good day ${topDebtor.person_name}, hope work dey go well. Abeg kindly remember your balance of ₦${topDebtor.balance_due.toLocaleString()} with ${businessName}. We need am for fresh market restock tomorrow. Thank you and God bless your hustle!`
         );
         window.open(`https://wa.me/${cleanPhone}?text=${waMsg}`, "_blank");
       } else if (onOpenGbeseBook) {
@@ -76,16 +76,16 @@ export function NextMoveCard({
       recordDecisionAction(
         "rec_collect",
         title,
-        `Sent WhatsApp reminder to ${topDebtor?.person_name || "customer"}`,
-        `Recover ₦${(topDebtor?.balance_due || 0).toLocaleString()} cash`
+        `Send WhatsApp reminder give ${topDebtor?.person_name || "customer"}`,
+        `Recover ₦${(topDebtor?.balance_due || 0).toLocaleString()} put back into cash drawer`
       );
     } else if (actionType === "SAFE_WITHDRAWAL") {
       if (onOpenWithdrawal) onOpenWithdrawal(metrics.safeWithdrawalAmount);
       recordDecisionAction(
         "rec_withdraw",
         title,
-        `Took ₦${metrics.safeWithdrawalAmount.toLocaleString()} chop money`,
-        "Protected restock capital"
+        `Take ₦${metrics.safeWithdrawalAmount.toLocaleString()} safe chop moni for house`,
+        "Protected restock capital 100% intact"
       );
     } else {
       if (onOpenGbeseBook) onOpenGbeseBook();

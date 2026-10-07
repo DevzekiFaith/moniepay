@@ -422,10 +422,10 @@ export function diagnoseFourQuestions(
     actionType: string;
     payload?: Record<string, any>;
   } = {
-    actionTitle: "Collect outstanding customer credit before buying new stock.",
+    actionTitle: "Collect customer gbese before you go buy fresh restock.",
     actionDetail: topDebtor
-      ? `Send a WhatsApp payment reminder to ${topDebtor.person_name} for ₦${topDebtor.balance_due.toLocaleString()} to boost drawer cash.`
-      : "Follow up with debtors to unlock working capital.",
+      ? `Send WhatsApp reminder slip give ${topDebtor.person_name} for ₦${topDebtor.balance_due.toLocaleString()} to recover cash drawer capital.`
+      : "Follow up debtors make money enter shop drawer before restock.",
     primaryActionLabel: topDebtor ? `Remind ${topDebtor.person_name} (₦${topDebtor.balance_due.toLocaleString()})` : "Open Gbese Book",
     actionType: "COLLECT_DEBT",
     payload: topDebtor
@@ -433,24 +433,24 @@ export function diagnoseFourQuestions(
           phone: topDebtor.phone,
           person_name: topDebtor.person_name,
           balance_due: topDebtor.balance_due,
-          suggested_message: `Good day ${topDebtor.person_name}, hope work is going well. Kindly remember your balance of ₦${topDebtor.balance_due.toLocaleString()} with ${businessName}. We need to reconcile before our fresh market restock tomorrow. Thank you!`,
+          suggested_message: `Good day ${topDebtor.person_name}, hope work dey go well. Abeg kindly remember your balance of ₦${topDebtor.balance_due.toLocaleString()} with ${businessName}. We need to reconcile before our fresh market restock tomorrow. Thank you and God bless your hustle!`,
         }
       : {},
   };
 
   if (metrics.customerDebtTotal < 30000 && metrics.safeWithdrawalAmount >= 20000) {
     whatToDoNow = {
-      actionTitle: `You can safely take ₦${metrics.safeWithdrawalAmount.toLocaleString()} chop money today.`,
-      actionDetail: "Your restocking capital and supplier commitments are fully covered.",
-      primaryActionLabel: `Take Safe Chop Money (₦${metrics.safeWithdrawalAmount.toLocaleString()})`,
+      actionTitle: `You fit safely take ₦${metrics.safeWithdrawalAmount.toLocaleString()} chop moni today with clean mind.`,
+      actionDetail: "Your tomorrow restock capital and shop running expenses dey 100% safe inside drawer.",
+      primaryActionLabel: `Take Safe Chop Moni (₦${metrics.safeWithdrawalAmount.toLocaleString()})`,
       actionType: "SAFE_WITHDRAWAL",
       payload: { safe_amount: metrics.safeWithdrawalAmount },
     };
   } else if (metrics.profitMarginPercent < 12 && metrics.directStockCost > metrics.totalRevenue * 0.65) {
     whatToDoNow = {
-      actionTitle: "Increase selling prices on fast-moving goods by ₦200–₦500.",
-      actionDetail: "Supplier purchase prices rose, shrinking your profit to under 12%. Pass on the price change immediately.",
-      primaryActionLabel: "Review Prices & Suppliers",
+      actionTitle: "Add ₦200–₦500 on top fast-moving goods sharp-sharp.",
+      actionDetail: "Market wholesalers don increase their carton price, profit margin dey squeeze. Adjust price today.",
+      primaryActionLabel: "Review Prices Sharp-Sharp",
       actionType: "PRICE_ADJUSTMENT",
       payload: { recommended_markup: 200 },
     };

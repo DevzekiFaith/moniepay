@@ -35,7 +35,7 @@ export function generatePriorityRecommendations(
     const topDebtor = [...activeCustomerDebts].sort((a, b) => b.balance_due - a.balance_due)[0];
 
     const suggestedWaMsg = encodeURIComponent(
-      `Good day ${topDebtor.person_name}, hope work is going well. Kindly remember your balance of ₦${topDebtor.balance_due.toLocaleString()} with ${businessName}. We need to reconcile for restocking. Thank you!`
+      `Good day ${topDebtor.person_name}, hope work dey go well. Abeg kindly remember your balance of ₦${topDebtor.balance_due.toLocaleString()} with ${businessName}. We need am for fresh market restock tomorrow. Thank you and God bless your hustle!`
     );
 
     recommendations.push({
@@ -43,9 +43,9 @@ export function generatePriorityRecommendations(
       business_id: "default",
       priority_rank: 1,
       action_type: "COLLECT_DEBT",
-      title: `${debtorCount} customers owe you ₦${metrics.customerDebtTotal.toLocaleString()}. Collect these before restocking.`,
-      description: `Your working capital is trapped in customer credit. Recovering this will give you immediate liquid cash for fresh inventory without borrowing.`,
-      impact_summary: `Unlocks ₦${metrics.customerDebtTotal.toLocaleString()} cash immediately.`,
+      title: `${debtorCount} customers dey owe you ₦${metrics.customerDebtTotal.toLocaleString()}. Collect this gbese before you restock.`,
+      description: `Your shop working capital dey trapped inside customer gbese. Once you recover this money, you go get solid liquid cash to pay wholesale goods without borrowing.`,
+      impact_summary: `Unlocks ₦${metrics.customerDebtTotal.toLocaleString()} cash drawer capital immediately.`,
       action_payload: {
         customer_id: topDebtor.customer_id,
         debt_id: topDebtor.id,
@@ -66,9 +66,9 @@ export function generatePriorityRecommendations(
       business_id: "default",
       priority_rank: 2,
       action_type: "PRICE_ADJUSTMENT",
-      title: "Your sales are active, but profit is tight because stock costs increased.",
-      description: `Your purchase costs took ${Math.round((metrics.directStockCost / metrics.totalRevenue) * 100)}% of your sales this period. Increase your unit prices slightly or negotiate supplier bulk discount.`,
-      impact_summary: `Protects your ₦${metrics.operatingProfit.toLocaleString()} profit margin.`,
+      title: "Market sales dey active, but profit tight because carton prices increased.",
+      description: `Stock purchasing cost chop ${Math.round((metrics.directStockCost / metrics.totalRevenue) * 100)}% of your sales this period. Add small ₦200-₦500 on top unit prices or negotiate bulk discount with wholesaler.`,
+      impact_summary: `Protects your ₦${metrics.operatingProfit.toLocaleString()} daily profit margin.`,
       action_payload: {
         recommended_price: 500,
       },
@@ -85,9 +85,9 @@ export function generatePriorityRecommendations(
       business_id: "default",
       priority_rank: recommendations.length === 0 ? 1 : 2,
       action_type: "SAFE_WITHDRAWAL",
-      title: `You can safely withdraw ₦${metrics.safeWithdrawalAmount.toLocaleString()} this week.`,
-      description: `After setting aside funds for restocking, shop running costs, and supplier payments, this amount can be taken for personal/household use without straining your shop.`,
-      impact_summary: `Guarantees shop working capital remains intact.`,
+      title: `You fit safely withdraw ₦${metrics.safeWithdrawalAmount.toLocaleString()} chop moni this week.`,
+      description: `After setting aside money for tomorrow restock, generator fuel, and supplier payments, this amount na clean profit wey you fit take chop life without touching capital.`,
+      impact_summary: `Guarantees your market restock capital remains 100% intact.`,
       action_payload: {
         safe_amount: metrics.safeWithdrawalAmount,
       },
@@ -103,9 +103,9 @@ export function generatePriorityRecommendations(
       business_id: "default",
       priority_rank: 1,
       action_type: "SAFE_WITHDRAWAL",
-      title: `Withdrawals (₦${metrics.ownerWithdrawals.toLocaleString()}) exceeded your real profit (₦${metrics.operatingProfit.toLocaleString()}).`,
-      description: `Taking out more than you made in profit is eating directly into your shop's capital. Pause personal withdrawals until the next sales cycle.`,
-      impact_summary: `Prevents capital depletion.`,
+      title: `Chop money withdrawals (₦${metrics.ownerWithdrawals.toLocaleString()}) pass your real shop profit (₦${metrics.operatingProfit.toLocaleString()}).`,
+      description: `Taking out more than wetin shop make in real profit dey eat directly into your capital. Pause personal withdrawals until fresh sales enter.`,
+      impact_summary: `Prevents shop capital from draining.`,
       action_payload: {
         safe_amount: 0,
       },
@@ -126,9 +126,9 @@ export function generatePriorityRecommendations(
         business_id: "default",
         priority_rank: 1,
         action_type: "SUPPLIER_DUE",
-        title: `Supplier ${topSupplier.person_name} is owed ₦${topSupplier.balance_due.toLocaleString()}. Protect cash.`,
-        description: `Your available cash is close to what you owe this supplier. Prioritize cash collections today before making non-essential purchases.`,
-        impact_summary: `Preserves supplier trust and credit line.`,
+        title: `Supplier ${topSupplier.person_name} dey expect ₦${topSupplier.balance_due.toLocaleString()}. Protect cash.`,
+        description: `Your cash for hand close to wetin you owe this wholesaler. Prioritize collecting customer debt today before making extra purchases.`,
+        impact_summary: `Protects your wholesale trust and continuous credit line.`,
         action_payload: {
           supplier_name: topSupplier.person_name,
           safe_amount: topSupplier.balance_due,
@@ -146,9 +146,9 @@ export function generatePriorityRecommendations(
       business_id: "default",
       priority_rank: 1,
       action_type: "GENERAL",
-      title: "Your business rhythm is balanced. Focus on high-margin fast movers.",
-      description: `Profit margin is ${metrics.profitMarginPercent}%, and cash in drawer/bank covers all current operating requirements. Keep recording every sale and expense.`,
-      impact_summary: "Maintains positive business health.",
+      title: "Your shop rhythm dey balanced! Focus on high-margin fast movers.",
+      description: `Profit margin dey at ${metrics.profitMarginPercent}%, and cash inside drawer/bank cover all current restock needs. Keep recording every sale and expense!`,
+      impact_summary: "Maintains solid market momentum.",
       status: "ACTIVE",
       created_at: new Date().toISOString(),
     });

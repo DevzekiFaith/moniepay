@@ -31,43 +31,43 @@ export function DecisionTrackerSheet({
     {
       id: "dec_1",
       date: "Yesterday",
-      title: "Sent WhatsApp debt reminder to Bro Segun",
+      title: "Send WhatsApp debt reminder give Bro Segun",
       impact: "Recovered ₦35,000 cash for restock",
       status: "COMPLETED",
     },
     {
       id: "dec_2",
       date: "3 days ago",
-      title: "Reduced Indomie carton order by 40%",
+      title: "Reduce Indomie carton order by 40%",
       impact: "Saved ₦48,000 from dead stock tie-down",
       status: "COMPLETED",
     },
     {
       id: "dec_3",
       date: "Last week",
-      title: "Maintained safe weekly chop money of ₦30,000",
-      impact: "Prevented capital erosion; shop runway intact",
+      title: "Maintain safe weekly chop money of ₦30,000",
+      impact: "Protected shop working capital; runway intact",
       status: "COMPLETED",
     },
   ];
 
   const learnedPatterns = [
     {
-      title: "Best Trading Days",
+      title: "Sweet Market Days",
       value: "Friday & Saturday",
-      explanation: "Generate 48% of weekly revenue. Restock heavily before Friday morning.",
+      explanation: "Brings 48% of weekly revenue. Restock heavily before Friday morning market rush.",
       icon: Calendar,
     },
     {
-      title: "Customer Credit Velocity",
+      title: "Customer Gbese Speed",
       value: "7.2 Days Average",
-      explanation: "Customers who owe less than ₦25,000 pay 3x faster than bulk debtors.",
+      explanation: "Customers who owe less than ₦25,000 pay 3x faster than heavy bulk debtors.",
       icon: Users,
     },
     {
-      title: "Fuel & Power Efficiency",
+      title: "Gen Fuel & Shop Bills",
       value: "₦8,500 / 3 Days",
-      explanation: "Generator running costs are steady at 7% of total revenue.",
+      explanation: "Generator running costs dey steady at 7% of total revenue.",
       icon: TrendingUp,
     },
   ];
@@ -87,13 +87,13 @@ export function DecisionTrackerSheet({
               <BrainCircuit className="h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">Track & Learn</h3>
-              <p className="text-xs text-slate-500">Decision outcomes & learned business rhythm</p>
+              <h3 className="text-base font-extrabold text-slate-900">Shop Memory & Learnings</h3>
+              <p className="text-xs text-slate-500">Wetin MoniePay don learn about your shop rhythm</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-100"
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-100 cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
@@ -105,7 +105,7 @@ export function DecisionTrackerSheet({
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-emerald-800 mb-2.5 flex items-center gap-1.5">
               <BadgeCheck className="h-3.5 w-3.5 text-emerald-600" />
-              <span>What MoniePay Has Learned About Your Business</span>
+              <span>Wetin MoniePay Don Learn About Your Shop</span>
             </h4>
             <div className="space-y-2.5">
               {learnedPatterns.map((pat, idx) => {
@@ -137,7 +137,7 @@ export function DecisionTrackerSheet({
           <div>
             <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5 flex items-center gap-1.5">
               <Award className="h-3.5 w-3.5 text-blue-600" />
-              <span>Decisions Actioned & Measured Results</span>
+              <span>Actions We Done Track & Verified Results</span>
             </h4>
             <div className="space-y-2.5">
               {pastDecisions.map((dec) => (
@@ -148,7 +148,7 @@ export function DecisionTrackerSheet({
                   <div className="flex items-center justify-between text-[11px] text-slate-400 mb-1">
                     <span>{dec.date}</span>
                     <span className="flex items-center gap-1 text-emerald-700 font-bold">
-                      <CheckCircle2 className="h-3 w-3 text-emerald-600" /> Actioned
+                      <CheckCircle2 className="h-3 w-3 text-emerald-600" /> Done & Recorded
                     </span>
                   </div>
                   <h5 className="text-sm font-bold text-slate-900">{dec.title}</h5>
