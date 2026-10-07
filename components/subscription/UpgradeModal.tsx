@@ -121,7 +121,7 @@ export function UpgradeModal() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 380, damping: 32 }}
-            className="relative w-full sm:max-w-lg max-h-[94vh] sm:max-h-[92vh] rounded-t-[36px] sm:rounded-[36px] overflow-hidden flex flex-col z-20 shadow-[0_24px_60px_rgba(154,180,214,0.45)] border-t sm:border border-white/70 backdrop-blur-2xl bg-[#edf3fb]/95 text-slate-800"
+            className="relative w-full sm:max-w-lg max-h-[94vh] sm:max-h-[92vh] rounded-t-[36px] sm:rounded-[36px] overflow-hidden flex flex-col z-20 shadow-[0_24px_60px_rgba(154,180,214,0.45)] dark:shadow-2xl border-t sm:border border-white/70 dark:border-white/10 backdrop-blur-2xl bg-[#edf3fb]/98 dark:bg-slate-900/98 text-slate-800 dark:text-slate-100 transition-colors"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Sapphire Banner (Solid Blue) */}
@@ -154,40 +154,40 @@ export function UpgradeModal() {
             <div className="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
               {/* Context / Reason Notice if triggered by feature gate or expired */}
               {isExpired ? (
-                <div className="p-3.5 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2.5">
-                  <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-2xl bg-rose-500/10 dark:bg-rose-950/40 border border-rose-500/30 dark:border-rose-800 flex items-start gap-2.5">
+                  <AlertTriangle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-black text-rose-950">
+                    <p className="text-xs font-black text-rose-950 dark:text-rose-200">
                       Your MoniePay Plus don expire.
                     </p>
-                    <p className="text-[11.5px] font-semibold text-rose-800 mt-0.5 leading-relaxed">
+                    <p className="text-[11.5px] font-semibold text-rose-800 dark:text-rose-300 mt-0.5 leading-relaxed">
                       Renew for ₦1,500/month or ₦15,000/year make you continue to record sales, track customer debt (gbese), and receive sharp shop advice.
                     </p>
                   </div>
                 </div>
               ) : isGracePeriodActive ? (
-                <div className="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-2.5">
-                  <Clock className="h-5 w-5 text-amber-700 shrink-0 mt-0.5" />
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-950/40 border border-amber-500/30 dark:border-amber-800 flex items-start gap-2.5">
+                  <Clock className="h-5 w-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-black text-amber-950">
+                    <p className="text-xs font-black text-amber-950 dark:text-amber-200">
                       Grace Period Dey Active: {graceDaysLeft} {graceDaysLeft === 1 ? "Day" : "Days"} Remain
                     </p>
-                    <p className="text-[11.5px] font-semibold text-amber-900 mt-0.5 leading-relaxed">
+                    <p className="text-[11.5px] font-semibold text-amber-900 dark:text-amber-300 mt-0.5 leading-relaxed">
                       Full shop features still dey open! Renew now before the 3-day grace period complete.
                     </p>
                   </div>
                 </div>
               ) : modalReason ? (
-                <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-500/25 flex items-start gap-2.5">
-                  <Clock className="h-4 w-4 text-blue-700 shrink-0 mt-0.5" />
-                  <p className="text-xs font-semibold text-blue-950 leading-relaxed">
+                <div className="p-3 rounded-2xl bg-blue-500/10 dark:bg-blue-950/40 border border-blue-500/25 dark:border-blue-800 flex items-start gap-2.5">
+                  <Clock className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0 mt-0.5" />
+                  <p className="text-xs font-semibold text-blue-950 dark:text-blue-200 leading-relaxed">
                     {modalReason}
                   </p>
                 </div>
               ) : null}
 
               {/* Status Strip */}
-              <div className="p-3.5 rounded-2xl bg-white/70 border border-white/90 shadow-2xs flex items-center justify-between gap-3">
+              <div className="p-3.5 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-white/90 dark:border-slate-700 shadow-2xs flex items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
                   <div
                     className={`h-3 w-3 rounded-full ${
@@ -201,7 +201,7 @@ export function UpgradeModal() {
                     }`}
                   />
                   <div>
-                    <p className="text-xs font-black text-slate-900">
+                    <p className="text-xs font-black text-slate-900 dark:text-white">
                       {isSubscribed
                         ? `${subscription?.planName || "MoniePay Plus Active"}`
                         : isGracePeriodActive
@@ -210,7 +210,7 @@ export function UpgradeModal() {
                         ? `7-Day Free Test-Run: ${trialDaysLeft} days remain`
                         : "Subscription Don Expire (Read-Only)"}
                     </p>
-                    <p className="text-[11px] text-slate-500 font-medium">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                       {isSubscribed
                         ? `Next Renewal: ${
                             subscription?.subscriptionEndsAt
@@ -233,7 +233,7 @@ export function UpgradeModal() {
 
               {/* ── PLAN SELECTOR TABS (Monthly vs Annual) ── */}
               <div className="space-y-1.5 pt-1">
-                <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider px-1">
+                <label className="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider px-1">
                   Pick How You Wan Pay:
                 </label>
 
@@ -244,18 +244,18 @@ export function UpgradeModal() {
                     onClick={() => setSelectedPlan("monthly")}
                     className={`p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
                       selectedPlan === "monthly"
-                        ? "bg-white border-blue-600 shadow-[0_8px_20px_rgba(37,99,235,0.15)] ring-2 ring-blue-600/30"
-                        : "bg-white/60 border-white/80 hover:bg-white/80"
+                        ? "bg-white dark:bg-slate-800 border-blue-600 dark:border-blue-500 shadow-[0_8px_20px_rgba(37,99,235,0.15)] ring-2 ring-blue-600/30"
+                        : "bg-white/60 dark:bg-slate-800/40 border-white/80 dark:border-slate-700 hover:bg-white/80 dark:hover:bg-slate-800/70"
                     }`}
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-slate-900">Monthly Plan</span>
+                      <span className="text-xs font-black text-slate-900 dark:text-white">Monthly Plan</span>
                       {selectedPlan === "monthly" && (
-                        <CheckCircle2 className="h-4 w-4 text-blue-600" />
+                        <CheckCircle2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       )}
                     </div>
-                    <p className="text-base font-black text-blue-900 mt-1">₦1,500</p>
-                    <p className="text-[10.5px] text-slate-500 font-medium">Dey renew every month</p>
+                    <p className="text-base font-black text-blue-900 dark:text-blue-300 mt-1">₦1,500</p>
+                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">Dey renew every month</p>
                   </button>
 
                   {/* Annual Plan Card */}
@@ -264,21 +264,21 @@ export function UpgradeModal() {
                     onClick={() => setSelectedPlan("annual")}
                     className={`p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
                       selectedPlan === "annual"
-                        ? "bg-white border-emerald-600 shadow-[0_8px_20px_rgba(5,150,105,0.15)] ring-2 ring-emerald-600/30"
-                        : "bg-white/60 border-white/80 hover:bg-white/80"
+                        ? "bg-white dark:bg-slate-800 border-emerald-600 dark:border-emerald-500 shadow-[0_8px_20px_rgba(5,150,105,0.15)] ring-2 ring-emerald-600/30"
+                        : "bg-white/60 dark:bg-slate-800/40 border-white/80 dark:border-slate-700 hover:bg-white/80 dark:hover:bg-slate-800/70"
                     }`}
                   >
                     <span className="absolute -top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black uppercase tracking-wider shadow-xs">
                       Save ₦3,000 Cash
                     </span>
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-slate-900">1 Full Year</span>
+                      <span className="text-xs font-black text-slate-900 dark:text-white">1 Full Year</span>
                       {selectedPlan === "annual" && (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                        <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                       )}
                     </div>
-                    <p className="text-base font-black text-emerald-900 mt-1">₦15,000</p>
-                    <p className="text-[10.5px] text-slate-500 font-medium">Dey renew every 12 months</p>
+                    <p className="text-base font-black text-emerald-900 dark:text-emerald-300 mt-1">₦15,000</p>
+                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">Dey renew every 12 months</p>
                   </button>
                 </div>
               </div>

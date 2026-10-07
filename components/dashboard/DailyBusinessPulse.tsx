@@ -1,8 +1,8 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoniePay — Daily Business View Component
-// Tactile Framer Motion Cards • Single Emerald Theme
+// MoniePay — Daily Business Pulse Component
+// Tactile Framer Motion Cards • Fintech Light & Dark Mode
 // ─────────────────────────────────────────────────────────────────
 
 import React from "react";
@@ -30,12 +30,12 @@ export function DailyBusinessPulse({
     <section className="space-y-2.5">
       {/* Section Header with Business Position Pill */}
       <div className="flex items-center justify-between gap-2 px-1">
-        <h2 className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-500 truncate">
+        <h2 className="text-[11px] sm:text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate">
           Shop Pulse (Wetin Dey Enter)
         </h2>
         <InfoTooltip content="Condition of your shop moni (0-100)">
-          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-blue-500/10 backdrop-blur-md border border-blue-400/20 text-blue-950 text-[10.5px] sm:text-xs font-black shadow-xs cursor-help shrink-0">
-            <Activity className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600" />
+          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-0.5 sm:py-1 rounded-full bg-blue-500/10 dark:bg-blue-500/20 backdrop-blur-md border border-blue-400/20 dark:border-blue-500/30 text-blue-950 dark:text-blue-200 text-[10.5px] sm:text-xs font-black shadow-xs cursor-help shrink-0">
+            <Activity className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-blue-600 dark:text-blue-400" />
             <span className="sm:hidden">{metrics.healthScore >= 75 ? "Health: Body Dey Sweet" : "Health: Small Adjustment"} ({metrics.healthScore}/100)</span>
             <span className="hidden sm:inline">Shop Condition: {metrics.healthScore >= 75 ? "Body Dey Sweet Business" : "Small Adjustment Needed"} ({metrics.healthScore}/100)</span>
           </div>
@@ -53,18 +53,18 @@ export function DailyBusinessPulse({
             className="clay-card-sm p-3.5 sm:p-4.5 cursor-pointer transition-all flex flex-col justify-between min-w-0"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 truncate">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate">
                 Moni Wey Enter (Sales)
               </span>
-              <div className="flex h-6.5 w-6.5 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-xl bg-blue-500/15 text-blue-700 shrink-0">
+              <div className="flex h-6.5 w-6.5 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-xl bg-blue-500/15 dark:bg-blue-500/25 text-blue-700 dark:text-blue-300 shrink-0">
                 <ArrowDownLeft className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
             <div className="mt-2.5 min-w-0">
-              <span className="text-base sm:text-xl md:text-2xl font-black text-slate-900 leading-tight tracking-tight truncate block font-mono">
+              <span className="text-base sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight truncate block font-mono">
                 ₦{metrics.totalRevenue.toLocaleString()}
               </span>
-              <p className="text-[10px] sm:text-[10.5px] font-bold text-blue-700 mt-0.5 truncate">
+              <p className="text-[10px] sm:text-[10.5px] font-bold text-blue-700 dark:text-blue-400 mt-0.5 truncate">
                 Cash Wey Dey Hand: ₦{metrics.cashRevenue.toLocaleString()}
               </p>
             </div>
@@ -80,18 +80,18 @@ export function DailyBusinessPulse({
             className="clay-card-sm p-3.5 sm:p-4.5 cursor-pointer transition-all flex flex-col justify-between min-w-0"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 truncate">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate">
                 Moni Wey Comot (Expenses)
               </span>
-              <div className="flex h-6.5 w-6.5 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-xl bg-slate-200/70 text-slate-700 shrink-0">
+              <div className="flex h-6.5 w-6.5 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-xl bg-slate-200/70 dark:bg-slate-800 text-slate-700 dark:text-slate-300 shrink-0">
                 <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
             <div className="mt-2.5 min-w-0">
-              <span className="text-base sm:text-xl md:text-2xl font-black text-slate-900 leading-tight tracking-tight truncate block font-mono">
+              <span className="text-base sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight truncate block font-mono">
                 ₦{metrics.totalCosts.toLocaleString()}
               </span>
-              <p className="text-[10px] sm:text-[10.5px] font-bold text-slate-500 mt-0.5 truncate">
+              <p className="text-[10px] sm:text-[10.5px] font-bold text-slate-500 dark:text-slate-400 mt-0.5 truncate">
                 Fresh Stock: ₦{metrics.directStockCost.toLocaleString()}
               </p>
             </div>
@@ -107,18 +107,18 @@ export function DailyBusinessPulse({
             className="clay-card-sm p-3.5 sm:p-4.5 cursor-pointer transition-all flex flex-col justify-between min-w-0"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 truncate">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate">
                 Cash Wey Dey Hand (Liquid)
               </span>
-              <div className="flex h-6.5 w-6.5 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-xl bg-blue-500/15 text-blue-700 shrink-0">
+              <div className="flex h-6.5 w-6.5 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-xl bg-blue-500/15 dark:bg-blue-500/25 text-blue-700 dark:text-blue-300 shrink-0">
                 <Wallet className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
             <div className="mt-2.5 min-w-0">
-              <span className="text-base sm:text-xl md:text-2xl font-black text-blue-950 leading-tight tracking-tight truncate block font-mono">
+              <span className="text-base sm:text-xl md:text-2xl font-black text-blue-950 dark:text-blue-100 leading-tight tracking-tight truncate block font-mono">
                 ₦{metrics.liquidCash.toLocaleString()}
               </span>
-              <p className="text-[10px] sm:text-[10.5px] font-bold text-blue-600 mt-0.5 truncate">
+              <p className="text-[10px] sm:text-[10.5px] font-bold text-blue-600 dark:text-blue-400 mt-0.5 truncate">
                 Safe Chop Moni: ₦{metrics.safeWithdrawalAmount.toLocaleString()}
               </p>
             </div>
@@ -134,18 +134,18 @@ export function DailyBusinessPulse({
             className="clay-card-sm p-3.5 sm:p-4.5 cursor-pointer transition-all flex flex-col justify-between min-w-0"
           >
             <div className="flex items-center justify-between">
-              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 truncate">
+              <span className="text-[10px] sm:text-[11px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400 truncate">
                 People Wey Owe (Gbese)
               </span>
-              <div className="flex h-6.5 w-6.5 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-xl bg-blue-500/15 text-blue-700 shrink-0">
+              <div className="flex h-6.5 w-6.5 sm:h-7.5 sm:w-7.5 items-center justify-center rounded-xl bg-blue-500/15 dark:bg-blue-500/25 text-blue-700 dark:text-blue-300 shrink-0">
                 <Users className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               </div>
             </div>
             <div className="mt-2.5 min-w-0">
-              <span className="text-base sm:text-xl md:text-2xl font-black text-slate-900 leading-tight tracking-tight truncate block font-mono">
+              <span className="text-base sm:text-xl md:text-2xl font-black text-slate-900 dark:text-white leading-tight tracking-tight truncate block font-mono">
                 ₦{metrics.customerDebtTotal.toLocaleString()}
               </span>
-              <p className="text-[10px] sm:text-[10.5px] font-bold text-blue-700 mt-0.5 truncate">
+              <p className="text-[10px] sm:text-[10.5px] font-bold text-blue-700 dark:text-blue-400 mt-0.5 truncate">
                 {metrics.customerDebtorCount} customer(s) dey owe shop
               </p>
             </div>
@@ -155,4 +155,3 @@ export function DailyBusinessPulse({
     </section>
   );
 }
-

@@ -1,8 +1,8 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoniePay — Modern Responsive Navigation Architecture
-// Frosted 3D Glassmorphism • Light & Dark Mode • Mobile Island Dock
+// MoniePay — Modern Fintech Navigation Architecture
+// 3D Glassmorphism • Light & Dark Mode • Floating Island Dock
 // ─────────────────────────────────────────────────────────────────
 
 import { useState } from "react";
@@ -14,8 +14,8 @@ import { LogoutModal } from "@/components/ui/LogoutModal";
 import { SubscriptionStatusPill } from "@/components/subscription/SubscriptionStatusPill";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import {
-  Home,
-  ArrowLeftRight,
+  LayoutDashboard,
+  Receipt,
   BrainCircuit,
   Building2,
   SlidersHorizontal,
@@ -23,8 +23,8 @@ import {
   User,
   ShieldCheck,
   ChevronRight,
-  Sparkles,
-  Zap,
+  Wallet,
+  Users,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -32,50 +32,50 @@ export const NAV_SECTIONS = [
     title: "Shop Operations",
     items: [
       {
-        label: "Today's Pulse",
+        label: "Daily Pulse & Cash",
         href: "/",
-        icon: Home,
+        icon: LayoutDashboard,
         description: "Operating Dashboard & Next Actions",
       },
       {
-        label: "Activity & Records",
+        label: "Activity & Receipts",
         href: "/activity",
-        icon: ArrowLeftRight,
-        description: "Live Transactions & Receipts",
+        icon: Receipt,
+        description: "Live Transactions & Customer Slips",
       },
       {
-        label: "Cash & Accounts",
+        label: "Cash Drawer & Bank",
         href: "/accounts",
-        icon: Building2,
-        description: "Drawer Cash, Bank & POS",
+        icon: Wallet,
+        description: "Cash Box, POS Terminals & Banks",
       },
     ],
   },
   {
-    title: "Intelligence Deck",
+    title: "Shop Intelligence",
     items: [
       {
-        label: "Market Intelligence",
+        label: "Market Diagnostics",
         href: "/insights",
         icon: BrainCircuit,
-        description: "Business Health, Leakages & Pricing",
+        description: "Health Scores, Leakages & Stock Alerts",
       },
     ],
   },
   {
-    title: "Shop Management",
+    title: "Account & Settings",
     items: [
       {
         label: "Shop Profile",
         href: "/profile",
         icon: SlidersHorizontal,
-        description: "Shop Details, Staff & Settings",
+        description: "Shop Details, Staff & Preferences",
       },
       {
         label: "MoniePay Plus",
         href: "/upgrade",
         icon: ShieldCheck,
-        description: "Shop Intelligence Plan",
+        description: "Shop Intelligence Subscription",
         badge: "PRO",
       },
     ],
@@ -84,9 +84,9 @@ export const NAV_SECTIONS = [
 
 // Flat list for mobile navigation
 export const MOBILE_NAV_ITEMS = [
-  { label: "Today", href: "/", icon: Home },
-  { label: "Activity", href: "/activity", icon: ArrowLeftRight },
-  { label: "Accounts", href: "/accounts", icon: Building2 },
+  { label: "Pulse", href: "/", icon: LayoutDashboard },
+  { label: "Activity", href: "/activity", icon: Receipt },
+  { label: "Accounts", href: "/accounts", icon: Wallet },
   { label: "Insights", href: "/insights", icon: BrainCircuit },
   { label: "Profile", href: "/profile", icon: User },
 ];
@@ -96,7 +96,7 @@ export function AppMobileHeader() {
   const { user } = useAuth();
 
   return (
-    <header className="md:hidden sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-slate-200/80 dark:border-slate-800/80 bg-white/85 dark:bg-slate-900/85 px-3.5 sm:px-4 backdrop-blur-xl transition-colors">
+    <header className="md:hidden sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 px-3.5 sm:px-4 backdrop-blur-2xl transition-colors">
       <Link href="/" className="flex items-center gap-2">
         <MoniePayMark size={28} />
         <div className="flex flex-col">
@@ -149,7 +149,7 @@ export function AppSidebar() {
 
   return (
     <>
-      <aside className="hidden md:flex flex-col justify-between w-64 border-r border-slate-200/80 dark:border-slate-800/80 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl min-h-screen p-4 sticky top-0 transition-colors z-30">
+      <aside className="hidden md:flex flex-col justify-between w-64 border-r border-slate-200/80 dark:border-white/10 bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl min-h-screen p-4 sticky top-0 transition-colors z-30 shadow-xs">
         <div className="space-y-6">
           {/* Logo & Tagline */}
           <div className="px-2 py-2">
@@ -173,7 +173,7 @@ export function AppSidebar() {
                         href={item.href}
                         className={`flex items-center justify-between px-3 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer ${
                           isActive
-                            ? "bg-blue-700 text-white shadow-md shadow-blue-700/20"
+                            ? "bg-blue-700 text-white shadow-md shadow-blue-700/25"
                             : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/80 hover:text-slate-950 dark:hover:text-white"
                         }`}
                       >
@@ -214,7 +214,7 @@ export function AppSidebar() {
         </div>
 
         {/* Footer / Theme Toggle, Subscription & Account */}
-        <div className="pt-4 border-t border-slate-200/80 dark:border-slate-800/80 space-y-3">
+        <div className="pt-4 border-t border-slate-200/80 dark:border-white/10 space-y-3">
           {/* Theme Switcher Segmented Control */}
           <div className="flex items-center justify-between px-1">
             <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
@@ -229,7 +229,7 @@ export function AppSidebar() {
           </div>
 
           {user && (
-            <div className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80">
+            <div className="flex items-center justify-between p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-white/10">
               <div className="min-w-0 pr-2">
                 <p className="text-xs font-black text-slate-900 dark:text-white truncate">
                   {user.name}
@@ -266,13 +266,13 @@ export function AppSidebar() {
   );
 }
 
-// ── Mobile Bottom Navigation Bar ──────────────────────────────────
+// ── Mobile Bottom Navigation Bar (Fintech Island Pill) ─────────────
 export function AppBottomBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/90 dark:bg-slate-900/90 border-t border-slate-200/80 dark:border-slate-800/80 px-2 py-1.5 backdrop-blur-2xl transition-colors pb-[env(safe-area-inset-bottom,4px)]">
-      <div className="flex items-center justify-around">
+    <nav className="md:hidden fixed bottom-2.5 inset-x-0 z-40 px-3 pointer-events-none pb-[env(safe-area-inset-bottom,0px)]">
+      <div className="mx-auto flex max-w-sm items-center justify-around rounded-[30px] clay-card p-1 pointer-events-auto border border-white/80 dark:border-white/10 shadow-2xl backdrop-blur-2xl">
         {MOBILE_NAV_ITEMS.map((item) => {
           const isActive = pathname === item.href;
           const Icon = item.icon;
@@ -280,7 +280,7 @@ export function AppBottomBar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[10.5px] font-bold transition-all ${
+              className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-2xl text-[9.5px] font-bold transition-all ${
                 isActive
                   ? "text-blue-700 dark:text-blue-400 font-black"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -293,9 +293,9 @@ export function AppBottomBar() {
                     : "text-slate-400 dark:text-slate-500"
                 }`}
               >
-                <Icon className="h-4.5 w-4.5" />
+                <Icon className="h-4.5 w-4.5 stroke-[2.2]" />
               </div>
-              <span>{item.label}</span>
+              <span className="mt-0.5">{item.label}</span>
             </Link>
           );
         })}
