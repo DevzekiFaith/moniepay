@@ -12,7 +12,7 @@ import {
   Clock,
   CheckCircle2,
   ArrowRight,
-  Download,
+  Smartphone,
   AlertTriangle,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -133,7 +133,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-slate-700 text-[11px] font-black text-slate-700 dark:text-slate-200 active:scale-95 transition-all shadow-2xs cursor-pointer shrink-0"
             title="Install MoniePay app on your phone"
           >
-            <Download className="h-3.5 w-3.5 text-[#1d4ed8] dark:text-blue-400" />
+            <Smartphone className="h-3.5 w-3.5 text-[#1d4ed8] dark:text-blue-400" />
             <span>Install App 📲</span>
           </button>
         </div>

@@ -8,7 +8,7 @@ import {
   Store,
   LogOut,
   QrCode,
-  Download,
+  Smartphone,
   AlertTriangle,
   Clock,
 } from "lucide-react";
@@ -147,14 +147,14 @@ export function DaylightHeader({
               </InfoTooltip>
 
               {/* 5. Install App Trigger */}
-              <InfoTooltip content="Install MoniePay app to home screen">
+              <InfoTooltip content="Install MoniePay app to phone home screen">
                 <button
                   type="button"
                   onClick={triggerInstallPrompt}
                   aria-label="Install App"
                   className="hidden sm:flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
                 >
-                  <Download className="h-4 w-4 text-sky-200" />
+                  <Smartphone className="h-4 w-4 text-sky-200" />
                 </button>
               </InfoTooltip>
 

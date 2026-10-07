@@ -26,7 +26,7 @@ import {
   Store,
   Receipt,
   HelpCircle,
-  Download,
+  Smartphone,
   AlertTriangle,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -129,9 +129,9 @@ function UpgradeContent() {
           <button
             type="button"
             onClick={triggerInstallPrompt}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-blue-50 hover:bg-blue-100 border border-blue-200 text-xs font-black text-blue-900 transition-all shadow-2xs cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-200 dark:border-blue-800 text-xs font-black text-blue-900 dark:text-blue-300 transition-all shadow-2xs cursor-pointer"
           >
-            <Download className="h-3.5 w-3.5 text-blue-600" />
+            <Smartphone className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
             <span>Install App 📲</span>
           </button>
         </div>
