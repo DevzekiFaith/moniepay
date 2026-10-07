@@ -100,6 +100,44 @@ const INITIAL_NOTIFICATIONS: MarketNotification[] = [
   },
 ];
 
+// Synthetic Web Audio API Audio Chime (Zero external assets, instant 100% offline playback)
+function playNotificationChime(type: "debt" | "success" | "general" = "debt") {
+  if (typeof window === "undefined") return;
+  try {
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
+    }
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = "sine";
+    if (type === "debt") {
+      // Urgent, clear two-tone shop alert chime (587Hz -> 880Hz)
+      osc.frequency.setValueAtTime(587.33, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
+    } else if (type === "success") {
+      // Pleasant cash drawer success chime
+      osc.frequency.setValueAtTime(523.25, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.1);
+    } else {
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(554.37, ctx.currentTime + 0.1);
+    }
+
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.32);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.33);
+  } catch {}
+}
+
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
@@ -129,7 +167,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }
   }, []);
 
-  // Automatic Background Debt Scanner (Scans due & overdue debts without pressing buttons)
+  // Automatic Background Debt Scanner (Scans due & overdue debts automatically every 60s & on load)
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -195,6 +233,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               actionUrl,
             });
 
+            // Play in-app audio chime beep
+            playNotificationChime("debt");
+
             // Native OS browser notification if granted
             if ("Notification" in window && Notification.permission === "granted") {
               try {
@@ -222,12 +263,20 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       }
     };
 
-    // Auto-scan shortly after load
-    const timer = setTimeout(runAutoDebtScan, 1800);
+    // 1. Initial Auto-scan 1.5s after load
+    const initialTimer = setTimeout(runAutoDebtScan, 1500);
+
+    // 2. Periodic background interval: every 60 seconds
+    const intervalTimer = setInterval(runAutoDebtScan, 60000);
+
+    // 3. Scan on window focus (when trader switches back to MoniePay tab)
+    window.addEventListener("focus", runAutoDebtScan);
     window.addEventListener("moniepay:debts-updated", runAutoDebtScan);
 
     return () => {
-      clearTimeout(timer);
+      clearTimeout(initialTimer);
+      clearInterval(intervalTimer);
+      window.removeEventListener("focus", runAutoDebtScan);
       window.removeEventListener("moniepay:debts-updated", runAutoDebtScan);
     };
   }, []);
@@ -330,6 +379,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         } catch {}
         return updated;
       });
+
+      // Play in-app audio chime beep
+      playNotificationChime(
+        type === "debt_reminder" ? "debt" : type === "sales_milestone" ? "success" : "general"
+      );
 
       // Also trigger instant floating toast
       const toastType: ToastItem["type"] =
