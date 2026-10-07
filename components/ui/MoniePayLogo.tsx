@@ -42,44 +42,30 @@ export function MoniePayMark({ size = 36 }: { size?: number }) {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          <rect width="100" height="100" rx="26" fill="#07122b" />
+          <rect width="100" height="100" rx="26" fill="#0c2356" />
           {/* Shop Canopy Roof */}
           <path
-            d="M18 36 C18 24, 30 20, 50 20 C70 20, 82 24, 82 36 L78 44 C76 46, 72 46, 70 44 C68 46, 64 46, 62 44 C60 46, 56 46, 54 44 C52 46, 48 46, 46 44 C44 46, 40 46, 38 44 C36 46, 32 46, 30 44 L26 44 C24 46, 20 46, 18 44 Z"
-            fill="url(#canopyGrad)"
+            d="M22 34 L30 24 H70 L78 34 L76 39 H24 Z"
+            fill="#ffffff"
           />
-          {/* Letter M Shop Pillars */}
+          {/* Letter M Pillars */}
           <path
-            d="M24 46 V80 H34 V58 L50 72 L66 58 V80 H76 V46"
-            stroke="url(#mGrad)"
-            strokeWidth="7"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+            d="M25 39 V78 H38 V56 L50 68 L62 56 V78 H75 V39"
+            fill="#ffffff"
           />
-          {/* Gold Naira Coin */}
-          <circle cx="50" cy="68" r="14" fill="#f59e0b" stroke="#fbbf24" strokeWidth="2" />
+          {/* Solid Gold Naira Coin */}
+          <circle cx="50" cy="66" r="13" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
           <text
             x="50"
-            y="73.5"
+            y="71.5"
             textAnchor="middle"
             fill="#78350f"
-            fontSize="14"
+            fontSize="13"
             fontWeight="900"
             fontFamily="sans-serif"
           >
             ₦
           </text>
-          <defs>
-            <linearGradient id="canopyGrad" x1="18" y1="20" x2="82" y2="44" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#38bdf8" />
-              <stop offset="0.5" stopColor="#0ea5e9" />
-              <stop offset="1" stopColor="#10b981" />
-            </linearGradient>
-            <linearGradient id="mGrad" x1="24" y1="46" x2="76" y2="80" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#0284c7" />
-              <stop offset="1" stopColor="#059669" />
-            </linearGradient>
-          </defs>
         </svg>
       )}
     </div>
