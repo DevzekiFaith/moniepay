@@ -26,6 +26,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 
 import { WelcomeIntroScreen } from "@/components/intro/WelcomeIntroScreen";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 function LoginContent() {
   const router = useRouter();
@@ -226,19 +227,22 @@ function LoginContent() {
 
           {/* ── MAIN 3D SOFT GLASS AUTH CONTAINER ── */}
           <div className="relative w-full max-w-sm sm:max-w-md my-6 z-10 space-y-5">
-            {/* Top Bar with Replay Intro Button */}
+            {/* Top Bar with Replay Intro Button & ThemeToggle */}
             <div className="flex items-center justify-between px-1">
               <button
                 type="button"
                 onClick={() => setShowIntro(true)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white/70 hover:bg-white border border-white/80 text-xs font-black text-blue-700 shadow-2xs backdrop-blur-md active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white/70 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 border border-white/80 dark:border-white/10 text-xs font-black text-blue-700 dark:text-sky-300 shadow-2xs backdrop-blur-md active:scale-95 transition-all cursor-pointer"
               >
                 <span>🎬 Watch Intro Tour</span>
               </button>
 
-              <span className="text-[11px] font-bold text-slate-500">
-                MoniePay v2.0
-              </span>
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                  MoniePay v2.0
+                </span>
+              </div>
             </div>
 
             {/* 3D User Profile & Welcoming Hero (Flex Presentation with Bold Text Hierarchy) */}
@@ -246,14 +250,14 @@ function LoginContent() {
               initial={{ opacity: 0, y: -14 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="clay-card p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left relative overflow-hidden"
+              className="clay-card p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left relative overflow-hidden bg-white/90 dark:bg-slate-900/90 border border-white/80 dark:border-white/10 shadow-xl"
             >
               {/* Ambient refraction top line */}
               <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-sky-400 opacity-90" />
 
               {/* 3D Profile Avatar */}
-              <div className="relative flex h-20 w-20 sm:h-22 sm:w-22 items-center justify-center rounded-[28px] clay-icon-box p-1 shrink-0 shadow-[0_10px_25px_rgba(154,180,214,0.45)] group">
-                <div className="relative h-full w-full rounded-[22px] overflow-hidden bg-slate-100 border border-white/80">
+              <div className="relative flex h-20 w-20 sm:h-22 sm:w-22 items-center justify-center rounded-[28px] clay-icon-box p-1 shrink-0 shadow-[0_10px_25px_rgba(154,180,214,0.45)] dark:shadow-none group">
+                <div className="relative h-full w-full rounded-[22px] overflow-hidden bg-slate-100 dark:bg-slate-800 border border-white/80 dark:border-white/10">
                   <img
                     src={avatarUrl}
                     alt="Trader Profile"
@@ -276,29 +280,29 @@ function LoginContent() {
                 </div>
 
                 {/* Active / Verified Online Dot */}
-                <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
+                <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 shadow-xs" />
               </div>
 
               {/* Text Hierarchy */}
               <div className="flex-1 min-w-0 space-y-1.5">
                 {/* Micro Tag / Category */}
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-700 text-[10.5px] font-black tracking-wide uppercase">
-                  <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50/90 dark:bg-blue-950/80 border border-blue-200/80 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10.5px] font-black tracking-wide uppercase">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-600 dark:bg-blue-400 animate-pulse" />
                   <span>Trader Shop Portal</span>
                 </div>
 
                 {/* Main Headline - Bold & Prominent */}
-                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight leading-snug">
                   {mode === "signin" ? "Welcome Back O!" : "Open Your Shop Sharp-Sharp"}
                 </h1>
 
                 {/* Descriptive Body - Concise & Direct */}
                 {mode === "signin" ? (
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
+                  <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 font-medium leading-snug pt-0.5">
                     Enter your shop make you see your daily profit &amp; track customer gbese.
                   </p>
                 ) : (
-                  <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
+                  <p className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-300 font-medium leading-snug pt-0.5">
                     Open your shop record book in 30 seconds, no shaking.
                   </p>
                 )}
@@ -310,36 +314,36 @@ function LoginContent() {
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: 0.08 }}
-          className="clay-card p-4 space-y-3 relative overflow-hidden text-center"
+          className="clay-card p-4 space-y-3 relative overflow-hidden text-center bg-white/90 dark:bg-slate-900/90 border border-white/80 dark:border-white/10 shadow-lg"
         >
           <div className="space-y-0.5">
-            <h3 className="text-xs sm:text-sm font-black text-slate-900 tracking-tight">
-              Understand your money, <span className="text-blue-700">no be just to record am.</span>
+            <h3 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight">
+              Understand your money, <span className="text-blue-700 dark:text-sky-400">no be just to record am.</span>
             </h3>
-            <p className="text-[11px] text-slate-500 font-medium">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
               Know where your profit dey go every single day.
             </p>
           </div>
 
           {/* 3 Concise Steps */}
           <div className="grid grid-cols-3 gap-1.5 pt-0.5">
-            <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
-              <p className="text-xs font-black text-slate-900">1. Record</p>
-              <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Sales &amp; Gbese</p>
+            <div className="p-2 rounded-xl bg-white/60 dark:bg-slate-800/80 border border-white/80 dark:border-white/10 shadow-2xs">
+              <p className="text-xs font-black text-slate-900 dark:text-white">1. Record</p>
+              <p className="text-[9.5px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Sales &amp; Gbese</p>
             </div>
 
-            <div className="p-2 rounded-xl bg-white/60 border border-white/80 shadow-2xs">
-              <p className="text-xs font-black text-slate-900">2. Understand</p>
-              <p className="text-[9.5px] text-slate-500 font-semibold mt-0.5">Real Profit</p>
+            <div className="p-2 rounded-xl bg-white/60 dark:bg-slate-800/80 border border-white/80 dark:border-white/10 shadow-2xs">
+              <p className="text-xs font-black text-slate-900 dark:text-white">2. Understand</p>
+              <p className="text-[9.5px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5">Real Profit</p>
             </div>
 
-            <div className="p-2 rounded-xl bg-white/80 border border-blue-300/70 shadow-xs ring-1 ring-blue-400/30">
-              <p className="text-xs font-black text-blue-900">3. Decide</p>
-              <p className="text-[9.5px] text-blue-600 font-bold mt-0.5">Sharp-Sharp</p>
+            <div className="p-2 rounded-xl bg-white/80 dark:bg-blue-950/60 border border-blue-300/70 dark:border-blue-800 shadow-xs ring-1 ring-blue-400/30">
+              <p className="text-xs font-black text-blue-900 dark:text-blue-200">3. Decide</p>
+              <p className="text-[9.5px] text-blue-600 dark:text-sky-300 font-bold mt-0.5">Sharp-Sharp</p>
             </div>
           </div>
 
-          <p className="text-[9.5px] sm:text-[10px] text-slate-400 font-bold tracking-wider uppercase pt-1 border-t border-slate-200/50">
+          <p className="text-[9.5px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-bold tracking-wider uppercase pt-1 border-t border-slate-200/50 dark:border-white/10">
             Your Money • Your Picture • Your Decisions
           </p>
         </motion.div>
@@ -349,17 +353,17 @@ function LoginContent() {
           initial={{ opacity: 0, scale: 0.96 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.45, delay: 0.15 }}
-          className="clay-card p-5 sm:p-7 space-y-4"
+          className="clay-card p-5 sm:p-7 space-y-4 bg-white/90 dark:bg-slate-900/90 border border-white/80 dark:border-white/10 shadow-2xl"
         >
           {/* Mode Switcher Pill */}
-          <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-200/50 border border-white/60 shadow-inner text-xs font-black">
+          <div className="grid grid-cols-2 p-1 rounded-2xl bg-slate-200/50 dark:bg-slate-800/60 border border-white/60 dark:border-white/10 shadow-inner text-xs font-black">
             <button
               type="button"
               onClick={() => setMode("signin")}
               className={`py-2 rounded-xl transition-all cursor-pointer ${
                 mode === "signin"
-                  ? "clay-btn-secondary text-blue-700 font-black"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "clay-btn-secondary text-blue-700 dark:text-blue-300 font-black"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
               }`}
             >
               Enter Shop
@@ -369,8 +373,8 @@ function LoginContent() {
               onClick={() => setMode("register")}
               className={`py-2 rounded-xl transition-all cursor-pointer ${
                 mode === "register"
-                  ? "clay-btn-secondary text-blue-700 font-black"
-                  : "text-slate-500 hover:text-slate-800"
+                  ? "clay-btn-secondary text-blue-700 dark:text-blue-300 font-black"
+                  : "text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white"
               }`}
             >
               Register New Shop
@@ -384,7 +388,7 @@ function LoginContent() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="flex items-center gap-2 p-3 rounded-2xl bg-rose-50/90 border border-rose-200 text-rose-700 text-xs font-semibold"
+                className="flex items-center gap-2 p-3 rounded-2xl bg-rose-50/90 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold"
               >
                 <AlertCircle className="h-4 w-4 shrink-0" />
                 <span>{errorMessage}</span>
@@ -395,7 +399,7 @@ function LoginContent() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="flex items-center gap-2 p-3 rounded-2xl bg-emerald-50/90 border border-emerald-200 text-emerald-800 text-xs font-semibold"
+                className="flex items-center gap-2 p-3 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold"
               >
                 <CheckCircle2 className="h-4 w-4 shrink-0" />
                 <span>{successMessage}</span>
@@ -408,8 +412,8 @@ function LoginContent() {
             {mode === "register" && (
               <div className="space-y-3 pt-1">
                 {/* Store Photo Upload Frame */}
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/60 border border-white/90 shadow-sm">
-                  <div className="relative h-14 w-14 rounded-2xl overflow-hidden border border-blue-200 shrink-0 bg-slate-100">
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/60 dark:bg-slate-800/60 border border-white/90 dark:border-white/10 shadow-sm">
+                  <div className="relative h-14 w-14 rounded-2xl overflow-hidden border border-blue-200 dark:border-blue-800 shrink-0 bg-slate-100 dark:bg-slate-800">
                     <img
                       src={avatarUrl}
                       alt="Shop Avatar"
@@ -424,8 +428,8 @@ function LoginContent() {
                     </button>
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-bold text-slate-900 truncate">Shop Photo / Logo</p>
-                    <p className="text-[10px] text-slate-500 font-medium">Snap your stall or upload photo</p>
+                    <p className="text-xs font-bold text-slate-900 dark:text-white truncate">Shop Photo / Logo</p>
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Snap your stall or upload photo</p>
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -445,38 +449,38 @@ function LoginContent() {
 
                 {/* Full Name */}
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
                   <input
                     type="text"
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Your Full Name (e.g. Mama Chidi)"
                     required
-                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
                   />
                 </div>
 
                 {/* Shop Name */}
                 <div className="relative">
-                  <Store className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Store className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
                   <input
                     type="text"
                     value={businessName}
                     onChange={(e) => setBusinessName(e.target.value)}
                     placeholder="Shop Name (e.g. Mama Chidi Super Store)"
-                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
                   />
                 </div>
 
                 {/* Market Location */}
                 <div className="relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
                   <input
                     type="text"
                     value={marketLocation}
                     onChange={(e) => setMarketLocation(e.target.value)}
                     placeholder="Market Location (e.g. Balogun Market, Lagos)"
-                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
                   />
                 </div>
               </div>
@@ -484,32 +488,32 @@ function LoginContent() {
 
             {/* Email or Username input */}
             <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 value={identifier}
                 onChange={(e) => setIdentifier(e.target.value)}
                 placeholder="Your Phone Number or Email"
                 required
-                className="w-full pl-11 pr-4 py-3.5 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+                className="w-full pl-11 pr-4 py-3.5 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
               />
             </div>
 
             {/* Password input */}
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
               <input
                 type={showPassword ? "text" : "password"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your Secret Password"
                 required
-                className="w-full pl-11 pr-11 py-3.5 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none transition-all"
+                className="w-full pl-11 pr-11 py-3.5 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 cursor-pointer"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 cursor-pointer"
               >
                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
               </button>
@@ -517,12 +521,12 @@ function LoginContent() {
 
             {/* Remember Me & Forgot Password row */}
             <div className="flex items-center justify-between text-xs pt-1 px-1">
-              <label className="flex items-center gap-2 text-slate-600 font-semibold cursor-pointer">
+              <label className="flex items-center gap-2 text-slate-600 dark:text-slate-300 font-semibold cursor-pointer">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="h-4 w-4 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer"
+                  className="h-4 w-4 rounded-md border-slate-300 dark:border-slate-700 text-blue-600 focus:ring-blue-500 accent-blue-600 cursor-pointer"
                 />
                 <span>Keep me signed in</span>
               </label>
@@ -530,7 +534,7 @@ function LoginContent() {
               <button
                 type="button"
                 onClick={() => setErrorMessage("Password reset link sent to your registered email/phone.")}
-                className="text-blue-600 hover:text-blue-800 font-bold transition-colors cursor-pointer"
+                className="text-blue-600 dark:text-sky-400 hover:text-blue-800 dark:hover:text-sky-300 font-bold transition-colors cursor-pointer"
               >
                 Forget Password?
               </button>
