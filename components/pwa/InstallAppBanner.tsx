@@ -16,7 +16,6 @@ import {
   BellRing,
   ShieldCheck,
   ArrowRight,
-  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
@@ -168,7 +167,7 @@ export function InstallAppBanner() {
                   <MoniePayMark size={44} />
                   <div>
                     <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 border border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300 text-[10px] font-black uppercase tracking-wider mb-0.5">
-                      <Sparkles className="h-2.5 w-2.5" />
+                      <ShieldCheck className="h-2.5 w-2.5" />
                       <span>Official Trader OS</span>
                     </div>
                     <h3 className="font-black text-slate-900 dark:text-white text-base sm:text-lg leading-tight">
