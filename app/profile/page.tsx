@@ -22,8 +22,7 @@ import {
   Store,
   MapPin,
 } from "lucide-react";
-import Link from "next/link";
-import { motion } from "framer-motion";
+import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
 
 export default function ProfilePage() {
   const { notify } = useNotification();
@@ -91,6 +90,9 @@ export default function ProfilePage() {
               Sign Out
             </button>
           </div>
+
+          {/* MoniePay Plus Subscription & Free Trial Section */}
+          <SubscriptionBannerCard />
 
           {/* Engine Settings */}
           <div className="rounded-[24px] bg-white border border-emerald-900/10 p-4 sm:p-5 shadow-xs space-y-3.5">

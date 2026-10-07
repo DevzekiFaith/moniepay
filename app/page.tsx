@@ -66,6 +66,7 @@ import { GbeseDebtSheet } from "@/components/dashboard/GbeseDebtSheet";
 import { DecisionTrackerSheet } from "@/components/dashboard/DecisionTrackerSheet";
 import { SafeWithdrawalModal } from "@/components/dashboard/SafeWithdrawalModal";
 import { FloatingActionDock } from "@/components/dashboard/FloatingActionDock";
+import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
 import { useToast } from "@/context/NotificationContext";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/context/AuthContext";
@@ -326,6 +327,9 @@ export default function MoniePayDashboard() {
                 onOpenDetailedSheet={handleOpenRecord}
                 onActivityRecorded={refreshTxs}
               />
+
+              {/* 1b. MONIEPAY PLUS & FREE TRIAL DAYS REMAINING CARD */}
+              <SubscriptionBannerCard />
 
               {/* 2. YOUR NEXT MOVE (The Single Star Recommendation) */}
               <NextMoveCard
