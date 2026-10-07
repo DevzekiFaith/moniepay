@@ -8,6 +8,7 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import {
   Plus,
   Store,
@@ -18,6 +19,8 @@ import {
   Users,
   Wallet,
   ArrowRight,
+  Search,
+  SlidersHorizontal,
 } from "lucide-react";
 
 // Types
@@ -104,6 +107,10 @@ export default function MoniePayDashboard() {
   const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false);
   const [safeWithdrawalAmount, setSafeWithdrawalAmount] = useState(40000);
 
+  // Activity Tab Search & Filter State
+  const [activitySearch, setActivitySearch] = useState("");
+  const [activityFilterType, setActivityFilterType] = useState("ALL");
+
   // 1. Initial State Hydration
   useEffect(() => {
     setIsOnline(typeof navigator !== "undefined" ? navigator.onLine : true);
@@ -170,6 +177,29 @@ export default function MoniePayDashboard() {
       return txTime >= monthStart;
     });
   }, [transactions, period]);
+
+  // 2b. Activity Tab Specific Filter & Search
+  const activityTabTransactions = useMemo(() => {
+    return filteredTransactions.filter((tx) => {
+      const q = activitySearch.toLowerCase();
+      const matchesSearch =
+        !q ||
+        (tx.description?.toLowerCase() || "").includes(q) ||
+        (tx.category?.toLowerCase() || "").includes(q) ||
+        (tx.type?.toLowerCase() || "").includes(q) ||
+        (tx.payment_method?.toLowerCase() || "").includes(q);
+
+      const matchesType =
+        activityFilterType === "ALL" ||
+        (activityFilterType === "SALE" && tx.type === "SALE" && tx.payment_method !== "CREDIT") ||
+        (activityFilterType === "CREDIT" && (tx.payment_method === "CREDIT" || tx.type === "DEBT_COLLECTION" || tx.category?.toLowerCase().includes("credit"))) ||
+        (activityFilterType === "STOCK" && tx.type === "STOCK_PURCHASE") ||
+        (activityFilterType === "EXPENSE" && (tx.type === "EXPENSE" || tx.type === "STAFF_PAYMENT")) ||
+        (activityFilterType === "WITHDRAWAL" && tx.type === "OWNER_WITHDRAWAL");
+
+      return matchesSearch && matchesType;
+    });
+  }, [filteredTransactions, activitySearch, activityFilterType]);
 
   // 3. Deterministic Business Intelligence Calculation
   const metrics = useMemo(() => {
@@ -386,24 +416,114 @@ export default function MoniePayDashboard() {
               transition={{ duration: 0.18 }}
               className="space-y-3"
             >
+              {/* Header & Quick Action */}
               <div className="flex items-center justify-between px-1">
-                <h2 className="text-xs font-black uppercase tracking-wider text-slate-500">
-                  Live Business Activity
-                </h2>
-                <button
-                  type="button"
-                  onClick={() => handleOpenRecord("SALE")}
-                  className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black flex items-center gap-1 cursor-pointer active:scale-95 transition-all shadow-xs"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  <span>Add Transaction</span>
-                </button>
+                <div>
+                  <h2 className="text-xs font-black uppercase tracking-wider text-slate-900">
+                    Live Market Activity
+                  </h2>
+                  <p className="text-[10.5px] text-slate-500 font-medium">
+                    Search and filter your shop transactions.
+                  </p>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Link
+                    href="/activity"
+                    className="px-2.5 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold flex items-center gap-1 cursor-pointer shadow-2xs"
+                  >
+                    <SlidersHorizontal className="h-3 w-3 text-emerald-700" />
+                    <span>All Filters</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => handleOpenRecord("SALE")}
+                    className="px-3 py-1.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black flex items-center gap-1 cursor-pointer active:scale-95 transition-all shadow-xs"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    <span>Record</span>
+                  </button>
+                </div>
               </div>
 
+              {/* Search Bar */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  value={activitySearch}
+                  onChange={(e) => setActivitySearch(e.target.value)}
+                  placeholder="Search goods, sales, or customer name..."
+                  className="w-full pl-9 pr-8 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 shadow-2xs"
+                />
+                {activitySearch && (
+                  <button
+                    type="button"
+                    onClick={() => setActivitySearch("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              {/* Quick Filter Chips */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
+                {[
+                  { id: "ALL", label: "All Records" },
+                  { id: "SALE", label: "Sales (Cash In)" },
+                  { id: "CREDIT", label: "Customer Gbese" },
+                  { id: "STOCK", label: "Restock Goods" },
+                  { id: "EXPENSE", label: "Expenses & Fuel" },
+                  { id: "WITHDRAWAL", label: "Chop Money" },
+                ].map((f) => (
+                  <button
+                    key={f.id}
+                    type="button"
+                    onClick={() => setActivityFilterType(f.id)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer transition-all ${
+                      activityFilterType === f.id
+                        ? "bg-emerald-700 text-white shadow-xs"
+                        : "bg-white border border-slate-200 text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Filter Count & Reset */}
+              {(activitySearch || activityFilterType !== "ALL") && (
+                <div className="flex items-center justify-between px-2 py-1 text-[11px] font-bold text-slate-500">
+                  <span>Found {activityTabTransactions.length} matching records</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActivitySearch("");
+                      setActivityFilterType("ALL");
+                    }}
+                    className="text-rose-600 hover:underline cursor-pointer"
+                  >
+                    Clear Filter
+                  </button>
+                </div>
+              )}
+
+              {/* Activity List */}
               <RecentActivityList
-                transactions={filteredTransactions}
+                transactions={activityTabTransactions}
                 onOpenRecordModal={() => handleOpenRecord("SALE")}
               />
+
+              {/* View Full Dedicated Activity Link */}
+              <div className="pt-2 text-center">
+                <Link
+                  href="/activity"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-white border border-slate-200 hover:border-emerald-500 text-slate-800 hover:text-emerald-800 text-xs font-black shadow-xs transition-all cursor-pointer"
+                >
+                  <span>Open Full Activity Page & Pagination</span>
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Link>
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
