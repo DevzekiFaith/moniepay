@@ -133,37 +133,44 @@ export default function VendorReviewsManagementPage() {
   return (
     <div className="min-h-screen bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100 pb-20 transition-colors">
       {/* ── TOP HEADER BAR ── */}
-      <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 px-4 py-3">
-        <div className="max-w-4xl mx-auto flex items-center justify-between">
+      <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 px-3 sm:px-4 py-2.5 sm:py-3">
+        <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
+          {/* Left: Back to Shop Dashboard */}
           <Link
             href="/"
-            className="flex items-center gap-1.5 text-xs font-black text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors"
+            aria-label="Back to Dashboard"
+            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-black text-slate-800 dark:text-slate-100 transition-colors shrink-0 active:scale-95 border border-slate-200/60 dark:border-white/10"
           >
             <ChevronLeft className="h-4 w-4" />
-            <span>Dashboard</span>
+            <span className="hidden xs:inline">Back to Shop</span>
+            <span className="xs:hidden">Shop</span>
           </Link>
 
-          <div className="flex items-center gap-2">
-            <MoniePayMark size={30} />
-            <h1 className="text-sm font-black text-slate-900 dark:text-white">
-              Customer Reviews &amp; Feedback
+          {/* Center: Brand & Title */}
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1 justify-center sm:justify-start sm:flex-initial">
+            <div className="shrink-0 flex items-center">
+              <MoniePayMark size={28} />
+            </div>
+            <h1 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate">
+              Customer Reviews &amp; Rating
             </h1>
           </div>
 
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
+          {/* Right: Theme Toggle */}
+          <div className="flex items-center gap-2 shrink-0">
+            <ThemeToggle size="sm" />
           </div>
         </div>
       </header>
 
       {/* ── MAIN CONTAINER ── */}
-      <main className="max-w-4xl mx-auto px-4 pt-4 space-y-4">
+      <main className="max-w-4xl mx-auto px-3.5 sm:px-4 pt-4 space-y-4">
         {/* ── 1. VENDOR SCORE OVERVIEW & EASY SHARE BAR ── */}
-        <div className="clay-card p-5 space-y-4 bg-white/95 dark:bg-slate-900/95 border border-white/80 dark:border-white/10 shadow-xl rounded-[28px]">
+        <div className="clay-card p-4 sm:p-5 space-y-4 bg-white/95 dark:bg-slate-900/95 border border-white/80 dark:border-white/10 shadow-xl rounded-[28px]">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             {/* Score & Profile Summary */}
-            <div className="flex items-center gap-4 text-center sm:text-left">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex flex-col items-center justify-center shadow-md shrink-0">
+            <div className="flex items-center gap-3 sm:gap-4 text-center sm:text-left">
+              <div className="h-15 w-15 sm:h-16 sm:w-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex flex-col items-center justify-center shadow-md shrink-0">
                 <span className="text-2xl font-black leading-none">{stats.average}</span>
                 <div className="flex items-center gap-0.5 mt-0.5">
                   {[...Array(5)].map((_, i) => (
@@ -174,16 +181,16 @@ export default function VendorReviewsManagementPage() {
 
               <div>
                 <div className="flex items-center gap-1.5 justify-center sm:justify-start">
-                  <h2 className="text-base font-black text-slate-900 dark:text-white">
+                  <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
                     {vendor?.shopName}
                   </h2>
-                  <span className="px-1.5 py-0.2 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-0.5">
+                  <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-0.5 border border-emerald-300 dark:border-emerald-700">
                     <ShieldCheck className="h-2.5 w-2.5" />
-                    Verified
+                    Verified Shop
                   </span>
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                  <strong>{stats.total} total reviews</strong> • 100% Verified customer feedback
+                <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
+                  <strong>{stats.total} Customer Reviews</strong> • 100% Real Buyers No Scam
                 </p>
               </div>
             </div>
@@ -224,8 +231,8 @@ export default function VendorReviewsManagementPage() {
 
           {/* ── EASY SHARING BAR FOR CUSTOMERS ── */}
           <div className="pt-3 border-t border-slate-100 dark:border-white/10 space-y-2">
-            <p className="text-[11px] font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">
-              Share With Customers to Get More Reviews:
+            <p className="text-[11px] font-black uppercase text-slate-600 dark:text-slate-300 tracking-wider">
+              Share Make Customers Rate Your Shop Sharp-Sharp:
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -233,7 +240,7 @@ export default function VendorReviewsManagementPage() {
                 href={shareLinks.whatsappReviewLink}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="py-3 px-3 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
+                className="py-2.5 sm:py-3 px-3 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
               >
                 <MessageCircle className="h-4 w-4" />
                 <span>Send WhatsApp Review Link</span>
@@ -242,16 +249,16 @@ export default function VendorReviewsManagementPage() {
               <button
                 type="button"
                 onClick={handleCopyLink}
-                className="py-3 px-3 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer"
+                className="py-2.5 sm:py-3 px-3 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 text-xs font-bold flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer border border-slate-200 dark:border-slate-700"
               >
-                {copied ? <Check className="h-4 w-4 text-emerald-600" /> : <Copy className="h-4 w-4" />}
-                <span>{copied ? "Review Link Copied!" : "Copy Review Link"}</span>
+                {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
+                <span>{copied ? "Review Link Don Copy!" : "Copy Shop Review Link"}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setShowQrStandModal(true)}
-                className="py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
+                className="py-2.5 sm:py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
               >
                 <QrCode className="h-4 w-4" />
                 <span>Print Countertop QR Stand</span>
@@ -489,38 +496,38 @@ export default function VendorReviewsManagementPage() {
               className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] p-5 text-slate-900 dark:text-slate-100 shadow-2xl border border-slate-200 dark:border-white/10 space-y-4"
             >
               <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-white/10">
-                <div className="flex items-center gap-2">
-                  <Reply className="h-4 w-4 text-blue-600" />
+                <div className="flex items-center gap-2 text-blue-600 dark:text-sky-300">
+                  <Reply className="h-4 w-4" />
                   <h3 className="font-black text-sm">
-                    Reply to {replyingReview.customerName}
+                    Reply {replyingReview.customerName}
                   </h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setReplyingReview(null)}
-                  className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
               <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-white/10 text-xs space-y-1">
-                <span className="font-bold text-slate-500">Customer said:</span>
+                <span className="font-bold text-slate-500 dark:text-slate-400">Customer talk say:</span>
                 <p className="font-medium text-slate-700 dark:text-slate-200 italic">
-                  "{replyingReview.comment || "Left a star rating"}"
+                  "{replyingReview.comment || "Gave a star rating"}"
                 </p>
               </div>
 
               <form onSubmit={handleSendReply} className="space-y-3">
-                <label className="text-xs font-bold block">
-                  Your Public Shop Owner Response:
+                <label className="text-xs font-bold block text-slate-800 dark:text-slate-200">
+                  Your Public Shop Reply:
                 </label>
                 <textarea
                   rows={3}
                   required
                   value={replyText}
                   onChange={(e) => setReplyText(e.target.value)}
-                  placeholder="E.g. Thank you for your market patronage! We look forward to seeing you again. 🙏"
+                  placeholder="E.g. Thank you well-well for buying from us! God bless your hustle. 🙏"
                   className="w-full p-3 rounded-2xl clay-input text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none resize-none"
                 />
 
@@ -528,7 +535,7 @@ export default function VendorReviewsManagementPage() {
                   <button
                     type="button"
                     onClick={() => setReplyingReview(null)}
-                    className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs cursor-pointer"
+                    className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs cursor-pointer text-slate-700 dark:text-slate-200"
                   >
                     Cancel
                   </button>
@@ -538,7 +545,7 @@ export default function VendorReviewsManagementPage() {
                     className="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-98 cursor-pointer"
                   >
                     <Send className="h-3.5 w-3.5" />
-                    <span>Publish Reply</span>
+                    <span>Post Reply Sharp-sharp</span>
                   </button>
                 </div>
               </form>
@@ -558,45 +565,45 @@ export default function VendorReviewsManagementPage() {
               className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-[28px] p-5 text-slate-900 dark:text-slate-100 shadow-2xl border border-slate-200 dark:border-white/10 space-y-4"
             >
               <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-white/10">
-                <div className="flex items-center gap-2 text-rose-600">
+                <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
                   <Flag className="h-4 w-4" />
-                  <h3 className="font-black text-sm">Report Review to Moderation</h3>
+                  <h3 className="font-black text-sm">Report Review to Admin</h3>
                 </div>
                 <button
                   type="button"
                   onClick={() => setReportingReview(null)}
-                  className="p-1 text-slate-400 hover:text-slate-600 cursor-pointer"
+                  className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
                 >
                   <X className="h-4 w-4" />
                 </button>
               </div>
 
-              <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 text-amber-900 dark:text-amber-200 text-xs">
-                Vendors cannot delete customer reviews directly. Reported reviews enter the <strong>MoniePay Admin Queue</strong> for investigation.
+              <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/80 text-amber-900 dark:text-amber-100 text-xs">
+                Shops no fit delete review directly. Reported reviews dey go <strong>MoniePay Admin Queue</strong> make we check am sharp-sharp.
               </div>
 
               <form onSubmit={handleSendReport} className="space-y-3 text-xs">
                 <div className="space-y-1">
-                  <label className="font-bold">Reason for Report:</label>
+                  <label className="font-bold text-slate-800 dark:text-slate-200">Reason why you dey report:</label>
                   <select
                     value={reportReason}
                     onChange={(e) => setReportReason(e.target.value)}
                     className="w-full p-2.5 rounded-xl clay-input text-xs font-semibold text-slate-900 dark:text-white bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
                   >
-                    <option value="Spam / Bot Review">Spam / Bot Review</option>
-                    <option value="Competitor Abuse / False Info">Competitor Abuse / False Info</option>
-                    <option value="Inappropriate Language">Inappropriate Language</option>
-                    <option value="Harassment">Harassment</option>
+                    <option value="Spam / Bot Review">Spam / Fake Bot Review</option>
+                    <option value="Competitor Abuse / False Info">Competitor Wahala / False Info</option>
+                    <option value="Inappropriate Language">Bad / Inappropriate Language</option>
+                    <option value="Harassment">Harassment / Insult</option>
                   </select>
                 </div>
 
                 <div className="space-y-1">
-                  <label className="font-bold">Additional details for Admin:</label>
+                  <label className="font-bold text-slate-800 dark:text-slate-200">Extra gist for Admin:</label>
                   <textarea
                     rows={2}
                     value={reportNote}
                     onChange={(e) => setReportNote(e.target.value)}
-                    placeholder="Provide context on why this review violates platform rules..."
+                    placeholder="Provide details why this review violate market rules..."
                     className="w-full p-2.5 rounded-xl clay-input text-xs text-slate-900 dark:text-white bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 resize-none"
                   />
                 </div>
@@ -605,7 +612,7 @@ export default function VendorReviewsManagementPage() {
                   <button
                     type="button"
                     onClick={() => setReportingReview(null)}
-                    className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs cursor-pointer"
+                    className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-xs cursor-pointer text-slate-700 dark:text-slate-200"
                   >
                     Cancel
                   </button>
@@ -615,7 +622,7 @@ export default function VendorReviewsManagementPage() {
                     className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-98 cursor-pointer"
                   >
                     <AlertTriangle className="h-3.5 w-3.5" />
-                    <span>Submit Report</span>
+                    <span>Send Report to Admin</span>
                   </button>
                 </div>
               </form>
