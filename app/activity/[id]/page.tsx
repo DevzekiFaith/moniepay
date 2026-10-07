@@ -35,6 +35,7 @@ import {
   Coins,
 } from "lucide-react";
 import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
+import { SubscriptionStatusPill } from "@/components/subscription/SubscriptionStatusPill";
 import { formatNaira, formatTransactionDate } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
 import { useNotification } from "@/context/NotificationContext";
@@ -421,6 +422,8 @@ _Powered by MoniePay_`;
             </button>
 
             <div className="flex items-center gap-1.5 sm:gap-2">
+              <SubscriptionStatusPill />
+
               <button
                 type="button"
                 onClick={handleDownloadReceipt}

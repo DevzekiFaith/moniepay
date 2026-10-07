@@ -11,6 +11,7 @@ import { usePathname } from "next/navigation";
 import { AjoLogo } from "@/components/ui/AjoLogo";
 import { useAuth } from "@/context/AuthContext";
 import { LogoutModal } from "@/components/ui/LogoutModal";
+import { SubscriptionStatusPill } from "@/components/subscription/SubscriptionStatusPill";
 import {
   Home,
   ArrowLeftRight,
@@ -70,6 +71,9 @@ export function AppMobileHeader() {
         </Link>
 
         <div className="flex items-center gap-2">
+          {/* Real-Time Subscription & Trial Days Pill */}
+          <SubscriptionStatusPill />
+
           {user ? (
             <Link
               href="/profile"
@@ -78,7 +82,7 @@ export function AppMobileHeader() {
               <div className="h-5 w-5 rounded-full bg-emerald-700 text-white flex items-center justify-center text-[10px] font-black">
                 {(user.name?.[0] || "M").toUpperCase()}
               </div>
-              <span className="max-w-[90px] truncate">{user.name?.split(" ")[0]}</span>
+              <span className="max-w-[80px] truncate hidden sm:inline">{user.name?.split(" ")[0]}</span>
             </Link>
           ) : (
             <Link
@@ -105,7 +109,7 @@ export function AppSidebar() {
       <aside className="hidden md:flex flex-col justify-between w-64 border-r border-emerald-900/10 bg-white min-h-screen p-4 sticky top-0">
         <div className="space-y-6">
           {/* Logo */}
-          <div className="px-2 py-2">
+          <div className="px-2 py-2 flex items-center justify-between">
             <AjoLogo size={32} showTagline={true} />
           </div>
 
@@ -144,8 +148,13 @@ export function AppSidebar() {
           </nav>
         </div>
 
-        {/* Footer / Account */}
-        <div className="pt-4 border-t border-slate-100 space-y-2">
+        {/* Footer / Account & Subscription Status */}
+        <div className="pt-4 border-t border-slate-100 space-y-2.5">
+          {/* Subscription Status Pill */}
+          <div className="px-1 flex justify-start">
+            <SubscriptionStatusPill />
+          </div>
+
           {user && (
             <div className="flex items-center justify-between p-2 rounded-2xl bg-emerald-50/70 border border-emerald-100">
               <div className="min-w-0">
@@ -179,28 +188,30 @@ export function AppSidebar() {
   );
 }
 
-// ── Mobile Bottom Bar ─────────────────────────────────────────────
+// ── Mobile Bottom Navigation Bar ──────────────────────────────────
 export function AppBottomBar() {
   const pathname = usePathname();
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 border-t border-emerald-900/10 backdrop-blur-md px-1 sm:px-2 py-1.5 pb-[max(0.5rem,env(safe-area-inset-bottom))] flex items-center justify-around shadow-lg">
-      {MOBILE_NAV_ITEMS.map((item) => {
-        const isActive = pathname === item.href;
-        const Icon = item.icon;
-        return (
-          <Link
-            key={item.href}
-            href={item.href}
-            className={`flex flex-col items-center justify-center py-1 px-1 sm:px-2 rounded-xl text-[10px] font-bold transition-all min-w-[50px] ${
-              isActive ? "text-emerald-800 font-black" : "text-slate-400 hover:text-slate-700"
-            }`}
-          >
-            <Icon className={`h-5 w-5 ${isActive ? "text-emerald-700 stroke-[2.5]" : "text-slate-400"}`} />
-            <span className="mt-0.5 text-[9.5px] sm:text-[10px] leading-tight truncate">{item.label}</span>
-          </Link>
-        );
-      })}
+    <nav className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 border-t border-emerald-900/10 px-2 py-1.5 backdrop-blur-md">
+      <div className="flex items-center justify-around">
+        {MOBILE_NAV_ITEMS.map((item) => {
+          const isActive = pathname === item.href;
+          const Icon = item.icon;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`flex flex-col items-center gap-0.5 px-3 py-1 rounded-xl text-[10.5px] font-bold transition-all ${
+                isActive ? "text-emerald-700 font-black" : "text-slate-500 hover:text-slate-900"
+              }`}
+            >
+              <Icon className={`h-4.5 w-4.5 ${isActive ? "text-emerald-700" : "text-slate-400"}`} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }
