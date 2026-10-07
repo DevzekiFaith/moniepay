@@ -25,16 +25,45 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+import { WelcomeIntroScreen } from "@/components/intro/WelcomeIntroScreen";
+
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, loginDemo, registerShop, isAuthenticated, isLoading: authLoading } = useAuth();
 
+  const [showIntro, setShowIntro] = useState<boolean | null>(null);
   const [mode, setMode] = useState<"signin" | "register">("signin");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+
+  // Check intro status on mount
+  useEffect(() => {
+    const forceIntro = searchParams?.get("intro") === "1";
+    if (forceIntro) {
+      setShowIntro(true);
+      return;
+    }
+    try {
+      const seen = localStorage.getItem("moniepay_seen_intro");
+      if (!seen) {
+        setShowIntro(true);
+      } else {
+        setShowIntro(false);
+      }
+    } catch (e) {
+      setShowIntro(true);
+    }
+  }, [searchParams]);
+
+  const handleFinishIntro = () => {
+    try {
+      localStorage.setItem("moniepay_seen_intro", "true");
+    } catch (e) {}
+    setShowIntro(false);
+  };
 
   // Register fields
   const [fullName, setFullName] = useState("");
@@ -153,81 +182,128 @@ function LoginContent() {
     }
   };
 
+  // While checking intro state, return loading placeholder
+  if (showIntro === null) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#edf3fb] text-slate-900">
+        <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden bg-[#edf3fb] selection:bg-blue-500/20">
-      {/* ── AMBIENT 3D FROSTED GLASS BACKGROUND ELEMENTS ── */}
-      <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-gradient-to-br from-blue-300/30 to-indigo-200/20 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-gradient-to-tl from-blue-400/25 to-sky-200/20 blur-3xl" />
-      
-      {/* Top Floating 3D Soft Orb */}
-      <div className="pointer-events-none absolute top-12 left-1/4 h-32 w-32 rounded-full bg-white/40 shadow-[10px_10px_30px_rgba(160,185,218,0.4)] backdrop-blur-xl border border-white/80 float-3d" />
-      <div className="pointer-events-none absolute bottom-16 right-1/4 h-24 w-24 rounded-full bg-white/30 shadow-[8px_8px_24px_rgba(160,185,218,0.35)] backdrop-blur-lg border border-white/70 float-3d" style={{ animationDelay: "-3s" }} />
-
-      {/* ── MAIN 3D SOFT GLASS AUTH CONTAINER ── */}
-      <div className="relative w-full max-w-sm sm:max-w-md my-6 z-10 space-y-5">
-        {/* 3D User Profile & Welcoming Hero (Flex Presentation with Bold Text Hierarchy) */}
+    <AnimatePresence mode="wait">
+      {showIntro ? (
         <motion.div
-          initial={{ opacity: 0, y: -14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="clay-card p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left relative overflow-hidden"
+          key="welcome-intro-screen"
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, y: -20, scale: 0.96 }}
+          transition={{ duration: 0.35, ease: "easeInOut" }}
+          className="w-full"
         >
-          {/* Ambient refraction top line */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-sky-400 opacity-90" />
-
-          {/* 3D Profile Avatar */}
-          <div className="relative flex h-20 w-20 sm:h-22 sm:w-22 items-center justify-center rounded-[28px] clay-icon-box p-1 shrink-0 shadow-[0_10px_25px_rgba(154,180,214,0.45)] group">
-            <div className="relative h-full w-full rounded-[22px] overflow-hidden bg-slate-100 border border-white/80">
-              <img
-                src={avatarUrl}
-                alt="Trader Profile"
-                className="h-full w-full object-cover object-center"
-                onError={(e) => {
-                  e.currentTarget.src = "/images/traders/mama_chidi.jpg";
-                }}
-              />
-              {mode === "register" && (
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-                  title="Upload profile photo"
-                >
-                  <Camera className="h-5 w-5" />
-                  <span className="text-[9px] font-bold mt-0.5">Change</span>
-                </button>
-              )}
-            </div>
-
-            {/* Active / Verified Online Dot */}
-            <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
-          </div>
-
-          {/* Text Hierarchy */}
-          <div className="flex-1 min-w-0 space-y-1.5">
-            {/* Micro Tag / Category */}
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-700 text-[10.5px] font-black tracking-wide uppercase">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
-              <span>Trader Shop Portal</span>
-            </div>
-
-            {/* Main Headline - Bold & Prominent */}
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
-              {mode === "signin" ? "Welcome Back O!" : "Open Your Shop Sharp-Sharp"}
-            </h1>
-
-            {/* Descriptive Body - Concise & Direct */}
-            {mode === "signin" ? (
-              <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
-                Enter your shop make you see your daily profit &amp; track customer gbese.
-              </p>
-            ) : (
-              <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
-                Open your shop record book in 30 seconds, no shaking.
-              </p>
-            )}
-          </div>
+          <WelcomeIntroScreen
+            onComplete={handleFinishIntro}
+            onSkip={handleFinishIntro}
+          />
         </motion.div>
+      ) : (
+        <motion.div
+          key="signin-portal-screen"
+          initial={{ opacity: 0, y: 20, scale: 0.96 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -20, scale: 0.96 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="min-h-screen relative flex flex-col items-center justify-center p-4 sm:p-6 overflow-hidden bg-[#edf3fb] selection:bg-blue-500/20"
+        >
+          {/* ── AMBIENT 3D FROSTED GLASS BACKGROUND ELEMENTS ── */}
+          <div className="pointer-events-none absolute -top-24 -left-24 h-96 w-96 rounded-full bg-gradient-to-br from-blue-300/30 to-indigo-200/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -right-24 h-96 w-96 rounded-full bg-gradient-to-tl from-blue-400/25 to-sky-200/20 blur-3xl" />
+          
+          {/* Top Floating 3D Soft Orb */}
+          <div className="pointer-events-none absolute top-12 left-1/4 h-32 w-32 rounded-full bg-white/40 shadow-[10px_10px_30px_rgba(160,185,218,0.4)] backdrop-blur-xl border border-white/80 float-3d" />
+          <div className="pointer-events-none absolute bottom-16 right-1/4 h-24 w-24 rounded-full bg-white/30 shadow-[8px_8px_24px_rgba(160,185,218,0.35)] backdrop-blur-lg border border-white/70 float-3d" style={{ animationDelay: "-3s" }} />
+
+          {/* ── MAIN 3D SOFT GLASS AUTH CONTAINER ── */}
+          <div className="relative w-full max-w-sm sm:max-w-md my-6 z-10 space-y-5">
+            {/* Top Bar with Replay Intro Button */}
+            <div className="flex items-center justify-between px-1">
+              <button
+                type="button"
+                onClick={() => setShowIntro(true)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-white/70 hover:bg-white border border-white/80 text-xs font-black text-blue-700 shadow-2xs backdrop-blur-md active:scale-95 transition-all cursor-pointer"
+              >
+                <span>✨ Watch Intro Tour</span>
+              </button>
+
+              <span className="text-[11px] font-bold text-slate-500">
+                MoniePay v2.0
+              </span>
+            </div>
+
+            {/* 3D User Profile & Welcoming Hero (Flex Presentation with Bold Text Hierarchy) */}
+            <motion.div
+              initial={{ opacity: 0, y: -14 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="clay-card p-4 sm:p-5 flex flex-col sm:flex-row items-center sm:items-start gap-4 text-center sm:text-left relative overflow-hidden"
+            >
+              {/* Ambient refraction top line */}
+              <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-500 to-sky-400 opacity-90" />
+
+              {/* 3D Profile Avatar */}
+              <div className="relative flex h-20 w-20 sm:h-22 sm:w-22 items-center justify-center rounded-[28px] clay-icon-box p-1 shrink-0 shadow-[0_10px_25px_rgba(154,180,214,0.45)] group">
+                <div className="relative h-full w-full rounded-[22px] overflow-hidden bg-slate-100 border border-white/80">
+                  <img
+                    src={avatarUrl}
+                    alt="Trader Profile"
+                    className="h-full w-full object-cover object-center"
+                    onError={(e) => {
+                      e.currentTarget.src = "/images/traders/mama_chidi.jpg";
+                    }}
+                  />
+                  {mode === "register" && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      className="absolute inset-0 bg-black/40 flex flex-col items-center justify-center text-white opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      title="Upload profile photo"
+                    >
+                      <Camera className="h-5 w-5" />
+                      <span className="text-[9px] font-bold mt-0.5">Change</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Active / Verified Online Dot */}
+                <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-white shadow-xs" />
+              </div>
+
+              {/* Text Hierarchy */}
+              <div className="flex-1 min-w-0 space-y-1.5">
+                {/* Micro Tag / Category */}
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50/90 border border-blue-200/80 text-blue-700 text-[10.5px] font-black tracking-wide uppercase">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
+                  <span>Trader Shop Portal</span>
+                </div>
+
+                {/* Main Headline - Bold & Prominent */}
+                <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-snug">
+                  {mode === "signin" ? "Welcome Back O!" : "Open Your Shop Sharp-Sharp"}
+                </h1>
+
+                {/* Descriptive Body - Concise & Direct */}
+                {mode === "signin" ? (
+                  <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
+                    Enter your shop make you see your daily profit &amp; track customer gbese.
+                  </p>
+                ) : (
+                  <p className="text-xs sm:text-[13px] text-slate-600 font-medium leading-snug pt-0.5">
+                    Open your shop record book in 30 seconds, no shaking.
+                  </p>
+                )}
+              </div>
+            </motion.div>
 
         {/* ── 2ND POSITION: MONIEPAY TRADER MOTTO & 3-STEP FLOW ── */}
         <motion.div
@@ -485,7 +561,9 @@ function LoginContent() {
           MONIEPAY • BALOGUN MARKET PORTAL
         </p>
       </div>
-    </div>
+    </motion.div>
+  )}
+</AnimatePresence>
   );
 }
 
