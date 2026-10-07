@@ -218,10 +218,10 @@ export function NotificationBellDrawer() {
 
               {/* Push Permission Prompt Strip */}
               {permission !== "granted" && permission !== "unsupported" && (
-                <div className="p-3 bg-amber-500/10 border-b border-amber-500/20 flex items-center justify-between gap-2 shrink-0">
+                <div className="p-3 bg-amber-500/10 dark:bg-amber-950/40 border-b border-amber-500/20 dark:border-amber-800 flex items-center justify-between gap-2 shrink-0">
                   <div className="flex items-center gap-2 min-w-0">
-                    <Radio className="h-4 w-4 text-amber-600 shrink-0 animate-pulse" />
-                    <p className="text-[11px] font-bold text-amber-950 leading-tight">
+                    <Radio className="h-4 w-4 text-amber-600 dark:text-amber-400 shrink-0 animate-pulse" />
+                    <p className="text-[11px] font-bold text-amber-950 dark:text-amber-200 leading-tight">
                       Turn on phone alerts make MoniePay ping you sharp-sharp when customer pay
                     </p>
                   </div>
@@ -251,7 +251,7 @@ export function NotificationBellDrawer() {
                       className={`px-3 py-1.5 text-xs font-black rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
                         activeFilter === tab.id
                           ? "bg-blue-600 text-white shadow-sm"
-                          : "text-slate-600 hover:text-slate-900 bg-white/25 hover:bg-white/40 border border-white/40"
+                          : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-white/25 dark:bg-slate-800/60 hover:bg-white/40 dark:hover:bg-slate-800 border border-white/40 dark:border-white/10"
                       }`}
                     >
                       <span>{tab.label}</span>
@@ -260,7 +260,7 @@ export function NotificationBellDrawer() {
                           className={`text-[9.5px] px-1.5 py-0.5 rounded-full font-bold ${
                             activeFilter === tab.id
                               ? "bg-white/25 text-white"
-                              : "bg-blue-100/80 text-blue-900"
+                              : "bg-blue-100/80 dark:bg-blue-950 text-blue-900 dark:text-blue-200"
                           }`}
                         >
                           {tab.count}
@@ -274,7 +274,7 @@ export function NotificationBellDrawer() {
                   <button
                     type="button"
                     onClick={markAllAsRead}
-                    className="text-xs font-bold text-blue-700 hover:text-blue-900 shrink-0 cursor-pointer flex items-center gap-1 bg-blue-50/80 hover:bg-blue-100 px-2.5 py-1.5 rounded-xl border border-blue-200/60 transition-colors"
+                    className="text-xs font-bold text-blue-700 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 shrink-0 cursor-pointer flex items-center gap-1 bg-blue-50/80 dark:bg-blue-950/80 hover:bg-blue-100 dark:hover:bg-blue-900 px-2.5 py-1.5 rounded-xl border border-blue-200/60 dark:border-blue-800 transition-colors"
                   >
                     <Check className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Mark all</span>
@@ -293,45 +293,45 @@ export function NotificationBellDrawer() {
                       onClick={() => markAsRead(n.id)}
                       className={`p-3.5 sm:p-4 rounded-2xl transition-all cursor-pointer relative ${
                         n.read
-                          ? "bg-white/25 hover:bg-white/40 border border-white/35 text-slate-700 shadow-2xs"
-                          : "bg-white/45 hover:bg-white/55 border border-blue-300/50 text-slate-900 shadow-xs ring-1 ring-blue-400/20"
+                          ? "bg-white/25 dark:bg-slate-800/40 hover:bg-white/40 dark:hover:bg-slate-800/60 border border-white/35 dark:border-white/10 text-slate-700 dark:text-slate-300 shadow-2xs"
+                          : "bg-white/45 dark:bg-slate-800/80 hover:bg-white/55 dark:hover:bg-slate-800 border border-blue-300/50 dark:border-blue-700/60 text-slate-900 dark:text-white shadow-xs ring-1 ring-blue-400/20"
                       }`}
                     >
                       {!n.read && (
-                        <span className="absolute top-3.5 right-3.5 h-2.5 w-2.5 rounded-full bg-blue-600 ring-4 ring-blue-200 animate-pulse" />
+                        <span className="absolute top-3.5 right-3.5 h-2.5 w-2.5 rounded-full bg-blue-600 ring-4 ring-blue-200 dark:ring-blue-900 animate-pulse" />
                       )}
 
                       <div className="flex items-start gap-3">
                         <div
-                          className={`p-2.5 rounded-2xl bg-white/40 border border-white/50 shadow-2xs shrink-0 mt-0.5 ${
+                          className={`p-2.5 rounded-2xl bg-white/40 dark:bg-slate-700/60 border border-white/50 dark:border-white/10 shadow-2xs shrink-0 mt-0.5 ${
                             n.type === "debt_reminder"
-                              ? "text-amber-600"
+                              ? "text-amber-600 dark:text-amber-400"
                               : n.type === "price_alert"
-                              ? "text-rose-600"
+                              ? "text-rose-600 dark:text-rose-400"
                               : n.type === "sales_milestone"
-                              ? "text-emerald-600"
-                              : "text-amber-500"
+                              ? "text-emerald-600 dark:text-emerald-400"
+                              : "text-amber-500 dark:text-amber-400"
                           }`}
                         >
                           {getNotificationIcon(n.type)}
                         </div>
 
                         <div className="flex-1 min-w-0 pr-2">
-                          <h4 className="text-xs sm:text-sm font-black text-slate-900 leading-tight">
+                          <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
                             {n.title}
                           </h4>
 
-                          <p className="text-xs text-slate-600 leading-relaxed mt-1 font-medium">
+                          <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed mt-1 font-medium">
                             {n.message}
                           </p>
 
                           <div className="mt-2.5 flex items-center justify-between gap-2">
-                            <span className="text-[10.5px] font-semibold text-slate-400">
+                            <span className="text-[10.5px] font-semibold text-slate-400 dark:text-slate-500">
                               {n.timestamp}
                             </span>
 
                             {n.amount && (
-                              <span className="text-xs font-black text-blue-900 bg-blue-50/70 border border-blue-200/60 px-2.5 py-0.5 rounded-xl font-mono shadow-2xs">
+                              <span className="text-xs font-black text-blue-900 dark:text-blue-200 bg-blue-50/70 dark:bg-blue-950/80 border border-blue-200/60 dark:border-blue-800 px-2.5 py-0.5 rounded-xl font-mono shadow-2xs">
                                 {n.amount}
                               </span>
                             )}
@@ -339,7 +339,7 @@ export function NotificationBellDrawer() {
 
                           {/* Actionable Button */}
                           {n.actionLabel && (
-                            <div className="mt-2.5 pt-2 border-t border-white/30 flex items-center justify-between">
+                            <div className="mt-2.5 pt-2 border-t border-white/30 dark:border-white/10 flex items-center justify-between">
                               <button
                                 type="button"
                                 onClick={(e) => handleActionClick(n, e)}
@@ -356,12 +356,12 @@ export function NotificationBellDrawer() {
                   ))
                 ) : (
                   <div className="text-center py-16 space-y-3">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/30 border border-white/45 text-slate-400 mx-auto">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/30 dark:bg-slate-800 border border-white/45 dark:border-white/10 text-slate-400 dark:text-slate-500 mx-auto">
                       <Bell className="h-6 w-6" />
                     </div>
                     <div>
-                      <p className="text-xs font-black text-slate-700">No alert for this section right now</p>
-                      <p className="text-[11px] text-slate-400 max-w-xs mx-auto mt-0.5 font-medium leading-relaxed">
+                      <p className="text-xs font-black text-slate-700 dark:text-slate-200">No alert for this section right now</p>
+                      <p className="text-[11px] text-slate-400 dark:text-slate-500 max-w-xs mx-auto mt-0.5 font-medium leading-relaxed">
                         Your customer debts, sales progress and market price updates go appear here.
                       </p>
                     </div>
@@ -370,8 +370,8 @@ export function NotificationBellDrawer() {
               </div>
 
               {/* Drawer Footer Actions */}
-              <div className="p-3.5 sm:p-4 bg-[#edf3fb]/60 dark:bg-slate-900/60 backdrop-blur-md border-t border-white/40 dark:border-white/10 flex items-center justify-between gap-2 shrink-0">
-                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500">
+              <div className="p-3.5 sm:p-4 bg-[#edf3fb]/60 dark:bg-slate-900/90 backdrop-blur-md border-t border-white/40 dark:border-white/10 flex items-center justify-between gap-2 shrink-0">
+                <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                   <span>Due debt & market alerts sync automatically</span>
                 </div>
@@ -379,7 +379,7 @@ export function NotificationBellDrawer() {
                 <button
                   type="button"
                   onClick={clearNotifications}
-                  className="p-2 rounded-xl bg-white/40 hover:bg-white/70 border border-white/50 text-slate-400 hover:text-rose-600 text-xs font-bold cursor-pointer transition-colors shadow-2xs"
+                  className="p-2 rounded-xl bg-white/40 dark:bg-slate-800 hover:bg-white/70 dark:hover:bg-slate-700 border border-white/50 dark:border-white/10 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 text-xs font-bold cursor-pointer transition-colors shadow-2xs"
                   title="Clear all alerts"
                 >
                   <Trash2 className="h-4 w-4" />

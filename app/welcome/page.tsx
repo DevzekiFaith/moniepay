@@ -18,40 +18,47 @@ import {
   Compass,
   CheckCircle2,
 } from "lucide-react";
-import { AjoLogo } from "@/components/ui/AjoLogo";
+import { MoniePayMark } from "@/components/ui/MoniePayLogo";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function WelcomePage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white flex flex-col justify-between overflow-x-hidden transition-colors">
       {/* Top Navbar */}
-      <header className="w-full border-b border-emerald-900/10 bg-white/90 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5">
+      <header className="w-full border-b border-emerald-900/10 dark:border-white/10 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-8 py-3.5">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
-          <AjoLogo size={32} showTagline={false} />
-          <Link
-            href="/login"
-            className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm cursor-pointer active:scale-95 transition-all shadow-xs"
-          >
-            Open Shop
+          <Link href="/" className="flex items-center gap-2">
+            <MoniePayMark size={32} />
+            <span className="text-base font-black tracking-tight text-slate-900 dark:text-white">MoniePay</span>
           </Link>
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            <Link
+              href="/login"
+              className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs sm:text-sm cursor-pointer active:scale-95 transition-all shadow-xs"
+            >
+              Open Shop
+            </Link>
+          </div>
         </div>
       </header>
 
       {/* Hero Section */}
       <main className="flex-1 w-full max-w-3xl mx-auto px-4 sm:px-6 py-8 sm:py-16 text-center space-y-6">
         {/* Market Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-black">
-          <Store className="h-3.5 w-3.5 text-emerald-700" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-300 text-xs font-black">
+          <Store className="h-3.5 w-3.5 text-emerald-700 dark:text-emerald-400" />
           <span>Informal Business Operating Layer</span>
         </div>
 
         {/* Big Headline */}
-        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-[1.15]">
+        <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
           You run your shop. <br />
-          <span className="text-emerald-700">MoniePay does the thinking.</span>
+          <span className="text-emerald-700 dark:text-emerald-400">MoniePay does the thinking.</span>
         </h1>
 
         {/* Subtitle */}
-        <p className="text-sm sm:text-base text-slate-600 font-medium max-w-xl mx-auto leading-relaxed">
+        <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 font-medium max-w-xl mx-auto leading-relaxed">
           Tell MoniePay what happened in plain words. Get instant answers on safe chop money, restocking funds, customer debt collection, and profit margins.
         </p>
 
@@ -59,7 +66,7 @@ export default function WelcomePage() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
           <Link
             href="/login"
-            className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all shadow-lg shadow-emerald-900/20"
+            className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all shadow-lg shadow-emerald-900/20"
           >
             <span>Start Using MoniePay</span>
             <ArrowRight className="h-4 w-4" />
@@ -68,32 +75,32 @@ export default function WelcomePage() {
 
         {/* 3 Core Value Props Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 pt-8 text-left">
-          <div className="rounded-[22px] bg-white border border-emerald-900/10 p-4 sm:p-5 shadow-xs space-y-2">
-            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+          <div className="rounded-[22px] bg-white dark:bg-slate-900 border border-emerald-900/10 dark:border-white/10 p-4 sm:p-5 shadow-xs space-y-2">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
               <Zap className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-black text-slate-900">Tell MoniePay</h3>
-            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+            <h3 className="text-sm font-black text-slate-900 dark:text-white">Tell MoniePay</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
               Type or speak “Sold 45k” or “Bought stock 20k”. No bookkeeping software to learn.
             </p>
           </div>
 
-          <div className="rounded-[22px] bg-white border border-emerald-900/10 p-4 sm:p-5 shadow-xs space-y-2">
-            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+          <div className="rounded-[22px] bg-white dark:bg-slate-900 border border-emerald-900/10 dark:border-white/10 p-4 sm:p-5 shadow-xs space-y-2">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
               <Compass className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-black text-slate-900">Your Next Move</h3>
-            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+            <h3 className="text-sm font-black text-slate-900 dark:text-white">Your Next Move</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
               Get the single highest-leverage decision every day so you never run out of restock capital.
             </p>
           </div>
 
-          <div className="rounded-[22px] bg-white border border-emerald-900/10 p-4 sm:p-5 shadow-xs space-y-2">
-            <div className="h-9 w-9 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center">
+          <div className="rounded-[22px] bg-white dark:bg-slate-900 border border-emerald-900/10 dark:border-white/10 p-4 sm:p-5 shadow-xs space-y-2">
+            <div className="h-9 w-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
               <Users className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-black text-slate-900">Gbese Book</h3>
-            <p className="text-xs text-slate-500 font-medium leading-relaxed">
+            <h3 className="text-sm font-black text-slate-900 dark:text-white">Gbese Book</h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
               1-tap WhatsApp reminders for customers who owe you money before your weekend stock buy.
             </p>
           </div>
@@ -101,7 +108,7 @@ export default function WelcomePage() {
       </main>
 
       {/* Footer */}
-      <footer className="w-full border-t border-slate-200/80 py-6 px-4 text-center text-xs text-slate-400 font-medium">
+      <footer className="w-full border-t border-slate-200/80 dark:border-white/10 py-6 px-4 text-center text-xs text-slate-400 dark:text-slate-500 font-medium">
         MoniePay • Built for Nigeria's Informal Economy
       </footer>
     </div>

@@ -67,16 +67,16 @@ export function LiquidAccountsDeck({
       {/* Section Header */}
       <div className="flex items-center justify-between px-1">
         <div>
-          <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-500">
+          <h3 className="text-xs sm:text-sm font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Cash Stores & POS Terminals
           </h3>
-          <p className="text-xs text-slate-400">Total liquid: ₦{totalLiquid.toLocaleString()}</p>
+          <p className="text-xs text-slate-400 dark:text-slate-500">Total liquid: ₦{totalLiquid.toLocaleString()}</p>
         </div>
 
         {onOpenWithdrawal && (
           <button
             onClick={onOpenWithdrawal}
-            className="text-xs font-bold text-emerald-700 hover:text-emerald-800 flex items-center gap-1 active:scale-95 transition-transform"
+            className="text-xs font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-emerald-300 flex items-center gap-1 active:scale-95 transition-transform"
           >
             <span>Safe Chop Money</span>
             <ArrowUpRight className="h-3.5 w-3.5" />
@@ -91,7 +91,7 @@ export function LiquidAccountsDeck({
           return (
             <div
               key={acc.id}
-              className="snap-start shrink-0 w-[240px] sm:w-[260px] rounded-[24px] bg-white border border-slate-200/90 p-4 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06)] hover:shadow-[0_10px_25px_-3px_rgba(15,23,42,0.1)] transition-all flex flex-col justify-between"
+              className="snap-start shrink-0 w-[240px] sm:w-[260px] rounded-[24px] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-white/10 p-4 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06)] dark:shadow-xl hover:shadow-[0_10px_25px_-3px_rgba(15,23,42,0.1)] transition-all flex flex-col justify-between"
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
@@ -101,21 +101,21 @@ export function LiquidAccountsDeck({
                     {visual.icon}
                   </div>
                   <span
-                    className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${visual.lightBg} ${visual.text} border`}
+                    className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${visual.lightBg} ${visual.text} border dark:border-white/10`}
                   >
                     {visual.badge}
                   </span>
                 </div>
 
-                <h4 className="text-xs font-bold text-slate-600 truncate">{acc.name}</h4>
-                <div className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight mt-1">
+                <h4 className="text-xs font-bold text-slate-600 dark:text-slate-300 truncate">{acc.name}</h4>
+                <div className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
                   ₦{Number(acc.current_balance).toLocaleString()}
                 </div>
               </div>
 
-              <div className="mt-4 pt-2.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+              <div className="mt-4 pt-2.5 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-[11px] text-slate-400 dark:text-slate-500">
                 <span>{acc.account_number ? `•• ${acc.account_number.slice(-4)}` : "Drawer"}</span>
-                <span className="text-emerald-700 font-bold flex items-center gap-1">
+                <span className="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-1">
                   <ShieldCheck className="h-3 w-3" /> Ready
                 </span>
               </div>

@@ -321,11 +321,11 @@ export function TellMoniePay({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2 px-1">
         <div className="flex items-center gap-2">
           <span className="flex h-2.5 w-2.5 rounded-full bg-blue-600 animate-pulse shadow-xs shadow-blue-500/50 shrink-0" />
-          <h2 className="text-xs sm:text-[13px] font-black uppercase tracking-wider text-slate-800 leading-tight">
+          <h2 className="text-xs sm:text-[13px] font-black uppercase tracking-wider text-slate-800 dark:text-white leading-tight">
             Tell MoniePay Wetin Happen For Shop
           </h2>
         </div>
-        <span className="self-start sm:self-auto text-[9.5px] sm:text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-blue-50/90 text-blue-700 border border-blue-200/60 shadow-xs">
+        <span className="self-start sm:self-auto text-[9.5px] sm:text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-blue-50/90 dark:bg-blue-950/80 text-blue-700 dark:text-sky-300 border border-blue-200/60 dark:border-blue-800 shadow-xs">
           Sharp-Sharp • Talk am or Type am
         </span>
       </div>
@@ -338,7 +338,7 @@ export function TellMoniePay({
             value={inputVal}
             onChange={(e) => setInputVal(e.target.value)}
             placeholder="Talk or type: e.g. Sell 45k, Chidi pay 15k, Buy market 20k..."
-            className="clay-input w-full pl-3.5 sm:pl-4 pr-10 sm:pr-11 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none"
+            className="clay-input w-full pl-3.5 sm:pl-4 pr-10 sm:pr-11 py-2.5 sm:py-3 text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none"
           />
           {inputVal && (
             <motion.button
@@ -364,7 +364,7 @@ export function TellMoniePay({
               className={`h-10 w-10 sm:h-11 sm:w-11 rounded-2xl flex items-center justify-center cursor-pointer transition-all shrink-0 ${
                 isListening
                   ? "bg-rose-600 text-white animate-pulse shadow-lg shadow-rose-500/40"
-                  : "clay-card-sm text-blue-700 hover:text-blue-900"
+                  : "clay-card-sm text-blue-700 dark:text-sky-300 hover:text-blue-900 dark:hover:text-white"
               }`}
             >
               {isListening ? (
@@ -390,7 +390,7 @@ export function TellMoniePay({
                 whileHover={{ y: -1, scale: 1.02 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={() => handleQuickExampleClick(item.text)}
-                className="px-2.5 sm:px-3 py-1.5 rounded-xl clay-card-sm text-slate-700 hover:text-blue-700 text-[11px] sm:text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0"
+                className="px-2.5 sm:px-3 py-1.5 rounded-xl clay-card-sm text-slate-700 dark:text-slate-300 hover:text-blue-700 dark:hover:text-sky-300 text-[11px] sm:text-xs font-bold whitespace-nowrap cursor-pointer transition-all shrink-0"
               >
                 {item.label}
               </motion.button>
@@ -410,23 +410,23 @@ export function TellMoniePay({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -6, scale: 0.97 }}
             transition={{ duration: 0.25, ease: "easeOut" }}
-            className="rounded-[24px] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-blue-50/70 to-white/90 border border-white/90 shadow-[0_12px_36px_rgba(37,99,235,0.12),-6px_-6px_20px_rgba(255,255,255,0.95)] p-3.5 sm:p-5 space-y-3 relative overflow-hidden"
+            className="rounded-[24px] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-blue-50/70 to-white/90 dark:from-slate-900/95 dark:via-slate-800/90 dark:to-slate-900/90 border border-white/90 dark:border-white/10 shadow-[0_12px_36px_rgba(37,99,235,0.12),-6px_-6px_20px_rgba(255,255,255,0.95)] dark:shadow-2xl p-3.5 sm:p-5 space-y-3 relative overflow-hidden"
           >
             {/* Ambient glass flare effect */}
             <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-blue-500/15 blur-xl" />
             <div className="pointer-events-none absolute -left-6 -bottom-6 h-24 w-24 rounded-full bg-emerald-500/10 blur-xl" />
 
             {/* Header: Recorded Status & Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-blue-100/80">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-blue-100/80 dark:border-white/10">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="h-7 w-7 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                  <CheckCircle2 className="h-4.5 w-4.5 text-emerald-600 shrink-0" />
+                  <CheckCircle2 className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 </div>
                 <div className="min-w-0">
-                  <span className="text-xs sm:text-sm font-black text-slate-900 tracking-tight block truncate">
-                    Don Record Sharp-Sharp ✓ <span className="text-blue-700">₦{feedback.amount.toLocaleString()}</span>
+                  <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white tracking-tight block truncate">
+                    Don Record Sharp-Sharp ✓ <span className="text-blue-700 dark:text-sky-400">₦{feedback.amount.toLocaleString()}</span>
                   </span>
-                  <span className="text-[10px] font-bold text-blue-700 bg-blue-50/90 px-2 py-0.5 rounded-full border border-blue-200/60 inline-block mt-0.5">
+                  <span className="text-[10px] font-bold text-blue-700 dark:text-sky-300 bg-blue-50/90 dark:bg-blue-950/80 px-2 py-0.5 rounded-full border border-blue-200/60 dark:border-blue-800 inline-block mt-0.5">
                     {feedback.typeLabel}
                   </span>
                 </div>
@@ -441,16 +441,16 @@ export function TellMoniePay({
                       `${feedback.typeLabel}: ${feedback.whatChanged} ${feedback.whatToDoNext}`
                     )
                   }
-                  className="flex items-center gap-1.5 text-[11px] font-black text-blue-700 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 border border-blue-200/80 px-3 py-1.5 rounded-xl transition-all cursor-pointer shadow-xs active:scale-95"
+                  className="flex items-center gap-1.5 text-[11px] font-black text-blue-700 dark:text-sky-300 hover:text-blue-900 dark:hover:text-white bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 dark:hover:bg-blue-900 border border-blue-200/80 dark:border-blue-800 px-3 py-1.5 rounded-xl transition-all cursor-pointer shadow-xs active:scale-95"
                   title="Listen to voice confirmation"
                 >
-                  <Volume2 className="h-3.5 w-3.5 text-blue-600" />
+                  <Volume2 className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400" />
                   <span>Hear am</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setFeedback(null)}
-                  className="text-[11px] font-bold text-slate-400 hover:text-slate-700 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+                  className="text-[11px] font-bold text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
                 >
                   Comot am
                 </button>
@@ -460,31 +460,31 @@ export function TellMoniePay({
             {/* 3 Core Value Items (Mobile-Fluid Stack) */}
             <div className="space-y-2 text-xs">
               {/* 1. Wetin change? */}
-              <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2.5 rounded-2xl bg-white/60 border border-white/90 shadow-2xs">
-                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-blue-800 bg-blue-50/90 px-2 py-0.5 rounded-lg border border-blue-200/60 self-start sm:shrink-0 sm:min-w-[95px] text-center">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2.5 rounded-2xl bg-white/60 dark:bg-slate-800/80 border border-white/90 dark:border-white/10 shadow-2xs">
+                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-blue-800 dark:text-sky-300 bg-blue-50/90 dark:bg-blue-950/80 px-2 py-0.5 rounded-lg border border-blue-200/60 dark:border-blue-800 self-start sm:shrink-0 sm:min-w-[95px] text-center">
                   Wetin change?
                 </span>
-                <span className="text-slate-800 font-bold leading-relaxed text-xs sm:text-[13px] pt-0.5">
+                <span className="text-slate-800 dark:text-slate-100 font-bold leading-relaxed text-xs sm:text-[13px] pt-0.5">
                   {feedback.whatChanged}
                 </span>
               </div>
 
               {/* 2. Why e matter? */}
-              <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2.5 rounded-2xl bg-white/60 border border-white/90 shadow-2xs">
-                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-indigo-800 bg-indigo-50/90 px-2 py-0.5 rounded-lg border border-indigo-200/60 self-start sm:shrink-0 sm:min-w-[95px] text-center">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-1 sm:gap-3 p-2.5 rounded-2xl bg-white/60 dark:bg-slate-800/80 border border-white/90 dark:border-white/10 shadow-2xs">
+                <span className="text-[10px] sm:text-[11px] font-black uppercase tracking-wider text-indigo-800 dark:text-indigo-300 bg-indigo-50/90 dark:bg-indigo-950/80 px-2 py-0.5 rounded-lg border border-indigo-200/60 dark:border-indigo-800 self-start sm:shrink-0 sm:min-w-[95px] text-center">
                   Why e matter?
                 </span>
-                <span className="text-slate-700 font-semibold leading-relaxed text-xs sm:text-[13px] pt-0.5">
+                <span className="text-slate-700 dark:text-slate-200 font-semibold leading-relaxed text-xs sm:text-[13px] pt-0.5">
                   {feedback.whyItMatters}
                 </span>
               </div>
 
               {/* 3. Wetin you go do now: */}
-              <div className="flex flex-col sm:flex-row sm:items-start gap-1.5 sm:gap-3 p-3 rounded-2xl bg-gradient-to-r from-blue-600/15 via-sky-500/10 to-transparent border-l-4 border-blue-600 shadow-xs">
-                <span className="text-[10.5px] sm:text-[11px] font-black uppercase tracking-wider text-blue-900 bg-blue-100/90 px-2.5 py-0.5 rounded-lg border border-blue-300/70 self-start sm:shrink-0 sm:min-w-[95px] text-center">
+              <div className="flex flex-col sm:flex-row sm:items-start gap-1.5 sm:gap-3 p-3 rounded-2xl bg-gradient-to-r from-blue-600/15 via-sky-500/10 to-transparent dark:from-blue-950/50 dark:via-sky-950/30 dark:to-transparent border-l-4 border-blue-600 dark:border-sky-400 shadow-xs">
+                <span className="text-[10.5px] sm:text-[11px] font-black uppercase tracking-wider text-blue-900 dark:text-sky-200 bg-blue-100/90 dark:bg-blue-900/80 px-2.5 py-0.5 rounded-lg border border-blue-300/70 dark:border-blue-700 self-start sm:shrink-0 sm:min-w-[95px] text-center">
                   Wetin you go do:
                 </span>
-                <span className="text-blue-950 font-black leading-relaxed text-xs sm:text-[13px] pt-0.5">
+                <span className="text-blue-950 dark:text-sky-100 font-black leading-relaxed text-xs sm:text-[13px] pt-0.5">
                   {feedback.whatToDoNext}
                 </span>
               </div>

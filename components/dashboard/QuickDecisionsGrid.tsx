@@ -158,10 +158,10 @@ export function QuickDecisionsGrid({
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-xs font-black uppercase tracking-wider text-emerald-950/60">
+        <h2 className="text-xs font-black uppercase tracking-wider text-emerald-950/60 dark:text-emerald-400">
           Decisions Wey You Fit Take Sharp-Sharp
         </h2>
-        <span className="text-[11px] font-bold text-emerald-800">Tap to see answer</span>
+        <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">Tap to see answer</span>
       </div>
 
       {/* Decision Grid */}
@@ -173,19 +173,19 @@ export function QuickDecisionsGrid({
               whileHover={{ y: -2, scale: 1.01 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setActiveDecision(d)}
-              className="rounded-[22px] sm:rounded-[24px] bg-white/80 backdrop-blur-md border border-emerald-950/[0.08] p-3 sm:p-4 text-left shadow-[0_4px_20px_rgba(4,120,87,0.04)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
+              className="rounded-[22px] sm:rounded-[24px] bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-emerald-950/[0.08] dark:border-white/10 p-3 sm:p-4 text-left shadow-[0_4px_20px_rgba(4,120,87,0.04)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
             >
               <div className="min-w-0">
-                <span className="text-[10.5px] sm:text-[11px] font-bold text-slate-500 block leading-tight line-clamp-2">
+                <span className="text-[10.5px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 block leading-tight line-clamp-2">
                   {d.question}
                 </span>
-                <span className="text-[11.5px] sm:text-xs md:text-sm font-black text-slate-900 mt-1.5 block leading-snug line-clamp-2">
+                <span className="text-[11.5px] sm:text-xs md:text-sm font-black text-slate-900 dark:text-white mt-1.5 block leading-snug line-clamp-2">
                   {d.verdict}
                 </span>
               </div>
-              <div className="mt-2.5 flex items-center justify-between pt-1.5 border-t border-slate-100/80">
-                <span className="text-[9.5px] sm:text-[10px] font-black text-emerald-800">See Action</span>
-                <ArrowRight className="h-3 w-3 text-emerald-700" />
+              <div className="mt-2.5 flex items-center justify-between pt-1.5 border-t border-slate-100/80 dark:border-white/10">
+                <span className="text-[9.5px] sm:text-[10px] font-black text-emerald-800 dark:text-emerald-400">See Action</span>
+                <ArrowRight className="h-3 w-3 text-emerald-700 dark:text-emerald-400" />
               </div>
             </motion.button>
           </InfoTooltip>
@@ -195,27 +195,27 @@ export function QuickDecisionsGrid({
       {/* Interactive Decision Answer Modal */}
       <AnimatePresence>
         {activeDecision && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="w-full max-w-md rounded-[28px] bg-white/95 backdrop-blur-xl border border-emerald-900/15 p-5 sm:p-6 shadow-2xl space-y-4 relative overflow-hidden"
+              className="w-full max-w-md rounded-[28px] bg-white dark:bg-slate-900 border border-emerald-900/15 dark:border-white/10 p-5 sm:p-6 shadow-2xl space-y-4 relative overflow-hidden text-slate-900 dark:text-slate-100"
             >
               <button
                 type="button"
                 onClick={() => setActiveDecision(null)}
-                className="absolute right-4 top-4 h-8 w-8 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 cursor-pointer transition-colors"
+                className="absolute right-4 top-4 h-8 w-8 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 cursor-pointer transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
 
               <div>
-                <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800">
+                <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400">
                   Business Decision Intelligence
                 </span>
-                <h3 className="text-base sm:text-lg font-black text-slate-900 mt-1">
+                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1">
                   {activeDecision.question}
                 </h3>
               </div>
@@ -233,14 +233,14 @@ export function QuickDecisionsGrid({
               {/* Plain English Explanation */}
               <div className="space-y-2 text-xs">
                 <div>
-                  <span className="font-extrabold text-slate-700 block">Why:</span>
-                  <p className="text-slate-600 font-medium leading-relaxed mt-0.5">
+                  <span className="font-extrabold text-slate-700 dark:text-slate-300 block">Why:</span>
+                  <p className="text-slate-600 dark:text-slate-300 font-medium leading-relaxed mt-0.5">
                     {activeDecision.explanation}
                   </p>
                 </div>
-                <div className="pt-2 border-t border-slate-100">
-                  <span className="font-extrabold text-emerald-900 block">Next move:</span>
-                  <p className="text-slate-800 font-black leading-relaxed mt-0.5">
+                <div className="pt-2 border-t border-slate-100 dark:border-white/10">
+                  <span className="font-extrabold text-emerald-900 dark:text-emerald-400 block">Next move:</span>
+                  <p className="text-slate-800 dark:text-slate-100 font-black leading-relaxed mt-0.5">
                     {activeDecision.nextStep}
                   </p>
                 </div>
@@ -252,7 +252,7 @@ export function QuickDecisionsGrid({
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={activeDecision.onAction}
-                className="w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-800 text-white font-black text-xs sm:text-sm cursor-pointer shadow-md shadow-emerald-900/20"
+                className="w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs sm:text-sm cursor-pointer shadow-md shadow-emerald-900/20"
               >
                 {activeDecision.buttonLabel}
               </motion.button>

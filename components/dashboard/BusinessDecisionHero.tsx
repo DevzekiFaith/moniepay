@@ -201,33 +201,33 @@ export function BusinessDecisionHero({
       )}
 
       {/* ── REAL OPERATING PROFIT BANNER ── */}
-      <div className="rounded-[26px] bg-white border border-slate-200/80 p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06)] flex items-center justify-between">
+      <div className="rounded-[26px] bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 p-5 sm:p-6 shadow-[0_4px_20px_-2px_rgba(15,23,42,0.06)] dark:shadow-xl flex items-center justify-between">
         <div>
-          <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-500 dark:text-slate-400">
             <span>Real Operating Profit</span>
             <span
               className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
                 metrics.profitMarginPercent >= 20
-                  ? "bg-emerald-100 text-emerald-700"
+                  ? "bg-emerald-100 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800"
                   : metrics.profitMarginPercent >= 10
-                  ? "bg-blue-100 text-blue-700"
-                  : "bg-amber-100 text-amber-700"
+                  ? "bg-blue-100 dark:bg-blue-950/80 text-blue-700 dark:text-sky-300 border border-blue-200/80 dark:border-blue-800"
+                  : "bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800"
               }`}
             >
               {metrics.profitMarginPercent}% Margin
             </span>
           </div>
-          <div className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight mt-1">
+          <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
             ₦{metrics.operatingProfit.toLocaleString()}
           </div>
         </div>
 
         {metrics.ownerWithdrawals > 0 && (
-          <div className="text-right pl-6 border-l border-slate-100">
-            <span className="text-xs font-bold text-slate-400 block">
+          <div className="text-right pl-6 border-l border-slate-100 dark:border-white/10">
+            <span className="text-xs font-bold text-slate-400 dark:text-slate-500 block">
               Taken Home (Chop)
             </span>
-            <span className="text-base sm:text-xl font-black text-slate-700 mt-1 block">
+            <span className="text-base sm:text-xl font-black text-slate-700 dark:text-slate-200 mt-1 block">
               ₦{metrics.ownerWithdrawals.toLocaleString()}
             </span>
           </div>
