@@ -260,26 +260,26 @@ export function InstantRecordSheet({
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", damping: 28, stiffness: 320 }}
-        className="w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] bg-white border border-slate-200 p-5 sm:p-6 shadow-2xl text-slate-900 max-h-[92vh] overflow-y-auto"
+        className="w-full max-w-lg rounded-t-[32px] sm:rounded-[32px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 p-5 sm:p-6 shadow-2xl text-slate-900 dark:text-slate-100 max-h-[92vh] overflow-y-auto transition-colors"
       >
         {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-white/10">
           <div className="flex items-center gap-2">
-            <span className="text-base font-extrabold text-slate-900">Record Business Activity</span>
-            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="text-base font-extrabold text-slate-900 dark:text-white">Record Business Activity</span>
+            <span className="text-[11px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
               Instant Sync
             </span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-800 hover:bg-slate-100 transition-colors"
+            className="p-1.5 rounded-full text-slate-400 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* 1-Tap Category Tabs */}
-        <div className="mt-4 grid grid-cols-5 gap-1.5 p-1 rounded-2xl bg-slate-100 border border-slate-200/80">
+        <div className="mt-4 grid grid-cols-5 gap-1.5 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-white/10">
           <button
             type="button"
             onClick={() => {
@@ -290,7 +290,7 @@ export function InstantRecordSheet({
             className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
               type === "SALE" && paymentMethod !== "CREDIT"
                 ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/30"
-                : "text-slate-600 hover:text-slate-900"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <Plus className="h-4 w-4 mb-0.5 stroke-[2.5]" />
@@ -307,7 +307,7 @@ export function InstantRecordSheet({
             className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
               type === "EXPENSE"
                 ? "bg-rose-600 text-white shadow-md shadow-rose-600/30"
-                : "text-slate-600 hover:text-slate-900"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <Minus className="h-4 w-4 mb-0.5 stroke-[2.5]" />
@@ -324,7 +324,7 @@ export function InstantRecordSheet({
             className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
               type === "STOCK_PURCHASE"
                 ? "bg-blue-600 text-white shadow-md shadow-blue-600/30"
-                : "text-slate-600 hover:text-slate-900"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <Package className="h-4 w-4 mb-0.5 stroke-[2.5]" />
@@ -341,7 +341,7 @@ export function InstantRecordSheet({
             className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
               type === "SALE" && paymentMethod === "CREDIT"
                 ? "bg-amber-500 text-white shadow-md shadow-amber-500/30"
-                : "text-slate-600 hover:text-slate-900"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <Users className="h-4 w-4 mb-0.5 stroke-[2.5]" />
@@ -358,7 +358,7 @@ export function InstantRecordSheet({
             className={`flex flex-col items-center justify-center py-2 px-1 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
               type === "OWNER_WITHDRAWAL"
                 ? "bg-purple-600 text-white shadow-md shadow-purple-600/30"
-                : "text-slate-600 hover:text-slate-900"
+                : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
             }`}
           >
             <Wallet className="h-4 w-4 mb-0.5 stroke-[2.5]" />
@@ -371,30 +371,30 @@ export function InstantRecordSheet({
           <button
             type="button"
             onClick={toggleVoice}
-            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-bold transition-all ${
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
               isListening
-                ? "border-red-500 bg-red-50 text-red-700 animate-pulse"
-                : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-slate-100"
+                ? "border-red-500 bg-red-50 dark:bg-red-950/80 text-red-700 dark:text-red-300 animate-pulse"
+                : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700"
             }`}
           >
-            {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4 text-emerald-600" />}
+            {isListening ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />}
             <span>{isListening ? "Listening... speak now" : "Voice / Pidgin"}</span>
           </button>
 
           <button
             type="button"
             onClick={() => setShowPasteAlert(!showPasteAlert)}
-            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-slate-200 bg-slate-50 text-slate-700 text-xs font-bold hover:bg-slate-100"
+            className="flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer"
           >
-            <ClipboardPaste className="h-4 w-4 text-blue-600" />
+            <ClipboardPaste className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             <span>Paste Bank SMS</span>
           </button>
         </div>
 
         {/* Bank Alert Paste Drawer */}
         {showPasteAlert && (
-          <div className="mt-2.5 p-3 rounded-2xl border border-blue-200 bg-blue-50/70">
-            <span className="text-[11px] text-blue-900 font-bold block mb-1">
+          <div className="mt-2.5 p-3 rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/70 dark:bg-blue-950/60">
+            <span className="text-[11px] text-blue-900 dark:text-blue-200 font-bold block mb-1">
               Paste SMS or WhatsApp bank alert
             </span>
             <textarea
@@ -402,14 +402,14 @@ export function InstantRecordSheet({
               value={pastedText}
               onChange={(e) => setPastedText(e.target.value)}
               placeholder="e.g. Acct: 1029*** Amt: NGN 35,000.00 CR Desc: TRF FROM..."
-              className="w-full rounded-xl bg-white border border-blue-200 p-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:border-blue-500 shadow-sm"
+              className="w-full rounded-xl bg-white dark:bg-slate-900 border border-blue-200 dark:border-blue-800 p-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-blue-500 shadow-sm"
             />
             <button
               type="button"
               onClick={() => parseBankAlert(pastedText)}
-              className="mt-1.5 w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm"
+              className="mt-1.5 w-full py-2 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold shadow-sm cursor-pointer"
             >
-              Extract & Fill
+              Extract &amp; Fill
             </button>
           </div>
         )}
@@ -418,7 +418,7 @@ export function InstantRecordSheet({
         <form onSubmit={handleSubmit} className="mt-4 space-y-4">
           {/* Amount Input */}
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-1">
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
               Amount (₦)
             </label>
             <div className="relative flex items-center">
@@ -430,7 +430,7 @@ export function InstantRecordSheet({
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 placeholder="0"
-                className="w-full rounded-2xl bg-slate-50 border border-slate-200 py-3.5 pl-10 pr-4 text-3xl font-black text-slate-900 placeholder-slate-300 focus:outline-none focus:border-emerald-600 focus:bg-white shadow-inner"
+                className="w-full rounded-2xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-white/15 py-3.5 pl-10 pr-4 text-3xl font-black text-slate-900 dark:text-white placeholder-slate-300 dark:placeholder-slate-600 focus:outline-none focus:border-emerald-600 focus:bg-white dark:focus:bg-slate-900 shadow-inner"
                 required
               />
             </div>
@@ -438,7 +438,7 @@ export function InstantRecordSheet({
 
           {/* Payment Method */}
           <div>
-            <label className="block text-xs font-bold text-slate-600 mb-1.5">
+            <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1.5">
               Payment Method
             </label>
             <div className="grid grid-cols-4 gap-2">
@@ -447,10 +447,10 @@ export function InstantRecordSheet({
                   key={method}
                   type="button"
                   onClick={() => setPaymentMethod(method)}
-                  className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all ${
+                  className={`py-2 px-1 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                     paymentMethod === method
-                      ? "border-emerald-600 bg-emerald-50 text-emerald-800 shadow-sm"
-                      : "border-slate-200 bg-white text-slate-600 hover:bg-slate-50"
+                      ? "border-emerald-600 bg-emerald-50 dark:bg-emerald-950/90 text-emerald-800 dark:text-emerald-300 shadow-sm"
+                      : "border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700"
                   }`}
                 >
                   {method === "CASH" && "Cash"}
@@ -464,7 +464,7 @@ export function InstantRecordSheet({
 
           {paymentMethod === "CREDIT" && (
             <div>
-              <label className="block text-xs font-bold text-amber-800 mb-1">
+              <label className="block text-xs font-bold text-amber-800 dark:text-amber-300 mb-1">
                 Customer Name (Who owes this?)
               </label>
               <input
@@ -472,7 +472,7 @@ export function InstantRecordSheet({
                 value={debtorName}
                 onChange={(e) => setDebtorName(e.target.value)}
                 placeholder="e.g. Bro Segun (Tailor) or Mama Ngozi"
-                className="w-full rounded-xl bg-amber-50/50 border border-amber-300 p-3 text-sm text-slate-900 placeholder-slate-400 focus:outline-none focus:border-amber-500 shadow-sm"
+                className="w-full rounded-xl bg-amber-50/50 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 p-3 text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-amber-500 shadow-sm"
                 required
               />
             </div>
@@ -481,18 +481,18 @@ export function InstantRecordSheet({
           {/* Description & Category */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-bold text-slate-600 mb-1">
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
                 Category
               </label>
               <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full rounded-xl bg-slate-50 border border-slate-200 p-2.5 text-xs font-medium text-slate-800 focus:outline-none focus:border-emerald-600"
+                className="w-full rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-white/15 p-2.5 text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-600"
               >
                 {type === "SALE" && (
                   <>
-                    <option value="Provisions & Groceries">Provisions & Groceries</option>
-                    <option value="Drinks & Beverages">Drinks & Beverages</option>
+                    <option value="Provisions & Groceries">Provisions &amp; Groceries</option>
+                    <option value="Drinks & Beverages">Drinks &amp; Beverages</option>
                     <option value="Frozen Foods">Frozen Foods</option>
                     <option value="General Goods">General Goods</option>
                   </>
@@ -500,15 +500,15 @@ export function InstantRecordSheet({
                 {type === "EXPENSE" && (
                   <>
                     <option value="Generator Fuel">Generator Fuel</option>
-                    <option value="Shop Rent & Levy">Shop Rent & Levy</option>
-                    <option value="Transport & Logistics">Transport & Logistics</option>
-                    <option value="Security & Waste">Security & Waste</option>
+                    <option value="Shop Rent & Levy">Shop Rent &amp; Levy</option>
+                    <option value="Transport & Logistics">Transport &amp; Logistics</option>
+                    <option value="Security & Waste">Security &amp; Waste</option>
                   </>
                 )}
                 {type === "STOCK_PURCHASE" && (
                   <>
                     <option value="Restock Goods">Restock Goods</option>
-                    <option value="Packaging & Bags">Packaging & Bags</option>
+                    <option value="Packaging & Bags">Packaging &amp; Bags</option>
                     <option value="Supplier Settlement">Supplier Settlement</option>
                   </>
                 )}
@@ -529,7 +529,7 @@ export function InstantRecordSheet({
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-600 mb-1">
+              <label className="block text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
                 Note / Description (Optional)
               </label>
               <input
@@ -537,7 +537,7 @@ export function InstantRecordSheet({
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="e.g. 3 cartons Indomie"
-                className="w-full rounded-xl bg-slate-50 border border-slate-200 p-2.5 text-xs text-slate-800 placeholder-slate-400 focus:outline-none focus:border-emerald-600"
+                className="w-full rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-white/15 p-2.5 text-xs text-slate-800 dark:text-slate-200 placeholder-slate-400 focus:outline-none focus:border-emerald-600"
               />
             </div>
           </div>
@@ -547,7 +547,7 @@ export function InstantRecordSheet({
             <button
               type="submit"
               disabled={isSubmitting || !!justRecorded}
-              className={`w-full py-4 rounded-2xl text-base font-extrabold flex items-center justify-center gap-2 transition-all active:scale-[0.98] ${
+              className={`w-full py-4 rounded-2xl text-base font-extrabold flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer ${
                 justRecorded
                   ? "bg-emerald-600 text-white font-black shadow-lg shadow-emerald-600/30"
                   : type === "SALE"

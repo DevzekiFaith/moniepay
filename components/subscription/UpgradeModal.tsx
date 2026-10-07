@@ -306,38 +306,38 @@ export function UpgradeModal() {
               </div>
 
               {/* Zero Data Deletion Guarantee Box */}
-              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-start gap-2.5">
-                <ShieldCheck className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
+              <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200 flex items-start gap-2.5">
+                <ShieldCheck className="h-5 w-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
                 <p className="text-xs font-semibold leading-relaxed">
-                  <strong>Zero Data Deletion:</strong> All your past sales transactions, debt records, and drawer balance dey safe inside your account forever. We no dey delete anything even if subscription expire.
+                  <strong className="text-emerald-950 dark:text-emerald-200">Zero Data Deletion:</strong> All your past sales transactions, debt records, and drawer balance dey safe inside your account forever. We no dey delete anything even if subscription expire.
                 </p>
               </div>
 
               {/* Error Message */}
               {errorMessage && (
-                <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+                <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold">
                   {errorMessage}
                 </div>
               )}
 
               {/* Supported Payment Channels */}
-              <div className="p-3 rounded-2xl bg-slate-100/70 border border-slate-200/60 text-center space-y-1.5">
-                <p className="text-[10.5px] font-black text-slate-600 uppercase tracking-wider">
+              <div className="p-3 rounded-2xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200/60 dark:border-slate-700 text-center space-y-1.5">
+                <p className="text-[10.5px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider">
                   Supported Flutterwave Payment Methods:
                 </p>
-                <p className="text-[11px] font-semibold text-slate-700">
+                <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
                   💳 Debit Cards (Mastercard, Visa, Verve) • 🏦 Instant Bank Transfer • 📱 USSD • 👛 Barter
                 </p>
               </div>
             </div>
 
             {/* Modal Bottom CTA */}
-            <div className="p-4 sm:p-5 bg-[#edf3fb]/90 border-t border-white/70 backdrop-blur-md space-y-2.5 shrink-0">
+            <div className="p-4 sm:p-5 bg-[#edf3fb]/90 dark:bg-slate-900/95 border-t border-white/70 dark:border-white/10 backdrop-blur-md space-y-2.5 shrink-0">
               <button
                 type="button"
                 onClick={handlePay}
                 disabled={isProcessing}
-                className="w-full py-4 rounded-2xl bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 shadow-md active:scale-98"
+                className="w-full py-4 rounded-2xl bg-[#1d4ed8] hover:bg-[#1e40af] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 shadow-md active:scale-98"
               >
                 {isProcessing ? (
                   <>
@@ -353,9 +353,9 @@ export function UpgradeModal() {
                 )}
               </button>
 
-              <div className="flex items-center justify-center text-[11px] px-1 text-slate-500 font-medium">
+              <div className="flex items-center justify-center text-[11px] px-1 text-slate-500 dark:text-slate-400 font-medium">
                 <span className="flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                   Secured by Flutterwave (256-bit Bank-Grade Encryption)
                 </span>
               </div>

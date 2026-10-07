@@ -282,14 +282,14 @@ export function AppBottomBar() {
               href={item.href}
               className={`flex-1 flex flex-col items-center justify-center py-1 px-1 rounded-2xl text-[9.5px] font-bold transition-all ${
                 isActive
-                  ? "text-blue-700 dark:text-blue-400 font-black"
+                  ? "text-blue-700 dark:text-sky-300 font-black"
                   : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
               }`}
             >
               <div
-                className={`p-1 rounded-xl transition-all ${
+                className={`p-1.5 rounded-xl transition-all ${
                   isActive
-                    ? "bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-400"
+                    ? "bg-blue-100 dark:bg-blue-600/30 text-blue-700 dark:text-sky-300 shadow-xs"
                     : "text-slate-400 dark:text-slate-500"
                 }`}
               >
