@@ -131,8 +131,8 @@ export function UpgradeModal() {
                   <ShieldCheck className="h-6 w-6 text-sky-300" />
                 </div>
                 <div>
-                  <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-blue-400/20 border border-blue-400/30 text-blue-200 text-[10px] font-black uppercase tracking-wider">
-                    <span>Trader Power Plan</span>
+                  <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-400/20 border border-blue-400/30 text-blue-200 text-[10.5px] font-black uppercase tracking-wide">
+                    <span>Shop Intelligence Plan</span>
                   </div>
                   <h3 id="upgrade-modal-title" className="text-base sm:text-lg font-black tracking-tight leading-tight text-white mt-0.5">
                     MoniePay Plus
@@ -173,7 +173,7 @@ export function UpgradeModal() {
                       Grace Period Dey Active: {graceDaysLeft} {graceDaysLeft === 1 ? "Day" : "Days"} Remain
                     </p>
                     <p className="text-[11.5px] font-semibold text-amber-900 mt-0.5 leading-relaxed">
-                      All your shop features still dey open! Renew now before the 3-day grace period complete.
+                      Full shop features still dey open! Renew now before the 3-day grace period complete.
                     </p>
                   </div>
                 </div>
@@ -205,9 +205,9 @@ export function UpgradeModal() {
                       {isSubscribed
                         ? `${subscription?.planName || "MoniePay Plus Active"}`
                         : isGracePeriodActive
-                        ? `3-Day Grace Period (${graceDaysLeft} days remain)`
+                        ? `3-Day Grace Period: ${graceDaysLeft} days remain`
                         : isTrialActive
-                        ? `7-Day Free Test-Run (${trialDaysLeft} days remain)`
+                        ? `7-Day Free Test-Run: ${trialDaysLeft} days remain`
                         : "Subscription Don Expire (Read-Only)"}
                     </p>
                     <p className="text-[11px] text-slate-500 font-medium">
@@ -224,7 +224,7 @@ export function UpgradeModal() {
                         : isGracePeriodActive
                         ? "Full shop access open for 3 days to renew."
                         : isTrialActive
-                        ? "Full sharp-sharp shop access during your 7-day test-run."
+                        ? "Enjoying full sharp-sharp shop intelligence during your 7-day test-run."
                         : "Renew for ₦1,500/month or ₦15,000/year to continue."}
                     </p>
                   </div>
@@ -232,7 +232,7 @@ export function UpgradeModal() {
               </div>
 
               {/* ── PLAN SELECTOR TABS (Monthly vs Annual) ── */}
-              <div className="space-y-1.5">
+              <div className="space-y-1.5 pt-1">
                 <label className="text-[11px] font-black text-slate-700 uppercase tracking-wider px-1">
                   Pick How You Wan Pay:
                 </label>
@@ -283,90 +283,33 @@ export function UpgradeModal() {
                 </div>
               </div>
 
-              {/* Price Hero Summary Card */}
-              <div className="clay-card p-4 sm:p-5 text-center space-y-2 relative overflow-hidden">
-                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100/70 border border-blue-200 text-blue-900 text-[11px] font-black">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />
-                  <span>
-                    {selectedPlan === "annual"
-                      ? "Annual Plan • 2 Months Free Shop Access Dey Inside"
-                      : "Simple Flat Price • No Hidden Charges or Extra Fee"}
-                  </span>
-                </div>
+              {/* Price Hero Summary Card (Solid Sapphire Blue) */}
+              <div className="p-4 sm:p-5 rounded-3xl bg-[#1e3a8a] text-white shadow-md space-y-2 text-center relative overflow-hidden">
+                <p className="text-[11px] text-blue-200 font-bold uppercase tracking-wider">
+                  {selectedPlan === "annual"
+                    ? "Annual Plan • 2 Months Free Shop Access Dey Inside"
+                    : "Monthly Plan • Cancel Anytime Without Wahala"}
+                </p>
 
-                <div className="flex items-baseline justify-center gap-1.5 pt-1">
-                  <span className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                <div className="flex items-baseline justify-center gap-1.5">
+                  <span className="text-4xl font-black text-white tracking-tight">
                     {amountToPay}
                   </span>
-                  <span className="text-xs sm:text-sm font-bold text-slate-500">
+                  <span className="text-sm font-bold text-blue-200">
                     {planPeriodText}
                   </span>
                 </div>
 
-                <p className="text-xs text-slate-600 font-medium max-w-sm mx-auto leading-relaxed">
-                  Protect your market profit, track all customer credit (gbese), and receive sharp shop advice everyday.
+                <p className="text-xs text-blue-100 max-w-sm mx-auto font-medium leading-relaxed">
+                  No hidden deductions or extra charges. Instant bank transfer, debit card, or USSD via Flutterwave.
                 </p>
               </div>
 
-              {/* Benefits Checklist */}
-              <div className="space-y-2.5 pt-1">
-                <h4 className="text-xs font-black text-slate-700 tracking-wide uppercase px-1">
-                  Everything Wey Dey Inside MoniePay Plus:
-                </h4>
-
-                <div className="space-y-2">
-                  {[
-                    {
-                      icon: <Zap className="h-4 w-4 text-emerald-600" />,
-                      title: "Sharp-Sharp Recording (Voice & Type)",
-                      desc: "Record unlimited sales, daily shop expenses & restock purchases in seconds.",
-                    },
-                    {
-                      icon: <TrendingUp className="h-4 w-4 text-blue-600" />,
-                      title: "Daily Business Pulse & Chop Money",
-                      desc: "Know your exact drawer cash, safe chop money allowance & true net profit.",
-                    },
-                    {
-                      icon: <MessageSquare className="h-4 w-4 text-amber-600" />,
-                      title: "One-Tap WhatsApp Debt Pings (Gbese Sheet)",
-                      desc: "Send polite automated WhatsApp reminders make customers pay fast.",
-                    },
-                    {
-                      icon: <TrendingUp className="h-4 w-4 text-indigo-600" />,
-                      title: "7 Market Decisions & Market Price Alerts",
-                      desc: "Real-time wholesale price tracking and intelligent advice on when to buy stock.",
-                    },
-                    {
-                      icon: <ShieldCheck className="h-4 w-4 text-slate-700" />,
-                      title: "Data Stays Safe Guarantee (Zero Loss)",
-                      desc: "All your sales records and customer balances stay stored safely forever even after expiry.",
-                    },
-                  ].map((item, idx) => (
-                    <div
-                      key={idx}
-                      className="p-3 rounded-2xl bg-white/60 border border-white/80 shadow-2xs flex items-start gap-3"
-                    >
-                      <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-white/80 border border-white shadow-2xs shrink-0 mt-0.5">
-                        {item.icon}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-xs font-black text-slate-900 leading-tight">
-                          {item.title}
-                        </p>
-                        <p className="text-[11px] text-slate-600 font-medium leading-relaxed mt-0.5">
-                          {item.desc}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Data Safety Notice Box */}
-              <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-start gap-2.5">
-                <ShieldCheck className="h-4 w-4 text-emerald-700 shrink-0 mt-0.5" />
-                <p className="text-[11px] font-semibold text-emerald-950 leading-relaxed">
-                  <strong>Zero Data Deletion:</strong> We no dey ever delete your sales history, ledger records, or customer balance. Once you pay, full access dey restore immediately sharp-sharp.
+              {/* Zero Data Deletion Guarantee Box */}
+              <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-start gap-2.5">
+                <ShieldCheck className="h-5 w-5 text-emerald-700 shrink-0 mt-0.5" />
+                <p className="text-xs font-semibold leading-relaxed">
+                  <strong>Zero Data Deletion:</strong> All your past sales transactions, debt records, and drawer balance dey safe inside your account forever. We no dey delete anything even if subscription expire.
                 </p>
               </div>
 

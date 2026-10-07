@@ -8,7 +8,9 @@ const STATIC_ASSETS = [
   "/",
   "/manifest.json",
   "/favicon.ico",
-  "/ajopay-logo-square.png"
+  "/moniepay-logo-square.png",
+  "/moniepay-icon-192.png",
+  "/moniepay-icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {

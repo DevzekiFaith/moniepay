@@ -116,8 +116,12 @@ export function InstallAppBanner() {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">
-                    <div className="h-10 w-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black">
-                      <Smartphone className="h-5 w-5" />
+                    <div className="h-11 w-11 rounded-2xl overflow-hidden shadow-sm border border-white shrink-0 bg-blue-950">
+                      <img
+                        src="/moniepay-logo-square.png"
+                        alt="MoniePay"
+                        className="h-full w-full object-cover"
+                      />
                     </div>
                     <div>
                       <h3 className="font-black text-slate-900 text-base leading-tight">
@@ -192,8 +196,12 @@ export function InstallAppBanner() {
           >
             <div className="clay-card p-3.5 sm:p-4 bg-[#edf3fb]/95 backdrop-blur-xl border border-white/90 shadow-[0_16px_36px_rgba(154,180,214,0.45)] rounded-3xl flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="h-10 w-10 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white flex items-center justify-center shrink-0 shadow-sm">
-                  <Smartphone className="h-5 w-5 text-sky-200" />
+                <div className="h-11 w-11 rounded-2xl overflow-hidden shadow-sm border border-white shrink-0 bg-blue-950">
+                  <img
+                    src="/moniepay-logo-square.png"
+                    alt="MoniePay"
+                    className="h-full w-full object-cover"
+                  />
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-black text-slate-900 leading-tight truncate">

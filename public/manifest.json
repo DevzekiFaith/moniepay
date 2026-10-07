@@ -9,12 +9,17 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/ajopay-logo-square.png",
+      "src": "/moniepay-icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/ajopay-logo-square.png",
+      "src": "/moniepay-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/moniepay-logo-square.png",
       "sizes": "512x512",
       "type": "image/png"
     }
