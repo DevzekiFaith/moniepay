@@ -50,17 +50,17 @@ export function DaylightHeader({
         <div className="pointer-events-none absolute -right-8 -top-8 h-48 w-48 rounded-full bg-sky-300/25 blur-2xl" />
         <div className="pointer-events-none absolute -left-8 -bottom-8 h-40 w-40 rounded-full bg-blue-300/20 blur-xl" />
 
-        <div className="relative mx-auto w-full max-w-4xl">
-          {/* Top Bar with Avatar, Greeting & Actions */}
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5 min-w-0">
-              {/* Profile Image Avatar Button with Tooltip */}
+        <div className="relative mx-auto w-full max-w-4xl space-y-3.5 sm:space-y-4">
+          {/* ── ROW 1: TOP UTILITY BAR (Avatar + Quick Action Controls) ── */}
+          <div className="flex items-center justify-between gap-2">
+            {/* Left: Avatar + Sync Badge */}
+            <div className="flex items-center gap-2">
               <InfoTooltip content="View shop profile, details & sign out">
                 <button
                   type="button"
                   onClick={() => setIsLogoutOpen(true)}
                   aria-label="Account profile & Sign Out"
-                  className="relative h-11 w-11 sm:h-12 sm:w-12 rounded-2xl overflow-hidden border-2 border-sky-300/80 shadow-[0_4px_16px_rgba(0,0,0,0.3)] shrink-0 cursor-pointer active:scale-95 transition-all bg-blue-950"
+                  className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-2xl overflow-hidden border-2 border-sky-300/80 shadow-[0_4px_16px_rgba(0,0,0,0.3)] shrink-0 cursor-pointer active:scale-95 transition-all bg-blue-950"
                 >
                   <img
                     src={profilePhoto}
@@ -74,21 +74,30 @@ export function DaylightHeader({
                 </button>
               </InfoTooltip>
 
-              <div className="min-w-0">
-                <span className="text-[11px] font-semibold text-sky-200 block truncate">
-                  Good day, {displayName.split(" ")[0]} 👋
-                </span>
-                <h1 className="text-sm sm:text-base font-black tracking-tight text-white leading-tight truncate">
-                  {user?.businessName || business.name}
-                </h1>
-                <div className="flex items-center gap-1 text-[10.5px] text-sky-100/90 mt-0.5 truncate">
-                  <MapPin className="h-3 w-3 shrink-0" />
-                  <span className="truncate">{user?.marketLocation || business.market_location || "Balogun Market"}</span>
-                </div>
-              </div>
+              {/* Online / Offline Status Badge */}
+              <InfoTooltip content={isOnline ? "Online: Transactions dey sync live to cloud" : "Offline: Everything saved safe on your phone memory"}>
+                <button
+                  type="button"
+                  onClick={onManualSync}
+                  aria-label={isOnline ? "Online • Instant Sync" : "Offline • Saved on device"}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/15 text-white text-[11px] font-bold backdrop-blur-md border border-white/20 active:scale-95 transition-all cursor-pointer shadow-xs"
+                >
+                  {isOnline ? (
+                    <>
+                      <span className="h-2 w-2 rounded-full bg-sky-300 animate-pulse" />
+                      <span>{isSyncing ? "..." : "Online"}</span>
+                    </>
+                  ) : (
+                    <>
+                      <WifiOff className="h-3 w-3 text-amber-300" />
+                      <span className="text-amber-200">Offline</span>
+                    </>
+                  )}
+                </button>
+              </InfoTooltip>
             </div>
 
-            {/* Action Buttons */}
+            {/* Right: Actions Cluster (Subscription Pill, Bell, Rating QR, Memory, Logout) */}
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
               {/* MoniePay Plus / Free Trial Status Pill */}
               <SubscriptionStatusPill />
@@ -105,7 +114,7 @@ export function DaylightHeader({
                   className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-auto sm:gap-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer shadow-xs"
                 >
                   <QrCode className="h-3.5 w-3.5 text-sky-200" />
-                  <span className="hidden sm:inline">Rating Stand</span>
+                  <span className="hidden md:inline">Rating Stand</span>
                 </button>
               </InfoTooltip>
 
@@ -118,29 +127,7 @@ export function DaylightHeader({
                   className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-auto sm:gap-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/15 text-white backdrop-blur-md border border-white/20 hover:bg-white/25 active:scale-95 transition-all text-xs font-bold cursor-pointer shadow-xs"
                 >
                   <BrainCircuit className="h-3.5 w-3.5 text-sky-200" />
-                  <span className="hidden sm:inline">Memory</span>
-                </button>
-              </InfoTooltip>
-
-              {/* Network Sync Status with Tooltip */}
-              <InfoTooltip content={isOnline ? "Online: Transactions dey sync live to cloud" : "Offline: Everything saved safe on your phone memory"}>
-                <button
-                  type="button"
-                  onClick={onManualSync}
-                  aria-label={isOnline ? "Online • Instant Sync" : "Offline • Saved on device"}
-                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-auto sm:gap-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-white/15 text-white text-xs font-bold backdrop-blur-md border border-white/20 active:scale-95 transition-all cursor-pointer shadow-xs"
-                >
-                  {isOnline ? (
-                    <>
-                      <span className="h-2 w-2 rounded-full bg-sky-300 animate-pulse" />
-                      <span className="text-[11px] hidden sm:inline">{isSyncing ? "..." : "Online"}</span>
-                    </>
-                  ) : (
-                    <>
-                      <WifiOff className="h-3.5 w-3.5 text-amber-300" />
-                      <span className="text-[11px] text-amber-200 hidden sm:inline">Offline</span>
-                    </>
-                  )}
+                  <span className="hidden md:inline">Memory</span>
                 </button>
               </InfoTooltip>
 
@@ -158,8 +145,26 @@ export function DaylightHeader({
             </div>
           </div>
 
-          {/* Compact Period Switcher Strip */}
-          <div className="mt-3.5 flex items-center justify-between">
+          {/* ── ROW 2: SHOP IDENTITY BANNER (Dedicated full-width row under avatar & trial pill) ── */}
+          <div className="pt-0.5">
+            <span className="text-xs sm:text-[13px] font-bold text-sky-200 flex items-center gap-1">
+              Good day, {displayName.split(" ")[0]} 👋
+            </span>
+
+            <h1 className="text-lg sm:text-2xl font-black tracking-tight text-white leading-tight mt-0.5">
+              {user?.businessName || business.name}
+            </h1>
+
+            <div className="flex items-center gap-1.5 text-xs text-sky-100/90 mt-1">
+              <MapPin className="h-3.5 w-3.5 text-sky-300 shrink-0" />
+              <span className="font-medium">
+                {user?.marketLocation || business.market_location || "Shop 14, Balogun Market, Lagos"}
+              </span>
+            </div>
+          </div>
+
+          {/* ── ROW 3: MARKET TIMELINE SWITCHER STRIP ── */}
+          <div className="pt-1 flex items-center justify-between">
             <div className="flex rounded-xl bg-black/25 p-0.5 border border-white/15 backdrop-blur-md">
               {(["today", "this_week", "this_month"] as const).map((p) => {
                 const isActive = activePeriod === p;
