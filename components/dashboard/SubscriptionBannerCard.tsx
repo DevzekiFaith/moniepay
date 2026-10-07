@@ -162,19 +162,19 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                     <div
                       className={`h-2.5 rounded-full transition-all duration-300 ${
                         isPassed
-                          ? "bg-slate-200"
+                          ? "bg-slate-200 dark:bg-slate-700"
                           : isCurrent
-                          ? "bg-[#1d4ed8] shadow-[0_0_8px_rgba(29,78,216,0.6)] animate-pulse"
-                          : "bg-blue-100"
+                          ? "bg-[#1d4ed8] dark:bg-sky-500 shadow-[0_0_10px_rgba(59,130,246,0.6)] animate-pulse"
+                          : "bg-blue-100 dark:bg-slate-800"
                       }`}
                     />
                     <span
                       className={`text-[9.5px] font-black block leading-none ${
                         isCurrent
-                          ? "text-[#1d4ed8]"
+                          ? "text-[#1d4ed8] dark:text-sky-400"
                           : isPassed
-                          ? "text-slate-400"
-                          : "text-slate-400"
+                          ? "text-slate-400 dark:text-slate-500"
+                          : "text-slate-400 dark:text-slate-500"
                       }`}
                     >
                       D{dayNum}

@@ -414,7 +414,7 @@ _Powered by MoniePay_`;
             <button
               type="button"
               onClick={() => router.back()}
-              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-black shadow-xs active:scale-95 transition-all cursor-pointer"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               <span className="hidden min-[380px]:inline">Back to Activity</span>
@@ -427,10 +427,10 @@ _Powered by MoniePay_`;
               <button
                 type="button"
                 onClick={handleDownloadReceipt}
-                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-xl bg-white border border-slate-200 text-slate-700 hover:text-slate-900 text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
+                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
                 title="Download Receipt PNG"
               >
-                <Download className="h-3.5 w-3.5 text-emerald-700" />
+                <Download className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                 <span className="hidden sm:inline">Download Slip</span>
                 <span className="inline sm:hidden text-[11px]">Save</span>
               </button>
@@ -448,15 +448,15 @@ _Powered by MoniePay_`;
           </div>
 
           {loading ? (
-            <div className="p-12 text-center rounded-[32px] bg-white border border-slate-200">
-              <Clock className="h-8 w-8 text-slate-300 mx-auto animate-spin mb-3" />
-              <p className="text-xs font-bold text-slate-500">Checking record for shop memory...</p>
+            <div className="p-12 text-center rounded-[32px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10">
+              <Clock className="h-8 w-8 text-slate-300 dark:text-slate-600 mx-auto animate-spin mb-3" />
+              <p className="text-xs font-bold text-slate-500 dark:text-slate-400">Checking record for shop memory...</p>
             </div>
           ) : !transaction ? (
-            <div className="p-10 text-center rounded-[32px] bg-white border border-slate-200 space-y-3">
+            <div className="p-10 text-center rounded-[32px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-3">
               <AlertTriangle className="h-8 w-8 text-amber-500 mx-auto" />
-              <h3 className="text-base font-black text-slate-900">Record Not Found</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <h3 className="text-base font-black text-slate-900 dark:text-white">Record Not Found</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                 This market record could not be found or may have been cleared from device memory.
               </p>
               <Link
@@ -469,7 +469,7 @@ _Powered by MoniePay_`;
           ) : (
             <div className="space-y-4">
               {/* ── DIGITAL SLIP CARD (Market Paper Slip Aesthetic) ── */}
-              <div className="relative rounded-[32px] bg-white border border-emerald-950/10 shadow-[0_12px_32px_rgba(0,0,0,0.06)] overflow-hidden">
+              <div className="relative rounded-[32px] bg-white dark:bg-slate-900 border border-emerald-950/10 dark:border-white/10 shadow-[0_12px_32px_rgba(0,0,0,0.06)] dark:shadow-2xl overflow-hidden transition-colors">
                 {/* Top Colored Branding Strip */}
                 <div
                   className={`h-3.5 w-full ${
@@ -481,100 +481,106 @@ _Powered by MoniePay_`;
 
                 <div className="p-5 sm:p-7 space-y-6">
                   {/* Shop Branding Header */}
-                  <div className="text-center pb-5 border-b border-dashed border-slate-200">
-                    <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-100 text-emerald-800 mb-2 shadow-xs">
-                      <Store className="h-6 w-6" />
+                  <div className="text-center pb-5 border-b border-dashed border-slate-200 dark:border-white/15">
+                    <div className="inline-flex items-center justify-center gap-2 mb-2">
+                      <div className="h-12 w-12 rounded-2xl overflow-hidden shadow-xs border border-white/80 dark:border-white/20 bg-blue-950 flex items-center justify-center">
+                        <img
+                          src="/moniepay-logo-square.png"
+                          alt="MoniePay"
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
                     </div>
-                    <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                    <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight">
                       {shopName}
                     </h2>
-                    <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                       {shopLocation}
                     </p>
-                    <div className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 text-[11px] font-black border border-emerald-200/80">
-                      <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+                    <div className="inline-flex items-center gap-1.5 mt-2 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[11px] font-black border border-emerald-200/80 dark:border-emerald-800">
+                      <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                       <span>Record Don Save Safe ✓</span>
                     </div>
                   </div>
 
                   {/* Main Amount Callout */}
                   <div className="text-center py-2">
-                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-500">
+                    <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       {getMarketTypeTitle(transaction.type, transaction.payment_method)}
                     </span>
                     <div
                       className={`text-3xl sm:text-4xl font-black tracking-tight mt-1 ${
-                        isPositive ? "text-emerald-800" : "text-slate-900"
+                        isPositive ? "text-emerald-700 dark:text-emerald-400" : "text-slate-900 dark:text-white"
                       }`}
                     >
                       {isPositive ? "+" : "-"}₦{Number(transaction.amount).toLocaleString()}
                     </div>
-                    <p className="text-xs font-bold text-slate-500 mt-1 italic max-w-md mx-auto">
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 mt-1 italic max-w-md mx-auto">
                       "{numberToNairaWords(Number(transaction.amount))}"
                     </p>
                   </div>
 
                   {/* Transaction Details Grid */}
-                  <div className="rounded-2xl bg-slate-50 border border-slate-200/80 p-3.5 sm:p-5 space-y-3 sm:space-y-3.5">
+                  <div className="rounded-2xl bg-slate-50 dark:bg-slate-950/60 border border-slate-200/80 dark:border-white/10 p-3.5 sm:p-5 space-y-3 sm:space-y-3.5">
                     {/* Item Description */}
                     <div className="flex items-start justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
-                      <span className="text-slate-500 font-semibold flex items-center gap-1.5 shrink-0">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 shrink-0">
                         <FileText className="h-4 w-4 text-slate-400 shrink-0" />
                         <span>Goods / Particulars</span>
                       </span>
-                      <span className="font-black text-slate-900 text-right break-words min-w-0 flex-1 pl-2">
+                      <span className="font-black text-slate-900 dark:text-white text-right break-words min-w-0 flex-1 pl-2">
                         {transaction.description || transaction.category}
                       </span>
                     </div>
 
                     {/* Category */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
-                      <span className="text-slate-500 font-semibold flex items-center gap-1.5 shrink-0">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 shrink-0">
                         <Tag className="h-4 w-4 text-slate-400 shrink-0" />
                         <span>Market Category</span>
                       </span>
-                      <span className="font-bold text-slate-800 text-right truncate">
+                      <span className="font-bold text-slate-800 dark:text-slate-200 text-right truncate">
                         {transaction.category}
                       </span>
                     </div>
 
                     {/* Payment Method */}
                     <div className="flex items-center justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
-                      <span className="text-slate-500 font-semibold flex items-center gap-1.5 shrink-0">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 shrink-0">
                         <CreditCard className="h-4 w-4 text-slate-400 shrink-0" />
                         <span>Payment Way</span>
                       </span>
-                      <span className="px-2 py-0.5 rounded-lg bg-white border border-slate-200 font-black text-slate-900 text-[11px] sm:text-xs shadow-2xs text-right truncate">
+                      <span className="px-2 py-0.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 font-black text-slate-900 dark:text-white text-[11px] sm:text-xs shadow-2xs text-right truncate">
                         {getMarketPaymentMethod(transaction.payment_method)}
                       </span>
                     </div>
 
                     {/* Exact Timestamp */}
                     <div className="flex items-start justify-between gap-2 sm:gap-3 text-xs sm:text-sm">
-                      <span className="text-slate-500 font-semibold flex items-center gap-1.5 shrink-0">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 shrink-0">
                         <Calendar className="h-4 w-4 text-slate-400 shrink-0" />
                         <span>Market Time & Date</span>
                       </span>
-                      <span className="font-bold text-slate-900 text-right text-[11px] sm:text-xs">
+                      <span className="font-bold text-slate-900 dark:text-white text-right text-[11px] sm:text-xs">
                         {formatFullDate(transaction.transaction_date)}
                       </span>
                     </div>
 
                     {/* Transaction Reference ID */}
-                    <div className="flex items-center justify-between gap-3 text-xs sm:text-sm pt-1 border-t border-slate-200/60">
-                      <span className="text-slate-500 font-semibold flex items-center gap-1.5 shrink-0">
+                    <div className="flex items-center justify-between gap-3 text-xs sm:text-sm pt-1 border-t border-slate-200/60 dark:border-white/10">
+                      <span className="text-slate-500 dark:text-slate-400 font-semibold flex items-center gap-1.5 shrink-0">
                         <span>Slip Ref Number</span>
                       </span>
                       <button
                         type="button"
                         onClick={handleCopyReference}
-                        className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-800 hover:text-emerald-900 hover:underline cursor-pointer"
+                        className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer"
                       >
                         <span>
                           #{(transaction.client_tx_id || transaction.id).slice(0, 8).toUpperCase()}
                         </span>
                         {copied ? (
-                          <Check className="h-3 w-3 text-emerald-600" />
+                          <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                         ) : (
                           <Copy className="h-3 w-3 text-slate-400" />
                         )}

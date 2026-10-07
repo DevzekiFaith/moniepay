@@ -22,7 +22,7 @@ export function MoniePayMark({ size = 36 }: { size?: number }) {
         height: `${size}px`,
         borderRadius: `${Math.round(size * 0.28)}px`,
       }}
-      className="overflow-hidden shadow-sm flex items-center justify-center shrink-0 border border-white/80 bg-blue-950"
+      className="overflow-hidden shadow-xs flex items-center justify-center shrink-0 border border-white/60 dark:border-white/20 bg-blue-950"
       aria-label="MoniePay mark"
     >
       <img
@@ -49,15 +49,15 @@ export function MoniePayLogo({
       <MoniePayMark size={size} />
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5">
-          <span className="text-base font-black tracking-tight text-slate-900 leading-tight">
+          <span className="text-base font-black tracking-tight text-slate-900 dark:text-white leading-tight">
             MoniePay
           </span>
-          <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200">
+          <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
             Trader OS
           </span>
         </div>
         {showTagline && (
-          <span className="text-[10.5px] font-medium text-slate-500 tracking-normal">
+          <span className="text-[10.5px] font-medium text-slate-500 dark:text-slate-400 tracking-normal">
             Understand your money
           </span>
         )}
