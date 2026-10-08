@@ -11,6 +11,10 @@ import {
   CheckCircle2,
   Wallet,
   Clock,
+  QrCode,
+  ArrowDownLeft,
+  Building2,
+  Copy,
 } from "lucide-react";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -180,6 +184,133 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
                 <span className="text-[10.5px] font-black text-slate-800 dark:text-slate-100">Recorded as Sale</span>
               </div>
               <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300">+₦18,000</span>
+            </div>
+          </motion.div>
+        </div>
+      ),
+    },
+    {
+      id: "wallet",
+      badge: "Auto-Record Payments • QR & Transfer ⚡",
+      badgeColor: "bg-cyan-50 dark:bg-cyan-950/80 text-cyan-900 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800",
+      title: "Direct Shop Wallet",
+      highlight: "Auto-Records Every Transfer",
+      highlightColor: "text-cyan-600 dark:text-cyan-400",
+      description:
+        "Give customer your dedicated shop account or QR code. Once they pay, MoniePay detects it instantly and auto-records the sale into your ledger—zero manual typing!",
+      icon: <Wallet className="h-7 w-7 text-cyan-600 dark:text-cyan-400" />,
+      themeColor: "#0891b2",
+      gradient: "from-cyan-800 via-cyan-600 to-blue-500",
+      visualElement: (
+        <div className="relative w-full h-48 sm:h-56 flex items-center justify-center">
+          {/* Animated Scanning Wave Ripples */}
+          <motion.div
+            animate={{ scale: [1, 1.3, 1], opacity: [0.35, 0.08, 0.35] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute h-44 w-44 sm:h-52 sm:w-52 rounded-full border-2 border-cyan-400/40 bg-cyan-100/20 dark:bg-cyan-900/20"
+          />
+          <motion.div
+            animate={{ scale: [1, 1.5, 1], opacity: [0.2, 0.03, 0.2] }}
+            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+            className="absolute h-56 w-56 sm:h-64 sm:w-64 rounded-full border border-teal-400/30"
+          />
+
+          {/* Floating QR Pill Left with Laser Scanning Animation */}
+          <motion.div
+            animate={{ y: [-4, 5, -4], rotate: [-2, 2, -2] }}
+            transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -left-2 sm:left-1 top-2 z-20 px-3 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-cyan-200 dark:border-cyan-800 shadow-lg flex items-center gap-2"
+          >
+            <div className="relative h-7 w-7 rounded-lg bg-cyan-100 dark:bg-cyan-950 text-cyan-700 dark:text-cyan-300 flex items-center justify-center overflow-hidden">
+              <QrCode className="h-4 w-4" />
+              {/* Scan laser sweep */}
+              <motion.div
+                animate={{ y: [-14, 14, -14] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                className="absolute inset-x-0 h-0.5 bg-cyan-500 shadow-[0_0_6px_#06b6d4]"
+              />
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Shop QR Code</p>
+              <p className="text-[11px] font-black text-cyan-800 dark:text-cyan-300">Scan to Pay</p>
+            </div>
+          </motion.div>
+
+          {/* Floating Pill Right: Available Wallet Balance */}
+          <motion.div
+            animate={{ y: [5, -5, 5], rotate: [2, -2, 2] }}
+            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+            className="absolute -right-2 sm:right-1 bottom-1 z-20 px-3 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-emerald-200 dark:border-emerald-800 shadow-lg flex items-center gap-1.5"
+          >
+            <div className="h-7 w-7 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
+              <Wallet className="h-4 w-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Wallet Balance</p>
+              </div>
+              <p className="text-xs font-black text-emerald-700 dark:text-emerald-300">₦125,000</p>
+            </div>
+          </motion.div>
+
+          {/* Central 3D Payment Detection Card */}
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="relative z-10 w-[270px] sm:w-72 p-3.5 rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(8,145,178,0.18)] dark:shadow-2xl space-y-2.5"
+          >
+            {/* Merchant Dedicated Virtual Account Bar */}
+            <div className="flex items-center justify-between p-2 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10">
+              <div className="flex items-center gap-2">
+                <div className="h-7 w-7 rounded-xl bg-cyan-600 text-white flex items-center justify-center font-black text-[10px]">
+                  <Building2 className="h-3.5 w-3.5" />
+                </div>
+                <div>
+                  <p className="text-[10px] font-black text-slate-900 dark:text-white">Providus Bank • 9920192841</p>
+                  <p className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400">MoniePay / Mama Chidi</p>
+                </div>
+              </div>
+              <span className="px-1.5 py-0.5 rounded-md bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 text-[9px] font-black">
+                Active
+              </span>
+            </div>
+
+            {/* Live Incoming Transfer Alert (Simulated Real-time webhook) */}
+            <motion.div
+              initial={{ scale: 0.9, y: 10, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              transition={{ delay: 0.4, type: "spring", stiffness: 380, damping: 24 }}
+              className="p-2.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/80 dark:to-teal-950/80 border border-emerald-300/80 dark:border-emerald-700/80 shadow-xs"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-1.5">
+                  <div className="h-5 w-5 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                    <ArrowDownLeft className="h-3 w-3" />
+                  </div>
+                  <div>
+                    <p className="text-[10.5px] font-black text-emerald-950 dark:text-emerald-100">
+                      +₦20,000 Transfer In
+                    </p>
+                    <p className="text-[9px] font-semibold text-emerald-700 dark:text-emerald-300">
+                      From: Chidinma O. (Providus)
+                    </p>
+                  </div>
+                </div>
+                <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300">+₦20,000</span>
+              </div>
+            </motion.div>
+
+            {/* Auto-Record Ledger Status Chip */}
+            <div className="flex items-center justify-between px-1">
+              <span className="text-[9.5px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                <CheckCircle2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                Auto-saved in Sales Ledger
+              </span>
+              <span className="text-[9px] font-black text-cyan-700 dark:text-cyan-300 bg-cyan-50 dark:bg-cyan-950 px-1.5 py-0.5 rounded border border-cyan-200/80 dark:border-cyan-800">
+                0 Manual Clicks
+              </span>
             </div>
           </motion.div>
         </div>
