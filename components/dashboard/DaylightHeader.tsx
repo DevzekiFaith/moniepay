@@ -166,11 +166,11 @@ export function DaylightHeader({
                       className="fixed inset-0 z-30"
                       onClick={() => setIsMoreMenuOpen(false)}
                     />
-                    <div className="absolute right-0 top-11 z-40 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-1.5 space-y-1 text-xs text-slate-800 dark:text-slate-200 backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150">
+                    <div className="absolute right-0 top-11 z-40 w-56 rounded-2xl bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl border border-white/60 dark:border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.25)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.6)] p-1.5 space-y-1 text-xs text-slate-800 dark:text-slate-200 animate-in fade-in slide-in-from-top-2 duration-150">
                       <Link
                         href="/reviews"
                         onClick={() => setIsMoreMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
                       >
                         <ThumbsUp className="h-4 w-4 text-amber-500 shrink-0" />
                         <span>Customer Reviews & QR</span>
@@ -179,7 +179,7 @@ export function DaylightHeader({
                       <Link
                         href="/map"
                         onClick={() => setIsMoreMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
                       >
                         <MapPin className="h-4 w-4 text-sky-500 shrink-0" />
                         <span>Market Vendor Map</span>
@@ -191,7 +191,7 @@ export function DaylightHeader({
                           setIsMoreMenuOpen(false);
                           onOpenTracker();
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors text-left cursor-pointer"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors text-left cursor-pointer"
                       >
                         <BrainCircuit className="h-4 w-4 text-indigo-500 shrink-0" />
                         <span>Decision Memory</span>
@@ -203,7 +203,7 @@ export function DaylightHeader({
                           setIsMoreMenuOpen(false);
                           triggerInstallPrompt();
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors text-left cursor-pointer"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors text-left cursor-pointer"
                       >
                         <Smartphone className="h-4 w-4 text-emerald-500 shrink-0" />
                         <span>Install App on Phone</span>
@@ -212,20 +212,20 @@ export function DaylightHeader({
                       <Link
                         href="/upgrade"
                         onClick={() => setIsMoreMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
                       >
                         <ShieldCheck className="h-4 w-4 text-blue-500 shrink-0" />
                         <span>MoniePay Plus Pass</span>
                       </Link>
 
-                      <div className="pt-1 border-t border-slate-100 dark:border-slate-800">
+                      <div className="pt-1 border-t border-black/10 dark:border-white/10">
                         <button
                           type="button"
                           onClick={() => {
                             setIsMoreMenuOpen(false);
                             setIsLogoutOpen(true);
                           }}
-                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-bold transition-colors text-left cursor-pointer"
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-500/15 text-rose-600 dark:text-rose-400 font-bold transition-colors text-left cursor-pointer"
                         >
                           <LogOut className="h-4 w-4 text-rose-500 shrink-0" />
                           <span>Lock Shop / Sign Out</span>
