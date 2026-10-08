@@ -197,7 +197,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
       highlight: "Auto-Records Every Transfer",
       highlightColor: "text-cyan-600 dark:text-cyan-400",
       description:
-        "Give customer your dedicated shop account or QR code. Once they pay, MoniePay detects it instantly and auto-records the sale into your ledger—zero manual typing!",
+        "Give customer your dedicated shop account or counter QR code make them transfer. As money land, MoniePay go catch am sharp-sharp and write the sale inside your record book—zero manual typing!",
       icon: <Wallet className="h-7 w-7 text-cyan-600 dark:text-cyan-400" />,
       themeColor: "#0891b2",
       gradient: "from-cyan-800 via-cyan-600 to-blue-500",
