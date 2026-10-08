@@ -10,6 +10,10 @@ export const FLUTTERWAVE_CONFIG = {
     process.env.FLUTTERWAVE_PUBLIC_KEY ||
     "",
   SECRET_KEY: process.env.FLUTTERWAVE_SECRET_KEY || "",
+  ENCRYPTION_KEY:
+    process.env.FLUTTERWAVE_ENCRYPTION_KEY ||
+    process.env.FLUTTERWAVE_ENC_KEY ||
+    "",
   SECRET_HASH: process.env.FLUTTERWAVE_SECRET_HASH || "moniepay_flw_secure_secret_hash",
   BASE_URL: "https://api.flutterwave.com/v3",
   MONTHLY_AMOUNT: 1500, // ₦1,500 / month
