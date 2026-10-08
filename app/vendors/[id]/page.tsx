@@ -9,7 +9,6 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Star,
   ShieldCheck,
   MapPin,
   Phone,
@@ -24,6 +23,7 @@ import {
   ExternalLink,
   ChevronLeft,
   QrCode,
+  Award,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
@@ -169,7 +169,7 @@ export default function PublicVendorProfilePage() {
               href={`/rate?shop=${vendor.id}`}
               className="py-2.5 px-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all text-center"
             >
-              <Star className="h-3.5 w-3.5 fill-white text-white" />
+              <ThumbsUp className="h-3.5 w-3.5 fill-white text-white" />
               <span>Leave Review</span>
             </Link>
 
@@ -206,13 +206,9 @@ export default function PublicVendorProfilePage() {
           <div className="flex flex-col sm:flex-row items-center gap-5 justify-between">
             {/* Big Score Box */}
             <div className="text-center sm:text-left flex items-center gap-3">
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-500 text-white flex flex-col items-center justify-center shadow-md">
+              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-700 text-white flex flex-col items-center justify-center shadow-md">
                 <span className="text-2xl font-black leading-none">{stats.average}</span>
-                <div className="flex items-center gap-0.5 mt-0.5">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="h-2.5 w-2.5 fill-white text-white" />
-                  ))}
-                </div>
+                <span className="text-[10px] font-bold text-emerald-100 mt-0.5">/ 5.0 pts</span>
               </div>
 
               <div>
@@ -225,28 +221,28 @@ export default function PublicVendorProfilePage() {
               </div>
             </div>
 
-            {/* Star Distribution Bars */}
+            {/* Score Distribution Bars */}
             <div className="w-full sm:w-48 space-y-1 text-xs">
-              {[5, 4, 3, 2, 1].map((star) => {
-                const count = stats.breakdown[star] || 0;
+              {[5, 4, 3, 2, 1].map((score) => {
+                const count = stats.breakdown[score] || 0;
                 const percent = stats.total > 0 ? (count / stats.total) * 100 : 0;
-                const isSelected = filterRating === star;
+                const isSelected = filterRating === score;
                 return (
                   <button
-                    key={star}
+                    key={score}
                     type="button"
-                    onClick={() => setFilterRating(isSelected ? null : star)}
+                    onClick={() => setFilterRating(isSelected ? null : score)}
                     className={`w-full flex items-center gap-2 py-0.5 px-1.5 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer ${
                       isSelected ? "ring-1 ring-blue-500 bg-blue-50/50 dark:bg-blue-950/40" : ""
                     }`}
                   >
                     <span className="w-3 text-right font-bold text-slate-600 dark:text-slate-400 text-[11px]">
-                      {star}
+                      {score}
                     </span>
-                    <Star className="h-2.5 w-2.5 fill-amber-400 text-amber-400 shrink-0" />
+                    <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 w-5 text-left">pts</span>
                     <div className="flex-1 h-2 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                       <div
-                        className="h-full bg-amber-400 rounded-full transition-all"
+                        className="h-full bg-emerald-500 rounded-full transition-all"
                         style={{ width: `${percent}%` }}
                       />
                     </div>
@@ -377,10 +373,10 @@ export default function PublicVendorProfilePage() {
                       </div>
                     </div>
 
-                    {/* Star Rating Badge */}
-                    <div className="flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 font-black text-xs border border-amber-200/80 dark:border-amber-800">
-                      <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
-                      <span>{rev.rating}.0</span>
+                    {/* Score Rating Badge */}
+                    <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-200 font-black text-xs border border-emerald-200/80 dark:border-emerald-700">
+                      <ThumbsUp className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                      <span>{rev.rating}.0 pts</span>
                     </div>
                   </div>
 

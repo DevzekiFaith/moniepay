@@ -12,7 +12,6 @@ import {
   MapPin,
   Search,
   Filter,
-  Star,
   ShieldCheck,
   Store,
   Navigation,
@@ -26,6 +25,8 @@ import {
   List,
   Compass,
   X,
+  ThumbsUp,
+  Award,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
@@ -353,9 +354,9 @@ function VendorMapContent() {
                   </h3>
 
                   <div className="flex items-center gap-2 pt-0.5">
-                    <div className="flex items-center gap-0.5 text-amber-500 font-black text-xs">
-                      <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                      <span>{activeStats?.average}</span>
+                    <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-black text-xs">
+                      <ThumbsUp className="h-3.5 w-3.5" />
+                      <span>{activeStats?.average} pts</span>
                     </div>
                     <span className="text-[11px] text-slate-400 font-medium">
                       ({activeStats?.total} verified reviews)
@@ -402,7 +403,7 @@ function VendorMapContent() {
                     href={`/rate?shop=${activeVendor.id}`}
                     className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 active:scale-95 transition-all"
                   >
-                    <Star className="h-3.5 w-3.5 text-amber-500" />
+                    <ThumbsUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
                     <span>Leave Review</span>
                   </Link>
 

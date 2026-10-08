@@ -13,7 +13,7 @@ import {
   X,
   AlertCircle,
   TrendingUp,
-  Star,
+  ThumbsUp,
   Zap,
   Phone,
   ArrowRight,
@@ -23,34 +23,13 @@ import {
   Radio,
   ExternalLink,
   Store,
+  Volume2,
+  VolumeX,
+  Vibrate,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNotifications, MarketNotification } from "@/context/NotificationContext";
 import { InfoTooltip } from "@/components/ui/tooltip";
-
-// Web Audio API chime for immediate tactile trader feedback
-function playChime() {
-  try {
-    const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc.type = "sine";
-    osc.frequency.setValueAtTime(587.33, ctx.currentTime); // D5
-    osc.frequency.setValueAtTime(880, ctx.currentTime + 0.08); // A5
-
-    gain.gain.setValueAtTime(0.12, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
-
-    osc.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc.start();
-    osc.stop(ctx.currentTime + 0.35);
-  } catch {}
-}
 
 export function NotificationBellDrawer() {
   const {
@@ -65,6 +44,11 @@ export function NotificationBellDrawer() {
     markAsRead,
     markAllAsRead,
     clearNotifications,
+    soundEnabled,
+    vibrationEnabled,
+    toggleSound,
+    toggleVibration,
+    testFeedback,
   } = useNotifications();
 
   const [activeFilter, setActiveFilter] = useState<"all" | "debts" | "alerts" | "sales">("all");
@@ -150,7 +134,7 @@ export function NotificationBellDrawer() {
       case "sales_milestone":
         return <Zap className="h-4 w-4 text-emerald-600" />;
       case "rating_received":
-        return <Star className="h-4 w-4 text-amber-500 fill-amber-400" />;
+        return <ThumbsUp className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />;
       default:
         return <Bell className="h-4 w-4 text-emerald-600" />;
     }
@@ -206,14 +190,45 @@ export function NotificationBellDrawer() {
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => setIsDrawerOpen(false)}
-                  aria-label="Close notification drawer"
-                  className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white/15 hover:bg-white/25 text-white transition-all cursor-pointer backdrop-blur-md border border-white/20 active:scale-95"
-                >
-                  <X className="h-4.5 w-4.5" />
-                </button>
+                {/* Sound, Vibration & Close Buttons */}
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={toggleSound}
+                    aria-label={soundEnabled ? "Sound ON (Tap make e off)" : "Sound OFF (Tap make e on)"}
+                    title={soundEnabled ? "Notification sound: ON (Tap make e off)" : "Notification sound: OFF (Tap make e on)"}
+                    className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-md transition-all cursor-pointer active:scale-95 ${
+                      soundEnabled
+                        ? "bg-white/20 hover:bg-white/30 text-emerald-300 border-white/25 shadow-xs"
+                        : "bg-white/10 hover:bg-white/20 text-slate-400 border-white/10 opacity-70"
+                    }`}
+                  >
+                    {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={toggleVibration}
+                    aria-label={vibrationEnabled ? "Vibration ON (Tap make e off)" : "Vibration OFF (Tap make e on)"}
+                    title={vibrationEnabled ? "Phone vibration: ON (Tap make e off)" : "Phone vibration: OFF (Tap make e on)"}
+                    className={`flex h-8 w-8 items-center justify-center rounded-xl border backdrop-blur-md transition-all cursor-pointer active:scale-95 ${
+                      vibrationEnabled
+                        ? "bg-white/20 hover:bg-white/30 text-emerald-300 border-white/25 shadow-xs"
+                        : "bg-white/10 hover:bg-white/20 text-slate-400 border-white/10 opacity-70"
+                    }`}
+                  >
+                    <Vibrate className="h-4 w-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsDrawerOpen(false)}
+                    aria-label="Close notification drawer"
+                    className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/15 hover:bg-white/25 text-white transition-all cursor-pointer backdrop-blur-md border border-white/20 active:scale-95 ml-0.5"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
 
               {/* Push Permission Prompt Strip */}
@@ -242,7 +257,7 @@ export function NotificationBellDrawer() {
                     { id: "all", label: "Everything", count: unreadCount },
                     { id: "debts", label: "Customer Gbese", count: debtCount },
                     { id: "alerts", label: "Price Alerts", count: alertCount },
-                    { id: "sales", label: "Sales & Stars", count: salesCount },
+                    { id: "sales", label: "Money & Reviews", count: salesCount },
                   ].map((tab) => (
                     <button
                       key={tab.id}
@@ -400,7 +415,7 @@ export function NotificationBellDrawer() {
         <button
           type="button"
           onClick={() => {
-            playChime();
+            testFeedback();
             setIsDrawerOpen(true);
           }}
           className="relative flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-white/15 text-white hover:bg-white/25 active:scale-95 transition-all cursor-pointer backdrop-blur-md border border-white/20 shadow-xs"

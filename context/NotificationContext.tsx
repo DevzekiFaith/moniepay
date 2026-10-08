@@ -55,6 +55,11 @@ interface NotificationContextType {
   success: (title: string, message?: string) => void;
   warning: (title: string, message?: string) => void;
   toast: (title: string, message?: string, options?: { type?: "info" | "success" | "warning" | "error"; duration?: number }) => void;
+  soundEnabled: boolean;
+  vibrationEnabled: boolean;
+  toggleSound: () => void;
+  toggleVibration: () => void;
+  testFeedback: () => void;
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   clearNotifications: () => void;
@@ -91,8 +96,8 @@ const INITIAL_NOTIFICATIONS: MarketNotification[] = [
   },
   {
     id: "notif_04",
-    title: "Customer Drop 5-Star Rating ⭐",
-    message: "One customer just scan your counter QR Code give you 5 stars: 'Original goods only, derica measure complete!'",
+    title: "Customer Drop 5-Point Review 👍",
+    message: "One customer just scan your counter QR Code give you 5.0 rating: 'Original goods only, derica measure complete!'",
     type: "rating_received",
     timestamp: "Yesterday",
     read: true,
@@ -101,7 +106,7 @@ const INITIAL_NOTIFICATIONS: MarketNotification[] = [
 ];
 
 // Synthetic Web Audio API Audio Chime (Zero external assets, instant 100% offline playback)
-function playNotificationChime(type: "debt" | "success" | "general" = "debt") {
+function playNotificationChime(type: "debt" | "success" | "review" | "general" = "debt") {
   if (typeof window === "undefined") return;
   try {
     const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
@@ -119,9 +124,13 @@ function playNotificationChime(type: "debt" | "success" | "general" = "debt") {
       osc.frequency.setValueAtTime(587.33, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.12);
     } else if (type === "success") {
-      // Pleasant cash drawer success chime
+      // Pleasant cash drawer success chime (523Hz -> 784Hz)
       osc.frequency.setValueAtTime(523.25, ctx.currentTime);
-      osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.1);
+      osc.frequency.exponentialRampToValueAtTime(784, ctx.currentTime + 0.14);
+    } else if (type === "review") {
+      // Harmonious review confirmation chime (440Hz -> 659Hz)
+      osc.frequency.setValueAtTime(440, ctx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(659.25, ctx.currentTime + 0.15);
     } else {
       osc.frequency.setValueAtTime(440, ctx.currentTime);
       osc.frequency.exponentialRampToValueAtTime(554.37, ctx.currentTime + 0.1);
@@ -138,6 +147,28 @@ function playNotificationChime(type: "debt" | "success" | "general" = "debt") {
   } catch {}
 }
 
+// Native Haptic Vibration Pattern trigger (Zero overhead, Works on mobile & PWA)
+function triggerHapticVibration(type: "debt" | "success" | "review" | "general" = "debt") {
+  if (typeof window === "undefined" || typeof navigator === "undefined" || !("vibrate" in navigator)) {
+    return;
+  }
+  try {
+    if (type === "debt") {
+      // Urgent double buzz for debt / overdue reminders
+      navigator.vibrate([140, 70, 140]);
+    } else if (type === "success") {
+      // Cheerful cash confirmation buzz
+      navigator.vibrate([100, 50, 150]);
+    } else if (type === "review") {
+      // Celebratory review double tap
+      navigator.vibrate([80, 50, 100]);
+    } else {
+      // Soft single tap
+      navigator.vibrate(100);
+    }
+  } catch {}
+}
+
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
@@ -145,6 +176,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const [permission, setPermission] = useState<NotificationPermission | "unsupported">("default");
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
+  const [soundEnabled, setSoundEnabled] = useState<boolean>(true);
+  const [vibrationEnabled, setVibrationEnabled] = useState<boolean>(true);
 
   // Initialize permission and local storage cache
   useEffect(() => {
@@ -344,6 +377,47 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }, [toast]);
 
   // Send a push notification (both browser push, in-app drawer, and instant toast)
+  // Initialize sound and vibration preferences
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedSound = localStorage.getItem("moniepay_notif_sound");
+      if (savedSound !== null) setSoundEnabled(savedSound === "true");
+      const savedVib = localStorage.getItem("moniepay_notif_vibration");
+      if (savedVib !== null) setVibrationEnabled(savedVib === "true");
+    }
+  }, []);
+
+  const toggleSound = useCallback(() => {
+    setSoundEnabled((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("moniepay_notif_sound", String(next));
+      } catch {}
+      if (next) {
+        playNotificationChime("success");
+      }
+      return next;
+    });
+  }, []);
+
+  const toggleVibration = useCallback(() => {
+    setVibrationEnabled((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem("moniepay_notif_vibration", String(next));
+      } catch {}
+      if (next) {
+        triggerHapticVibration("success");
+      }
+      return next;
+    });
+  }, []);
+
+  const testFeedback = useCallback(() => {
+    if (soundEnabled) playNotificationChime("success");
+    if (vibrationEnabled) triggerHapticVibration("success");
+  }, [soundEnabled, vibrationEnabled]);
+
   const sendPushNotification = useCallback(
     ({
       title,
@@ -380,10 +454,17 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         return updated;
       });
 
-      // Play in-app audio chime beep
-      playNotificationChime(
-        type === "debt_reminder" ? "debt" : type === "sales_milestone" ? "success" : "general"
-      );
+      // Play in-app audio chime & haptics if enabled
+      if (soundEnabled) {
+        playNotificationChime(
+          type === "debt_reminder" ? "debt" : type === "sales_milestone" ? "success" : type === "rating_received" ? "review" : "general"
+        );
+      }
+      if (vibrationEnabled) {
+        triggerHapticVibration(
+          type === "debt_reminder" ? "debt" : type === "sales_milestone" ? "success" : type === "rating_received" ? "review" : "general"
+        );
+      }
 
       // Also trigger instant floating toast
       const toastType: ToastItem["type"] =
@@ -400,7 +481,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         } catch {}
       }
     },
-    [toast]
+    [toast, soundEnabled, vibrationEnabled]
   );
 
   const markAsRead = useCallback((id: string) => {
@@ -540,6 +621,11 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         success,
         warning,
         toast,
+        soundEnabled,
+        vibrationEnabled,
+        toggleSound,
+        toggleVibration,
+        testFeedback,
         markAsRead,
         markAllAsRead,
         clearNotifications,

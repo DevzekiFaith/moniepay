@@ -9,7 +9,6 @@ import React, { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Star,
   CheckCircle2,
   ShieldCheck,
   Store,
@@ -20,9 +19,9 @@ import {
   Check,
   MessageCircle,
   Clock,
-  Sparkles,
   AlertCircle,
   ThumbsUp,
+  Award,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
@@ -70,7 +69,7 @@ function CustomerRatingContent() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const activeStarRating = hoverScore !== null ? hoverScore : overallScore;
+  const activeRating = hoverScore !== null ? hoverScore : overallScore;
 
   // Check cooldown on load
   const [cooldownStatus, setCooldownStatus] = useState<{ canSubmit: boolean; message?: string }>({
@@ -87,20 +86,20 @@ function CustomerRatingContent() {
     }
   }, [shopKey]);
 
-  const getStarLabel = (stars: number) => {
-    switch (stars) {
+  const getRatingLabel = (score: number) => {
+    switch (score) {
       case 1:
         return "1.0 • Poor Service / Issue Dey";
       case 2:
         return "2.0 • Fair / Small Wahala";
       case 3:
-        return "3.0 • Good / Standard Market Buy";
+        return "3.0 • Good / Correct Market Buy";
       case 4:
-        return "4.0 • Very Good / Reliable Trader";
+        return "4.0 • Sharp Sharp / Reliable Trader";
       case 5:
-        return "5.0 • Top Notch / 100% Correct!";
+        return "5.0 • Top Quality / 100% Genuine!";
       default:
-        return "Tap star to rate";
+        return "Tap score to rate";
     }
   };
 
@@ -115,7 +114,7 @@ function CustomerRatingContent() {
     setErrorMsg(null);
 
     if (overallScore < 1) {
-      setErrorMsg("Please choose a star rating.");
+      setErrorMsg("Please choose your score (1 to 5).");
       return;
     }
 
@@ -243,39 +242,41 @@ function CustomerRatingContent() {
               )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
-                {/* ── 1. STAR RATING SELECTOR ── */}
+                {/* ── 1. NUMERIC SCORE SELECTOR ── */}
                 <div className="text-center space-y-2 pt-1 pb-2">
                   <p className="text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider">
                     How was your market experience?
                   </p>
 
-                  <div className="flex items-center justify-center gap-2">
-                    {[1, 2, 3, 4, 5].map((star) => {
-                      const isFilled = star <= activeStarRating;
+                  <div className="flex items-center justify-center gap-2 sm:gap-3">
+                    {[1, 2, 3, 4, 5].map((score) => {
+                      const isSelected = score === overallScore;
+                      const isHovered = hoverScore !== null && score <= hoverScore;
+                      const isActive = isHovered || isSelected;
                       return (
                         <button
-                          key={star}
+                          key={score}
                           type="button"
-                          onClick={() => setOverallScore(star)}
-                          onMouseEnter={() => setHoverScore(star)}
+                          onClick={() => setOverallScore(score)}
+                          onMouseEnter={() => setHoverScore(score)}
                           onMouseLeave={() => setHoverScore(null)}
-                          className="p-1 cursor-pointer active:scale-90 transition-transform focus:outline-none"
-                          aria-label={`Rate ${star} star`}
+                          className={`flex flex-col items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-2xl font-black text-sm transition-all cursor-pointer border ${
+                            isActive
+                              ? "bg-gradient-to-br from-emerald-600 to-teal-700 text-white border-emerald-400 shadow-md scale-105"
+                              : "bg-white/80 dark:bg-slate-800/80 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-white/10 hover:border-emerald-400 hover:bg-emerald-50/50 dark:hover:bg-slate-700"
+                          }`}
+                          aria-label={`Score ${score} of 5`}
                         >
-                          <Star
-                            className={`h-9 w-9 sm:h-10 sm:w-10 transition-colors ${
-                              isFilled
-                                ? "text-amber-400 fill-amber-400 drop-shadow-sm"
-                                : "text-slate-300 dark:text-slate-700"
-                            }`}
-                          />
+                          <span className="text-base sm:text-lg font-black leading-none">{score}</span>
+                          <span className="text-[9px] font-bold opacity-80 mt-0.5">{score === 5 ? "Best" : "pts"}</span>
                         </button>
                       );
                     })}
                   </div>
 
-                  <div className="inline-block px-3 py-1 rounded-full bg-amber-50 dark:bg-amber-950/80 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs font-black">
-                    {getStarLabel(activeStarRating)}
+                  <div className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-200 text-xs font-black shadow-2xs">
+                    <ThumbsUp className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span>{getRatingLabel(hoverScore || overallScore)}</span>
                   </div>
                 </div>
 

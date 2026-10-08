@@ -15,7 +15,7 @@ import {
   Printer,
   ShieldCheck,
   CheckCircle2,
-  Star,
+  ThumbsUp,
   Store,
   MapPin,
   ExternalLink,
@@ -300,7 +300,7 @@ export function MerchantRatingStand({
                     href={`/rate?shop=${encodeURIComponent(shopId)}`}
                     className="w-full py-3 rounded-2xl bg-emerald-700 hover:bg-emerald-800 dark:bg-emerald-600 dark:hover:bg-emerald-500 text-white font-black text-xs sm:text-sm shadow-md shadow-emerald-900/20 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                   >
-                    <Star className="h-4 w-4 fill-amber-300 text-amber-300" />
+                    <ThumbsUp className="h-4 w-4 text-emerald-200 fill-emerald-300" />
                     <span>Open Customer Rating Form</span>
                     <ChevronRight className="h-4 w-4" />
                   </a>

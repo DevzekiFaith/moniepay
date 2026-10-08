@@ -25,7 +25,7 @@ import {
   ChevronRight,
   Wallet,
   Users,
-  Star,
+  ThumbsUp,
   MapPin,
 } from "lucide-react";
 
@@ -59,7 +59,7 @@ export const NAV_SECTIONS = [
       {
         label: "Customer Reviews",
         href: "/reviews",
-        icon: Star,
+        icon: ThumbsUp,
         description: "Public Ratings, QR Links & Replies",
       },
       {
