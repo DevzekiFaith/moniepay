@@ -67,7 +67,7 @@ import { DecisionTrackerSheet } from "@/components/dashboard/DecisionTrackerShee
 import { SafeWithdrawalModal } from "@/components/dashboard/SafeWithdrawalModal";
 import { FloatingActionDock } from "@/components/dashboard/FloatingActionDock";
 import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
-import { BusinessWalletCard } from "@/components/wallet/BusinessWalletCard";
+import { MoniePayBusinessWalletView } from "@/components/wallet/MoniePayBusinessWalletView";
 import { ReceiveMoneyModal } from "@/components/wallet/ReceiveMoneyModal";
 import { useToast } from "@/context/NotificationContext";
 import { useSubscription } from "@/context/SubscriptionContext";
@@ -358,14 +358,20 @@ export default function MoniePayDashboard() {
                 onActivityRecorded={refreshTxs}
               />
 
-              {/* 1b. MONIEPAY BUSINESS WALLET & RECEIVE MONEY (Flutterwave Dedicated Account & QR) */}
-              <BusinessWalletCard
+              {/* 1b. MONIEPAY BUSINESS WALLET SYSTEM (Flutterwave DVA • 5 Core Metrics & Auto-Recorder) */}
+              <MoniePayBusinessWalletView
                 availableBalance={walletBalance}
+                moneyReceived={metrics.totalRevenue || 420000}
+                moneySpent={metrics.totalCosts || 295000}
+                todaysCount={filteredTransactions.filter((t) => t.type === "SALE").length || 8}
+                monthlyVolume={metrics.totalRevenue * 3.5 || 1840000}
+                recentTransactions={transactions.slice(0, 5)}
                 onOpenReceiveModal={() => setIsReceiveOpen(true)}
                 onOpenWithdrawal={() => {
                   setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
                   setIsWithdrawalOpen(true);
                 }}
+                onSimulateTransfer={handleSimulateIncomingTransfer}
               />
 
               {/* 1c. MONIEPAY PLUS & FREE TRIAL DAYS REMAINING CARD */}
