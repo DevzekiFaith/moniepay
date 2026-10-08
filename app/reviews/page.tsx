@@ -79,11 +79,14 @@ export default function VendorReviewsManagementPage() {
     setStats(calculateVendorStats(shopKey));
   };
 
+  const [shareLinks, setShareLinks] = useState(() => getVendorShareLinks(shopKey));
+
   useEffect(() => {
     refreshData();
+    if (typeof window !== "undefined") {
+      setShareLinks(getVendorShareLinks(shopKey, window.location.origin));
+    }
   }, [shopKey, adminMode]);
-
-  const shareLinks = getVendorShareLinks(shopKey);
 
   const handleCopyLink = () => {
     if (typeof navigator !== "undefined") {

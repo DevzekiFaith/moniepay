@@ -465,9 +465,9 @@ export function moderateReviewAction(reviewId: string, action: "approve" | "hide
 }
 
 // ── 7. EASY SHARING HELPERS ────────────────────────────────────────
-export function getVendorShareLinks(vendorId: string) {
+export function getVendorShareLinks(vendorId: string, customOrigin?: string) {
   const vendor = getVendor(vendorId) || INITIAL_VENDORS.mama_chidi;
-  const baseUrl = typeof window !== "undefined" ? window.location.origin : "https://moniepay.app";
+  const baseUrl = customOrigin || "https://moniepay.app";
   
   const reviewUrl = `${baseUrl}/rate?shop=${encodeURIComponent(vendor.id)}`;
   const profileUrl = `${baseUrl}/vendors/${encodeURIComponent(vendor.id)}`;

@@ -77,9 +77,14 @@ function CustomerRatingContent() {
     canSubmit: true,
   });
 
+  const [shareLinks, setShareLinks] = useState(() => getVendorShareLinks(shopKey));
+
   useEffect(() => {
     const status = checkReviewCooldown(shopKey);
     setCooldownStatus(status);
+    if (typeof window !== "undefined") {
+      setShareLinks(getVendorShareLinks(shopKey, window.location.origin));
+    }
   }, [shopKey]);
 
   const getStarLabel = (stars: number) => {
@@ -134,8 +139,6 @@ function CustomerRatingContent() {
     }
     setIsSubmitting(false);
   };
-
-  const shareLinks = getVendorShareLinks(shopKey);
 
   const handleCopyLink = () => {
     if (typeof navigator !== "undefined") {

@@ -47,10 +47,15 @@ export default function PublicVendorProfilePage() {
   const [copied, setCopied] = useState(false);
   const [filterRating, setFilterRating] = useState<number | null>(null);
 
+  const [shareLinks, setShareLinks] = useState(() => getVendorShareLinks(vendorId));
+
   useEffect(() => {
     if (vendorId) {
       setReviews(getVendorReviews(vendorId));
       setStats(calculateVendorStats(vendorId));
+      if (typeof window !== "undefined") {
+        setShareLinks(getVendorShareLinks(vendorId, window.location.origin));
+      }
     }
   }, [vendorId]);
 
@@ -69,8 +74,6 @@ export default function PublicVendorProfilePage() {
       </div>
     );
   }
-
-  const shareLinks = getVendorShareLinks(vendorId);
 
   const handleCopyLink = () => {
     if (typeof navigator !== "undefined") {
