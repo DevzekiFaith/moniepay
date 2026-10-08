@@ -54,7 +54,7 @@ export function ReceiveMoneyModal({
   const businessName = user?.businessName || (user?.name ? `${user.name} Provisions` : "Mama Chidi Provisions");
   const bankName = "Providus Bank";
   // Deterministic or user-assigned dedicated payment account
-  const accountNumber = user?.phone ? `99${user.phone.replace(/\D/g, "").slice(-8).padStart(8, "201928")}` : "9920192841";
+  const accountNumber = user?.id ? `99${user.id.replace(/\D/g, "").slice(-8).padStart(8, "201928")}` : "9920192841";
   const accountName = `MoniePay / ${businessName}`;
 
   // Generate QR Code data URL

@@ -258,19 +258,22 @@ export default function MoniePayDashboard() {
   };
 
   const handleSimulateIncomingTransfer = (amount: number, senderName: string) => {
+    const txId = `tx_auto_${Date.now()}`;
     const newTx: BusinessTransaction = {
-      id: `tx_auto_${Date.now()}`,
+      id: txId,
+      client_tx_id: txId,
       business_id: business.id,
       type: "SALE",
       amount: amount,
       category: "Shop Sale (Auto-Transfer)",
       description: `Direct Transfer from ${senderName} (Providus Bank)`,
       payment_method: "TRANSFER",
-      source_channel: "IN_PERSON",
-      is_recurring: false,
-      receipt_reference: `FLW-${Date.now().toString().slice(-6)}`,
       transaction_date: new Date().toISOString(),
       created_at: new Date().toISOString(),
+      metadata: {
+        receipt_reference: `FLW-${Date.now().toString().slice(-6)}`,
+        source_channel: "IN_PERSON",
+      },
     };
 
     const updatedTxs = [newTx, ...transactions];

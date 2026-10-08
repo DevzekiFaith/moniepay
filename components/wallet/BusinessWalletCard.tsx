@@ -39,7 +39,7 @@ export function BusinessWalletCard({
 
   const businessName = user?.businessName || (user?.name ? `${user.name} Provisions` : "Mama Chidi Provisions");
   const bankName = "Providus Bank";
-  const accountNumber = user?.phone ? `99${user.phone.replace(/\D/g, "").slice(-8).padStart(8, "201928")}` : "9920192841";
+  const accountNumber = user?.id ? `99${user.id.replace(/\D/g, "").slice(-8).padStart(8, "201928")}` : "9920192841";
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
