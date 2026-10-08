@@ -40,6 +40,7 @@ import { MerchantRatingStand } from "@/components/rating/MerchantRatingStand";
 import { useAuth } from "@/context/AuthContext";
 import {
   getVendor,
+  getCurrentUserVendor,
   getVendorReviews,
   calculateVendorStats,
   addVendorReply,
@@ -51,9 +52,8 @@ import {
 
 export default function VendorReviewsManagementPage() {
   const { user } = useAuth();
-  // Map current authenticated trader or default to mama_chidi
-  const shopKey = "mama_chidi";
-  const vendor = getVendor(shopKey);
+  const vendor = getCurrentUserVendor(user);
+  const shopKey = vendor.id;
 
   const [reviews, setReviews] = useState<CustomerReview[]>([]);
   const [stats, setStats] = useState(calculateVendorStats(shopKey));
@@ -637,7 +637,7 @@ export default function VendorReviewsManagementPage() {
         onClose={() => setShowQrStandModal(false)}
         shopName={vendor?.shopName}
         traderName={vendor?.name}
-        marketLocation={vendor?.market}
+        marketLocation={vendor?.fullAddress || vendor?.market}
         shopId={shopKey}
         avatarUrl={vendor?.image}
       />

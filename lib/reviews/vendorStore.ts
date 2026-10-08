@@ -234,14 +234,207 @@ export const SEED_REVIEWS: CustomerReview[] = [
 
 const STORAGE_KEY = "moniepay_customer_ratings_v2";
 const COOLDOWN_KEY = "moniepay_review_cooldowns";
+const CUSTOM_VENDORS_KEY = "moniepay_custom_vendors";
+
+// ── Helper to resolve market coordinates & landmarks for any Nigerian address ──
+export function resolveMarketCoordinates(addressOrMarket: string): {
+  market: string;
+  landmark: string;
+  lat: number;
+  lng: number;
+  mapX: number;
+  mapY: number;
+} {
+  const text = (addressOrMarket || "").toLowerCase();
+
+  if (text.includes("mile 12") || text.includes("ketu") || text.includes("kosofe")) {
+    return {
+      market: "Mile 12 Wholesale Market, Ketu",
+      landmark: "Near Main Truck Offloading Bay, Gate 2",
+      lat: 6.6018,
+      lng: 3.3958,
+      mapX: 68,
+      mapY: 28,
+    };
+  }
+  if (text.includes("alaba") || text.includes("ojo") || text.includes("electronics")) {
+    return {
+      market: "Alaba International Market, Ojo",
+      landmark: "Near St. Patrick's Cathedral entrance, Alaba expressway",
+      lat: 6.4623,
+      lng: 3.1925,
+      mapX: 20,
+      mapY: 72,
+    };
+  }
+  if (text.includes("tejuosho") || text.includes("yaba") || text.includes("ojuelegba")) {
+    return {
+      market: "Tejuosho Ultra-Modern Market, Yaba",
+      landmark: "Right by Yaba train station flyover escalator",
+      lat: 6.5165,
+      lng: 3.3752,
+      mapX: 52,
+      mapY: 42,
+    };
+  }
+  if (text.includes("computer village") || text.includes("ikeja") || text.includes("otigba")) {
+    return {
+      market: "Computer Village, Ikeja, Lagos",
+      landmark: "Otigba Street junction, opposite Medical Road",
+      lat: 6.5956,
+      lng: 3.3369,
+      mapX: 48,
+      mapY: 24,
+    };
+  }
+  if (text.includes("trade fair") || text.includes("badagry") || text.includes("festac")) {
+    return {
+      market: "Trade Fair Complex, Badagry Expressway",
+      landmark: "BBA Hall 4, Trade Fair main gate",
+      lat: 6.4632,
+      lng: 3.2384,
+      mapX: 26,
+      mapY: 65,
+    };
+  }
+  if (text.includes("idumota") || text.includes("dosunmu") || text.includes("nnamdi azikiwe")) {
+    return {
+      market: "Idumota Wholesale Market, Lagos Island",
+      landmark: "Beside Idumota cenotaph & Carter Bridge entrance",
+      lat: 6.459,
+      lng: 3.3892,
+      mapX: 45,
+      mapY: 55,
+    };
+  }
+  if (text.includes("lekki") || text.includes("ajah") || text.includes("victoria island") || text.includes("vi")) {
+    return {
+      market: "Lekki Market & Palms Hub, Lagos",
+      landmark: "Admiralty Way / Lekki Phase 1 Junction",
+      lat: 6.4474,
+      lng: 3.4849,
+      mapX: 78,
+      mapY: 68,
+    };
+  }
+
+  // Default / Balogun Market with custom address
+  return {
+    market: addressOrMarket || "Balogun Market, Lagos Island",
+    landmark: "Directly opposite First Bank junction, Beside Breadfruit street",
+    lat: 6.4551,
+    lng: 3.3841,
+    mapX: 42,
+    mapY: 58,
+  };
+}
+
+export function getCustomVendors(): Record<string, VendorProfile> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(CUSTOM_VENDORS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+export function saveCustomVendor(vendor: VendorProfile) {
+  if (typeof window === "undefined") return;
+  try {
+    const existing = getCustomVendors();
+    existing[vendor.id] = vendor;
+    localStorage.setItem(CUSTOM_VENDORS_KEY, JSON.stringify(existing));
+  } catch {}
+}
+
+/**
+ * Synchronizes the logged-in merchant's active profile and address across the entire app
+ */
+export function getCurrentUserVendor(user?: {
+  id?: string;
+  name?: string;
+  businessName?: string;
+  marketLocation?: string;
+  avatarUrl?: string;
+} | null): VendorProfile {
+  let activeUser = user;
+  if (!activeUser && typeof window !== "undefined") {
+    try {
+      const raw = localStorage.getItem("moniepay_session") || localStorage.getItem("ajo_session");
+      if (raw) activeUser = JSON.parse(raw);
+    } catch {}
+  }
+
+  const shopId = activeUser?.id || "mama_chidi";
+  const shopName = activeUser?.businessName || "Mama Chidi Super Provisions";
+  const traderName = activeUser?.name || "Mama Chidi";
+  const fullAddress = activeUser?.marketLocation || "Shop 14, Line 3, Main Plaza, Balogun Market, Lagos Island, Lagos";
+  const avatarUrl = activeUser?.avatarUrl || "/images/traders/mama_chidi.jpg";
+
+  const resolved = resolveMarketCoordinates(fullAddress);
+
+  const vendorProfile: VendorProfile = {
+    id: shopId,
+    name: traderName,
+    shopName,
+    category: "Provisions & Groceries",
+    market: resolved.market,
+    fullAddress,
+    landmark: resolved.landmark,
+    phone: "+234 803 123 4567",
+    whatsapp: "2348031234567",
+    image: avatarUrl,
+    code: `MP-${shopId.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase() || "84920"}`,
+    coordinates: {
+      lat: resolved.lat,
+      lng: resolved.lng,
+      mapX: resolved.mapX,
+      mapY: resolved.mapY,
+    },
+    openingHours: "Mon - Sat: 7:30 AM - 6:30 PM",
+    verified: true,
+    tags: ["Original Goods Only", "Fair Market Price", "Always Has Change", "Fast Packaging"],
+  };
+
+  saveCustomVendor(vendorProfile);
+  return vendorProfile;
+}
 
 // ── 3. CLIENT STORE ACCESS METHODS ──────────────────────────────────
 export function getAllVendors(): VendorProfile[] {
-  return Object.values(INITIAL_VENDORS);
+  const custom = Object.values(getCustomVendors());
+  const initial = Object.values(INITIAL_VENDORS);
+
+  const activeUserVendor = getCurrentUserVendor();
+  const otherVendors = initial.filter((v) => v.id !== activeUserVendor.id && v.id !== "mama_chidi");
+
+  // Put the active owner's shop first, followed by custom and other market shops
+  return [activeUserVendor, ...otherVendors];
 }
 
-export function getVendor(id: string): VendorProfile | undefined {
-  return INITIAL_VENDORS[id] || INITIAL_VENDORS.mama_chidi;
+export function getVendor(id?: string | null): VendorProfile {
+  if (!id) return getCurrentUserVendor();
+
+  const custom = getCustomVendors();
+  if (custom[id]) return custom[id];
+
+  const activeUserVendor = getCurrentUserVendor();
+  if (id === activeUserVendor.id || id === "current" || id === "my_shop" || id === "user_owner_01") {
+    return activeUserVendor;
+  }
+
+  if (id === "mama_chidi") {
+    if (
+      activeUserVendor.shopName !== INITIAL_VENDORS.mama_chidi.shopName ||
+      activeUserVendor.fullAddress !== INITIAL_VENDORS.mama_chidi.fullAddress
+    ) {
+      return activeUserVendor;
+    }
+    return INITIAL_VENDORS.mama_chidi;
+  }
+
+  return INITIAL_VENDORS[id] || activeUserVendor;
 }
 
 export function getAllReviews(): CustomerReview[] {

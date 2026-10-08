@@ -284,6 +284,7 @@ export function DaylightHeader({
         shopName={shopName}
         traderName={displayName}
         marketLocation={location}
+        shopId={user?.id || "mama_chidi"}
         avatarUrl={profilePhoto}
       />
     </>
