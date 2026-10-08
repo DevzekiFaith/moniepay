@@ -30,6 +30,7 @@ interface DaylightHeaderProps {
   isSyncing: boolean;
   onManualSync: () => void;
   onOpenTracker: () => void;
+  onOpenReceiveMoney?: () => void;
   activePeriod: "today" | "this_week" | "this_month";
   onChangePeriod: (p: "today" | "this_week" | "this_month") => void;
 }
@@ -40,6 +41,7 @@ export function DaylightHeader({
   isSyncing,
   onManualSync,
   onOpenTracker,
+  onOpenReceiveMoney,
   activePeriod,
   onChangePeriod,
 }: DaylightHeaderProps) {
@@ -124,6 +126,22 @@ export function DaylightHeader({
 
             {/* Right: Rearranged Fintech Action Icons */}
             <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              {/* 0. Dedicated Receive Money (QR & Dedicated Bank Transfer) */}
+              {onOpenReceiveMoney && (
+                <InfoTooltip content="Show customer QR & shop account to receive money">
+                  <button
+                    type="button"
+                    onClick={onOpenReceiveMoney}
+                    aria-label="Receive Money with QR & Account"
+                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-cyan-300 hover:from-cyan-300 hover:to-cyan-200 text-slate-950 font-black text-[11px] sm:text-xs shadow-md shadow-cyan-950/30 active:scale-95 transition-all cursor-pointer shrink-0"
+                  >
+                    <QrCode className="h-3.5 w-3.5 sm:h-4 sm:w-4 stroke-[2.5]" />
+                    <span className="hidden xs:inline">Receive Moni</span>
+                    <span className="xs:hidden">Receive</span>
+                  </button>
+                </InfoTooltip>
+              )}
+
               {/* 1. MoniePay Plus / Free Trial Status Pill */}
               <SubscriptionStatusPill />
 
@@ -135,7 +153,7 @@ export function DaylightHeader({
               {/* 3. Push Notification Bell & Drawer */}
               <NotificationBellDrawer />
 
-              {/* 4. Customer Rating QR & Reviews Portal (Changed from Star to QrCode) */}
+              {/* 4. Customer Rating QR & Reviews Portal */}
               <InfoTooltip content="Shop Counter QR & Customer Reviews">
                 <Link
                   href="/reviews"

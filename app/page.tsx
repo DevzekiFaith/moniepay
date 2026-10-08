@@ -67,6 +67,8 @@ import { DecisionTrackerSheet } from "@/components/dashboard/DecisionTrackerShee
 import { SafeWithdrawalModal } from "@/components/dashboard/SafeWithdrawalModal";
 import { FloatingActionDock } from "@/components/dashboard/FloatingActionDock";
 import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
+import { BusinessWalletCard } from "@/components/wallet/BusinessWalletCard";
+import { ReceiveMoneyModal } from "@/components/wallet/ReceiveMoneyModal";
 import { useToast } from "@/context/NotificationContext";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/context/AuthContext";
@@ -119,6 +121,8 @@ export default function MoniePayDashboard() {
   const [isGbeseOpen, setIsGbeseOpen] = useState(false);
   const [isTrackerOpen, setIsTrackerOpen] = useState(false);
   const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false);
+  const [isReceiveOpen, setIsReceiveOpen] = useState(false);
+  const [walletBalance, setWalletBalance] = useState(125000);
   const [safeWithdrawalAmount, setSafeWithdrawalAmount] = useState(40000);
 
   // Activity Tab Search & Filter State
@@ -253,6 +257,28 @@ export default function MoniePayDashboard() {
     );
   };
 
+  const handleSimulateIncomingTransfer = (amount: number, senderName: string) => {
+    const newTx: BusinessTransaction = {
+      id: `tx_auto_${Date.now()}`,
+      business_id: business.id,
+      type: "SALE",
+      amount: amount,
+      category: "Shop Sale (Auto-Transfer)",
+      description: `Direct Transfer from ${senderName} (Providus Bank)`,
+      payment_method: "TRANSFER",
+      source_channel: "IN_PERSON",
+      is_recurring: false,
+      receipt_reference: `FLW-${Date.now().toString().slice(-6)}`,
+      transaction_date: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+    };
+
+    const updatedTxs = [newTx, ...transactions];
+    setTransactions(updatedTxs);
+    setCachedTransactions(updatedTxs);
+    setWalletBalance((prev) => prev + amount);
+  };
+
   const refreshTxs = () => {
     const cachedTxs = getCachedTransactions();
     if (cachedTxs.length > 0) setTransactions(cachedTxs);
@@ -267,6 +293,7 @@ export default function MoniePayDashboard() {
         isSyncing={isSyncing}
         onManualSync={handleManualSync}
         onOpenTracker={() => setIsTrackerOpen(true)}
+        onOpenReceiveMoney={() => setIsReceiveOpen(true)}
         activePeriod={period}
         onChangePeriod={setPeriod}
       />
@@ -328,10 +355,20 @@ export default function MoniePayDashboard() {
                 onActivityRecorded={refreshTxs}
               />
 
-              {/* 1b. MONIEPAY PLUS & FREE TRIAL DAYS REMAINING CARD */}
+              {/* 1b. MONIEPAY BUSINESS WALLET & RECEIVE MONEY (Flutterwave Dedicated Account & QR) */}
+              <BusinessWalletCard
+                availableBalance={walletBalance}
+                onOpenReceiveModal={() => setIsReceiveOpen(true)}
+                onOpenWithdrawal={() => {
+                  setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
+                  setIsWithdrawalOpen(true);
+                }}
+              />
+
+              {/* 1c. MONIEPAY PLUS & FREE TRIAL DAYS REMAINING CARD */}
               <SubscriptionBannerCard />
 
-              {/* 2. YOUR NEXT MOVE (The Single Star Recommendation) */}
+              {/* 2. YOUR NEXT MOVE (The Single Priority Recommendation) */}
               <NextMoveCard
                 metrics={metrics}
                 debts={debts}
@@ -588,6 +625,12 @@ export default function MoniePayDashboard() {
         onClose={() => setIsWithdrawalOpen(false)}
         safeAmount={safeWithdrawalAmount}
         businessId={business.id}
+      />
+
+      <ReceiveMoneyModal
+        isOpen={isReceiveOpen}
+        onClose={() => setIsReceiveOpen(false)}
+        onSimulateIncomingTransfer={handleSimulateIncomingTransfer}
       />
     </div>
   );
