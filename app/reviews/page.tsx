@@ -135,14 +135,14 @@ export default function VendorReviewsManagementPage() {
       {/* ── TOP HEADER BAR ── */}
       <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 px-3 sm:px-4 py-2.5 sm:py-3">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-2">
-          {/* Left: Back to Shop Dashboard */}
+          {/* Left: Go Back Shop Dashboard */}
           <Link
             href="/"
-            aria-label="Back to Dashboard"
+            aria-label="Go Back Shop"
             className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-xs font-black text-slate-800 dark:text-slate-100 transition-colors shrink-0 active:scale-95 border border-slate-200/60 dark:border-white/10"
           >
             <ChevronLeft className="h-4 w-4" />
-            <span className="hidden xs:inline">Back to Shop</span>
+            <span className="hidden xs:inline">Go Back Shop</span>
             <span className="xs:hidden">Shop</span>
           </Link>
 
@@ -152,7 +152,7 @@ export default function VendorReviewsManagementPage() {
               <MoniePayMark size={28} />
             </div>
             <h1 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white truncate">
-              Customer Reviews &amp; Rating
+              Customer Ratings &amp; Gist
             </h1>
           </div>
 
@@ -186,11 +186,11 @@ export default function VendorReviewsManagementPage() {
                   </h2>
                   <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-0.5 border border-emerald-300 dark:border-emerald-700">
                     <ShieldCheck className="h-2.5 w-2.5" />
-                    Verified Shop
+                    Confirmed Shop
                   </span>
                 </div>
                 <p className="text-xs text-slate-600 dark:text-slate-300 font-medium">
-                  <strong>{stats.total} Customer Reviews</strong> • 100% Real Buyers No Scam
+                  <strong>{stats.total} Customer Reviews</strong> • 100% Real Market Buyers, No Scam
                 </p>
               </div>
             </div>
@@ -232,7 +232,7 @@ export default function VendorReviewsManagementPage() {
           {/* ── EASY SHARING BAR FOR CUSTOMERS ── */}
           <div className="pt-3 border-t border-slate-100 dark:border-white/10 space-y-2">
             <p className="text-[11px] font-black uppercase text-slate-600 dark:text-slate-300 tracking-wider">
-              Share Make Customers Rate Your Shop Sharp-Sharp:
+              Send Link Make Customers Rate Your Shop Sharp-Sharp:
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -243,7 +243,7 @@ export default function VendorReviewsManagementPage() {
                 className="py-2.5 sm:py-3 px-3 rounded-2xl bg-[#25D366] hover:bg-[#20bd5a] text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
               >
                 <MessageCircle className="h-4 w-4" />
-                <span>Send WhatsApp Review Link</span>
+                <span>Share Link on WhatsApp</span>
               </a>
 
               <button
@@ -252,7 +252,7 @@ export default function VendorReviewsManagementPage() {
                 className="py-2.5 sm:py-3 px-3 rounded-2xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-100 text-xs font-bold flex items-center justify-center gap-2 active:scale-98 transition-all cursor-pointer border border-slate-200 dark:border-slate-700"
               >
                 {copied ? <Check className="h-4 w-4 text-emerald-500" /> : <Copy className="h-4 w-4" />}
-                <span>{copied ? "Review Link Don Copy!" : "Copy Shop Review Link"}</span>
+                <span>{copied ? "Link Don Copy!" : "Copy Rating Link"}</span>
               </button>
 
               <button
@@ -261,7 +261,7 @@ export default function VendorReviewsManagementPage() {
                 className="py-2.5 sm:py-3 px-3 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-black flex items-center justify-center gap-2 shadow-sm active:scale-98 transition-all cursor-pointer"
               >
                 <QrCode className="h-4 w-4" />
-                <span>Print Countertop QR Stand</span>
+                <span>Print Counter QR Stand</span>
               </button>
             </div>
           </div>
@@ -272,7 +272,7 @@ export default function VendorReviewsManagementPage() {
           <div className="flex items-center justify-between px-1 text-xs">
             <div className="flex items-center gap-2">
               <span className="font-extrabold text-slate-800 dark:text-slate-100">
-                Customer Reviews ({filteredReviews.length})
+                Wetin Customers Dey Talk ({filteredReviews.length})
               </span>
               {filterRating && (
                 <button
@@ -306,9 +306,9 @@ export default function VendorReviewsManagementPage() {
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-amber-600 dark:text-amber-300 shrink-0" />
                 <div>
-                  <span className="font-black text-slate-900 dark:text-white">Admin Queue Active: </span>
+                  <span className="font-black text-slate-900 dark:text-white">Admin Queue Dey Active: </span>
                   <span className="text-slate-700 dark:text-amber-200/90 font-medium">
-                    Showing all customer submissions and reported reviews with Approve/Hide controls.
+                    Check wetin customers write and reported reviews. You fit Approve or Hide am sharp-sharp.
                   </span>
                 </div>
               </div>
@@ -325,7 +325,7 @@ export default function VendorReviewsManagementPage() {
             <div className="clay-card p-8 text-center space-y-2 bg-white/80 dark:bg-slate-900/80 rounded-[28px]">
               <Store className="h-8 w-8 text-slate-400 mx-auto" />
               <p className="text-xs font-bold text-slate-600 dark:text-slate-300">
-                No reviews found for this filter.
+                No review dey for this star level yet.
               </p>
             </div>
           ) : (
@@ -354,19 +354,19 @@ export default function VendorReviewsManagementPage() {
                         {rev.isVerifiedCustomer && (
                           <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9.5px] font-bold inline-flex items-center gap-0.5 border border-emerald-300 dark:border-emerald-700">
                             <ShieldCheck className="h-2.5 w-2.5" />
-                            Verified Customer
+                            Confirmed Buyer
                           </span>
                         )}
                         {rev.isReported && (
                           <span className="px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-900/80 text-amber-900 dark:text-amber-100 text-[10px] font-black inline-flex items-center gap-1 border border-amber-300 dark:border-amber-500 shadow-xs">
                             <AlertTriangle className="h-3 w-3 text-amber-600 dark:text-amber-300" />
-                            Under Admin Moderation ({rev.reportReason})
+                            Admin Dey Check Am ({rev.reportReason})
                           </span>
                         )}
                         {rev.moderationStatus === "hidden" && (
                           <span className="px-2 py-0.5 rounded-md bg-rose-100 dark:bg-rose-900/80 text-rose-900 dark:text-rose-100 text-[10px] font-black inline-flex items-center gap-1 border border-rose-300 dark:border-rose-500 shadow-xs">
                             <EyeOff className="h-3 w-3 text-rose-600 dark:text-rose-300" />
-                            Hidden by Admin
+                            Admin Don Hide Am
                           </span>
                         )}
                       </div>
@@ -441,7 +441,7 @@ export default function VendorReviewsManagementPage() {
                       className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/80 hover:bg-blue-100 text-blue-700 dark:text-sky-200 text-[11px] font-bold flex items-center gap-1 cursor-pointer active:scale-95 transition-all border border-blue-200 dark:border-blue-800"
                     >
                       <Reply className="h-3 w-3" />
-                      <span>{rev.reply ? "Edit Reply" : "Reply As Shop Owner"}</span>
+                      <span>{rev.reply ? "Change Reply" : "Reply Customer"}</span>
                     </button>
 
                     {!rev.isReported && (
@@ -452,7 +452,7 @@ export default function VendorReviewsManagementPage() {
                         title="Report inappropriate / spam review"
                       >
                         <Flag className="h-3 w-3" />
-                        <span>Report</span>
+                        <span>Report Wahala</span>
                       </button>
                     )}
                   </div>
@@ -466,7 +466,7 @@ export default function VendorReviewsManagementPage() {
                         className="px-2.5 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-[10.5px] font-black cursor-pointer shadow-xs active:scale-95 transition-all flex items-center gap-1"
                       >
                         <CheckCircle2 className="h-3 w-3" />
-                        <span>Approve</span>
+                        <span>Approve Am</span>
                       </button>
                       <button
                         type="button"
@@ -474,7 +474,7 @@ export default function VendorReviewsManagementPage() {
                         className="px-2.5 py-1 rounded-lg bg-rose-600 hover:bg-rose-500 text-white text-[10.5px] font-black cursor-pointer shadow-xs active:scale-95 transition-all flex items-center gap-1"
                       >
                         <EyeOff className="h-3 w-3" />
-                        <span>Hide</span>
+                        <span>Hide Am</span>
                       </button>
                     </div>
                   )}
