@@ -131,23 +131,10 @@ export function DaylightHeader({
 
             {/* Right: Streamlined, Uncrowded Action Bar */}
             <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* 1. Dedicated Receive Money Button (Solid, Prominent) */}
-              {onOpenReceiveMoney && (
-                <button
-                  type="button"
-                  onClick={onOpenReceiveMoney}
-                  aria-label="Receive Money with QR & Account"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs shadow-md shadow-blue-950/40 active:scale-95 transition-all cursor-pointer shrink-0"
-                >
-                  <QrCode className="h-3.5 w-3.5 stroke-[2.5]" />
-                  <span>Receive Moni</span>
-                </button>
-              )}
-
-              {/* 2. Notification Bell */}
+              {/* 1. Notification Bell */}
               <NotificationBellDrawer />
 
-              {/* 3. Theme Toggle */}
+              {/* 2. Theme Toggle */}
               <InfoTooltip content="Switch Daylight or Night Mode">
                 <ThemeToggle size="sm" />
               </InfoTooltip>

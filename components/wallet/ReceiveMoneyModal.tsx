@@ -61,7 +61,12 @@ export function ReceiveMoneyModal({
   useEffect(() => {
     if (!isOpen) return;
 
-    const origin = typeof window !== "undefined" && window.location.origin ? window.location.origin : "https://moniepay.app";
+    let origin = typeof window !== "undefined" && window.location.origin ? window.location.origin : "https://moniepay.app";
+    // If running in local dev on localhost, use the machine's LAN IP so phone cameras on the Wi-Fi open it seamlessly
+    if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
+      origin = `http://192.168.149.225:${window.location.port || "3001"}`;
+    }
+
     const paymentUrl = `${origin}/pay?account=${encodeURIComponent(accountNumber)}&bank=${encodeURIComponent(bankName)}&name=${encodeURIComponent(businessName)}`;
 
     QRCode.toDataURL(paymentUrl, {

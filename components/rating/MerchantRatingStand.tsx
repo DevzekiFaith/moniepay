@@ -102,9 +102,16 @@ export function MerchantRatingStand({
   }, []);
 
   // Construct rating portal URL
-  const ratingUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/rate?shop=${encodeURIComponent(shopId)}`
-    : `https://moniepay.app/rate?shop=${encodeURIComponent(shopId)}`;
+  const getRatingUrl = () => {
+    if (typeof window === "undefined") return `https://moniepay.app/rate?shop=${encodeURIComponent(shopId)}`;
+    let origin = window.location.origin;
+    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+      origin = `http://192.168.149.225:${window.location.port || "3001"}`;
+    }
+    return `${origin}/rate?shop=${encodeURIComponent(shopId)}`;
+  };
+
+  const ratingUrl = getRatingUrl();
 
   const barcodeString = `MP-${shopId.substring(0, 4).toUpperCase()}-84920`;
 
