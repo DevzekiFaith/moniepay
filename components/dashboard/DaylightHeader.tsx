@@ -12,6 +12,10 @@ import {
   Smartphone,
   AlertTriangle,
   Clock,
+  MoreVertical,
+  ThumbsUp,
+  ShieldCheck,
+  ChevronDown,
 } from "lucide-react";
 import type { Business } from "@/types/moniepay.types";
 import { useAuth } from "@/context/AuthContext";
@@ -49,6 +53,7 @@ export function DaylightHeader({
   const { isGracePeriodActive, graceDaysLeft, isExpired, openUpgradeModal } = useSubscription();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isRatingStandOpen, setIsRatingStandOpen] = useState(false);
+  const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
   const displayName = user?.name || "Mama Chidi";
   const shopName = user?.businessName || business.name;
@@ -63,7 +68,7 @@ export function DaylightHeader({
         <div className="pointer-events-none absolute -left-8 -bottom-8 h-40 w-40 rounded-full bg-blue-300/20 dark:bg-sky-400/10 blur-xl" />
 
         <div className="relative mx-auto w-full max-w-4xl space-y-3">
-          {/* ── ROW 1: TOP MAIN NAV BAR (Shop Identity on Left • Action Hub on Right) ── */}
+          {/* ── ROW 1: TOP MAIN NAV BAR (Shop Identity on Left • Clean Action Hub on Right) ── */}
           <div className="flex items-center justify-between gap-2">
             {/* Left: Merchant Profile & Identity */}
             <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
@@ -124,92 +129,123 @@ export function DaylightHeader({
               </div>
             </div>
 
-            {/* Right: Rearranged Fintech Action Icons */}
-            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
-              {/* 0. Dedicated Receive Money (QR & Dedicated Bank Transfer) */}
+            {/* Right: Streamlined, Uncrowded Action Bar */}
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              {/* 1. Dedicated Receive Money Button (Solid, Prominent) */}
               {onOpenReceiveMoney && (
-                <InfoTooltip content="Show customer QR & shop account to receive money">
-                  <button
-                    type="button"
-                    onClick={onOpenReceiveMoney}
-                    aria-label="Receive Money with QR & Account"
-                    className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-2xl bg-gradient-to-r from-cyan-400 to-cyan-300 hover:from-cyan-300 hover:to-cyan-200 text-slate-950 font-black text-[11px] sm:text-xs shadow-md shadow-cyan-950/30 active:scale-95 transition-all cursor-pointer shrink-0"
-                  >
-                    <QrCode className="h-3.5 w-3.5 sm:h-4 sm:w-4 stroke-[2.5]" />
-                    <span className="hidden xs:inline">Receive Moni</span>
-                    <span className="xs:hidden">Receive</span>
-                  </button>
-                </InfoTooltip>
+                <button
+                  type="button"
+                  onClick={onOpenReceiveMoney}
+                  aria-label="Receive Money with QR & Account"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-400 hover:bg-cyan-300 text-slate-950 font-black text-xs shadow-md shadow-blue-950/40 active:scale-95 transition-all cursor-pointer shrink-0"
+                >
+                  <QrCode className="h-3.5 w-3.5 stroke-[2.5]" />
+                  <span>Receive Moni</span>
+                </button>
               )}
 
-              {/* 1. MoniePay Plus / Free Trial Status Pill */}
-              <SubscriptionStatusPill />
+              {/* 2. Notification Bell */}
+              <NotificationBellDrawer />
 
-              {/* 2. Theme Toggle (Sun ☀️ / Moon 🌙) */}
-              <InfoTooltip content="Switch Daylight or Night Market Mode">
+              {/* 3. Theme Toggle */}
+              <InfoTooltip content="Switch Daylight or Night Mode">
                 <ThemeToggle size="sm" />
               </InfoTooltip>
 
-              {/* 3. Push Notification Bell & Drawer */}
-              <NotificationBellDrawer />
+              {/* 4. Pro Status Pill (Visible on md+ screens) */}
+              <div className="hidden md:inline-flex">
+                <SubscriptionStatusPill />
+              </div>
 
-              {/* 4. Customer Rating QR & Reviews Portal */}
-              <InfoTooltip content="Shop Counter QR & Customer Reviews">
-                <Link
-                  href="/reviews"
-                  aria-label="Shop QR & Customer Reviews"
-                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs group"
-                >
-                  <QrCode className="h-4 w-4 text-amber-300 group-hover:scale-110 transition-transform" />
-                </Link>
-              </InfoTooltip>
-
-              {/* 5. Vendor Market Map */}
-              <InfoTooltip content="Find nearby market shops on map">
-                <Link
-                  href="/map"
-                  aria-label="Market Map"
-                  className="hidden xs:flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
-                >
-                  <MapPin className="h-4 w-4 text-sky-200" />
-                </Link>
-              </InfoTooltip>
-
-              {/* 6. Install App Trigger (Mobile & Desktop) */}
-              <InfoTooltip content="Save MoniePay to your phone home screen">
+              {/* 5. More Actions Dropdown (Organizes secondary links cleanly) */}
+              <div className="relative">
                 <button
                   type="button"
-                  onClick={triggerInstallPrompt}
-                  aria-label="Install App"
-                  className="hidden sm:flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
+                  onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
+                  aria-label="More Options"
+                  className={`flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs ${
+                    isMoreMenuOpen ? "bg-white/30 text-white" : ""
+                  }`}
                 >
-                  <Smartphone className="h-4 w-4 text-sky-200" />
+                  <MoreVertical className="h-4 w-4" />
                 </button>
-              </InfoTooltip>
 
-              {/* 7. Decision Memory Button */}
-              <InfoTooltip content="Past shop decision memory">
-                <button
-                  type="button"
-                  onClick={onOpenTracker}
-                  aria-label="Decision Memory"
-                  className="hidden md:flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
-                >
-                  <BrainCircuit className="h-4 w-4 text-sky-200" />
-                </button>
-              </InfoTooltip>
+                {/* Dropdown Menu Popup */}
+                {isMoreMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-30"
+                      onClick={() => setIsMoreMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 top-11 z-40 w-52 rounded-2xl bg-slate-900 border border-slate-700/80 shadow-2xl p-1.5 space-y-1 text-xs text-slate-200 backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150">
+                      <Link
+                        href="/reviews"
+                        onClick={() => setIsMoreMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors"
+                      >
+                        <ThumbsUp className="h-4 w-4 text-amber-400 shrink-0" />
+                        <span>Customer Reviews & QR</span>
+                      </Link>
 
-              {/* 8. Sign Out / Lock Shop */}
-              <InfoTooltip content="Lock shop make nobody touch am">
-                <button
-                  type="button"
-                  onClick={() => setIsLogoutOpen(true)}
-                  aria-label="Sign Out"
-                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-2xl bg-white/10 dark:bg-white/5 hover:bg-white/20 text-white active:scale-95 transition-all cursor-pointer backdrop-blur-md border border-white/15"
-                >
-                  <LogOut className="h-4 w-4 text-sky-100" />
-                </button>
-              </InfoTooltip>
+                      <Link
+                        href="/map"
+                        onClick={() => setIsMoreMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors"
+                      >
+                        <MapPin className="h-4 w-4 text-sky-400 shrink-0" />
+                        <span>Market Vendor Map</span>
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMoreMenuOpen(false);
+                          onOpenTracker();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors text-left cursor-pointer"
+                      >
+                        <BrainCircuit className="h-4 w-4 text-indigo-400 shrink-0" />
+                        <span>Decision Memory</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMoreMenuOpen(false);
+                          triggerInstallPrompt();
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors text-left cursor-pointer"
+                      >
+                        <Smartphone className="h-4 w-4 text-emerald-400 shrink-0" />
+                        <span>Install App on Phone</span>
+                      </button>
+
+                      <Link
+                        href="/upgrade"
+                        onClick={() => setIsMoreMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors"
+                      >
+                        <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0" />
+                        <span>MoniePay Plus Pass</span>
+                      </Link>
+
+                      <div className="pt-1 border-t border-slate-800">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsMoreMenuOpen(false);
+                            setIsLogoutOpen(true);
+                          }}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-950/60 text-rose-300 font-bold transition-colors text-left cursor-pointer"
+                        >
+                          <LogOut className="h-4 w-4 text-rose-400 shrink-0" />
+                          <span>Lock Shop / Sign Out</span>
+                        </button>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
