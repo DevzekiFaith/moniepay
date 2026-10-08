@@ -20,48 +20,48 @@ export function ThemeToggle({
   if (variant === "segmented") {
     return (
       <div
-        className={`inline-flex items-center rounded-2xl bg-slate-200/80 dark:bg-slate-800/80 p-1 border border-slate-300/60 dark:border-slate-700/60 backdrop-blur-md ${className}`}
+        className={`inline-flex items-center w-full rounded-2xl bg-slate-200/70 dark:bg-slate-800/80 p-1 border border-slate-300/60 dark:border-slate-700/60 backdrop-blur-md ${className}`}
       >
         <button
           type="button"
           onClick={() => setTheme("light")}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1 px-1.5 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
             theme === "light"
               ? "bg-white text-blue-950 shadow-xs"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           }`}
           title="Light Mode (Daylight)"
         >
-          <Sun className="h-3.5 w-3.5 text-amber-500" />
-          <span className="hidden sm:inline">Light</span>
+          <Sun className="h-3.5 w-3.5 text-amber-500 shrink-0" />
+          <span className="truncate">Light</span>
         </button>
 
         <button
           type="button"
           onClick={() => setTheme("dark")}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1 px-1.5 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
             theme === "dark"
               ? "bg-slate-900 text-white shadow-xs"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           }`}
           title="Dark Mode (Night Market)"
         >
-          <Moon className="h-3.5 w-3.5 text-sky-400" />
-          <span className="hidden sm:inline">Dark</span>
+          <Moon className="h-3.5 w-3.5 text-sky-400 shrink-0" />
+          <span className="truncate">Dark</span>
         </button>
 
         <button
           type="button"
           onClick={() => setTheme("system")}
-          className={`flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-1 px-1.5 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer ${
             theme === "system"
               ? "bg-white dark:bg-slate-900 text-blue-950 dark:text-white shadow-xs"
               : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
           }`}
           title="Auto / System"
         >
-          <Laptop className="h-3.5 w-3.5 text-slate-500" />
-          <span className="hidden sm:inline">Auto</span>
+          <Laptop className="h-3.5 w-3.5 text-slate-500 shrink-0" />
+          <span className="truncate">Auto</span>
         </button>
       </div>
     );

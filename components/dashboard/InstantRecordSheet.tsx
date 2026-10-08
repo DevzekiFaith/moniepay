@@ -27,6 +27,7 @@ import type {
 } from "@/types/moniepay.types";
 import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";
 import { speakTraderAudioFeedback } from "@/components/dashboard/TellMoniePay";
+import { parseSpokenMarketAmount } from "@/lib/voice/spokenParser";
 
 interface InstantRecordSheetProps {
   isOpen: boolean;
@@ -131,19 +132,11 @@ export function InstantRecordSheet({
   const parseNaturalLanguage = (text: string) => {
     const lower = text.toLowerCase();
 
-    // 1. Amount Extraction
-    let extractedAmount = "";
-    const kMatch = lower.match(/(?:₦\s*|ngn\s*)?(\d+(?:\.\d+)?)\s*k\b/i);
-    if (kMatch) {
-      extractedAmount = String(Math.round(parseFloat(kMatch[1]) * 1000));
-    } else {
-      const numMatch = lower.match(/(?:₦\s*|ngn\s*)?(\d{1,3}(?:,\d{3})*|\d+)/i);
-      if (numMatch) {
-        extractedAmount = numMatch[1].replace(/,/g, "");
-      }
+    // 1. Amount Extraction (Spoken Nigerian English + Digits + Words)
+    const extractedNum = parseSpokenMarketAmount(text);
+    if (extractedNum > 0) {
+      setAmount(String(extractedNum));
     }
-
-    if (extractedAmount) setAmount(extractedAmount);
 
     // 2. Type Extraction
     if (lower.includes("sold") || lower.includes("sale") || lower.includes("customer pay")) {

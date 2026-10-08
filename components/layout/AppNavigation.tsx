@@ -168,7 +168,7 @@ export function AppSidebar() {
 
   return (
     <>
-      <aside className="hidden md:flex flex-col justify-between w-64 border-r border-slate-200/80 dark:border-white/10 bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl min-h-screen p-4 sticky top-0 transition-colors z-30 shadow-xs">
+      <aside className="hidden md:flex flex-col justify-between w-64 border-r border-slate-200/80 dark:border-white/10 bg-white/85 dark:bg-slate-900/85 backdrop-blur-2xl h-screen sticky top-0 overflow-y-auto no-scrollbar p-3.5 sm:p-4 transition-colors z-30 shadow-xs">
         <div className="space-y-6">
           {/* Logo & Tagline */}
           <div className="px-2 py-2">
@@ -233,17 +233,17 @@ export function AppSidebar() {
         </div>
 
         {/* Footer / Theme Toggle, Subscription & Account */}
-        <div className="pt-4 border-t border-slate-200/80 dark:border-white/10 space-y-3">
+        <div className="pt-3 border-t border-slate-200/80 dark:border-white/10 space-y-2.5">
           {/* Theme Switcher Segmented Control */}
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-              Theme:
+          <div className="space-y-1 px-0.5">
+            <span className="text-[10.5px] font-black uppercase tracking-wider text-slate-400 dark:text-slate-500">
+              Theme Mode
             </span>
-            <ThemeToggle variant="segmented" />
+            <ThemeToggle variant="segmented" className="w-full" />
           </div>
 
           {/* Subscription Status Pill */}
-          <div className="px-1 flex justify-start">
+          <div className="px-0.5 flex justify-start">
             <SubscriptionStatusPill />
           </div>
 

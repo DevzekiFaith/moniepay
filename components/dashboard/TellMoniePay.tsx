@@ -27,28 +27,14 @@ import {
 import type { TransactionType, PaymentMethod } from "@/types/moniepay.types";
 import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";
 import { useSubscription } from "@/context/SubscriptionContext";
+import {
+  parseSpokenMarketAmount,
+  playFemaleTraderVoice,
+} from "@/lib/voice/spokenParser";
 
-// Natural Nigerian Voice Audio Playback for traders
+// Natural Nigerian Female Voice Audio Playback for traders
 export function speakTraderAudioFeedback(text: string) {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-  try {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-NG";
-    utterance.rate = 1.02;
-    utterance.pitch = 1.0;
-
-    const voices = window.speechSynthesis.getVoices();
-    const voice = voices.find(
-      (v) =>
-        v.lang.includes("en-NG") ||
-        v.lang.includes("en-GB") ||
-        v.name.toLowerCase().includes("nigeria") ||
-        v.name.toLowerCase().includes("english")
-    );
-    if (voice) utterance.voice = voice;
-    window.speechSynthesis.speak(utterance);
-  } catch {}
+  playFemaleTraderVoice(text);
 }
 
 interface TellMoniePayProps {
@@ -143,15 +129,7 @@ export function TellMoniePay({
     const text = rawText.trim();
     if (!text) return;
 
-    let amount = 0;
-    const matchK = text.match(/(\d+(?:\.\d+)?)\s*k\b/i);
-    const matchNum = text.match(/(?:₦|ngn)?\s*(\d[\d,]*)/i);
-
-    if (matchK) {
-      amount = parseFloat(matchK[1]) * 1000;
-    } else if (matchNum) {
-      amount = parseFloat(matchNum[1].replace(/,/g, ""));
-    }
+    const amount = parseSpokenMarketAmount(text);
 
     if (!amount || amount <= 0) {
       onOpenDetailedSheet("SALE");
