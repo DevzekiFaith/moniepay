@@ -166,22 +166,22 @@ export function DaylightHeader({
                       className="fixed inset-0 z-30"
                       onClick={() => setIsMoreMenuOpen(false)}
                     />
-                    <div className="absolute right-0 top-11 z-40 w-52 rounded-2xl bg-slate-900 border border-slate-700/80 shadow-2xl p-1.5 space-y-1 text-xs text-slate-200 backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150">
+                    <div className="absolute right-0 top-11 z-40 w-56 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-1.5 space-y-1 text-xs text-slate-800 dark:text-slate-200 backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-150">
                       <Link
                         href="/reviews"
                         onClick={() => setIsMoreMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
                       >
-                        <ThumbsUp className="h-4 w-4 text-amber-400 shrink-0" />
+                        <ThumbsUp className="h-4 w-4 text-amber-500 shrink-0" />
                         <span>Customer Reviews & QR</span>
                       </Link>
 
                       <Link
                         href="/map"
                         onClick={() => setIsMoreMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
                       >
-                        <MapPin className="h-4 w-4 text-sky-400 shrink-0" />
+                        <MapPin className="h-4 w-4 text-sky-500 shrink-0" />
                         <span>Market Vendor Map</span>
                       </Link>
 
@@ -191,9 +191,9 @@ export function DaylightHeader({
                           setIsMoreMenuOpen(false);
                           onOpenTracker();
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors text-left cursor-pointer"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors text-left cursor-pointer"
                       >
-                        <BrainCircuit className="h-4 w-4 text-indigo-400 shrink-0" />
+                        <BrainCircuit className="h-4 w-4 text-indigo-500 shrink-0" />
                         <span>Decision Memory</span>
                       </button>
 
@@ -203,31 +203,31 @@ export function DaylightHeader({
                           setIsMoreMenuOpen(false);
                           triggerInstallPrompt();
                         }}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors text-left cursor-pointer"
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors text-left cursor-pointer"
                       >
-                        <Smartphone className="h-4 w-4 text-emerald-400 shrink-0" />
+                        <Smartphone className="h-4 w-4 text-emerald-500 shrink-0" />
                         <span>Install App on Phone</span>
                       </button>
 
                       <Link
                         href="/upgrade"
                         onClick={() => setIsMoreMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-800 text-slate-200 hover:text-white font-bold transition-colors"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
                       >
-                        <ShieldCheck className="h-4 w-4 text-blue-400 shrink-0" />
+                        <ShieldCheck className="h-4 w-4 text-blue-500 shrink-0" />
                         <span>MoniePay Plus Pass</span>
                       </Link>
 
-                      <div className="pt-1 border-t border-slate-800">
+                      <div className="pt-1 border-t border-slate-100 dark:border-slate-800">
                         <button
                           type="button"
                           onClick={() => {
                             setIsMoreMenuOpen(false);
                             setIsLogoutOpen(true);
                           }}
-                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-950/60 text-rose-300 font-bold transition-colors text-left cursor-pointer"
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-bold transition-colors text-left cursor-pointer"
                         >
-                          <LogOut className="h-4 w-4 text-rose-400 shrink-0" />
+                          <LogOut className="h-4 w-4 text-rose-500 shrink-0" />
                           <span>Lock Shop / Sign Out</span>
                         </button>
                       </div>
