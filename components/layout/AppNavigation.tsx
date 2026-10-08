@@ -115,7 +115,7 @@ export function AppMobileHeader() {
   const { user } = useAuth();
 
   return (
-    <header className="md:hidden sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b border-slate-200/80 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 px-3.5 sm:px-4 backdrop-blur-2xl transition-colors">
+    <header className="md:hidden sticky top-0 z-50 flex h-14 w-full items-center justify-between border-b border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 px-3.5 sm:px-4 backdrop-blur-2xl transition-colors shadow-xs">
       <Link href="/" className="flex items-center gap-2">
         <MoniePayMark size={28} />
         <div className="flex flex-col">

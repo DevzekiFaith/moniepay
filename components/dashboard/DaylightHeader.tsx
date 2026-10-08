@@ -62,12 +62,14 @@ export function DaylightHeader({
 
   return (
     <>
-      <header className="relative overflow-hidden bg-gradient-to-br from-[#1e3a8a] via-[#1d4ed8] to-[#2563eb] dark:from-[#0b1739] dark:via-[#0f2359] dark:to-[#173887] backdrop-blur-2xl pt-3.5 pb-8 px-3.5 sm:px-6 md:px-8 text-white shadow-[0_12px_36px_rgba(29,78,216,0.3)] dark:shadow-2xl border-b border-white/20 dark:border-white/10 transition-colors">
-        {/* Decorative background light orbs */}
-        <div className="pointer-events-none absolute -right-8 -top-8 h-48 w-48 rounded-full bg-sky-300/25 dark:bg-blue-400/10 blur-2xl" />
-        <div className="pointer-events-none absolute -left-8 -bottom-8 h-40 w-40 rounded-full bg-blue-300/20 dark:bg-sky-400/10 blur-xl" />
+      <header className="relative z-30 bg-gradient-to-br from-[#1e3a8a] via-[#1d4ed8] to-[#2563eb] dark:from-[#0b1739] dark:via-[#0f2359] dark:to-[#173887] backdrop-blur-2xl pt-3.5 pb-8 px-3.5 sm:px-6 md:px-8 text-white shadow-[0_12px_36px_rgba(29,78,216,0.3)] dark:shadow-2xl border-b border-white/20 dark:border-white/10 transition-colors">
+        {/* Decorative background light orbs (contained in dedicated overflow wrapper) */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -right-8 -top-8 h-48 w-48 rounded-full bg-sky-300/25 dark:bg-blue-400/10 blur-2xl" />
+          <div className="absolute -left-8 -bottom-8 h-40 w-40 rounded-full bg-blue-300/20 dark:bg-sky-400/10 blur-xl" />
+        </div>
 
-        <div className="relative mx-auto w-full max-w-4xl space-y-3">
+        <div className="relative z-10 mx-auto w-full max-w-4xl space-y-3">
           {/* ── ROW 1: TOP MAIN NAV BAR (Shop Identity on Left • Clean Action Hub on Right) ── */}
           <div className="flex items-center justify-between gap-2">
             {/* Left: Merchant Profile & Identity */}
