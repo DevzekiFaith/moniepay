@@ -57,20 +57,14 @@ export function ReceiveMoneyModal({
   const accountNumber = user?.id ? `99${user.id.replace(/\D/g, "").slice(-8).padStart(8, "201928")}` : "9920192841";
   const accountName = `MoniePay / ${businessName}`;
 
-  // Generate QR Code data URL
+  // Generate QR Code data URL (encodes valid public payment URL)
   useEffect(() => {
     if (!isOpen) return;
 
-    const paymentPayload = JSON.stringify({
-      type: "MONIEPAY_TRANSFER",
-      bank: bankName,
-      accountNumber,
-      accountName,
-      merchant: businessName,
-      currency: "NGN",
-    });
+    const origin = typeof window !== "undefined" && window.location.origin ? window.location.origin : "https://moniepay.app";
+    const paymentUrl = `${origin}/pay?account=${encodeURIComponent(accountNumber)}&bank=${encodeURIComponent(bankName)}&name=${encodeURIComponent(businessName)}`;
 
-    QRCode.toDataURL(paymentPayload, {
+    QRCode.toDataURL(paymentUrl, {
       width: 280,
       margin: 2,
       color: {
@@ -80,7 +74,7 @@ export function ReceiveMoneyModal({
     })
       .then((url) => setQrDataUrl(url))
       .catch((err) => console.error("QR Code generate error:", err));
-  }, [isOpen, accountNumber, accountName, businessName]);
+  }, [isOpen, accountNumber, bankName, businessName]);
 
   const copyToClipboard = async (text: string, label: string) => {
     try {
