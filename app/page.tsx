@@ -69,6 +69,7 @@ import { FloatingActionDock } from "@/components/dashboard/FloatingActionDock";
 import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
 import { BusinessWalletCard } from "@/components/wallet/BusinessWalletCard";
 import { ReceiveMoneyModal } from "@/components/wallet/ReceiveMoneyModal";
+import { LiveMarketFeedCard } from "@/components/intelligence/LiveMarketFeedCard";
 import { useToast } from "@/context/NotificationContext";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/context/AuthContext";
@@ -372,6 +373,7 @@ export default function MoniePayDashboard() {
                 metrics={metrics}
                 debts={debts}
                 recommendations={recommendations}
+                tradeType={business.trade_type}
                 businessName={business.name}
                 onOpenGbeseBook={() => setIsGbeseOpen(true)}
                 onOpenWithdrawal={(safeAmt) => {
@@ -442,10 +444,17 @@ export default function MoniePayDashboard() {
               transition={{ duration: 0.18 }}
               className="space-y-4"
             >
-              {/* 7 Core Trader Decisions */}
+              {/* 1. Live Market Readings & Commodity Price Movements */}
+              <LiveMarketFeedCard
+                tradeType={business.trade_type}
+                marketLocation={business.market_location}
+              />
+
+              {/* 2. 7 Core Trader Decisions in Authentic Informal Market Voice */}
               <QuickDecisionsGrid
                 metrics={metrics}
                 debts={debts}
+                tradeType={business.trade_type}
                 onOpenWithdrawal={() => {
                   setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
                   setIsWithdrawalOpen(true);
@@ -455,7 +464,7 @@ export default function MoniePayDashboard() {
                 onOpenProfitDetail={() => handleOpenRecord("SALE")}
               />
 
-              {/* Decision Memory Tracking */}
+              {/* 3. Decision Memory Tracking */}
               <DecisionMemoryCard />
             </motion.div>
           )}

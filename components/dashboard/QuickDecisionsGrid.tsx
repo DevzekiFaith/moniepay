@@ -2,32 +2,32 @@
 
 // ─────────────────────────────────────────────────────────────────
 // MoniePay — 7 Core Decisions Grid Component
-// Spring Tactile Cards • Deep Emerald Answer Drawer
+// Live Informal Market Decision Intelligence • Solid Colors • Zero Gradients
+// Authentic Nigerian Market Trader Lingo & Actionable Guidance
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  PiggyBank,
-  ShoppingBag,
-  Users,
+  ArrowRight,
+  X,
   TrendingUp,
   AlertTriangle,
-  Receipt,
-  HelpCircle,
-  ArrowRight,
   CheckCircle2,
-  X,
-  CreditCard,
-  ShieldCheck,
-  Compass,
+  HelpCircle,
+  Building2,
+  Users,
+  Wallet,
+  ShoppingBag,
 } from "lucide-react";
-import type { DeterministicMetrics, Debt } from "@/types/moniepay.types";
+import type { DeterministicMetrics, Debt, TradeType } from "@/types/moniepay.types";
 import { InfoTooltip } from "@/components/ui/tooltip";
+import { getLiveMarketDecisionInsight } from "@/lib/intelligence/marketIntelligence";
 
 interface QuickDecisionsGridProps {
   metrics: DeterministicMetrics;
   debts?: Debt[];
+  tradeType?: TradeType;
   onOpenWithdrawal?: () => void;
   onOpenRestock?: () => void;
   onOpenGbeseBook?: () => void;
@@ -42,12 +42,14 @@ interface DecisionDetail {
   explanation: string;
   nextStep: string;
   buttonLabel: string;
+  badge?: string;
   onAction: () => void;
 }
 
 export function QuickDecisionsGrid({
   metrics,
   debts = [],
+  tradeType = "retail_provisions",
   onOpenWithdrawal,
   onOpenRestock,
   onOpenGbeseBook,
@@ -59,17 +61,18 @@ export function QuickDecisionsGrid({
   const supplierTotal = supplierDebts.reduce((sum, d) => sum + d.balance_due, 0);
 
   const customerDebts = debts.filter((d) => d.debt_type === "CUSTOMER_CREDIT" && d.status !== "SETTLED");
+  const liveMarket = getLiveMarketDecisionInsight(tradeType);
 
-  // Define the 7 core trader decision entry points
+  // The 7 Core Trader Decisions in Authentic Informal Nigerian Market Language
   const decisions: DecisionDetail[] = [
     {
       id: "withdraw",
-      question: "I fit withdraw this moni?",
+      question: "I fit withdraw chop moni today?",
       verdict: `YES O — ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe to Chop`,
       statusType: "safe",
-      explanation: "Your market capital and shop bills dey safe. This amount na clean profit wey you fit take chop life.",
-      nextStep: "Withdraw only this safe amount so tomorrow's market stock no go suffer.",
-      buttonLabel: `Take ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe Chop Moni`,
+      explanation: "Your shop capital, wholesaler money, and NEPA/fuel bills dey intact. This ₦" + metrics.safeWithdrawalAmount.toLocaleString() + " na clean gain wey you fit take chop life without shaking your business.",
+      nextStep: "Withdraw only this exact amount make tomorrow morning restock money no go suffer.",
+      buttonLabel: `Collect ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe Chop Moni`,
       onAction: () => {
         setActiveDecision(null);
         if (onOpenWithdrawal) onOpenWithdrawal();
@@ -77,12 +80,27 @@ export function QuickDecisionsGrid({
     },
     {
       id: "restock",
-      question: "I fit buy new market/stock?",
-      verdict: `YES O — ₦${Math.max(0, metrics.liquidCash - metrics.safeWithdrawalAmount).toLocaleString()} Available`,
+      question: "I fit buy new market/stock now?",
+      verdict: `YES O — ₦${Math.max(0, metrics.liquidCash - metrics.safeWithdrawalAmount).toLocaleString()} Working Capital Ready`,
       statusType: "safe",
-      explanation: "You get solid working capital ready for hand to buy wholesale stock without taking loan.",
-      nextStep: "Target fast-moving goods with sweet profit margins to maximize quick turnover.",
-      buttonLabel: "Plan Restock & Buy Market",
+      explanation: `You get ₦${Math.max(0, metrics.liquidCash - metrics.safeWithdrawalAmount).toLocaleString()} cash on hand ready to clear fresh wholesale cart cash-down with zero loan interest.`,
+      nextStep: "Rush target fast-moving goods wey customers dey ask every day (Rice, Sugar, Oil, Indomie).",
+      buttonLabel: "Plan Wholesale Restock",
+      badge: "Cash Ready",
+      onAction: () => {
+        setActiveDecision(null);
+        if (onOpenRestock) onOpenRestock();
+      },
+    },
+    {
+      id: "market_reading",
+      question: "Wetin wholesalers dey talk about price?",
+      verdict: liveMarket.verdict,
+      statusType: liveMarket.trend === "UP" ? "warning" : "safe",
+      explanation: liveMarket.explanation,
+      nextStep: liveMarket.headline,
+      buttonLabel: "Check Depot Price Ticker",
+      badge: "Live Reading",
       onAction: () => {
         setActiveDecision(null);
         if (onOpenRestock) onOpenRestock();
@@ -90,14 +108,14 @@ export function QuickDecisionsGrid({
     },
     {
       id: "pay_debt",
-      question: "I fit pay supplier debt today?",
-      verdict: supplierTotal > 0 ? `YES — Pay ₦${Math.min(supplierTotal, metrics.liquidCash).toLocaleString()} Sharp-Sharp` : "NO DEBT OWED",
+      question: "I fit clear my supplier debt today?",
+      verdict: supplierTotal > 0 ? `YES — Settle ₦${Math.min(supplierTotal, metrics.liquidCash).toLocaleString()} Sharp-Sharp` : "NO DEBT OWED",
       statusType: supplierTotal > 0 ? "action_needed" : "safe",
       explanation: supplierTotal > 0
-        ? `You owe suppliers ₦${supplierTotal.toLocaleString()}. Clearing this keeps your wholesale trust 100% solid.`
-        : "You no dey owe any supplier kobo. Your wholesale name and integrity clean pass mirror!",
-      nextStep: supplierTotal > 0 ? "Settle supplier today so they go bring fresh goods immediately." : "Keep this clean record.",
-      buttonLabel: supplierTotal > 0 ? "Settle Supplier Gbese" : "Close",
+        ? `You dey owe wholesaler ₦${supplierTotal.toLocaleString()}. If you clear am today, they go give you fresh high-demand stock with 2% cash discount.`
+        : "You no dey owe any wholesaler kobo! Your business name for market clean pass new naira note.",
+      nextStep: supplierTotal > 0 ? "Pay supplier right now make your supply line no jam hold-up." : "Keep this clean record.",
+      buttonLabel: supplierTotal > 0 ? "Settle Supplier Debt" : "Close",
       onAction: () => {
         setActiveDecision(null);
         if (onOpenGbeseBook) onOpenGbeseBook();
@@ -105,12 +123,12 @@ export function QuickDecisionsGrid({
     },
     {
       id: "profit",
-      question: "Profit dey come out so?",
-      verdict: `${metrics.profitMarginPercent}% Margin (₦${metrics.operatingProfit.toLocaleString()} Net Gain)`,
+      question: "Profit dey real or my money dey sink?",
+      verdict: `${metrics.profitMarginPercent}% Net Margin (₦${metrics.operatingProfit.toLocaleString()} Gain)`,
       statusType: metrics.operatingProfit > 0 ? "safe" : "warning",
-      explanation: `Calculated after subtracting ₦${metrics.directStockCost.toLocaleString()} goods costs and ₦${metrics.operatingExpenses.toLocaleString()} shop bills.`,
-      nextStep: "Your profit dey healthy! Keep recording every small expense to avoid hidden leakage.",
-      buttonLabel: "See Full Profit Breakdown",
+      explanation: `Calculated after removing ₦${metrics.directStockCost.toLocaleString()} goods cost and ₦${metrics.operatingExpenses.toLocaleString()} gen fuel, transport, and shop bills.`,
+      nextStep: "Your gain dey very sweet and healthy! Continue recording small-small cash so leakage no go enter.",
+      buttonLabel: "See Full Profit Record",
       onAction: () => {
         setActiveDecision(null);
         if (onOpenProfitDetail) onOpenProfitDetail();
@@ -118,37 +136,26 @@ export function QuickDecisionsGrid({
     },
     {
       id: "who_owes",
-      question: "Who dey owe my shop gbese?",
-      verdict: `₦${metrics.customerDebtTotal.toLocaleString()} Outside (${customerDebts.length} Customers)`,
+      question: "Who dey hold my shop gbese outside?",
+      verdict: `₦${metrics.customerDebtTotal.toLocaleString()} Outside (${customerDebts.length} People)`,
       statusType: metrics.customerDebtTotal > 0 ? "action_needed" : "safe",
-      explanation: "People don take goods on credit and your hard-earned money dey outside. Time to collect am!",
-      nextStep: "Send polite reminder to top debtors on WhatsApp before weekend rush.",
-      buttonLabel: "Open Debt Book & Send Reminders",
+      explanation: "Customers don pack goods go house and your sweat dey outside. Time don reach to collect your money back!",
+      nextStep: "Send friendly WhatsApp reminder slip give them before weekend market rush.",
+      buttonLabel: "Open Gbese Book & Send Slip",
+      badge: metrics.customerDebtTotal > 0 ? "Collect Moni" : undefined,
       onAction: () => {
         setActiveDecision(null);
         if (onOpenGbeseBook) onOpenGbeseBook();
       },
     },
     {
-      id: "losing_money",
-      question: "Where my money dey leak enter?",
-      verdict: (metrics.trends?.stockCostGrowthPercent || 0) > 0 ? `Stock Price Up +${metrics.trends.stockCostGrowthPercent}%` : "Zero Leakage",
-      statusType: (metrics.trends?.stockCostGrowthPercent || 0) > 10 ? "warning" : "safe",
-      explanation: "Supplier price inflation and untracked transport/POS charges na the main place money fit leak.",
-      nextStep: "Check wholesale unit prices when buying in bulk and review POS slips every evening.",
-      buttonLabel: "Check Money Leakage",
-      onAction: () => {
-        setActiveDecision(null);
-      },
-    },
-    {
       id: "today_cash",
-      question: "Wetin I go do with today cash?",
+      question: "Wetin I suppose do with today cash?",
       verdict: `Lock ₦${Math.round(metrics.liquidCash * 0.7).toLocaleString()} for Stock First`,
       statusType: "safe",
-      explanation: `Market golden rule: 70% for stock replenishment, 15% for bills/wages, 15% clean chop moni.`,
-      nextStep: "Keep restock money inside bank or safe drawer before taking personal chop money home.",
-      buttonLabel: "Lock In Restock Capital",
+      explanation: "Market golden rule: Keep 70% for stock replenishment, 15% for shop bills, and 15% for personal feeding. No carry stock money take solve family emergency.",
+      nextStep: "Transfer the restock money keep inside dedicated MoniePay account before closing shop.",
+      buttonLabel: "Keep Capital Safe",
       onAction: () => {
         setActiveDecision(null);
       },
@@ -158,10 +165,11 @@ export function QuickDecisionsGrid({
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between px-1">
-        <h2 className="text-xs font-black uppercase tracking-wider text-emerald-950/60 dark:text-emerald-400">
-          Decisions Wey You Fit Take Sharp-Sharp
+        <h2 className="text-xs font-black uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
+          <span className="h-2 w-2 rounded-full bg-blue-600" />
+          7 Market Decisions Wey You Fit Take Sharp-Sharp
         </h2>
-        <span className="text-[11px] font-bold text-emerald-800 dark:text-emerald-300">Tap to see answer</span>
+        <span className="text-[11px] font-bold text-blue-700 dark:text-blue-400">Tap card to see verdict</span>
       </div>
 
       {/* Decision Grid */}
@@ -173,19 +181,28 @@ export function QuickDecisionsGrid({
               whileHover={{ y: -2, scale: 1.01 }}
               whileTap={{ scale: 0.97 }}
               onClick={() => setActiveDecision(d)}
-              className="rounded-[22px] sm:rounded-[24px] bg-white/80 dark:bg-slate-900/90 backdrop-blur-md border border-emerald-950/[0.08] dark:border-white/10 p-3 sm:p-4 text-left shadow-[0_4px_20px_rgba(4,120,87,0.04)] hover:border-emerald-500/50 hover:shadow-md cursor-pointer transition-all flex flex-col justify-between min-w-0"
+              className="rounded-[22px] sm:rounded-[24px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-3 sm:p-4 text-left shadow-sm hover:border-blue-500/60 dark:hover:border-blue-500/60 cursor-pointer transition-all flex flex-col justify-between min-w-0 group"
             >
               <div className="min-w-0">
-                <span className="text-[10.5px] sm:text-[11px] font-bold text-slate-500 dark:text-slate-400 block leading-tight line-clamp-2">
-                  {d.question}
-                </span>
-                <span className="text-[11.5px] sm:text-xs md:text-sm font-black text-slate-900 dark:text-white mt-1.5 block leading-snug line-clamp-2">
+                <div className="flex items-center justify-between gap-1 mb-1">
+                  <span className="text-[10px] sm:text-[10.5px] font-bold text-slate-500 dark:text-slate-400 block leading-tight line-clamp-1">
+                    {d.question}
+                  </span>
+                  {d.badge && (
+                    <span className="px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-[9px] font-black shrink-0">
+                      {d.badge}
+                    </span>
+                  )}
+                </div>
+
+                <span className="text-xs sm:text-[13px] font-black text-slate-900 dark:text-white mt-1 block leading-snug line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                   {d.verdict}
                 </span>
               </div>
-              <div className="mt-2.5 flex items-center justify-between pt-1.5 border-t border-slate-100/80 dark:border-white/10">
-                <span className="text-[9.5px] sm:text-[10px] font-black text-emerald-800 dark:text-emerald-400">See Action</span>
-                <ArrowRight className="h-3 w-3 text-emerald-700 dark:text-emerald-400" />
+
+              <div className="mt-2.5 flex items-center justify-between pt-1.5 border-t border-slate-100 dark:border-slate-800">
+                <span className="text-[10px] font-black text-blue-700 dark:text-blue-400">See Answer</span>
+                <ArrowRight className="h-3 w-3 text-blue-600 dark:text-blue-400 group-hover:translate-x-0.5 transition-transform" />
               </div>
             </motion.button>
           </InfoTooltip>
@@ -195,13 +212,13 @@ export function QuickDecisionsGrid({
       {/* Interactive Decision Answer Modal */}
       <AnimatePresence>
         {activeDecision && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md">
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/75 backdrop-blur-md">
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="w-full max-w-md rounded-[28px] bg-white dark:bg-slate-900 border border-emerald-900/15 dark:border-white/10 p-5 sm:p-6 shadow-2xl space-y-4 relative overflow-hidden text-slate-900 dark:text-slate-100"
+              className="w-full max-w-md rounded-[28px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-2xl space-y-4 relative overflow-hidden text-slate-900 dark:text-slate-100"
             >
               <button
                 type="button"
@@ -212,47 +229,47 @@ export function QuickDecisionsGrid({
               </button>
 
               <div>
-                <span className="text-[11px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400">
-                  Business Decision Intelligence
+                <span className="text-[11px] font-black uppercase tracking-wider text-blue-600 dark:text-blue-400">
+                  MoniePay Market Verdict
                 </span>
                 <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1">
                   {activeDecision.question}
                 </h3>
               </div>
 
-              {/* Big Deep Emerald Verdict Pill */}
-              <div className="p-4 rounded-2xl bg-gradient-to-br from-[#022c22] via-[#064e3b] to-[#047857] text-white shadow-md">
-                <span className="text-[10.5px] font-black uppercase tracking-widest text-emerald-300 block mb-0.5">
-                  MoniePay Verdict
+              {/* Solid Blue / Slate Verdict Box (Single Colour) */}
+              <div className="p-4 rounded-2xl bg-slate-900 text-white shadow-md border border-slate-800">
+                <span className="text-[10px] font-black uppercase tracking-widest text-blue-300 block mb-1">
+                  Wetin MoniePay Talk
                 </span>
-                <p className="text-base sm:text-lg font-black text-white">
+                <p className="text-base sm:text-lg font-black text-white leading-snug">
                   {activeDecision.verdict}
                 </p>
               </div>
 
-              {/* Plain English Explanation */}
+              {/* Plain Informal Market Explanation (Pidgin) */}
               <div className="space-y-2 text-xs">
                 <div>
-                  <span className="font-extrabold text-slate-700 dark:text-slate-300 block">Why:</span>
+                  <span className="font-black text-slate-800 dark:text-slate-200 block">Why we talk so:</span>
                   <p className="text-slate-600 dark:text-slate-300 font-medium leading-relaxed mt-0.5">
                     {activeDecision.explanation}
                   </p>
                 </div>
-                <div className="pt-2 border-t border-slate-100 dark:border-white/10">
-                  <span className="font-extrabold text-emerald-900 dark:text-emerald-400 block">Next move:</span>
-                  <p className="text-slate-800 dark:text-slate-100 font-black leading-relaxed mt-0.5">
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+                  <span className="font-black text-blue-700 dark:text-blue-400 block">Wetin you suppose do next:</span>
+                  <p className="text-slate-900 dark:text-white font-extrabold leading-relaxed mt-0.5">
                     {activeDecision.nextStep}
                   </p>
                 </div>
               </div>
 
-              {/* Action Button */}
+              {/* Action Button (Solid Blue) */}
               <motion.button
                 type="button"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.96 }}
                 onClick={activeDecision.onAction}
-                className="w-full py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white font-black text-xs sm:text-sm cursor-pointer shadow-md shadow-emerald-900/20"
+                className="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs sm:text-sm cursor-pointer shadow-sm active:scale-98 transition-all"
               >
                 {activeDecision.buttonLabel}
               </motion.button>
