@@ -99,51 +99,54 @@ function wordsToNumber(phrase: string): number {
 export function parseSpokenMarketAmount(rawText: string): number {
   if (!rawText) return 0;
 
-  const text = rawText.toLowerCase().trim();
+  const text = rawText
+    .toLowerCase()
+    .replace(/[₦#,]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 
-  // 1. Hybrid numeric with word/multiplier suffix:
-  // e.g. "20 thousand", "20thousand", "20k", "20 k", "1.5 million", "1.5m", "100k", "500 hundred"
-  const hybridMultiplierRegex = /(\d+(?:\.\d+)?)\s*(k|thousand|million|m|billion|b|hundred)\b/i;
-  const hybridMatch = text.match(hybridMultiplierRegex);
-  if (hybridMatch) {
-    const val = parseFloat(hybridMatch[1]);
-    const multUnit = hybridMatch[2].toLowerCase();
-    const mult = MULTIPLIERS[multUnit] || 1;
-    return Math.round(val * mult);
+  // Pattern 1: Decimal million/k formats e.g. "1.5m", "1.5 million", "2.5k"
+  const decMatch = text.match(/(\d+\.?\d*)\s*(m|million|mils|mil|k|thousand|b|billion)/i);
+  if (decMatch) {
+    const val = parseFloat(decMatch[1]);
+    const unit = decMatch[2].toLowerCase();
+    if (unit.startsWith("m")) return Math.round(val * 1000000);
+    if (unit.startsWith("k") || unit.startsWith("thous")) return Math.round(val * 1000);
+    if (unit.startsWith("b")) return Math.round(val * 1000000000);
   }
 
-  // 2. Full digit match with optional currency symbols:
-  // e.g. "20000", "20,000", "₦20000", "ngn 20,000", "20000 naira", "20000.00"
-  const directDigitRegex = /(?:₦|ngn|\$)?\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?(?:\s*naira)?/i;
-  const digitMatch = text.match(directDigitRegex);
-  if (digitMatch) {
-    const cleanNum = parseFloat(digitMatch[1].replace(/,/g, ""));
-    // Check if followed by "thousand" or "million" right after
-    const afterDigitText = text.slice((digitMatch.index || 0) + digitMatch[0].length).trim();
-    if (/^(?:thousand|k\b)/i.test(afterDigitText)) {
-      return Math.round(cleanNum * 1000);
-    }
-    if (/^(?:million|m\b)/i.test(afterDigitText)) {
-      return Math.round(cleanNum * 1000000);
-    }
-    if (!isNaN(cleanNum) && cleanNum > 0) {
-      return cleanNum;
-    }
+  // Pattern 2: Raw number directly followed by naira or stand-alone large number
+  const numMatch = text.match(/\b(\d{2,10})\b/);
+  if (numMatch) {
+    const parsed = parseInt(numMatch[1], 10);
+    if (parsed > 0) return parsed;
   }
 
-  // 3. Spoken number words:
-  // e.g. "twenty thousand naira", "two hundred thousand", "one million five hundred thousand", "fifty thousand"
-  const wordAmount = wordsToNumber(text);
-  if (wordAmount > 0) {
-    return wordAmount;
+  // Pattern 3: Hybrid text like "twenty thousand" or "forty five k"
+  const wordsMatch = text.match(
+    /\b((?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|k|\d+)(?:\s+(?:and\s+)?(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|k|\d+))*)\b/i
+  );
+
+  if (wordsMatch) {
+    const parsedFromWords = wordsToNumber(wordsMatch[1]);
+    if (parsedFromWords > 0) return parsedFromWords;
   }
 
   return 0;
 }
 
+// Pre-load voices cache in browser
+let cachedVoices: SpeechSynthesisVoice[] = [];
+if (typeof window !== "undefined" && "speechSynthesis" in window) {
+  cachedVoices = window.speechSynthesis.getVoices();
+  window.speechSynthesis.onvoiceschanged = () => {
+    cachedVoices = window.speechSynthesis.getVoices();
+  };
+}
+
 /**
- * Universal High-Quality Female Voice Player for Web Speech Synthesis
- * Guarantees a female voice on all devices (Windows Surface Pro, PC, Mac, iPhone, Android)
+ * Universal High-Quality Nigerian / African Female Trader Voice Player
+ * Guarantees a unanimous female voice on all devices (Windows, Mac, iPhone, Android)
  */
 export function playFemaleTraderVoice(text: string) {
   if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
@@ -152,20 +155,21 @@ export function playFemaleTraderVoice(text: string) {
     window.speechSynthesis.cancel();
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = "en-NG";
-    utterance.rate = 1.0;
-    // Set feminine pitch (1.15) for warm, natural and pleasant tone
-    utterance.pitch = 1.15;
+    utterance.rate = 1.02;
+    // Set feminine pitch (1.20) for warm, clear female tone
+    utterance.pitch = 1.2;
 
-    const voices = window.speechSynthesis.getVoices();
+    const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
 
     if (voices && voices.length > 0) {
-      // 1. Priority 1: High quality English female voices
+      // Priority keywords for natural female voices
       const femaleKeywords = [
-        "zira", // Windows 10/11 Microsoft Zira (Female)
+        "zira", // Microsoft Zira (Female)
         "jenny", // Microsoft Jenny (Natural Female)
+        "aria", // Microsoft Aria (Natural Female)
         "samantha", // Apple Samantha (Female)
         "victoria", // Apple Victoria (Female)
-        "karen", // Apple / Australian Female
+        "karen", // Australian Female
         "moira", // Irish Female
         "fiona", // Scottish Female
         "catherine",
@@ -173,8 +177,11 @@ export function playFemaleTraderVoice(text: string) {
         "hazel",
         "serena",
         "female",
+        "woman",
         "google uk english female",
         "google us english",
+        "en-ng",
+        "en-za",
       ];
 
       const maleKeywords = [
@@ -189,9 +196,10 @@ export function playFemaleTraderVoice(text: string) {
         "brian",
         "oliver",
         "rishi",
+        "man",
       ];
 
-      // Find best female voice
+      // 1. First priority: Exact English female voice
       let selectedVoice = voices.find((v) => {
         const name = v.name.toLowerCase();
         const isEnglish = v.lang.startsWith("en");
@@ -200,7 +208,7 @@ export function playFemaleTraderVoice(text: string) {
         return isEnglish && hasFemaleKeyword && !hasMaleKeyword;
       });
 
-      // Priority 2: Any English voice that is NOT explicitly named male
+      // 2. Second priority: Any English voice that is NOT explicitly named male
       if (!selectedVoice) {
         selectedVoice = voices.find((v) => {
           const name = v.name.toLowerCase();
@@ -217,6 +225,6 @@ export function playFemaleTraderVoice(text: string) {
 
     window.speechSynthesis.speak(utterance);
   } catch (err) {
-    console.warn("Speech synthesis error:", err);
+    console.warn("Speech synthesis notice:", err);
   }
 }

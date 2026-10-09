@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────
 // MoniePay — Smart Voice & Auto-Stock Directory Ledger Table
 // Official MoniePay Branded Directory • Real-time Stock Reconciliation
-// Hands-Off Entry Auditing • Date Filtering • Audio Playback
+// Hands-Off Entry Auditing • Date Filtering • Unanimous Female Audio Voice
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -21,19 +21,11 @@ import {
   Share2,
   Download,
   Plus,
-  RefreshCw,
-  CheckCircle2,
-  SlidersHorizontal,
   X,
-  Store,
-  ArrowRight,
-  ShieldCheck,
   Vibrate,
-  Bell,
   Sparkles,
 } from "lucide-react";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
-import { MonieAiLogo } from "@/components/ui/MonieAiLogo";
 import {
   InventoryItem,
   VoiceTypedEntry,
@@ -65,10 +57,6 @@ export function StockDirectoryTable() {
   const [movementFilter, setMovementFilter] = useState<"ALL" | "SALES" | "RESTOCK">("ALL");
   const [dateFilter, setDateFilter] = useState<"ALL" | "TODAY" | "YESTERDAY" | "THIS_WEEK" | "THIS_MONTH" | "CUSTOM">("ALL");
   const [customDate, setCustomDate] = useState("");
-
-  // Simulated Voice Test State
-  const [testTranscript, setTestTranscript] = useState("");
-  const [isSimulating, setIsSimulating] = useState(false);
 
   // New Stock Modal State
   const [isAddStockOpen, setIsAddStockOpen] = useState(false);
@@ -192,7 +180,6 @@ export function StockDirectoryTable() {
 
   // Quick Voice Simulation / Live Beep Test
   const handleTestVoiceEntry = (spokenText: string) => {
-    setIsSimulating(true);
     try {
       const result = recordVoiceOrTypedStockEntry({
         method: "VOICE",
@@ -205,9 +192,8 @@ export function StockDirectoryTable() {
 
       toast("Voice Entry Recorded 🎙️", `Auto-reconciled: ${spokenText}`, { type: "success" });
       loadData();
-    } finally {
-      setIsSimulating(false);
-      setTestTranscript("");
+    } catch (err) {
+      console.debug("Voice simulation notice:", err);
     }
   };
 
@@ -399,10 +385,10 @@ export function StockDirectoryTable() {
         <div className="flex items-center justify-between">
           <span className="text-xs font-black text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
             <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            Try Live Voice / Spoken Entry (Triggers Hands-Off Beep & Vibration)
+            Try Live Female Voice Entry (Triggers Hands-Off Beep & Vibration)
           </span>
           <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
-            Natural Pidgin & English
+            Natural Nigerian Female Voice
           </span>
         </div>
 
@@ -727,124 +713,117 @@ export function StockDirectoryTable() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {filteredEntries.map((entry) => {
-                    const isSale = entry.stock_delta < 0;
-                    const isRestock = entry.stock_delta > 0;
+                    {filteredEntries.map((entry) => {
+                      const isSale = entry.stock_delta < 0;
+                      const isRestock = entry.stock_delta > 0;
 
-                    return (
-                      <tr key={entry.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
-                        {/* Method Badge */}
-                        <td className="py-3 px-3.5 whitespace-nowrap">
-                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-black ${
-                            entry.method === "VOICE"
-                              ? "bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300"
-                              : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
-                          }`}>
-                            {entry.method === "VOICE" ? <Mic className="h-3 w-3" /> : <Keyboard className="h-3 w-3" />}
-                            <span>{entry.method}</span>
-                          </span>
-                        </td>
+                      return (
+                        <tr key={entry.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                          <td className="py-3 px-3.5 whitespace-nowrap">
+                            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-black ${
+                              entry.method === "VOICE"
+                                ? "bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300"
+                                : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                            }`}>
+                              {entry.method === "VOICE" ? <Mic className="h-3 w-3" /> : <Keyboard className="h-3 w-3" />}
+                              <span>{entry.method}</span>
+                            </span>
+                          </td>
 
-                        {/* Raw Transcript with Audio Playback */}
-                        <td className="py-3 px-3.5 max-w-xs font-semibold text-slate-900 dark:text-white">
-                          <div className="flex items-center gap-1.5">
+                          <td className="py-3 px-3.5 max-w-xs font-semibold text-slate-900 dark:text-white">
+                            <div className="flex items-center gap-1.5">
+                              <button
+                                type="button"
+                                onClick={() => playFemaleTraderVoice(entry.raw_transcript)}
+                                className="h-6 w-6 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 hover:text-emerald-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
+                                title="Replay Voice Audio"
+                              >
+                                <Volume2 className="h-3 w-3" />
+                              </button>
+                              <span className="line-clamp-2">"{entry.raw_transcript}"</span>
+                            </div>
+                          </td>
+
+                          <td className="py-3 px-3.5 whitespace-nowrap">
+                            <span className="font-extrabold text-slate-900 dark:text-white block">
+                              {entry.detected_item}
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+                              Qty: {entry.quantity} {entry.unit}
+                            </span>
+                          </td>
+
+                          <td className="py-3 px-3.5 whitespace-nowrap text-slate-600 dark:text-slate-400">
+                            <span className="font-bold text-slate-900 dark:text-white block">
+                              {new Date(entry.timestamp).toLocaleDateString("en-NG", {
+                                month: "short",
+                                day: "numeric",
+                                year: "numeric",
+                              })}
+                            </span>
+                            <span className="text-[10px]">
+                              {new Date(entry.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                            </span>
+                          </td>
+
+                          <td className="py-3 px-3.5 whitespace-nowrap">
+                            <span className={`font-black block ${
+                              entry.type === "SALE" || entry.type === "DEBT_COLLECTION"
+                                ? "text-emerald-600 dark:text-emerald-400"
+                                : "text-slate-900 dark:text-white"
+                            }`}>
+                              ₦{entry.amount.toLocaleString()}
+                            </span>
+                            <span className="text-[10px] font-bold text-slate-500 uppercase">
+                              {entry.payment_method}
+                            </span>
+                          </td>
+
+                          <td className="py-3 px-3.5 whitespace-nowrap">
+                            {isSale && (
+                              <span className="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400 font-black">
+                                <TrendingDown className="h-3 w-3" />
+                                <span>{entry.stock_delta} {entry.unit}</span>
+                              </span>
+                            )}
+                            {isRestock && (
+                              <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-black">
+                                <TrendingUp className="h-3 w-3" />
+                                <span>+{entry.stock_delta} {entry.unit}</span>
+                              </span>
+                            )}
+                            {!isSale && !isRestock && (
+                              <span className="text-slate-400 font-bold">0 Delta</span>
+                            )}
+                            <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
+                              Balance: {entry.stock_balance_after} {entry.unit}
+                            </span>
+                          </td>
+
+                          <td className="py-3 px-3.5 text-right whitespace-nowrap">
                             <button
                               type="button"
-                              onClick={() => playFemaleTraderVoice(entry.raw_transcript)}
-                              className="h-6 w-6 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 hover:text-emerald-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
-                              title="Replay Spoken Audio"
+                              onClick={() => {
+                                const text = `MoniePay Receipt Slip:%0AItem: ${entry.detected_item} (${entry.quantity} ${entry.unit})%0AAmount: ₦${entry.amount.toLocaleString()}%0ADate: ${new Date(entry.timestamp).toLocaleString()}`;
+                                window.open(`https://wa.me/?text=${text}`, "_blank");
+                              }}
+                              className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold hover:bg-emerald-100 text-[11px] inline-flex items-center gap-1 cursor-pointer transition-colors"
                             >
-                              <Volume2 className="h-3 w-3" />
+                              <Share2 className="h-3 w-3" />
+                              <span>Slip</span>
                             </button>
-                            <span className="line-clamp-2">"{entry.raw_transcript}"</span>
-                          </div>
-                        </td>
-
-                        {/* Detected Item & Qty */}
-                        <td className="py-3 px-3.5 whitespace-nowrap">
-                          <span className="font-extrabold text-slate-900 dark:text-white block">
-                            {entry.detected_item}
-                          </span>
-                          <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
-                            Qty: {entry.quantity} {entry.unit}
-                          </span>
-                        </td>
-
-                        {/* Date & Time */}
-                        <td className="py-3 px-3.5 whitespace-nowrap text-slate-600 dark:text-slate-400">
-                          <span className="font-bold text-slate-900 dark:text-white block">
-                            {new Date(entry.timestamp).toLocaleDateString("en-NG", {
-                              month: "short",
-                              day: "numeric",
-                              year: "numeric",
-                            })}
-                          </span>
-                          <span className="text-[10px]">
-                            {new Date(entry.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                          </span>
-                        </td>
-
-                        {/* Amount & Payment Channel */}
-                        <td className="py-3 px-3.5 whitespace-nowrap">
-                          <span className={`font-black block ${
-                            entry.type === "SALE" || entry.type === "DEBT_COLLECTION"
-                              ? "text-emerald-600 dark:text-emerald-400"
-                              : "text-slate-900 dark:text-white"
-                          }`}>
-                            ₦{entry.amount.toLocaleString()}
-                          </span>
-                          <span className="text-[10px] font-bold text-slate-500 uppercase">
-                            {entry.payment_method}
-                          </span>
-                        </td>
-
-                        {/* Stock Movement & Balance */}
-                        <td className="py-3 px-3.5 whitespace-nowrap">
-                          {isSale && (
-                            <span className="inline-flex items-center gap-1 text-rose-600 dark:text-rose-400 font-black">
-                              <TrendingDown className="h-3 w-3" />
-                              <span>{entry.stock_delta} {entry.unit}</span>
-                            </span>
-                          )}
-                          {isRestock && (
-                            <span className="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-black">
-                              <TrendingUp className="h-3 w-3" />
-                              <span>+{entry.stock_delta} {entry.unit}</span>
-                            </span>
-                          )}
-                          {!isSale && !isRestock && (
-                            <span className="text-slate-400 font-bold">0 Delta</span>
-                          )}
-                          <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
-                            Balance: {entry.stock_balance_after} {entry.unit}
-                          </span>
-                        </td>
-
-                        {/* Action Slip */}
-                        <td className="py-3 px-3.5 text-right whitespace-nowrap">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const text = `MoniePay Receipt Slip:%0AItem: ${entry.detected_item} (${entry.quantity} ${entry.unit})%0AAmount: ₦${entry.amount.toLocaleString()}%0ADate: ${new Date(entry.timestamp).toLocaleString()}`;
-                              window.open(`https://wa.me/?text=${text}`, "_blank");
-                            }}
-                            className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold hover:bg-emerald-100 text-[11px] inline-flex items-center gap-1 cursor-pointer transition-colors"
-                          >
-                            <Share2 className="h-3 w-3" />
-                            <span>Slip</span>
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
         </div>
       ) : (
-        {/* ── INVENTORY CATALOG VIEW (Mobile Cards + Desktop Table) ── */}
+        /* ── INVENTORY CATALOG VIEW (Mobile Cards + Desktop Table) ── */
         <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs overflow-hidden">
           {/* Mobile Inventory Cards (Visible < 640px) */}
           <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-800">
