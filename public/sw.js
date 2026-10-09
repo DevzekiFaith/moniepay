@@ -3,7 +3,7 @@
 // Offline resilience for Nigerian micro-businesses
 // ─────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "moniepay-cache-v1";
+const CACHE_NAME = "moniepay-cache-v2";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
@@ -54,10 +54,12 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Skip caching API routes, POST requests, and external database connections
+  // Never cache Next.js internal chunks, HMR, API routes, or Supabase
   if (
     request.method !== "GET" ||
+    url.pathname.startsWith("/_next/") ||
     url.pathname.startsWith("/api/") ||
+    url.pathname.includes("hot-update") ||
     url.hostname.includes("supabase.co")
   ) {
     return;
