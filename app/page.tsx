@@ -23,6 +23,7 @@ import {
   SlidersHorizontal,
   Calendar,
   X,
+  Package,
 } from "lucide-react";
 
 // Types
@@ -534,6 +535,14 @@ export default function MoniePayDashboard() {
                   </p>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0">
+                  <Link
+                    href="/directory"
+                    className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-300 text-xs font-black flex items-center gap-1 cursor-pointer shadow-2xs hover:bg-blue-100"
+                  >
+                    <Package className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400 shrink-0" />
+                    <span className="hidden min-[380px]:inline">Stock Directory</span>
+                    <span className="inline min-[380px]:hidden">Stock</span>
+                  </Link>
                   <Link
                     href="/activity"
                     className="px-2 sm:px-2.5 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-bold flex items-center gap-1 cursor-pointer shadow-2xs"
