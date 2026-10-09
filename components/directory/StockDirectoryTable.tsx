@@ -23,7 +23,7 @@ import {
   Plus,
   X,
   Vibrate,
-  Sparkles,
+  Store,
   CheckCircle2,
   Layers,
 } from "lucide-react";
@@ -402,7 +402,7 @@ export function StockDirectoryTable() {
       <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 border border-emerald-200/80 dark:border-emerald-900/40 space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-xs font-black text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
-            <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+            <Store className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
             Test Talk Am Live (Female Voice Alert & Vibration Go Fire)
           </span>
           <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
