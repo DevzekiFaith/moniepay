@@ -606,7 +606,7 @@ export function StockDirectoryTable() {
         )}
       </div>
 
-      {/* ── 5. LIVE DATA TABLE SECTION ── */}
+      {/* ── 5. LIVE ENTRIES SECTION (Mobile Cards + Desktop Table) ── */}
       {activeTab === "ENTRIES" ? (
         <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs overflow-hidden">
           {filteredEntries.length === 0 ? (
@@ -619,20 +619,114 @@ export function StockDirectoryTable() {
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-white/10 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  <tr>
-                    <th className="py-3 px-3.5">Method</th>
-                    <th className="py-3 px-3.5">Spoken / Typed Input</th>
-                    <th className="py-3 px-3.5">Detected Item & Qty</th>
-                    <th className="py-3 px-3.5">Date & Time</th>
-                    <th className="py-3 px-3.5">Amount</th>
-                    <th className="py-3 px-3.5">Stock Movement</th>
-                    <th className="py-3 px-3.5 text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+            <>
+              {/* ── MOBILE CARD FEED (Visible on Phones < 640px) ── */}
+              <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-800">
+                {filteredEntries.map((entry) => {
+                  const isSale = entry.stock_delta < 0;
+                  const isRestock = entry.stock_delta > 0;
+
+                  return (
+                    <div key={entry.id} className="p-3.5 space-y-2.5">
+                      {/* Row 1: Method + Date + Audio Replay */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-black ${
+                            entry.method === "VOICE"
+                              ? "bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300"
+                              : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
+                          }`}>
+                            {entry.method === "VOICE" ? <Mic className="h-3 w-3" /> : <Keyboard className="h-3 w-3" />}
+                            <span>{entry.method}</span>
+                          </span>
+
+                          <span className="text-[10.5px] text-slate-500 font-semibold">
+                            {new Date(entry.timestamp).toLocaleDateString("en-NG", { month: "short", day: "numeric" })} • {new Date(entry.timestamp).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                          </span>
+                        </div>
+
+                        <button
+                          type="button"
+                          onClick={() => playFemaleTraderVoice(entry.raw_transcript)}
+                          className="h-7 w-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center cursor-pointer hover:bg-emerald-100 hover:text-emerald-700"
+                          title="Replay Voice Audio"
+                        >
+                          <Volume2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
+
+                      {/* Row 2: Spoken Transcript */}
+                      <p className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                        "{entry.raw_transcript}"
+                      </p>
+
+                      {/* Row 3: Detected Item + Stock Delta + Amount */}
+                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800">
+                        <div>
+                          <span className="text-xs font-black text-slate-900 dark:text-white block">
+                            {entry.detected_item}
+                          </span>
+                          <span className="text-[10px] font-bold text-slate-500">
+                            Qty: {entry.quantity} {entry.unit}
+                          </span>
+                        </div>
+
+                        <div className="text-right">
+                          <span className={`text-xs font-black block ${
+                            isSale ? "text-emerald-600 dark:text-emerald-400" : "text-slate-900 dark:text-white"
+                          }`}>
+                            ₦{entry.amount.toLocaleString()}
+                          </span>
+                          {isSale && (
+                            <span className="text-[10px] font-black text-rose-600 dark:text-rose-400 block">
+                              {entry.stock_delta} {entry.unit} ({entry.stock_balance_after} left)
+                            </span>
+                          )}
+                          {isRestock && (
+                            <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 block">
+                              +{entry.stock_delta} {entry.unit} ({entry.stock_balance_after} left)
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Row 4: Action button */}
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-[10px] font-black uppercase text-slate-500">
+                          {entry.payment_method}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const text = `MoniePay Receipt Slip:%0AItem: ${entry.detected_item} (${entry.quantity} ${entry.unit})%0AAmount: ₦${entry.amount.toLocaleString()}%0ADate: ${new Date(entry.timestamp).toLocaleString()}`;
+                            window.open(`https://wa.me/?text=${text}`, "_blank");
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[11px] inline-flex items-center gap-1 cursor-pointer"
+                        >
+                          <Share2 className="h-3 w-3" />
+                          <span>WhatsApp Slip</span>
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* ── DESKTOP & TABLET TABLE VIEW (Visible >= 640px) ── */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-white/10 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                    <tr>
+                      <th className="py-3 px-3.5">Method</th>
+                      <th className="py-3 px-3.5">Spoken / Typed Input</th>
+                      <th className="py-3 px-3.5">Detected Item & Qty</th>
+                      <th className="py-3 px-3.5">Date & Time</th>
+                      <th className="py-3 px-3.5">Amount</th>
+                      <th className="py-3 px-3.5">Stock Movement</th>
+                      <th className="py-3 px-3.5 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {filteredEntries.map((entry) => {
                     const isSale = entry.stock_delta < 0;
                     const isRestock = entry.stock_delta > 0;
@@ -746,12 +840,62 @@ export function StockDirectoryTable() {
                 </tbody>
               </table>
             </div>
+          </>
           )}
         </div>
       ) : (
-        /* ── INVENTORY CATALOG VIEW ── */
+        {/* ── INVENTORY CATALOG VIEW (Mobile Cards + Desktop Table) ── */}
         <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs overflow-hidden">
-          <div className="overflow-x-auto">
+          {/* Mobile Inventory Cards (Visible < 640px) */}
+          <div className="sm:hidden divide-y divide-slate-100 dark:divide-slate-800">
+            {filteredInventory.map((item) => {
+              const isLow = item.current_stock <= item.reorder_threshold;
+              const itemValue = item.current_stock * item.selling_price;
+
+              return (
+                <div key={item.id} className="p-3.5 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div>
+                      <h4 className="text-xs font-black text-slate-900 dark:text-white">
+                        {item.name}
+                      </h4>
+                      <span className="text-[10.5px] text-slate-500 font-semibold">
+                        {item.category}
+                      </span>
+                    </div>
+
+                    {isLow ? (
+                      <span className="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-black text-[10px] shrink-0">
+                        ⚠️ Low ({item.current_stock} left)
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-black text-[10px] shrink-0">
+                        ✅ {item.current_stock} {item.unit}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-center text-[11px]">
+                    <div>
+                      <span className="text-[9.5px] text-slate-400 font-bold block">Cost</span>
+                      <span className="font-bold text-slate-700 dark:text-slate-300">₦{item.cost_price.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9.5px] text-slate-400 font-bold block">Selling</span>
+                      <span className="font-black text-emerald-600 dark:text-emerald-400">₦{item.selling_price.toLocaleString()}</span>
+                    </div>
+                    <div>
+                      <span className="text-[9.5px] text-slate-400 font-bold block">Total Worth</span>
+                      <span className="font-black text-slate-900 dark:text-white">₦{itemValue.toLocaleString()}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop & Tablet Table (Visible >= 640px) */}
+          <div className="hidden sm:block overflow-x-auto">
             <table className="w-full text-left text-xs">
               <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-white/10 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 <tr>
