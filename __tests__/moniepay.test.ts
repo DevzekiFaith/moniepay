@@ -149,8 +149,8 @@ describe("MoniePay — Business Decision Intelligence OS", () => {
 
     // Priority rank 1 must target collecting the trapped ₦85,000 customer credit before restocking
     expect(topRec.action_type).toBe("COLLECT_DEBT");
-    expect(topRec.title).toContain("3 customers owe you ₦85,000");
-    expect(topRec.title).toContain("Collect these before restocking");
+    expect(topRec.title).toContain("3 customers dey owe you ₦85,000");
+    expect(topRec.title).toContain("Collect this gbese before you restock");
     expect(topRec.action_payload?.phone).toBeDefined();
     expect(topRec.action_payload?.suggested_message).toContain("balance");
   });

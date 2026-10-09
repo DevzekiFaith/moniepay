@@ -37,7 +37,7 @@ import { getCachedTransactions, setCachedTransactions } from "@/lib/offline/offl
 import { DEFAULT_TRANSACTIONS } from "@/lib/data/initialBusinessData";
 import { InstantRecordSheet } from "@/components/dashboard/InstantRecordSheet";
 
-type DateRangeFilter = "ALL" | "TODAY" | "THIS_WEEK" | "THIS_MONTH";
+type DateRangeFilter = "ALL" | "TODAY" | "YESTERDAY" | "THIS_WEEK" | "THIS_MONTH" | "CUSTOM";
 type SortOption = "NEWEST" | "OLDEST" | "AMOUNT_HIGH" | "AMOUNT_LOW";
 
 function getMarketTypeBadge(type: string, method?: string): string {
@@ -69,6 +69,7 @@ export default function ActivityPage() {
   const [filterType, setFilterType] = useState<string>("ALL");
   const [filterMethod, setFilterMethod] = useState<string>("ALL");
   const [filterDateRange, setFilterDateRange] = useState<DateRangeFilter>("ALL");
+  const [customDateValue, setCustomDateValue] = useState("");
   const [sortBy, setSortBy] = useState<SortOption>("NEWEST");
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
 
@@ -102,14 +103,24 @@ export default function ActivityPage() {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
 
     const result = transactions.filter((tx) => {
+      const txDateStr = tx.transaction_date || "";
+      const txTime = new Date(txDateStr).getTime();
+      const formattedDate = new Date(txDateStr).toLocaleDateString("en-NG", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }).toLowerCase();
+
       // 1. Search Query
-      const q = searchTerm.toLowerCase();
+      const q = searchTerm.toLowerCase().trim();
       const matchesSearch =
         !q ||
         (tx.description?.toLowerCase() || "").includes(q) ||
         (tx.category?.toLowerCase() || "").includes(q) ||
         (tx.type?.toLowerCase() || "").includes(q) ||
-        (tx.payment_method?.toLowerCase() || "").includes(q);
+        (tx.payment_method?.toLowerCase() || "").includes(q) ||
+        txDateStr.toLowerCase().includes(q) ||
+        formattedDate.includes(q);
 
       // 2. Type Filter
       const matchesType =
@@ -126,14 +137,19 @@ export default function ActivityPage() {
 
       // 4. Date Range Filter
       let matchesDate = true;
-      if (filterDateRange !== "ALL") {
-        const txTime = new Date(tx.transaction_date).getTime();
-        if (filterDateRange === "TODAY") {
-          matchesDate = txTime >= today;
-        } else if (filterDateRange === "THIS_WEEK") {
-          matchesDate = txTime >= oneWeekAgo;
-        } else if (filterDateRange === "THIS_MONTH") {
-          matchesDate = txTime >= startOfMonth;
+      if (filterDateRange === "TODAY") {
+        matchesDate = txTime >= today && txTime < today + 86400000;
+      } else if (filterDateRange === "YESTERDAY") {
+        matchesDate = txTime >= today - 86400000 && txTime < today;
+      } else if (filterDateRange === "THIS_WEEK") {
+        matchesDate = txTime >= oneWeekAgo;
+      } else if (filterDateRange === "THIS_MONTH") {
+        matchesDate = txTime >= startOfMonth;
+      } else if (filterDateRange === "CUSTOM" && customDateValue) {
+        const parts = customDateValue.split("-");
+        if (parts.length === 3) {
+          const cStart = new Date(parseInt(parts[0], 10), parseInt(parts[1], 10) - 1, parseInt(parts[2], 10)).getTime();
+          matchesDate = txTime >= cStart && txTime < cStart + 86400000;
         }
       }
 
@@ -349,16 +365,33 @@ export default function ActivityPage() {
                         <label className="block text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
                           Market Time
                         </label>
-                        <select
-                          value={filterDateRange}
-                          onChange={(e) => setFilterDateRange(e.target.value as DateRangeFilter)}
-                          className="w-full py-1.5 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 font-bold focus:outline-none focus:border-emerald-600 text-xs cursor-pointer"
-                        >
-                          <option value="ALL">All Time</option>
-                          <option value="TODAY">Today Only</option>
-                          <option value="THIS_WEEK">Past 7 Days</option>
-                          <option value="THIS_MONTH">This Month</option>
-                        </select>
+                        <div className="space-y-1.5">
+                          <select
+                            value={filterDateRange}
+                            onChange={(e) => {
+                              const val = e.target.value as DateRangeFilter;
+                              setFilterDateRange(val);
+                              if (val !== "CUSTOM") setCustomDateValue("");
+                            }}
+                            className="w-full py-1.5 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 font-bold focus:outline-none focus:border-emerald-600 text-xs cursor-pointer"
+                          >
+                            <option value="ALL">All Time</option>
+                            <option value="TODAY">Today Only</option>
+                            <option value="YESTERDAY">Yesterday</option>
+                            <option value="THIS_WEEK">Past 7 Days</option>
+                            <option value="THIS_MONTH">This Month</option>
+                            <option value="CUSTOM">Specific Date 📅</option>
+                          </select>
+
+                          {filterDateRange === "CUSTOM" && (
+                            <input
+                              type="date"
+                              value={customDateValue}
+                              onChange={(e) => setCustomDateValue(e.target.value)}
+                              className="w-full py-1.5 px-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 text-slate-800 dark:text-slate-100 font-bold focus:outline-none focus:border-emerald-600 text-xs cursor-pointer"
+                            />
+                          )}
+                        </div>
                       </div>
 
                       {/* 3. Sort Order */}

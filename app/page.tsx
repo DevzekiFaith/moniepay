@@ -21,6 +21,8 @@ import {
   ArrowRight,
   Search,
   SlidersHorizontal,
+  Calendar,
+  X,
 } from "lucide-react";
 
 // Types
@@ -129,6 +131,8 @@ export default function MoniePayDashboard() {
   // Activity Tab Search & Filter State
   const [activitySearch, setActivitySearch] = useState("");
   const [activityFilterType, setActivityFilterType] = useState("ALL");
+  const [activityDateFilter, setActivityDateFilter] = useState<"ALL" | "TODAY" | "YESTERDAY" | "THIS_WEEK" | "THIS_MONTH" | "CUSTOM">("ALL");
+  const [activityCustomDate, setActivityCustomDate] = useState("");
 
   // 1. Initial State Hydration
   useEffect(() => {
@@ -197,17 +201,36 @@ export default function MoniePayDashboard() {
     });
   }, [transactions, period]);
 
-  // 2b. Activity Tab Specific Filter & Search
+  // 2b. Activity Tab Specific Filter & Search with Date Filtering
   const activityTabTransactions = useMemo(() => {
-    return filteredTransactions.filter((tx) => {
-      const q = activitySearch.toLowerCase();
+    const now = new Date();
+    const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    const todayEnd = todayStart + 86400000;
+    const yesterdayStart = todayStart - 86400000;
+    const weekStart = todayStart - 7 * 86400000;
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+
+    return transactions.filter((tx) => {
+      const q = activitySearch.toLowerCase().trim();
+      const txDateStr = tx.transaction_date || "";
+      const txTime = new Date(txDateStr).getTime();
+      const formattedDate = new Date(txDateStr).toLocaleDateString("en-NG", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }).toLowerCase();
+
+      // Search matches description, category, type, payment method, or date text
       const matchesSearch =
         !q ||
         (tx.description?.toLowerCase() || "").includes(q) ||
         (tx.category?.toLowerCase() || "").includes(q) ||
         (tx.type?.toLowerCase() || "").includes(q) ||
-        (tx.payment_method?.toLowerCase() || "").includes(q);
+        (tx.payment_method?.toLowerCase() || "").includes(q) ||
+        txDateStr.toLowerCase().includes(q) ||
+        formattedDate.includes(q);
 
+      // Type Filter
       const matchesType =
         activityFilterType === "ALL" ||
         (activityFilterType === "SALE" && tx.type === "SALE" && tx.payment_method !== "CREDIT") ||
@@ -216,9 +239,31 @@ export default function MoniePayDashboard() {
         (activityFilterType === "EXPENSE" && (tx.type === "EXPENSE" || tx.type === "STAFF_PAYMENT")) ||
         (activityFilterType === "WITHDRAWAL" && tx.type === "OWNER_WITHDRAWAL");
 
-      return matchesSearch && matchesType;
+      // Date Range Filter
+      let matchesDate = true;
+      if (activityDateFilter === "TODAY") {
+        matchesDate = txTime >= todayStart && txTime < todayEnd;
+      } else if (activityDateFilter === "YESTERDAY") {
+        matchesDate = txTime >= yesterdayStart && txTime < todayStart;
+      } else if (activityDateFilter === "THIS_WEEK") {
+        matchesDate = txTime >= weekStart;
+      } else if (activityDateFilter === "THIS_MONTH") {
+        matchesDate = txTime >= monthStart;
+      } else if (activityDateFilter === "CUSTOM" && activityCustomDate) {
+        const customParts = activityCustomDate.split("-");
+        if (customParts.length === 3) {
+          const cYear = parseInt(customParts[0], 10);
+          const cMonth = parseInt(customParts[1], 10) - 1;
+          const cDay = parseInt(customParts[2], 10);
+          const cStart = new Date(cYear, cMonth, cDay).getTime();
+          const cEnd = cStart + 86400000;
+          matchesDate = txTime >= cStart && txTime < cEnd;
+        }
+      }
+
+      return matchesSearch && matchesType && matchesDate;
     });
-  }, [filteredTransactions, activitySearch, activityFilterType]);
+  }, [transactions, activitySearch, activityFilterType, activityDateFilter, activityCustomDate]);
 
   // 3. Deterministic Business Intelligence Calculation
   const metrics = useMemo(() => {
@@ -508,29 +553,98 @@ export default function MoniePayDashboard() {
                 </div>
               </div>
 
-              {/* Search Bar */}
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
-                <input
-                  type="text"
-                  value={activitySearch}
-                  onChange={(e) => setActivitySearch(e.target.value)}
-                  placeholder="Search goods, sales, or customer name..."
-                  className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 shadow-2xs"
-                />
-                {activitySearch && (
-                  <button
-                    type="button"
-                    onClick={() => setActivitySearch("")}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300"
-                  >
-                    ✕
-                  </button>
-                )}
+              {/* Search Bar & Date Picker Row */}
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                  <input
+                    type="text"
+                    value={activitySearch}
+                    onChange={(e) => setActivitySearch(e.target.value)}
+                    placeholder="Search goods, sales, customer, or date..."
+                    className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:border-emerald-600 focus:ring-1 focus:ring-emerald-600 shadow-2xs"
+                  />
+                  {activitySearch && (
+                    <button
+                      type="button"
+                      onClick={() => setActivitySearch("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 dark:text-slate-500 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
+
+                {/* Date Picker Input */}
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <div className="relative flex items-center">
+                    <Calendar className="absolute left-2.5 h-3.5 w-3.5 text-emerald-700 dark:text-emerald-400 pointer-events-none" />
+                    <input
+                      type="date"
+                      value={activityCustomDate}
+                      onChange={(e) => {
+                        const val = e.target.value;
+                        setActivityCustomDate(val);
+                        if (val) {
+                          setActivityDateFilter("CUSTOM");
+                        } else {
+                          setActivityDateFilter("ALL");
+                        }
+                      }}
+                      className="pl-8 pr-2.5 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-xs font-bold text-slate-800 dark:text-slate-200 focus:outline-none focus:border-emerald-600 shadow-2xs cursor-pointer"
+                      title="Filter by specific date"
+                    />
+                  </div>
+                  {activityCustomDate && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setActivityCustomDate("");
+                        setActivityDateFilter("ALL");
+                      }}
+                      className="px-2 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 cursor-pointer"
+                    >
+                      Clear Date
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {/* Quick Filter Chips */}
+              {/* Date Filter Preset Chips */}
               <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
+                <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
+                  <Calendar className="h-3 w-3 text-emerald-700 dark:text-emerald-400" /> Date:
+                </span>
+                {[
+                  { id: "ALL", label: "All Time" },
+                  { id: "TODAY", label: "Today" },
+                  { id: "YESTERDAY", label: "Yesterday" },
+                  { id: "THIS_WEEK", label: "This Week" },
+                  { id: "THIS_MONTH", label: "This Month" },
+                ].map((d) => (
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => {
+                      setActivityDateFilter(d.id as any);
+                      if (d.id !== "CUSTOM") setActivityCustomDate("");
+                    }}
+                    className={`px-2.5 py-1 rounded-xl text-[11px] font-bold whitespace-nowrap cursor-pointer transition-all ${
+                      activityDateFilter === d.id && !activityCustomDate
+                        ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900 shadow-xs"
+                        : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
+                    }`}
+                  >
+                    {d.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Transaction Type Filter Chips */}
+              <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
+                <span className="text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wider shrink-0 mr-1">
+                  Type:
+                </span>
                 {[
                   { id: "ALL", label: "All Records" },
                   { id: "SALE", label: "Sales (Cash In)" },
@@ -543,7 +657,7 @@ export default function MoniePayDashboard() {
                     key={f.id}
                     type="button"
                     onClick={() => setActivityFilterType(f.id)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap cursor-pointer transition-all ${
+                    className={`px-2.5 py-1 rounded-xl text-[11px] font-bold whitespace-nowrap cursor-pointer transition-all ${
                       activityFilterType === f.id
                         ? "bg-emerald-700 text-white shadow-xs"
                         : "bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
@@ -555,18 +669,27 @@ export default function MoniePayDashboard() {
               </div>
 
               {/* Filter Count & Reset */}
-              {(activitySearch || activityFilterType !== "ALL") && (
+              {(activitySearch || activityFilterType !== "ALL" || activityDateFilter !== "ALL" || activityCustomDate) && (
                 <div className="flex items-center justify-between px-2 py-1 text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                  <span>Found {activityTabTransactions.length} matching records</span>
+                  <span className="flex items-center gap-1.5">
+                    <span>Found {activityTabTransactions.length} matching records</span>
+                    {activityCustomDate && (
+                      <span className="px-1.5 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px]">
+                        {activityCustomDate}
+                      </span>
+                    )}
+                  </span>
                   <button
                     type="button"
                     onClick={() => {
                       setActivitySearch("");
                       setActivityFilterType("ALL");
+                      setActivityDateFilter("ALL");
+                      setActivityCustomDate("");
                     }}
                     className="text-rose-600 dark:text-rose-400 hover:underline cursor-pointer"
                   >
-                    Clear Filter
+                    Clear All Filters
                   </button>
                 </div>
               )}
