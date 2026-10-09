@@ -5,7 +5,7 @@
 // Light & Dark Mode • Mobile Responsive • Modern Navigation
 // ─────────────────────────────────────────────────────────────────
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
 import { formatNaira } from "@/lib/utils";
 import { useNotification } from "@/context/NotificationContext";
@@ -29,6 +29,9 @@ import {
   Store,
 } from "lucide-react";
 import Link from "next/link";
+import { getCachedAccounts, setCachedAccounts } from "@/lib/offline/offlineQueue";
+import { DEFAULT_ACCOUNTS } from "@/lib/data/initialBusinessData";
+import type { BusinessAccount, AccountType } from "@/types/moniepay.types";
 
 interface Account {
   id: string;
@@ -47,41 +50,54 @@ export default function AccountsPage() {
   const { user } = useAuth();
   const { notify } = useNotification();
 
-  const [accounts, setAccounts] = useState<Account[]>([
-    {
-      id: "acc_cash_drawer",
-      name: "Shop Physical Cash Drawer",
-      accountType: "CASH",
-      currency: "NGN",
-      currentBalance: 120000,
-      isPrimary: true,
-      syncStatus: "ACTIVE",
-    },
-    {
-      id: "acc_opay_pos",
-      name: "OPay Merchant POS",
-      accountType: "POS",
-      currency: "NGN",
-      currentBalance: 65000,
-      isPrimary: false,
-      syncStatus: "ACTIVE",
-    },
-    {
-      id: "acc_gtb_bank",
-      name: "GTBank Business Account",
-      accountType: "BANK",
-      currency: "NGN",
-      currentBalance: 145000,
-      isPrimary: false,
-      syncStatus: "ACTIVE",
-      mask: "9042",
-    },
-  ]);
+  const [accounts, setAccounts] = useState<Account[]>([]);
 
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
   const [newAccName, setNewAccName] = useState("");
   const [newAccType, setNewAccType] = useState<"CASH" | "POS" | "BANK">("POS");
   const [newAccBalance, setNewAccBalance] = useState("");
+
+  const loadAccounts = () => {
+    const cached = getCachedAccounts();
+    if (cached.length > 0) {
+      setAccounts(
+        cached.map((a) => ({
+          id: a.id,
+          name: a.name,
+          accountType: a.account_type,
+          currency: "NGN",
+          currentBalance: Number(a.current_balance || 0),
+          isPrimary: !!a.is_primary,
+          syncStatus: "ACTIVE",
+          mask: a.account_number ? a.account_number.slice(-4) : undefined,
+        }))
+      );
+    } else {
+      setAccounts(
+        DEFAULT_ACCOUNTS.map((a) => ({
+          id: a.id,
+          name: a.name,
+          accountType: a.account_type,
+          currency: "NGN",
+          currentBalance: Number(a.current_balance || 0),
+          isPrimary: !!a.is_primary,
+          syncStatus: "ACTIVE",
+          mask: a.account_number ? a.account_number.slice(-4) : undefined,
+        }))
+      );
+      setCachedAccounts(DEFAULT_ACCOUNTS);
+    }
+  };
+
+  useEffect(() => {
+    loadAccounts();
+
+    const handleAccountsUpdated = () => loadAccounts();
+    window.addEventListener("moniepay:accounts-updated", handleAccountsUpdated);
+    return () => {
+      window.removeEventListener("moniepay:accounts-updated", handleAccountsUpdated);
+    };
+  }, []);
 
   const totalBalance = accounts.reduce((sum, a) => sum + a.currentBalance, 0);
 
@@ -90,18 +106,20 @@ export default function AccountsPage() {
     if (!newAccName.trim()) return;
 
     const parsedBal = parseFloat(newAccBalance.replace(/,/g, "")) || 0;
-    const newAcc: Account = {
+    const newBizAcc: BusinessAccount = {
       id: `acc_${Date.now()}`,
+      business_id: "biz_default_01",
       name: newAccName.trim(),
-      accountType: newAccType,
-      currency: "NGN",
-      currentBalance: parsedBal,
-      isPrimary: false,
-      syncStatus: "ACTIVE",
+      account_type: newAccType as AccountType,
+      current_balance: parsedBal,
+      is_primary: accounts.length === 0,
     };
 
-    setAccounts((prev) => [...prev, newAcc]);
-    notify("Account Added", `${newAcc.name} added to your active money pool.`, { type: "success" });
+    const currentCached = getCachedAccounts();
+    const updated = [...currentCached, newBizAcc];
+    setCachedAccounts(updated);
+
+    notify("Account Added", `${newBizAcc.name} added to your active money pool.`, "success");
     setIsConnectModalOpen(false);
     setNewAccName("");
     setNewAccBalance("");

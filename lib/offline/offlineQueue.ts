@@ -50,7 +50,7 @@ export function setCachedTransactions(transactions: BusinessTransaction[]): void
 export function getCachedDebts(): Debt[] {
   if (typeof window === "undefined") return [];
   try {
-    const raw = localStorage.getItem(DEBT_CACHE_KEY);
+    const raw = localStorage.getItem(DEBT_CACHE_KEY) || localStorage.getItem("moniepay_debts");
     return raw ? JSON.parse(raw) : [];
   } catch {
     return [];
@@ -61,9 +61,27 @@ export function setCachedDebts(debts: Debt[]): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(DEBT_CACHE_KEY, JSON.stringify(debts));
+    localStorage.setItem("moniepay_debts", JSON.stringify(debts));
+    window.dispatchEvent(new CustomEvent("moniepay:debts-updated", { detail: { debts } }));
   } catch (err) {
     console.warn("Could not cache debts:", err);
   }
+}
+
+export function settleCachedDebt(debtId: string, amount: number): Debt[] {
+  const debts = getCachedDebts();
+  const updated = debts.map((d) =>
+    d.id === debtId
+      ? {
+          ...d,
+          balance_due: 0,
+          amount_paid: Number(d.amount_paid) + amount,
+          status: "SETTLED" as const,
+        }
+      : d
+  );
+  setCachedDebts(updated);
+  return updated;
 }
 
 export function getCachedAccounts(): BusinessAccount[] {
@@ -80,6 +98,7 @@ export function setCachedAccounts(accounts: BusinessAccount[]): void {
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(ACCOUNT_CACHE_KEY, JSON.stringify(accounts));
+    window.dispatchEvent(new CustomEvent("moniepay:accounts-updated", { detail: { accounts } }));
   } catch (err) {
     console.warn("Could not cache accounts:", err);
   }

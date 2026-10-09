@@ -51,6 +51,7 @@ import {
   setCachedTransactions,
   getCachedDebts,
   setCachedDebts,
+  settleCachedDebt,
   getCachedAccounts,
   setCachedAccounts,
   triggerBackgroundSync,
@@ -178,12 +179,28 @@ export default function MoniePayDashboard() {
       }
     };
 
+    const handleDebtsUpdated = (e: any) => {
+      if (e?.detail?.debts) {
+        setDebts(e.detail.debts);
+      }
+    };
+
+    const handleAccountsUpdated = (e: any) => {
+      if (e?.detail?.accounts) {
+        setAccounts(e.detail.accounts);
+      }
+    };
+
     window.addEventListener("moniepay:transaction-recorded", handleTxRecorded);
+    window.addEventListener("moniepay:debts-updated", handleDebtsUpdated);
+    window.addEventListener("moniepay:accounts-updated", handleAccountsUpdated);
 
     return () => {
       window.removeEventListener("online", handleOnline);
       window.removeEventListener("offline", handleOffline);
       window.removeEventListener("moniepay:transaction-recorded", handleTxRecorded);
+      window.removeEventListener("moniepay:debts-updated", handleDebtsUpdated);
+      window.removeEventListener("moniepay:accounts-updated", handleAccountsUpdated);
     };
   }, []);
 
@@ -290,18 +307,16 @@ export default function MoniePayDashboard() {
   };
 
   const handleDebtSettled = (debtId: string, amount: number) => {
-    setDebts((prev) =>
-      prev.map((d) =>
-        d.id === debtId
-          ? {
-              ...d,
-              balance_due: 0,
-              amount_paid: Number(d.amount_paid) + amount,
-              status: "SETTLED" as const,
-            }
-          : d
-      )
-    );
+    const updated = settleCachedDebt(debtId, amount);
+    setDebts(updated);
+  };
+
+  const handleDebtCreated = (newDebt: Debt) => {
+    setDebts((prev) => {
+      const updated = [newDebt, ...prev.filter((d) => d.id !== newDebt.id)];
+      setCachedDebts(updated);
+      return updated;
+    });
   };
 
   const handleSimulateIncomingTransfer = (amount: number, senderName: string) => {
@@ -752,6 +767,7 @@ export default function MoniePayDashboard() {
         businessName={business.name}
         businessId={business.id}
         onDebtSettled={handleDebtSettled}
+        onDebtCreated={handleDebtCreated}
       />
 
       <DecisionTrackerSheet

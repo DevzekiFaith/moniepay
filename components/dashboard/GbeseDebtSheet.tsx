@@ -25,7 +25,12 @@ import {
   Check,
 } from "lucide-react";
 import type { Debt } from "@/types/moniepay.types";
-import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";
+import {
+  recordOptimisticTransaction,
+  settleCachedDebt,
+  setCachedDebts,
+  getCachedDebts,
+} from "@/lib/offline/offlineQueue";
 import { useNotifications } from "@/context/NotificationContext";
 import { triggerCashHapticVibration, playCashChime } from "@/lib/alerts/hapticSoundService";
 
@@ -128,9 +133,9 @@ export function GbeseDebtSheet({
 
     // Save to local storage debts list
     try {
-      const existing = JSON.parse(localStorage.getItem("moniepay_debts") || "[]");
+      const existing = getCachedDebts();
       const updated = [newDebtObj, ...existing];
-      localStorage.setItem("moniepay_debts", JSON.stringify(updated));
+      setCachedDebts(updated);
     } catch {}
 
     if (onDebtCreated) {
@@ -230,6 +235,10 @@ export function GbeseDebtSheet({
   const handleSettle = (debt: Debt) => {
     setSettlingId(debt.id);
 
+    // 1. Persistently mark settled in local cache so it never returns on refresh
+    settleCachedDebt(debt.id, Number(debt.balance_due));
+
+    // 2. Record ledger collection transaction
     recordOptimisticTransaction({
       business_id: businessId,
       type: debt.debt_type === "CUSTOMER_CREDIT" ? "DEBT_COLLECTION" : "SUPPLIER_PAYMENT",
