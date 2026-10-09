@@ -3,7 +3,7 @@
 // ─────────────────────────────────────────────────────────────────
 // MoniePay — Smart Voice & Auto-Stock Directory Ledger Table
 // Official MoniePay Branded Directory • Real-time Stock Reconciliation
-// Hands-Off Entry Auditing • Date Filtering • Unanimous Female Audio Voice
+// Hands-Off Entry Auditing • Date Filtering • Nigerian Market Vernacular & Audio
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState, useEffect, useMemo } from "react";
@@ -24,6 +24,8 @@ import {
   X,
   Vibrate,
   Sparkles,
+  CheckCircle2,
+  Layers,
 } from "lucide-react";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
 import {
@@ -39,7 +41,10 @@ import {
   triggerCashHapticVibration,
   requestHandsOffAlertPermissions,
 } from "@/lib/alerts/hapticSoundService";
-import { playFemaleTraderVoice } from "@/lib/voice/spokenParser";
+import {
+  playFemaleTraderVoice,
+  generateMarketVernacularVoiceResponse,
+} from "@/lib/voice/spokenParser";
 import { useAuth } from "@/context/AuthContext";
 import { useToast } from "@/context/NotificationContext";
 
@@ -188,9 +193,19 @@ export function StockDirectoryTable() {
 
       playCashChime();
       triggerCashHapticVibration("cash");
-      playFemaleTraderVoice(`Recorded ${result.entry.detected_item}. Stock updated.`);
 
-      toast("Voice Entry Recorded 🎙️", `Auto-reconciled: ${spokenText}`, { type: "success" });
+      const pidginFeedback = generateMarketVernacularVoiceResponse({
+        item: result.entry.detected_item,
+        qty: result.entry.quantity,
+        unit: result.entry.unit,
+        amount: result.entry.amount,
+        type: result.entry.type,
+        stockBalanceAfter: result.entry.stock_balance_after,
+      });
+
+      playFemaleTraderVoice(pidginFeedback);
+
+      toast("Market Entry Don Enter! 🎙️", `I don record am sharp-sharp: ${spokenText}`, { type: "success" });
       loadData();
     } catch (err) {
       console.debug("Voice simulation notice:", err);
@@ -223,15 +238,18 @@ export function StockDirectoryTable() {
 
     playCashChime();
     triggerCashHapticVibration("restock");
-    toast("Stock Item Added 📦", `${newItem.name} registered in directory`, { type: "success" });
+
+    playFemaleTraderVoice(`New market commodity ${newItem.name} don save inside shop directory ledger.`);
+
+    toast("Fresh Goods Registered 📦", `${newItem.name} don save inside shop catalog!`, { type: "success" });
   };
 
   // Export CSV
   const handleExportCSV = () => {
-    const headers = ["Entry ID", "Method", "Spoken Transcript", "Detected Item", "Quantity", "Unit", "Amount (NGN)", "Stock Delta", "Stock Balance", "Timestamp"];
+    const headers = ["Entry ID", "Method", "Wetin Person Talk (Transcript)", "Commodity Item", "How Many (Qty)", "Unit", "Total Amount (NGN)", "Stock Delta", "Stock Balance Left", "Date & Time"];
     const rows = filteredEntries.map((e) => [
       e.id,
-      e.method,
+      e.method === "VOICE" ? "Talk Am (Voice)" : "Type Am (Keyboard)",
       `"${e.raw_transcript.replace(/"/g, '""')}"`,
       `"${e.detected_item}"`,
       e.quantity,
@@ -247,7 +265,7 @@ export function StockDirectoryTable() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `moniepay_voice_stock_directory_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `moniepay_market_stock_ledger_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -255,7 +273,7 @@ export function StockDirectoryTable() {
 
   return (
     <div className="space-y-4">
-      {/* ── 1. OFFICIAL MONIEPAY BRANDED DIRECTORY HEADER ── */}
+      {/* ── 1. OFFICIAL MONIEPAY BRANDED DIRECTORY HEADER (MARKET VERNACULAR) ── */}
       <section className="relative overflow-hidden rounded-[28px] bg-slate-900 text-white p-5 sm:p-6 shadow-xl border border-slate-800">
         <div className="pointer-events-none absolute -right-12 -top-12 h-44 w-44 rounded-full bg-emerald-500/15 blur-3xl" />
         <div className="pointer-events-none absolute -left-12 -bottom-12 h-36 w-36 rounded-full bg-blue-500/15 blur-2xl" />
@@ -266,17 +284,17 @@ export function StockDirectoryTable() {
               <MoniePayMark size={32} />
               <div className="flex items-center gap-2">
                 <span className="text-sm sm:text-base font-black tracking-tight text-white">
-                  MoniePay Auto-Stock Directory
+                  MoniePay Auto-Stock Directory Ledger
                 </span>
                 <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-black border border-emerald-400/30 flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                  Live Reconciler
+                  Sharp-Sharp Balancer
                 </span>
               </div>
             </div>
 
-            <p className="text-xs text-slate-300 font-medium max-w-xl">
-              Every voice entry ("Talk Am") and typed sale is automatically parsed, cataloged with date & amount, and reconciles shop stock in real time with hands-off vibration & audio alerts.
+            <p className="text-xs text-slate-300 font-medium max-w-xl leading-relaxed">
+              Every market sale wey you <strong className="text-emerald-400">“Talk Am 🎙️”</strong> or type dey auto-record with date & amount, and update your shop goods automatically with live phone vibration & female voice alert.
             </p>
           </div>
 
@@ -285,10 +303,10 @@ export function StockDirectoryTable() {
               type="button"
               onClick={requestHandsOffAlertPermissions}
               className="px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-black flex items-center gap-1.5 border border-slate-700 transition-all cursor-pointer shadow-sm active:scale-95"
-              title="Test Hardware Vibration & Beep"
+              title="Test Hardware Vibration & Live Beep Alert"
             >
               <Vibrate className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Enable Hands-Off Alerts</span>
+              <span>Enable Hands-Off Alerts (Phone Go Vibrate)</span>
             </button>
 
             <button
@@ -297,19 +315,19 @@ export function StockDirectoryTable() {
               className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-black flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
             >
               <Plus className="h-3.5 w-3.5" />
-              <span>Add Stock Item</span>
+              <span>Put New Goods / Add Stock 📦</span>
             </button>
           </div>
         </div>
       </section>
 
-      {/* ── 2. EXECUTIVE KPI CARDS ── */}
+      {/* ── 2. EXECUTIVE KPI CARDS (MARKET VERNACULAR & STATS) ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
         {/* Total Entries */}
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Total Logged Entries
+              Market Records Logged
             </span>
             <div className="h-7 w-7 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 flex items-center justify-center">
               <Mic className="h-3.5 w-3.5" />
@@ -319,7 +337,7 @@ export function StockDirectoryTable() {
             {stats.totalEntries}
           </p>
           <span className="text-[10px] text-blue-700 dark:text-blue-400 font-bold block">
-            {stats.voiceCount} captured via Voice 🎙️
+            {stats.voiceCount} entered via Talk Am 🎙️
           </span>
         </div>
 
@@ -327,17 +345,17 @@ export function StockDirectoryTable() {
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Tracked Commodities
+              Goods Wey Dey Shop
             </span>
             <div className="h-7 w-7 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
               <Package className="h-3.5 w-3.5" />
             </div>
           </div>
           <p className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white">
-            {inventory.length} <span className="text-xs font-bold text-slate-500">Items</span>
+            {inventory.length} <span className="text-xs font-bold text-slate-500">Commodities</span>
           </p>
           <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold block">
-            Auto-deduct on every sale
+            Auto-deduct on every sale sharp-sharp
           </span>
         </div>
 
@@ -345,7 +363,7 @@ export function StockDirectoryTable() {
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Stock Valuation
+              Total Stock Worth
             </span>
             <div className="h-7 w-7 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 flex items-center justify-center">
               <TrendingUp className="h-3.5 w-3.5" />
@@ -355,7 +373,7 @@ export function StockDirectoryTable() {
             ₦{stats.totalValuation.toLocaleString()}
           </p>
           <span className="text-[10px] text-amber-700 dark:text-amber-400 font-bold block">
-            Total warehouse worth
+            Warehouse goods value in cash
           </span>
         </div>
 
@@ -363,7 +381,7 @@ export function StockDirectoryTable() {
         <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 shadow-xs space-y-1">
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-extrabold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
-              Low Stock Alerts
+              Low Stock Warning
             </span>
             <div className={`h-7 w-7 rounded-lg flex items-center justify-center ${
               stats.lowStockCount > 0 ? "bg-rose-100 dark:bg-rose-950 text-rose-600 animate-pulse" : "bg-slate-100 dark:bg-slate-800 text-slate-500"
@@ -372,32 +390,32 @@ export function StockDirectoryTable() {
             </div>
           </div>
           <p className={`text-xl sm:text-2xl font-black ${stats.lowStockCount > 0 ? "text-rose-600 dark:text-rose-400" : "text-slate-900 dark:text-white"}`}>
-            {stats.lowStockCount} <span className="text-xs font-bold text-slate-500">Commodities</span>
+            {stats.lowStockCount} <span className="text-xs font-bold text-slate-500">Items</span>
           </p>
           <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold block">
-            {stats.lowStockCount > 0 ? "Reorder before stock finishes" : "All stock levels healthy"}
+            {stats.lowStockCount > 0 ? "E don remain small! Reorder sharp-sharp" : "All goods dey healthy for shop"}
           </span>
         </div>
       </div>
 
-      {/* ── 3. VOICE ENTRY SIMULATOR / LIVE PREVIEW BAR ── */}
+      {/* ── 3. VOICE ENTRY SIMULATOR / LIVE MARKET DIALECT BAR ── */}
       <div className="p-3.5 rounded-2xl bg-gradient-to-r from-emerald-50 via-white to-blue-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-900 border border-emerald-200/80 dark:border-emerald-900/40 space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-xs font-black text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
             <Sparkles className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-            Try Live Female Voice Entry (Triggers Hands-Off Beep & Vibration)
+            Test Talk Am Live (Female Voice Alert & Vibration Go Fire)
           </span>
           <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400">
-            Natural Nigerian Female Voice
+            Unanimous Female Nigerian Trader Voice 🔊
           </span>
         </div>
 
         <div className="flex flex-wrap items-center gap-1.5">
           {[
-            "Sold 3 bags of Mama Gold Rice for ₦234,000 via transfer",
-            "Bought 8 cartons Indomie for ₦68,000 cash",
-            "Customer took 4 fast chargers on credit ₦14,000",
-            "Filled 2 cooking gas cylinders for ₦30,000",
+            "I sell 3 bags of Mama Gold Rice for ₦234,000 via transfer",
+            "We buy 8 cartons Indomie for ₦68,000 cash for warehouse",
+            "Customer take 4 fast chargers on credit (gbese) ₦14,000",
+            "I fill 2 cooking gas cylinders for ₦30,000 cash",
           ].map((sample, i) => (
             <button
               key={i}
@@ -427,7 +445,7 @@ export function StockDirectoryTable() {
               }`}
             >
               <Mic className="h-3.5 w-3.5" />
-              <span>Voice & Typed Entry Log ({filteredEntries.length})</span>
+              <span>Voice & Typed Log (Wetin Happen) ({filteredEntries.length})</span>
             </button>
 
             <button
@@ -440,7 +458,7 @@ export function StockDirectoryTable() {
               }`}
             >
               <Package className="h-3.5 w-3.5" />
-              <span>Live Stock Catalog ({filteredInventory.length})</span>
+              <span>Shop Goods Catalog (Stock Level) ({filteredInventory.length})</span>
             </button>
           </div>
 
@@ -450,7 +468,7 @@ export function StockDirectoryTable() {
             className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-2xs"
           >
             <Download className="h-3.5 w-3.5 text-emerald-600" />
-            <span className="hidden sm:inline">Export CSV</span>
+            <span className="hidden sm:inline">Download Market Ledger (CSV)</span>
           </button>
         </div>
 
@@ -463,14 +481,14 @@ export function StockDirectoryTable() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by spoken words, commodity, customer, or date..."
+              placeholder="Search goods, wetin person talk, customer name, date, or amount..."
               className="w-full pl-9 pr-8 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-xs font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-600 shadow-2xs"
             />
             {searchTerm && (
               <button
                 type="button"
                 onClick={() => setSearchTerm("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400 hover:text-slate-600 cursor-pointer"
               >
                 ✕
               </button>
@@ -515,11 +533,11 @@ export function StockDirectoryTable() {
             {/* Date Presets */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
               <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider shrink-0 mr-1 flex items-center gap-1">
-                <Calendar className="h-3 w-3 text-emerald-600" /> Date:
+                <Calendar className="h-3 w-3 text-emerald-600" /> When e happen:
               </span>
               {[
                 { id: "ALL", label: "All Time" },
-                { id: "TODAY", label: "Today" },
+                { id: "TODAY", label: "Today Market" },
                 { id: "YESTERDAY", label: "Yesterday" },
                 { id: "THIS_WEEK", label: "This Week" },
                 { id: "THIS_MONTH", label: "This Month" },
@@ -545,12 +563,12 @@ export function StockDirectoryTable() {
             {/* Entry Method & Movement */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 -mx-1 px-1">
               <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider shrink-0 mr-1">
-                Method:
+                How E Enter:
               </span>
               {[
                 { id: "ALL", label: "All Methods" },
-                { id: "VOICE", label: "Voice Entries 🎙️" },
-                { id: "TYPED", label: "Typed Entries ⌨️" },
+                { id: "VOICE", label: "Talk Am (Voice) 🎙️" },
+                { id: "TYPED", label: "Type Am (Keyboard) ⌨️" },
               ].map((m) => (
                 <button
                   key={m.id}
@@ -567,12 +585,12 @@ export function StockDirectoryTable() {
               ))}
 
               <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider shrink-0 mx-1">
-                Stock:
+                Stock Move:
               </span>
               {[
-                { id: "ALL", label: "All Movement" },
-                { id: "SALES", label: "Sales Outflow ➖" },
-                { id: "RESTOCK", label: "Restock Inflow ➕" },
+                { id: "ALL", label: "All Movements" },
+                { id: "SALES", label: "Market Sales (Minus Stock ➖)" },
+                { id: "RESTOCK", label: "Restock Supply (Plus Stock ➕)" },
               ].map((mov) => (
                 <button
                   key={mov.id}
@@ -598,10 +616,10 @@ export function StockDirectoryTable() {
           {filteredEntries.length === 0 ? (
             <div className="p-8 text-center space-y-2">
               <p className="text-sm font-black text-slate-800 dark:text-slate-200">
-                No entries match your search or date filter.
+                No entry match wetin you dey find for this date.
               </p>
               <p className="text-xs text-slate-500">
-                Speak or type a new sale (e.g. "Sold 3 bags of rice for ₦90k") to see auto-reconciliation.
+                Talk am with voice or type new sale (e.g. "I sell 3 bags of rice ₦90k") to see auto-reconcile sharp-sharp!
               </p>
             </div>
           ) : (
@@ -623,7 +641,7 @@ export function StockDirectoryTable() {
                               : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                           }`}>
                             {entry.method === "VOICE" ? <Mic className="h-3 w-3" /> : <Keyboard className="h-3 w-3" />}
-                            <span>{entry.method}</span>
+                            <span>{entry.method === "VOICE" ? "Talk Am" : "Typed"}</span>
                           </span>
 
                           <span className="text-[10.5px] text-slate-500 font-semibold">
@@ -633,9 +651,19 @@ export function StockDirectoryTable() {
 
                         <button
                           type="button"
-                          onClick={() => playFemaleTraderVoice(entry.raw_transcript)}
-                          className="h-7 w-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center cursor-pointer hover:bg-emerald-100 hover:text-emerald-700"
-                          title="Replay Voice Audio"
+                          onClick={() => {
+                            const pidginFeedback = generateMarketVernacularVoiceResponse({
+                              item: entry.detected_item,
+                              qty: entry.quantity,
+                              unit: entry.unit,
+                              amount: entry.amount,
+                              type: entry.type,
+                              stockBalanceAfter: entry.stock_balance_after,
+                            });
+                            playFemaleTraderVoice(pidginFeedback);
+                          }}
+                          className="h-7 w-7 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center justify-center cursor-pointer hover:bg-emerald-100 hover:text-emerald-700 active:scale-90 transition-all"
+                          title="Listen To Female Voice Audio"
                         >
                           <Volume2 className="h-3.5 w-3.5" />
                         </button>
@@ -665,12 +693,12 @@ export function StockDirectoryTable() {
                           </span>
                           {isSale && (
                             <span className="text-[10px] font-black text-rose-600 dark:text-rose-400 block">
-                              {entry.stock_delta} {entry.unit} ({entry.stock_balance_after} left)
+                              {entry.stock_delta} {entry.unit} (E remain {entry.stock_balance_after})
                             </span>
                           )}
                           {isRestock && (
                             <span className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 block">
-                              +{entry.stock_delta} {entry.unit} ({entry.stock_balance_after} left)
+                              +{entry.stock_delta} {entry.unit} (Total: {entry.stock_balance_after})
                             </span>
                           )}
                         </div>
@@ -684,10 +712,10 @@ export function StockDirectoryTable() {
                         <button
                           type="button"
                           onClick={() => {
-                            const text = `MoniePay Receipt Slip:%0AItem: ${entry.detected_item} (${entry.quantity} ${entry.unit})%0AAmount: ₦${entry.amount.toLocaleString()}%0ADate: ${new Date(entry.timestamp).toLocaleString()}`;
+                            const text = `MoniePay Receipt Slip:%0AItem: ${entry.detected_item} (${entry.quantity} ${entry.unit})%0AAmount: ₦${entry.amount.toLocaleString()}%0AStock Left: ${entry.stock_balance_after} ${entry.unit}%0ADate: ${new Date(entry.timestamp).toLocaleString()}`;
                             window.open(`https://wa.me/?text=${text}`, "_blank");
                           }}
-                          className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[11px] inline-flex items-center gap-1 cursor-pointer"
+                          className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold text-[11px] inline-flex items-center gap-1 cursor-pointer active:scale-95 transition-all"
                         >
                           <Share2 className="h-3 w-3" />
                           <span>WhatsApp Slip</span>
@@ -704,12 +732,12 @@ export function StockDirectoryTable() {
                   <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-white/10 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                     <tr>
                       <th className="py-3 px-3.5">Method</th>
-                      <th className="py-3 px-3.5">Spoken / Typed Input</th>
-                      <th className="py-3 px-3.5">Detected Item & Qty</th>
+                      <th className="py-3 px-3.5">Wetin Person Talk (Voice / Text)</th>
+                      <th className="py-3 px-3.5">Commodity Item & Qty</th>
                       <th className="py-3 px-3.5">Date & Time</th>
-                      <th className="py-3 px-3.5">Amount</th>
+                      <th className="py-3 px-3.5">Total Amount</th>
                       <th className="py-3 px-3.5">Stock Movement</th>
-                      <th className="py-3 px-3.5 text-right">Action</th>
+                      <th className="py-3 px-3.5 text-right">Receipt Slip</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -726,7 +754,7 @@ export function StockDirectoryTable() {
                                 : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300"
                             }`}>
                               {entry.method === "VOICE" ? <Mic className="h-3 w-3" /> : <Keyboard className="h-3 w-3" />}
-                              <span>{entry.method}</span>
+                              <span>{entry.method === "VOICE" ? "Talk Am" : "Typed"}</span>
                             </span>
                           </td>
 
@@ -734,9 +762,19 @@ export function StockDirectoryTable() {
                             <div className="flex items-center gap-1.5">
                               <button
                                 type="button"
-                                onClick={() => playFemaleTraderVoice(entry.raw_transcript)}
-                                className="h-6 w-6 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 hover:text-emerald-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0 cursor-pointer transition-colors"
-                                title="Replay Voice Audio"
+                                onClick={() => {
+                                  const pidginFeedback = generateMarketVernacularVoiceResponse({
+                                    item: entry.detected_item,
+                                    qty: entry.quantity,
+                                    unit: entry.unit,
+                                    amount: entry.amount,
+                                    type: entry.type,
+                                    stockBalanceAfter: entry.stock_balance_after,
+                                  });
+                                  playFemaleTraderVoice(pidginFeedback);
+                                }}
+                                className="h-6 w-6 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-emerald-100 hover:text-emerald-700 text-slate-600 dark:text-slate-300 flex items-center justify-center shrink-0 cursor-pointer transition-colors active:scale-90"
+                                title="Listen To Female Voice Audio"
                               >
                                 <Volume2 className="h-3 w-3" />
                               </button>
@@ -796,7 +834,7 @@ export function StockDirectoryTable() {
                               <span className="text-slate-400 font-bold">0 Delta</span>
                             )}
                             <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
-                              Balance: {entry.stock_balance_after} {entry.unit}
+                              E remain: {entry.stock_balance_after} {entry.unit}
                             </span>
                           </td>
 
@@ -804,10 +842,10 @@ export function StockDirectoryTable() {
                             <button
                               type="button"
                               onClick={() => {
-                                const text = `MoniePay Receipt Slip:%0AItem: ${entry.detected_item} (${entry.quantity} ${entry.unit})%0AAmount: ₦${entry.amount.toLocaleString()}%0ADate: ${new Date(entry.timestamp).toLocaleString()}`;
+                                const text = `MoniePay Receipt Slip:%0AItem: ${entry.detected_item} (${entry.quantity} ${entry.unit})%0AAmount: ₦${entry.amount.toLocaleString()}%0AStock Left: ${entry.stock_balance_after} ${entry.unit}%0ADate: ${new Date(entry.timestamp).toLocaleString()}`;
                                 window.open(`https://wa.me/?text=${text}`, "_blank");
                               }}
-                              className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold hover:bg-emerald-100 text-[11px] inline-flex items-center gap-1 cursor-pointer transition-colors"
+                              className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-bold hover:bg-emerald-100 text-[11px] inline-flex items-center gap-1 cursor-pointer transition-colors active:scale-95"
                             >
                               <Share2 className="h-3 w-3" />
                               <span>Slip</span>
@@ -845,22 +883,22 @@ export function StockDirectoryTable() {
 
                     {isLow ? (
                       <span className="px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-300 font-black text-[10px] shrink-0">
-                        ⚠️ Low ({item.current_stock} left)
+                        ⚠️ E don finish ({item.current_stock} left)
                       </span>
                     ) : (
                       <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 font-black text-[10px] shrink-0">
-                        ✅ {item.current_stock} {item.unit}
+                        ✅ {item.current_stock} {item.unit} dey shop
                       </span>
                     )}
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-100 dark:border-slate-800 text-center text-[11px]">
                     <div>
-                      <span className="text-[9.5px] text-slate-400 font-bold block">Cost</span>
+                      <span className="text-[9.5px] text-slate-400 font-bold block">Cost Price</span>
                       <span className="font-bold text-slate-700 dark:text-slate-300">₦{item.cost_price.toLocaleString()}</span>
                     </div>
                     <div>
-                      <span className="text-[9.5px] text-slate-400 font-bold block">Selling</span>
+                      <span className="text-[9.5px] text-slate-400 font-bold block">Selling Price</span>
                       <span className="font-black text-emerald-600 dark:text-emerald-400">₦{item.selling_price.toLocaleString()}</span>
                     </div>
                     <div>
@@ -879,12 +917,12 @@ export function StockDirectoryTable() {
               <thead className="bg-slate-50 dark:bg-slate-800/80 border-b border-slate-200 dark:border-white/10 text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 <tr>
                   <th className="py-3 px-3.5">Commodity Name</th>
-                  <th className="py-3 px-3.5">Category</th>
-                  <th className="py-3 px-3.5">Current Stock</th>
+                  <th className="py-3 px-3.5">Market Category</th>
+                  <th className="py-3 px-3.5">Stock Left For Shop</th>
                   <th className="py-3 px-3.5">Cost Price</th>
                   <th className="py-3 px-3.5">Selling Price</th>
                   <th className="py-3 px-3.5">Total Value</th>
-                  <th className="py-3 px-3.5 text-right">Stock Health</th>
+                  <th className="py-3 px-3.5 text-right">Stock Level Status</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -935,7 +973,7 @@ export function StockDirectoryTable() {
         </div>
       )}
 
-      {/* ── 6. ADD STOCK ITEM MODAL ── */}
+      {/* ── 6. ADD STOCK ITEM MODAL (MARKET VERNACULAR & SMOOTH VALIDATION) ── */}
       <AnimatePresence>
         {isAddStockOpen && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
@@ -951,8 +989,8 @@ export function StockDirectoryTable() {
                     <Package className="h-4 w-4" />
                   </div>
                   <div>
-                    <h3 className="text-sm font-black">Register New Stock Item</h3>
-                    <p className="text-[11px] text-slate-500">Auto-tracked on every voice sale</p>
+                    <h3 className="text-sm font-black">Register New Commodity / Market Goods</h3>
+                    <p className="text-[11px] text-slate-500">Auto-tracked on every voice sale sharp-sharp</p>
                   </div>
                 </div>
                 <button
@@ -974,7 +1012,7 @@ export function StockDirectoryTable() {
                     required
                     value={newItemName}
                     onChange={(e) => setNewItemName(e.target.value)}
-                    placeholder="e.g. Indomie Hungryman, 50kg Sugar, Type-C Cable"
+                    placeholder="e.g. 50kg Mama Gold Rice, Indomie Hungryman, Type-C Cable"
                     className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600"
                   />
                 </div>
@@ -982,7 +1020,7 @@ export function StockDirectoryTable() {
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      Category
+                      Market Category
                     </label>
                     <select
                       value={newItemCategory}
@@ -1021,7 +1059,7 @@ export function StockDirectoryTable() {
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <label className="block font-bold text-slate-700 dark:text-slate-300 mb-1">
-                      Current Stock Qty
+                      Current Stock For Shop
                     </label>
                     <input
                       type="number"
@@ -1078,7 +1116,7 @@ export function StockDirectoryTable() {
                   type="submit"
                   className="w-full py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs cursor-pointer shadow-sm active:scale-98 transition-all mt-2"
                 >
-                  Save Commodity to Directory
+                  Save Commodity to Shop Directory
                 </button>
               </form>
             </motion.div>

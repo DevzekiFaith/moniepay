@@ -228,3 +228,36 @@ export function playFemaleTraderVoice(text: string) {
     console.warn("Speech synthesis notice:", err);
   }
 }
+
+/**
+ * Generates natural Nigerian Market Pidgin audio feedback for traders
+ */
+export function generateMarketVernacularVoiceResponse(params: {
+  item: string;
+  qty: number;
+  unit: string;
+  amount: number;
+  type: string;
+  stockBalanceAfter: number;
+}): string {
+  const { item, qty, unit, amount, type, stockBalanceAfter } = params;
+
+  if (type === "SALE") {
+    if (stockBalanceAfter <= 3 && stockBalanceAfter > 0) {
+      return `I don record am sharp sharp. ${qty} ${unit} of ${item} don sell for ₦${amount.toLocaleString()}. E remain only ${stockBalanceAfter} ${unit} for shop o, make you restock am soon.`;
+    } else if (stockBalanceAfter === 0) {
+      return `I don record am. ${qty} ${unit} of ${item} don sell. Notice: stock don finish completely for shop o!`;
+    }
+    return `I don record am sharp sharp. ${qty} ${unit} of ${item} don sell for ₦${amount.toLocaleString()}. Stock balance wey remain na ${stockBalanceAfter} ${unit}.`;
+  }
+
+  if (type === "STOCK_PURCHASE") {
+    return `Fresh stock don enter! You restock ${qty} ${unit} of ${item} with ₦${amount.toLocaleString()}. Total goods for shop now na ${stockBalanceAfter} ${unit}.`;
+  }
+
+  if (type === "DEBT_COLLECTION") {
+    return `Gbese don recover! Customer pay ₦${amount.toLocaleString()} cash clean. Money don enter drawer back.`;
+  }
+
+  return `I don record am sharp sharp. ₦${amount.toLocaleString()} entry don enter shop directory ledger.`;
+}
