@@ -222,10 +222,32 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         debts.forEach((debt) => {
           if (debt.status === "SETTLED") return;
 
-          const isOverdue = debt.status === "OVERDUE" || (debt.due_date && new Date(debt.due_date) < now);
-          const isDueToday = debt.due_date && new Date(debt.due_date).toDateString() === now.toDateString();
+          let isDueUrgent = false;
+          let daysLeft: number | null = null;
+          let isOverdue = false;
+          let isDueToday = false;
+          let isDueIn4Days = false;
 
-          if ((isOverdue || isDueToday) && !pingedIds[debt.id]) {
+          if (debt.due_date) {
+            const due = new Date(debt.due_date);
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+            const dueStart = new Date(due.getFullYear(), due.getMonth(), due.getDate()).getTime();
+            const diffDays = Math.round((dueStart - todayStart) / (1000 * 60 * 60 * 24));
+            daysLeft = diffDays;
+
+            if (diffDays < 0 || debt.status === "OVERDUE") {
+              isOverdue = true;
+              isDueUrgent = true;
+            } else if (diffDays === 0) {
+              isDueToday = true;
+              isDueUrgent = true;
+            } else if (diffDays <= 4) {
+              isDueIn4Days = true;
+              isDueUrgent = true;
+            }
+          }
+
+          if (isDueUrgent && !pingedIds[debt.id]) {
             pingedIds[debt.id] = true;
             hasNewAlerts = true;
 
@@ -236,13 +258,21 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             const title = isSupplier
               ? isOverdue
                 ? "⚠️ Overdue Supplier Payment"
-                : "⏰ Supplier Payment Due Today"
+                : isDueToday
+                ? "⏰ Supplier Payment Due Today"
+                : `⏰ Supplier Payment Due in ${daysLeft} Days`
               : isOverdue
-              ? "🚨 Overdue Customer Gbese Due"
-              : "🔔 Customer Gbese Due Today";
+              ? "🚨 Overdue Customer Gbese Alert"
+              : isDueToday
+              ? "🔔 Customer Gbese Due Today"
+              : `🔔 Customer Gbese Due in ${daysLeft} Days (4-Day Alert)`;
 
             const message = isSupplier
-              ? `You owe ${debt.person_name} ${formattedAmount}${debt.notes ? ` (${debt.notes})` : ""}. Settle on time make supplier continue giving you goods on credit.`
+              ? isDueIn4Days
+                ? `You owe ${debt.person_name} ${formattedAmount} due in ${daysLeft} days. Secure cash inside drawer now so your restock no go freeze.`
+                : `You owe ${debt.person_name} ${formattedAmount}${debt.notes ? ` (${debt.notes})` : ""}. Settle on time make supplier continue giving you goods on credit.`
+              : isDueIn4Days
+              ? `${debt.person_name} owes ${formattedAmount} due in ${daysLeft} days. Tap to send a polite WhatsApp reminder before the money disappears.`
               : `${debt.person_name} owes your shop ${formattedAmount}${debt.notes ? ` for ${debt.notes}` : ""}. Tap to send WhatsApp reminder now.`;
 
             const actionLabel = isSupplier ? "Record Payment" : "Send WhatsApp Nudge";
@@ -250,7 +280,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               ? "/accounts"
               : cleanPhone
               ? `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-                  `Good day ${debt.person_name}, hope work dey go well. Abeg kindly remember your balance of ${formattedAmount} with our shop. We need am for fresh market restock today. Thank you and God bless your hustle!`
+                  isDueIn4Days
+                    ? `Good day ${debt.person_name}! Just a gentle heads-up from our shop say your balance of ${formattedAmount} will be due in ${daysLeft} days. Thank you for your custom and God bless your hustle!`
+                    : `Good day ${debt.person_name}, hope work dey go well. Abeg kindly remember your balance of ${formattedAmount} with our shop. We need am for fresh market restock today. Thank you and God bless your hustle!`
                 )}`
               : undefined;
 
