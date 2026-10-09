@@ -20,7 +20,6 @@ import {
   ExternalLink,
   MessageCircle,
   Clock,
-  Sparkles,
   Zap,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
