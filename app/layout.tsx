@@ -31,6 +31,16 @@ export const metadata: Metadata = {
   title: "MoniePay — Business Decision Intelligence OS",
   description: "Know what is happening in your business. Know what to do next. Operating system for Nigeria's informal and micro-business economy.",
   manifest: "/manifest.json",
+  icons: {
+    icon: [
+      { url: "/moniepay-logo-square.png", sizes: "any" },
+      { url: "/moniepay-icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/moniepay-icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    apple: [
+      { url: "/moniepay-logo-square.png", sizes: "180x180", type: "image/png" },
+    ],
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
