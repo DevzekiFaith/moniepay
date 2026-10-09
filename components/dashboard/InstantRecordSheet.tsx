@@ -28,6 +28,7 @@ import type {
 import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";
 import { speakTraderAudioFeedback } from "@/components/dashboard/TellMoniePay";
 import { parseSpokenMarketAmount } from "@/lib/voice/spokenParser";
+import { recordVoiceOrTypedStockEntry } from "@/lib/inventory/inventoryStore";
 
 interface InstantRecordSheetProps {
   isOpen: boolean;
@@ -220,6 +221,19 @@ export function InstantRecordSheet({
       category,
       description: txDesc,
     });
+
+    // Automatically reconcile stock, record in Directory, and trigger hands-off alert
+    try {
+      recordVoiceOrTypedStockEntry({
+        method: "TYPED",
+        rawTranscript: `${type === "SALE" ? "Sold" : type === "STOCK_PURCHASE" ? "Restocked" : "Spent"} ${txDesc} ₦${numAmount}`,
+        explicitType: type,
+        explicitAmount: numAmount,
+        explicitItem: txDesc,
+        paymentMethod,
+        counterparty: debtorName || undefined,
+      });
+    } catch {}
 
     const label =
       type === "SALE"

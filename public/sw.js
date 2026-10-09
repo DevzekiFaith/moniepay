@@ -93,3 +93,62 @@ self.addEventListener("fetch", (event) => {
       })
   );
 });
+
+// ─────────────────────────────────────────────────────────────────
+// Background Push & Live Entry Alert Handler (Hands-Off Vibration & Beep)
+// ─────────────────────────────────────────────────────────────────
+self.addEventListener("push", (event) => {
+  let data = {
+    title: "MoniePay: New Transaction Alert",
+    body: "A new entry has been recorded in your shop.",
+    url: "/directory",
+    vibrate: [200, 100, 200, 100, 350],
+  };
+
+  if (event.data) {
+    try {
+      const parsed = event.data.json();
+      data = { ...data, ...parsed };
+    } catch {
+      data.body = event.data.text();
+    }
+  }
+
+  const options = {
+    body: data.body,
+    icon: "/moniepay-icon-192.png",
+    badge: "/moniepay-icon-192.png",
+    vibrate: [200, 100, 200, 100, 350],
+    tag: "moniepay-cash-entry",
+    renotify: true,
+    data: {
+      url: data.url || "/directory",
+    },
+    actions: [
+      { action: "open_directory", title: "Open Directory" },
+      { action: "dismiss", title: "Dismiss" },
+    ],
+  };
+
+  event.waitUntil(self.registration.showNotification(data.title, options));
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const urlToOpen = (event.notification.data && event.notification.data.url) || "/directory";
+
+  if (event.action === "dismiss") return;
+
+  event.waitUntil(
+    clients.matchAll({ type: "window", includeUncontrolled: true }).then((windowClients) => {
+      for (const client of windowClients) {
+        if (client.url.includes(urlToOpen) && "focus" in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(urlToOpen);
+      }
+    })
+  );
+});

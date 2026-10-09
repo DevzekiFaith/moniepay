@@ -31,6 +31,7 @@ import {
   parseSpokenMarketAmount,
   playFemaleTraderVoice,
 } from "@/lib/voice/spokenParser";
+import { recordVoiceOrTypedStockEntry } from "@/lib/inventory/inventoryStore";
 
 // Natural Nigerian Female Voice Audio Playback for traders
 export function speakTraderAudioFeedback(text: string) {
@@ -250,6 +251,19 @@ export function TellMoniePay({
       description: text,
       transaction_date: new Date().toISOString(),
     });
+
+    // Automatically reconcile stock, record in Directory, and fire hands-off phone vibration + chime beep
+    try {
+      recordVoiceOrTypedStockEntry({
+        method: isListening ? "VOICE" : "TYPED",
+        rawTranscript: text,
+        explicitType: type,
+        explicitAmount: amount,
+        paymentMethod,
+      });
+    } catch (stockErr) {
+      console.debug("Auto-stock reconciliation notice:", stockErr);
+    }
 
     setInputVal("");
     setFeedback({

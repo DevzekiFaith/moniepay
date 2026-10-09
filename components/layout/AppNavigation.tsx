@@ -27,6 +27,7 @@ import {
   Users,
   ThumbsUp,
   MapPin,
+  Package,
 } from "lucide-react";
 
 export const NAV_SECTIONS = [
@@ -38,6 +39,13 @@ export const NAV_SECTIONS = [
         href: "/",
         icon: LayoutDashboard,
         description: "Operating Dashboard & Next Actions",
+      },
+      {
+        label: "Stock Directory",
+        href: "/directory",
+        icon: Package,
+        description: "Voice Entry Log & Auto-Stock Ledger",
+        badge: "AUTO",
       },
       {
         label: "Activity & Receipts",
