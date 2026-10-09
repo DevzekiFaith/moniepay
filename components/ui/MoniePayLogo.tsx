@@ -14,7 +14,7 @@ interface MoniePayLogoProps {
   showTagline?: boolean;
 }
 
-export function MoniePayMark({ size = 36 }: { size?: number }) {
+export function MoniePayMark({ size = 36, className = "" }: { size?: number; className?: string }) {
   const [imgError, setImgError] = useState(false);
 
   return (
@@ -24,7 +24,7 @@ export function MoniePayMark({ size = 36 }: { size?: number }) {
         height: `${size}px`,
         borderRadius: `${Math.round(size * 0.26)}px`,
       }}
-      className="relative overflow-hidden shadow-md flex items-center justify-center shrink-0 border border-emerald-500/30 dark:border-white/20 bg-[#061129] select-none transition-transform hover:scale-105 active:scale-95"
+      className={`relative overflow-hidden shadow-md flex items-center justify-center shrink-0 border border-emerald-500/30 dark:border-white/20 bg-[#061129] select-none transition-transform hover:scale-105 active:scale-95 ${className}`}
       aria-label="MoniePay mark"
     >
       {!imgError ? (
