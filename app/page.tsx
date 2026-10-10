@@ -74,6 +74,8 @@ import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBanne
 import { BusinessWalletCard } from "@/components/wallet/BusinessWalletCard";
 import { ReceiveMoneyModal } from "@/components/wallet/ReceiveMoneyModal";
 import { LiveMarketFeedCard } from "@/components/intelligence/LiveMarketFeedCard";
+import { ReferralDashboardBanner } from "@/components/dashboard/ReferralDashboardBanner";
+import { InviteShopModal } from "@/components/referral/InviteShopModal";
 import { useToast } from "@/context/NotificationContext";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/context/AuthContext";
@@ -127,6 +129,7 @@ export default function MoniePayDashboard() {
   const [isTrackerOpen, setIsTrackerOpen] = useState(false);
   const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false);
   const [isReceiveOpen, setIsReceiveOpen] = useState(false);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState(125000);
   const [safeWithdrawalAmount, setSafeWithdrawalAmount] = useState(40000);
 
@@ -453,6 +456,13 @@ export default function MoniePayDashboard() {
                 }}
                 onOpenSales={() => handleOpenRecord("SALE")}
                 onOpenCosts={() => handleOpenRecord("EXPENSE")}
+              />
+
+              {/* Referral & 7-Day Reward Banner */}
+              <ReferralDashboardBanner
+                onOpenInviteModal={() => setIsInviteOpen(true)}
+                businessName={business.name}
+                userPhone={user?.phone || ""}
               />
 
               {/* Quick Actions Row */}
@@ -787,6 +797,14 @@ export default function MoniePayDashboard() {
         isOpen={isReceiveOpen}
         onClose={() => setIsReceiveOpen(false)}
         onSimulateIncomingTransfer={handleSimulateIncomingTransfer}
+      />
+
+      <InviteShopModal
+        isOpen={isInviteOpen}
+        onClose={() => setIsInviteOpen(false)}
+        businessName={business.name}
+        ownerName={user?.name || business.name}
+        userPhone={user?.phone || ""}
       />
     </div>
   );

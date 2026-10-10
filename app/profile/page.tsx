@@ -25,11 +25,14 @@ import {
   SunMoon,
 } from "lucide-react";
 import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
+import { ReferralDashboardBanner } from "@/components/dashboard/ReferralDashboardBanner";
+import { InviteShopModal } from "@/components/referral/InviteShopModal";
 
 export default function ProfilePage() {
   const { notify } = useNotification();
   const { user, logout } = useAuth();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
 
   // Settings
   const [currency, setCurrency] = useState("NGN (₦)");
@@ -115,6 +118,13 @@ export default function ProfilePage() {
           {/* MoniePay Plus Subscription & Free Trial Section */}
           <SubscriptionBannerCard />
 
+          {/* Referral & Invite Rewards Section */}
+          <ReferralDashboardBanner
+            onOpenInviteModal={() => setIsInviteOpen(true)}
+            businessName={user?.businessName || user?.name || "My Shop"}
+            userPhone={user?.phone || ""}
+          />
+
           {/* Engine Settings */}
           <div className="rounded-[28px] bg-white dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-xs space-y-3.5">
             <div className="flex items-center gap-2">
@@ -166,6 +176,14 @@ export default function ProfilePage() {
 
         <AppBottomBar />
       </div>
+
+      <InviteShopModal
+        isOpen={isInviteOpen}
+        onClose={() => setIsInviteOpen(false)}
+        businessName={user?.businessName || user?.name || "My Shop"}
+        ownerName={user?.name || "Shop Owner"}
+        userPhone={user?.phone || ""}
+      />
 
       <LogoutModal
         isOpen={isLogoutOpen}
