@@ -89,20 +89,25 @@ export function generateUserReferralCode(businessName?: string, phone?: string):
   return code;
 }
 
+let inMemoryTradersCache: ReferredTrader[] = SEED_REFERRED_TRADERS;
+
 /**
  * Retrieve all referred traders with localStorage fallback
  */
 export function getReferredTraders(): ReferredTrader[] {
-  if (typeof window === "undefined") return SEED_REFERRED_TRADERS;
+  if (typeof window === "undefined") return inMemoryTradersCache;
   try {
     const raw = localStorage.getItem(REFERRAL_STORAGE_KEY);
     if (!raw) {
       localStorage.setItem(REFERRAL_STORAGE_KEY, JSON.stringify(SEED_REFERRED_TRADERS));
+      inMemoryTradersCache = SEED_REFERRED_TRADERS;
       return SEED_REFERRED_TRADERS;
     }
-    return JSON.parse(raw);
+    const parsed = JSON.parse(raw);
+    inMemoryTradersCache = parsed;
+    return parsed;
   } catch {
-    return SEED_REFERRED_TRADERS;
+    return inMemoryTradersCache;
   }
 }
 
@@ -110,6 +115,7 @@ export function getReferredTraders(): ReferredTrader[] {
  * Save referred traders and emit reactive event
  */
 export function saveReferredTraders(traders: ReferredTrader[]): void {
+  inMemoryTradersCache = traders;
   if (typeof window === "undefined") return;
   try {
     localStorage.setItem(REFERRAL_STORAGE_KEY, JSON.stringify(traders));

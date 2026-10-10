@@ -15,6 +15,9 @@ import {
   ArrowDownLeft,
   Building2,
   Copy,
+  Users,
+  Gift,
+  Share2,
 } from "lucide-react";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -411,6 +414,84 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 flex items-center gap-2 text-[10.5px] font-bold text-slate-700 dark:text-slate-200">
               <Zap className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
               <span>Restock Sugar: <strong className="text-amber-600 dark:text-amber-300 font-black">Price drops by ₦1,200 tomorrow!</strong></span>
+            </div>
+          </motion.div>
+        </div>
+      ),
+    },
+    {
+      id: "referral",
+      badge: "Community Rewards • Free Days 🤝",
+      badgeColor: "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+      title: "Invite Shop Neighbors",
+      highlight: "Earn +14 Days Free MoniePay Plus",
+      highlightColor: "text-emerald-600 dark:text-emerald-400",
+      description:
+        "Share your invite code with shop neighbors. When they record for 7 active days, you both unlock +14 days of free MoniePay Plus!",
+      icon: <Users className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />,
+      themeColor: "#059669",
+      gradient: "from-emerald-800 via-emerald-600 to-teal-500",
+      visualElement: (
+        <div className="relative w-full h-48 sm:h-56 flex items-center justify-center">
+          {/* Animated Connecting Wave Ripples */}
+          <motion.div
+            animate={{ scale: [1, 1.25, 1], opacity: [0.35, 0.1, 0.35] }}
+            transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute h-44 w-44 sm:h-52 sm:w-52 rounded-full border-2 border-emerald-400/40 bg-emerald-100/20 dark:bg-emerald-900/20"
+          />
+
+          {/* Floating WhatsApp Pill Left */}
+          <motion.div
+            animate={{ y: [-4, 5, -4], rotate: [-2, 2, -2] }}
+            transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -left-2 sm:left-1 top-2 z-20 px-3 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-emerald-200 dark:border-emerald-800 shadow-lg flex items-center gap-2"
+          >
+            <div className="h-7 w-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-black text-[10px]">
+              WA
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">1-Tap WhatsApp</p>
+              <p className="text-[11px] font-black text-emerald-700 dark:text-emerald-300">Invite Sent 🚀</p>
+            </div>
+          </motion.div>
+
+          {/* Floating Reward Pill Right */}
+          <motion.div
+            animate={{ y: [5, -5, 5], rotate: [2, -2, 2] }}
+            transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
+            className="absolute -right-2 sm:right-1 bottom-1 z-20 px-3 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-amber-200 dark:border-amber-800 shadow-lg flex items-center gap-1.5"
+          >
+            <div className="h-7 w-7 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+              <Gift className="h-4 w-4" />
+            </div>
+            <div>
+              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Bonus Days</p>
+              <p className="text-xs font-black text-amber-800 dark:text-amber-300">+14 Days Free</p>
+            </div>
+          </motion.div>
+
+          {/* Central 3D Referral Card */}
+          <motion.div
+            initial={{ scale: 0.85, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", stiffness: 350, damping: 25 }}
+            className="relative z-10 w-72 p-4 rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(5,150,105,0.18)] dark:shadow-2xl space-y-2.5"
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-slate-900 dark:text-white">Shop Neighbor Referral</span>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-black">
+                Win-Win 🎁
+              </span>
+            </div>
+
+            <div className="p-2.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/80 border border-emerald-100 dark:border-emerald-800 space-y-1">
+              <p className="text-xs font-black text-emerald-950 dark:text-emerald-100">Your Code: MONIE-SHOP-24</p>
+              <p className="text-[10px] text-emerald-700 dark:text-emerald-300 font-medium">Both of you get +14 days free when they record for 7 days</p>
+            </div>
+
+            <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 pt-0.5">
+              <span>Zero wahala sharing</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-black">Instant Activation ✓</span>
             </div>
           </motion.div>
         </div>

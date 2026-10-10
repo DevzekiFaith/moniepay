@@ -1,8 +1,8 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoniePay — Subscription & Free Trial Banner Card Widget (Modern Market Design)
-// Informal market language tailored for Nigerian merchants & traders
+// MoniePay — Subscription & Free Trial Banner Card Widget
+// Clean, Modern, 100% Mobile Responsive • Zero Overflow
 // ─────────────────────────────────────────────────────────────────
 
 import React from "react";
@@ -45,27 +45,23 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
 
   return (
     <motion.section
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-[26px] bg-gradient-to-b from-white via-white to-[#f4f8fe] dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 border border-blue-100/90 dark:border-white/10 p-4 sm:p-5 shadow-[0_10px_30px_rgba(29,78,216,0.06)] dark:shadow-2xl transition-colors"
+      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900/95 border border-slate-200/90 dark:border-white/10 p-3.5 sm:p-4.5 shadow-sm transition-colors"
     >
-      {/* Ambient background glow */}
-      <div className="pointer-events-none absolute -right-10 -top-10 h-36 w-36 rounded-full bg-blue-500/10 blur-2xl" />
-      <div className="pointer-events-none absolute -left-10 -bottom-10 h-28 w-28 rounded-full bg-sky-400/10 blur-xl" />
-
-      <div className="space-y-4 relative z-10">
+      <div className="space-y-3 sm:space-y-3.5 relative z-10">
         {/* ── TOP HEADER ROW ── */}
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
-            {/* Dynamic Status Icon Capsule */}
+        <div className="flex items-start justify-between gap-2.5">
+          <div className="flex items-start gap-2.5 sm:gap-3 min-w-0">
+            {/* Dynamic Status Icon */}
             <div
-              className={`h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 shadow-sm border ${
+              className={`h-10 w-10 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-2xs border ${
                 isSubscribed
                   ? "bg-emerald-600 border-emerald-500 text-white"
                   : isGracePeriodActive
                   ? "bg-amber-500 border-amber-400 text-white animate-pulse"
                   : isTrialActive
-                  ? "bg-[#1d4ed8] border-blue-600 text-white shadow-[0_4px_14px_rgba(29,78,216,0.25)]"
+                  ? "bg-[#1d4ed8] border-blue-600 text-white shadow-[0_4px_12px_rgba(29,78,216,0.25)]"
                   : "bg-rose-600 border-rose-500 text-white"
               }`}
             >
@@ -81,9 +77,9 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
             </div>
 
             {/* Title & Badge */}
-            <div>
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight">
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white leading-tight">
                   {isSubscribed
                     ? subscription?.planName || "MoniePay Plus Active"
                     : isGracePeriodActive
@@ -94,7 +90,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                 </span>
 
                 <span
-                  className={`px-2.5 py-0.5 rounded-full text-[10.5px] font-black tracking-wide border shadow-2xs ${
+                  className={`px-2 py-0.5 rounded-full text-[10px] font-black tracking-wide border ${
                     isSubscribed
                       ? "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800"
                       : isGracePeriodActive
@@ -107,52 +103,53 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                   {isSubscribed
                     ? "Plus Active"
                     : isGracePeriodActive
-                    ? `${graceDaysLeft}d Grace Remain`
+                    ? `${graceDaysLeft}d Grace`
                     : isTrialActive
                     ? `${trialDaysLeft}d Remain`
                     : "Renew Now"}
                 </span>
               </div>
 
-              <p className="text-[11.5px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 leading-snug">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 leading-snug">
                 {isSubscribed
-                  ? `All Plus features dey active • Renews on ${nextRenewalFormatted || "Active"}`
+                  ? `Renews on ${nextRenewalFormatted || "Active"}`
                   : isGracePeriodActive
-                  ? "Full access dey open for 3 days. Renew now so your shop record no go pause."
+                  ? "Full access dey open. Renew make your record no pause."
                   : isTrialActive
-                  ? `You still get ${trialDaysLeft} days remaining of sharp-sharp shop intelligence access.`
-                  : "Renew for ₦1,500/month or ₦15,000/year make you continue recording."}
+                  ? `You get ${trialDaysLeft} days remaining of sharp-sharp shop intelligence.`
+                  : "Renew for ₦1,500/mo make you continue recording."}
               </p>
             </div>
           </div>
 
-          {/* Install App Quick Action */}
+          {/* Install App Button */}
           <button
             type="button"
             onClick={triggerInstallPrompt}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-slate-700 text-[11px] font-black text-slate-700 dark:text-slate-200 active:scale-95 transition-all shadow-2xs cursor-pointer shrink-0"
+            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-[10.5px] font-black text-slate-700 dark:text-slate-200 active:scale-95 transition-all cursor-pointer shrink-0 shadow-2xs"
             title="Install MoniePay app on your phone"
           >
-            <Smartphone className="h-3.5 w-3.5 text-[#1d4ed8] dark:text-blue-400" />
-            <span>Install App 📲</span>
+            <Smartphone className="h-3 w-3 text-[#1d4ed8] dark:text-blue-400" />
+            <span className="hidden min-[360px]:inline">Install App</span>
+            <span className="inline min-[360px]:hidden">App</span>
           </button>
         </div>
 
-        {/* ── VISUAL PROGRESS CAPSULE (Trial / Grace) ── */}
+        {/* ── VISUAL PROGRESS CAPSULE (Trial Mode) ── */}
         {isTrialActive && (
-          <div className="bg-white/95 dark:bg-slate-800/80 rounded-2xl p-3 sm:p-3.5 border border-blue-100/90 dark:border-slate-700 shadow-2xs space-y-2.5">
-            <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300">
-              <span className="flex items-center gap-1.5 text-slate-900 dark:text-white font-black text-[12px]">
+          <div className="bg-slate-50/90 dark:bg-slate-800/60 rounded-xl sm:rounded-2xl p-2.5 sm:p-3 border border-slate-100 dark:border-slate-800 space-y-2">
+            <div className="flex items-center justify-between text-[11px] font-bold text-slate-700 dark:text-slate-300">
+              <span className="flex items-center gap-1.5 text-slate-900 dark:text-white font-black text-[11.5px]">
                 <Clock className="h-3.5 w-3.5 text-[#1d4ed8] dark:text-blue-400" />
                 Day {7 - trialDaysLeft + 1} of 7 don enter
               </span>
-              <span className="text-[11px] font-black text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/80 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-800">
-                {trialDaysLeft} {trialDaysLeft === 1 ? "Day" : "Days"} Dey Left
+              <span className="text-[10.5px] font-black text-[#1d4ed8] dark:text-sky-300 bg-blue-50 dark:bg-blue-950/80 px-2 py-0.5 rounded-full border border-blue-200 dark:border-blue-900">
+                {trialDaysLeft} {trialDaysLeft === 1 ? "Day" : "Days"} Left
               </span>
             </div>
 
             {/* 7-Segmented Day Pills */}
-            <div className="grid grid-cols-7 gap-1.5 sm:gap-2">
+            <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
               {[1, 2, 3, 4, 5, 6, 7].map((dayNum) => {
                 const isPassed = dayNum <= 7 - trialDaysLeft;
                 const isCurrent = dayNum === 7 - trialDaysLeft + 1;
@@ -160,21 +157,21 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                 return (
                   <div key={dayNum} className="space-y-1 text-center">
                     <div
-                      className={`h-2.5 rounded-full transition-all duration-300 ${
+                      className={`h-2 rounded-full transition-all duration-300 ${
                         isPassed
-                          ? "bg-slate-200 dark:bg-slate-700"
+                          ? "bg-slate-300 dark:bg-slate-700"
                           : isCurrent
-                          ? "bg-[#1d4ed8] dark:bg-sky-500 shadow-[0_0_10px_rgba(59,130,246,0.6)] animate-pulse"
-                          : "bg-blue-100 dark:bg-slate-800"
+                          ? "bg-[#1d4ed8] dark:bg-sky-500 shadow-[0_0_8px_rgba(59,130,246,0.6)] animate-pulse"
+                          : "bg-slate-200 dark:bg-slate-800"
                       }`}
                     />
                     <span
-                      className={`text-[9.5px] font-black block leading-none ${
+                      className={`text-[9px] font-black block leading-none ${
                         isCurrent
                           ? "text-[#1d4ed8] dark:text-sky-400"
                           : isPassed
-                          ? "text-slate-400 dark:text-slate-500"
-                          : "text-slate-400 dark:text-slate-500"
+                          ? "text-slate-500 dark:text-slate-400"
+                          : "text-slate-400 dark:text-slate-600"
                       }`}
                     >
                       D{dayNum}
@@ -184,28 +181,24 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
               })}
             </div>
 
-            <div className="flex items-center justify-between text-[10.5px] text-slate-500 font-medium pt-0.5 border-t border-slate-100">
+            <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400 font-medium pt-0.5 border-t border-slate-200/60 dark:border-slate-700/60">
               <span>One free trial per shop</span>
-              <span className="text-[#1d4ed8] font-bold">Upgrade anytime without wahala</span>
+              <span className="text-[#1d4ed8] dark:text-sky-400 font-bold">Upgrade anytime without wahala</span>
             </div>
           </div>
         )}
 
-        {/* ── FOOTER ROW (Pricing + Zero Deletion + Solid Blue CTA) ── */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1 border-t border-blue-50">
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 flex-wrap">
-            <span className="inline-flex items-center gap-1.5 text-slate-900 font-black bg-white px-2.5 py-1 rounded-xl border border-slate-200/80 shadow-2xs">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
-              <span>₦1,500/mo or ₦15,000/yr</span>
+        {/* ── FOOTER ROW ── */}
+        <div className="flex items-center justify-between gap-2.5 pt-1 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 min-w-0">
+            <span className="inline-flex items-center gap-1 text-slate-900 dark:text-white font-black bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-[10.5px] truncate">
+              <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
+              <span>₦1,500/mo</span>
             </span>
-            <span className="text-slate-400 font-bold">•</span>
-            <span className="inline-flex items-center gap-1 text-slate-600 font-medium text-[11px]">
-              <ShieldCheck className="h-3.5 w-3.5 text-blue-600 shrink-0" />
-              <span>Zero data deletion (Record safe forever)</span>
-            </span>
+            <span className="text-[10px] text-slate-400 dark:text-slate-500 hidden sm:inline">• Record safe forever</span>
           </div>
 
-          {/* Solid MoniePay Blue Button (No Gradient) */}
+          {/* Primary Action Button */}
           <button
             type="button"
             onClick={() =>
@@ -215,10 +208,10 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                   : undefined
               )
             }
-            className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-black text-xs tracking-wide flex items-center justify-center gap-2 cursor-pointer active:scale-95 shadow-[0_4px_14px_rgba(29,78,216,0.25)] transition-all shrink-0"
+            className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-sm transition-all shrink-0"
           >
-            <span>{isSubscribed ? "Check Your Plan" : isExpired ? "Renew Your Plus" : "Upgrade to Plus"}</span>
-            <ArrowRight className="h-3.5 w-3.5" />
+            <span>{isSubscribed ? "Check Plan" : isExpired ? "Renew Plus" : "Upgrade Plan"}</span>
+            <ArrowRight className="h-3 w-3" />
           </button>
         </div>
       </div>

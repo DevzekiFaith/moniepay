@@ -16,6 +16,7 @@ import {
   ThumbsUp,
   ShieldCheck,
   ChevronDown,
+  Users,
 } from "lucide-react";
 import type { Business } from "@/types/moniepay.types";
 import { useAuth } from "@/context/AuthContext";
@@ -35,6 +36,7 @@ interface DaylightHeaderProps {
   onManualSync: () => void;
   onOpenTracker: () => void;
   onOpenReceiveMoney?: () => void;
+  onOpenInvite?: () => void;
   activePeriod: "today" | "this_week" | "this_month";
   onChangePeriod: (p: "today" | "this_week" | "this_month") => void;
 }
@@ -46,6 +48,7 @@ export function DaylightHeader({
   onManualSync,
   onOpenTracker,
   onOpenReceiveMoney,
+  onOpenInvite,
   activePeriod,
   onChangePeriod,
 }: DaylightHeaderProps) {
@@ -208,6 +211,20 @@ export function DaylightHeader({
                         <Smartphone className="h-4 w-4 text-emerald-500 shrink-0" />
                         <span>Install App on Phone</span>
                       </button>
+
+                      {onOpenInvite && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsMoreMenuOpen(false);
+                            onOpenInvite();
+                          }}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-emerald-800 dark:text-emerald-300 font-black transition-colors text-left cursor-pointer"
+                        >
+                          <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                          <span>Invite Neighbor (+14d Free) 🤝</span>
+                        </button>
+                      )}
 
                       <Link
                         href="/upgrade"

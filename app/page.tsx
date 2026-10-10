@@ -362,6 +362,7 @@ export default function MoniePayDashboard() {
         onManualSync={handleManualSync}
         onOpenTracker={() => setIsTrackerOpen(true)}
         onOpenReceiveMoney={() => setIsReceiveOpen(true)}
+        onOpenInvite={() => setIsInviteOpen(true)}
         activePeriod={period}
         onChangePeriod={setPeriod}
       />
@@ -432,6 +433,13 @@ export default function MoniePayDashboard() {
               {/* 1c. MONIEPAY PLUS & FREE TRIAL DAYS REMAINING CARD */}
               <SubscriptionBannerCard />
 
+              {/* 1d. REFERRAL & 7-DAY REWARD BANNER (Compact White Card) */}
+              <ReferralDashboardBanner
+                onOpenInviteModal={() => setIsInviteOpen(true)}
+                businessName={business.name}
+                userPhone={user?.phone || ""}
+              />
+
               {/* 2. YOUR NEXT MOVE (The Single Priority Recommendation) */}
               <NextMoveCard
                 metrics={metrics}
@@ -456,13 +464,6 @@ export default function MoniePayDashboard() {
                 }}
                 onOpenSales={() => handleOpenRecord("SALE")}
                 onOpenCosts={() => handleOpenRecord("EXPENSE")}
-              />
-
-              {/* Referral & 7-Day Reward Banner */}
-              <ReferralDashboardBanner
-                onOpenInviteModal={() => setIsInviteOpen(true)}
-                businessName={business.name}
-                userPhone={user?.phone || ""}
               />
 
               {/* Quick Actions Row */}

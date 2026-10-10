@@ -38,44 +38,52 @@ export function ReferralDashboardBanner({
   }, [businessName, userPhone]);
 
   return (
-    <section className="relative overflow-hidden rounded-[24px] sm:rounded-[28px] bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 border border-emerald-900/60 p-4 sm:p-5 text-white shadow-lg">
-      <div className="pointer-events-none absolute -right-10 -bottom-10 h-32 w-32 rounded-full bg-emerald-500/15 blur-2xl" />
-
-      <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3.5">
-        <div className="flex items-start sm:items-center gap-3">
-          <div className="h-11 w-11 rounded-2xl bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 flex items-center justify-center shrink-0">
-            <Users className="h-5 w-5" />
+    <motion.section
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ scale: 1.008 }}
+      whileTap={{ scale: 0.992 }}
+      onClick={onOpenInviteModal}
+      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900/95 border border-slate-200/90 dark:border-white/10 p-3 sm:p-3.5 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+    >
+      <div className="relative z-10 flex items-center justify-between gap-2.5 sm:gap-3">
+        {/* Left: Icon & Short Pidgin Copy */}
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+          <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-blue-50 dark:bg-blue-950/80 text-[#1d4ed8] dark:text-sky-400 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+            <Users className="h-5 w-5 stroke-[2.2]" />
           </div>
 
-          <div className="space-y-0.5">
-            <div className="flex items-center gap-2">
-              <h3 className="text-xs sm:text-sm font-black text-white">
-                Invite Shop Neighbor &amp; Earn Free Days 🤝
+          <div className="min-w-0">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h3 className="text-xs sm:text-[13px] font-black text-slate-900 dark:text-white truncate leading-tight">
+                Invite Neighbor • +14d Free 🤝
               </h3>
               {stats.pending_claims_count > 0 && (
-                <span className="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px] animate-pulse">
-                  {stats.pending_claims_count} Reward Ready!
+                <span className="px-1.5 py-0.2 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-black text-[9.5px] border border-amber-300 dark:border-amber-800">
+                  {stats.pending_claims_count} Ready
                 </span>
               )}
             </div>
-            <p className="text-[11px] sm:text-xs text-emerald-200/90 font-medium leading-relaxed">
-              When a shop owner records for 7 active days, you both get +14 Days MoniePay Plus.
+            <p className="text-[10.5px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
+              Tell neighbor make una two get +14 days free MoniePay Plus.
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 sm:shrink-0">
-          <button
-            type="button"
-            onClick={onOpenInviteModal}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-md shadow-emerald-900/40 active:scale-95 transition-all cursor-pointer"
-          >
-            <Share2 className="h-3.5 w-3.5" />
-            <span>Invite on WhatsApp</span>
-            <ArrowRight className="h-3.5 w-3.5" />
-          </button>
-        </div>
+        {/* Right: Compact Link Sharing Button */}
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenInviteModal();
+          }}
+          className="px-3 sm:px-3.5 py-2 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95 transition-all cursor-pointer"
+        >
+          <Share2 className="h-3.5 w-3.5" />
+          <span className="hidden min-[360px]:inline">Share Link</span>
+          <ArrowRight className="h-3 w-3" />
+        </button>
       </div>
-    </section>
+    </motion.section>
   );
 }
