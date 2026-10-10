@@ -20,7 +20,6 @@ import {
   X,
   ArrowRight,
   MessageCircle,
-  Sparkles,
 } from "lucide-react";
 import {
   ReferredTrader,
@@ -408,7 +407,7 @@ export function InviteShopModal({
 
         {/* ── FOOTER ── */}
         <div className="p-3 sm:p-3.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-200/80 dark:border-slate-800 text-center text-[11px] text-slate-500 font-medium shrink-0 flex items-center justify-center gap-1.5">
-          <Sparkles className="h-3.5 w-3.5 text-amber-500" />
+          <Store className="h-3.5 w-3.5 text-[#1d4ed8] dark:text-sky-400" />
           <span>MoniePay • Understand your money, no be just to record am</span>
         </div>
       </motion.div>
