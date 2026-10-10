@@ -56,6 +56,12 @@ export function StockDirectoryTable() {
   const { user } = useAuth();
   const { toast } = useToast();
 
+  const currentBizId = user?.id
+    ? user.id === "user_owner_01"
+      ? "biz_mamachidi_01"
+      : `biz_${user.id}`
+    : "biz_mamachidi_01";
+
   const [inventory, setInventory] = useState<InventoryItem[]>([]);
   const [entries, setEntries] = useState<VoiceTypedEntry[]>([]);
   const [activeTab, setActiveTab] = useState<"ENTRIES" | "INVENTORY">("ENTRIES");
@@ -79,15 +85,23 @@ export function StockDirectoryTable() {
 
   // Hydrate from Storage
   const loadData = () => {
-    setInventory(getInventoryItems());
-    setEntries(getVoiceTypedEntries());
+    setInventory(getInventoryItems(currentBizId));
+    setEntries(getVoiceTypedEntries(currentBizId));
   };
 
   useEffect(() => {
     loadData();
 
-    const handleStockUpdate = () => loadData();
-    const handleVoiceLogged = () => loadData();
+    const handleStockUpdate = (e: any) => {
+      if (!e?.detail?.businessId || e.detail.businessId === currentBizId) {
+        loadData();
+      }
+    };
+    const handleVoiceLogged = (e: any) => {
+      if (!e?.detail?.businessId || e.detail.businessId === currentBizId) {
+        loadData();
+      }
+    };
 
     window.addEventListener("moniepay:stock-updated", handleStockUpdate);
     window.addEventListener("moniepay:voice-entry-logged", handleVoiceLogged);
@@ -96,7 +110,7 @@ export function StockDirectoryTable() {
       window.removeEventListener("moniepay:stock-updated", handleStockUpdate);
       window.removeEventListener("moniepay:voice-entry-logged", handleVoiceLogged);
     };
-  }, []);
+  }, [currentBizId]);
 
   // ── FILTERED ENTRIES ──
   const filteredEntries = useMemo(() => {
@@ -193,6 +207,7 @@ export function StockDirectoryTable() {
       const result = recordVoiceOrTypedStockEntry({
         method: "VOICE",
         rawTranscript: spokenText,
+        businessId: currentBizId,
       });
 
       playCashChime();
@@ -235,7 +250,7 @@ export function StockDirectoryTable() {
     };
 
     const updated = [newItem, ...inventory];
-    saveInventoryItems(updated);
+    saveInventoryItems(updated, currentBizId);
     setInventory(updated);
     setIsAddStockOpen(false);
     setNewItemName("");

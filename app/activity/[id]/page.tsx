@@ -38,7 +38,7 @@ import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/A
 import { SubscriptionStatusPill } from "@/components/subscription/SubscriptionStatusPill";
 import { formatNaira, formatTransactionDate } from "@/lib/utils";
 import { useAuth } from "@/context/AuthContext";
-import { useNotification } from "@/context/NotificationContext";
+import { useToast } from "@/context/NotificationContext";
 import type { BusinessTransaction } from "@/types/moniepay.types";
 import {
   getCachedTransactions,
@@ -131,7 +131,14 @@ export default function TransactionDetailPage() {
   const params = useParams();
   const router = useRouter();
   const { user } = useAuth();
-  const { notify } = useNotification();
+  const { toast } = useToast();
+
+  const currentBizId = user?.id
+    ? user.id === "user_owner_01"
+      ? "biz_mamachidi_01"
+      : `biz_${user.id}`
+    : DEFAULT_BUSINESS.id;
+  const isDemoShop = !user || user.id === "user_owner_01" || currentBizId === "biz_mamachidi_01";
 
   const id = Array.isArray(params?.id) ? params.id[0] : params?.id;
 
@@ -145,19 +152,21 @@ export default function TransactionDetailPage() {
     if (!id) return;
 
     // Search cached transactions
-    const cached = getCachedTransactions();
-    const all = cached.length > 0 ? cached : DEFAULT_TRANSACTIONS;
+    const cached = getCachedTransactions(currentBizId);
+    const all = cached.length > 0 ? cached : isDemoShop ? DEFAULT_TRANSACTIONS : [];
     const found = all.find((tx) => tx.id === id || tx.client_tx_id === id);
 
     if (found) {
       setTransaction(found);
-    } else {
+    } else if (isDemoShop) {
       // Fallback search default transactions
       const defaultFound = DEFAULT_TRANSACTIONS.find((tx) => tx.id === id || tx.client_tx_id === id);
       setTransaction(defaultFound || null);
+    } else {
+      setTransaction(null);
     }
     setLoading(false);
-  }, [id]);
+  }, [id, currentBizId, isDemoShop]);
 
   const isPositive = transaction?.type === "SALE" || transaction?.type === "DEBT_COLLECTION";
 
@@ -169,10 +178,10 @@ export default function TransactionDetailPage() {
     const ref = (transaction.client_tx_id || transaction.id).slice(0, 8).toUpperCase();
     navigator.clipboard?.writeText(ref);
     setCopied(true);
-    notify(
+    toast(
       "Slip Ref Copied!",
       `Slip Reference #${ref} copied to clipboard.`,
-      "success"
+      { type: "success" }
     );
     setTimeout(() => setCopied(false), 2000);
   };
@@ -364,13 +373,13 @@ _Powered by MoniePay_`;
       link.href = dataUrl;
       link.click();
 
-      notify(
+      toast(
         "Receipt Downloaded",
         `Receipt image #MoniePay_Slip_${ref}.png saved to your device.`,
-        "success"
+        { type: "success" }
       );
     } catch (err) {
-      notify("Download Error", "Could not export receipt image.", "error");
+      toast("Download Error", "Could not export receipt image.", { type: "error" });
     }
   };
 
@@ -379,23 +388,23 @@ _Powered by MoniePay_`;
     setIsDeleting(true);
 
     try {
-      const cached = getCachedTransactions();
+      const cached = getCachedTransactions(currentBizId);
       const txId = transaction.id || transaction.client_tx_id;
       const updated = cached.filter((tx) => tx.id !== txId && tx.client_tx_id !== txId);
-      setCachedTransactions(updated);
+      setCachedTransactions(updated, currentBizId);
 
-      notify(
+      toast(
         "Record Deleted",
         "Transaction was removed from your market ledger.",
-        "success"
+        { type: "success" }
       );
 
       router.push("/activity");
     } catch (err) {
-      notify(
+      toast(
         "Error",
         "Could not delete this transaction.",
-        "error"
+        { type: "error" }
       );
       setIsDeleting(false);
     }

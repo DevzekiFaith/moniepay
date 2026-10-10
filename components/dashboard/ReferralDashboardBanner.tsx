@@ -22,15 +22,11 @@ export function ReferralDashboardBanner({
   businessName = "My Shop",
   userPhone = "",
 }: ReferralDashboardBannerProps) {
-  const [stats, setStats] = useState<ReferralStats>(() => getReferralStats(businessName, userPhone));
-
-  const loadStats = () => {
-    setStats(getReferralStats(businessName, userPhone));
-  };
+  const [stats, setStats] = useState<ReferralStats | null>(null);
 
   useEffect(() => {
-    loadStats();
-    const handleUpdate = () => loadStats();
+    setStats(getReferralStats(businessName, userPhone));
+    const handleUpdate = () => setStats(getReferralStats(businessName, userPhone));
     window.addEventListener("moniepay:referral-updated", handleUpdate);
     return () => {
       window.removeEventListener("moniepay:referral-updated", handleUpdate);
@@ -58,8 +54,8 @@ export function ReferralDashboardBanner({
               <h3 className="text-xs sm:text-[13px] font-black text-slate-900 dark:text-white truncate leading-tight">
                 Invite Neighbor • +14d Free 🤝
               </h3>
-              {stats.pending_claims_count > 0 && (
-                <span className="px-1.5 py-0.2 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-black text-[9.5px] border border-amber-300 dark:border-amber-800">
+              {stats && stats.pending_claims_count > 0 && (
+                <span className="px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-black text-[9.5px] border border-amber-300 dark:border-amber-800">
                   {stats.pending_claims_count} Ready
                 </span>
               )}

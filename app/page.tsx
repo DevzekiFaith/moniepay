@@ -87,6 +87,14 @@ export default function MoniePayDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
   const { requireSubscription } = useSubscription();
+
+  const currentBizId = user?.id
+    ? user.id === "user_owner_01"
+      ? "biz_mamachidi_01"
+      : `biz_${user.id}`
+    : DEFAULT_BUSINESS.id;
+  const isDemoShop = !user || user.id === "user_owner_01" || currentBizId === "biz_mamachidi_01";
+
   const [business, setBusiness] = useState<Business>(DEFAULT_BUSINESS);
 
   // Synchronize business with authenticated user profile
@@ -94,11 +102,13 @@ export default function MoniePayDashboard() {
     if (user?.businessName || user?.name) {
       setBusiness((prev) => ({
         ...prev,
+        id: currentBizId,
+        owner_id: user.id || prev.owner_id,
         name: user.businessName || (user.name ? `${user.name} Provisions` : prev.name),
         market_location: user.marketLocation || prev.market_location,
       }));
     }
-  }, [user]);
+  }, [user, currentBizId]);
   const [period, setPeriod] = useState<Period>("this_week");
   const [activeTab, setActiveTab] = useState<MainTab>("today");
   const [isOnline, setIsOnline] = useState<boolean>(true);
@@ -139,7 +149,7 @@ export default function MoniePayDashboard() {
   const [activityDateFilter, setActivityDateFilter] = useState<"ALL" | "TODAY" | "YESTERDAY" | "THIS_WEEK" | "THIS_MONTH" | "CUSTOM">("ALL");
   const [activityCustomDate, setActivityCustomDate] = useState("");
 
-  // 1. Initial State Hydration
+  // 1. Initial State Hydration (Shop-Scoped Isolation)
   useEffect(() => {
     setIsOnline(typeof navigator !== "undefined" ? navigator.onLine : true);
 
@@ -152,45 +162,76 @@ export default function MoniePayDashboard() {
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
 
-    const cachedTxs = getCachedTransactions();
+    const cachedTxs = getCachedTransactions(currentBizId);
     if (cachedTxs.length > 0) {
       setTransactions(cachedTxs);
-    } else {
+    } else if (isDemoShop) {
       setTransactions(DEFAULT_TRANSACTIONS);
-      setCachedTransactions(DEFAULT_TRANSACTIONS);
+      setCachedTransactions(DEFAULT_TRANSACTIONS, currentBizId);
+    } else {
+      setTransactions([]);
     }
 
-    const cachedDebts = getCachedDebts();
+    const cachedDebts = getCachedDebts(currentBizId);
     if (cachedDebts.length > 0) {
       setDebts(cachedDebts);
-    } else {
+    } else if (isDemoShop) {
       setDebts(DEFAULT_DEBTS);
-      setCachedDebts(DEFAULT_DEBTS);
+      setCachedDebts(DEFAULT_DEBTS, currentBizId);
+    } else {
+      setDebts([]);
     }
 
-    const cachedAccs = getCachedAccounts();
+    const cachedAccs = getCachedAccounts(currentBizId);
     if (cachedAccs.length > 0) {
       setAccounts(cachedAccs);
-    } else {
+    } else if (isDemoShop) {
       setAccounts(DEFAULT_ACCOUNTS);
-      setCachedAccounts(DEFAULT_ACCOUNTS);
+      setCachedAccounts(DEFAULT_ACCOUNTS, currentBizId);
+    } else {
+      const cleanAccounts: BusinessAccount[] = [
+        {
+          id: `acc_cash_${currentBizId}`,
+          business_id: currentBizId,
+          name: "Cash at Hand / Drawer",
+          account_type: "CASH",
+          current_balance: 0,
+          is_primary: true,
+        },
+        {
+          id: `acc_pos_${currentBizId}`,
+          business_id: currentBizId,
+          name: "POS Terminal",
+          account_type: "POS",
+          current_balance: 0,
+          is_primary: false,
+        },
+      ];
+      setAccounts(cleanAccounts);
+      setCachedAccounts(cleanAccounts, currentBizId);
     }
 
     const handleTxRecorded = (e: any) => {
       if (e?.detail?.transaction) {
-        setTransactions((prev) => [e.detail.transaction, ...prev]);
+        if (!e.detail.businessId || e.detail.businessId === currentBizId) {
+          setTransactions((prev) => [e.detail.transaction, ...prev]);
+        }
       }
     };
 
     const handleDebtsUpdated = (e: any) => {
       if (e?.detail?.debts) {
-        setDebts(e.detail.debts);
+        if (!e.detail.businessId || e.detail.businessId === currentBizId) {
+          setDebts(e.detail.debts);
+        }
       }
     };
 
     const handleAccountsUpdated = (e: any) => {
       if (e?.detail?.accounts) {
-        setAccounts(e.detail.accounts);
+        if (!e.detail.businessId || e.detail.businessId === currentBizId) {
+          setAccounts(e.detail.accounts);
+        }
       }
     };
 
@@ -205,7 +246,7 @@ export default function MoniePayDashboard() {
       window.removeEventListener("moniepay:debts-updated", handleDebtsUpdated);
       window.removeEventListener("moniepay:accounts-updated", handleAccountsUpdated);
     };
-  }, []);
+  }, [currentBizId, isDemoShop]);
 
   // 2. Filter Transactions by Period
   const filteredTransactions = useMemo(() => {
@@ -310,14 +351,14 @@ export default function MoniePayDashboard() {
   };
 
   const handleDebtSettled = (debtId: string, amount: number) => {
-    const updated = settleCachedDebt(debtId, amount);
+    const updated = settleCachedDebt(debtId, amount, currentBizId);
     setDebts(updated);
   };
 
   const handleDebtCreated = (newDebt: Debt) => {
     setDebts((prev) => {
       const updated = [newDebt, ...prev.filter((d) => d.id !== newDebt.id)];
-      setCachedDebts(updated);
+      setCachedDebts(updated, currentBizId);
       return updated;
     });
   };
@@ -327,7 +368,7 @@ export default function MoniePayDashboard() {
     const newTx: BusinessTransaction = {
       id: txId,
       client_tx_id: txId,
-      business_id: business.id,
+      business_id: currentBizId,
       type: "SALE",
       amount: amount,
       category: "Shop Sale (Auto-Transfer)",
@@ -343,13 +384,19 @@ export default function MoniePayDashboard() {
 
     const updatedTxs = [newTx, ...transactions];
     setTransactions(updatedTxs);
-    setCachedTransactions(updatedTxs);
+    setCachedTransactions(updatedTxs, currentBizId);
     setWalletBalance((prev) => prev + amount);
   };
 
   const refreshTxs = () => {
-    const cachedTxs = getCachedTransactions();
-    if (cachedTxs.length > 0) setTransactions(cachedTxs);
+    const cachedTxs = getCachedTransactions(currentBizId);
+    if (cachedTxs.length > 0) {
+      setTransactions(cachedTxs);
+    } else if (isDemoShop) {
+      setTransactions(DEFAULT_TRANSACTIONS);
+    } else {
+      setTransactions([]);
+    }
   };
 
   return (
@@ -420,6 +467,7 @@ export default function MoniePayDashboard() {
             >
               {/* 1. TELL MONIEPAY (Voice, Text & Instant Feedback) */}
               <TellMoniePay
+                businessId={currentBizId}
                 onOpenDetailedSheet={handleOpenRecord}
                 onActivityRecorded={refreshTxs}
               />

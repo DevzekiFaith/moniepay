@@ -41,6 +41,7 @@ export function speakTraderAudioFeedback(text: string) {
 interface TellMoniePayProps {
   onOpenDetailedSheet: (type: TransactionType) => void;
   onActivityRecorded: () => void;
+  businessId?: string;
 }
 
 interface ValueFeedback {
@@ -56,6 +57,7 @@ interface ValueFeedback {
 export function TellMoniePay({
   onOpenDetailedSheet,
   onActivityRecorded,
+  businessId = "biz_mamachidi_01",
 }: TellMoniePayProps) {
   const { requireSubscription } = useSubscription();
   const [inputVal, setInputVal] = useState("");
@@ -243,7 +245,7 @@ export function TellMoniePay({
     }
 
     recordOptimisticTransaction({
-      business_id: "biz_default_01",
+      business_id: businessId,
       type,
       amount,
       payment_method: paymentMethod,
@@ -260,6 +262,7 @@ export function TellMoniePay({
         explicitType: type,
         explicitAmount: amount,
         paymentMethod,
+        businessId,
       });
     } catch (stockErr) {
       console.debug("Auto-stock reconciliation notice:", stockErr);

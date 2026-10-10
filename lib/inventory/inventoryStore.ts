@@ -206,58 +206,81 @@ export const INITIAL_VOICE_ENTRIES: VoiceTypedEntry[] = [
   },
 ];
 
+function getScopedKey(baseKey: string, businessId?: string): string {
+  if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
+    return baseKey;
+  }
+  return `${baseKey}_${businessId}`;
+}
+
 // ── GET INVENTORY ITEMS ──
-export function getInventoryItems(): InventoryItem[] {
-  if (typeof window === "undefined") return INITIAL_INVENTORY;
+export function getInventoryItems(businessId?: string): InventoryItem[] {
+  if (typeof window === "undefined") {
+    if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
+      return INITIAL_INVENTORY;
+    }
+    return [];
+  }
+  const key = getScopedKey(INVENTORY_STORAGE_KEY, businessId);
   try {
-    const raw = localStorage.getItem(INVENTORY_STORAGE_KEY);
-    if (!raw) {
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+    if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
       localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(INITIAL_INVENTORY));
       return INITIAL_INVENTORY;
     }
-    return JSON.parse(raw);
+    return [];
   } catch {
-    return INITIAL_INVENTORY;
+    return (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") ? INITIAL_INVENTORY : [];
   }
 }
 
 // ── SAVE INVENTORY ITEMS ──
-export function saveInventoryItems(items: InventoryItem[]) {
+export function saveInventoryItems(items: InventoryItem[], businessId?: string) {
   if (typeof window === "undefined") return;
+  const key = getScopedKey(INVENTORY_STORAGE_KEY, businessId);
   try {
-    localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(items));
-    window.dispatchEvent(new CustomEvent("moniepay:stock-updated", { detail: { items } }));
+    localStorage.setItem(key, JSON.stringify(items));
+    window.dispatchEvent(new CustomEvent("moniepay:stock-updated", { detail: { items, businessId } }));
   } catch {}
 }
 
 // ── GET VOICE & TYPED ENTRIES ──
-export function getVoiceTypedEntries(): VoiceTypedEntry[] {
-  if (typeof window === "undefined") return INITIAL_VOICE_ENTRIES;
+export function getVoiceTypedEntries(businessId?: string): VoiceTypedEntry[] {
+  if (typeof window === "undefined") {
+    if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
+      return INITIAL_VOICE_ENTRIES;
+    }
+    return [];
+  }
+  const key = getScopedKey(VOICE_ENTRIES_STORAGE_KEY, businessId);
   try {
-    const raw = localStorage.getItem(VOICE_ENTRIES_STORAGE_KEY);
-    if (!raw) {
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+    if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
       localStorage.setItem(VOICE_ENTRIES_STORAGE_KEY, JSON.stringify(INITIAL_VOICE_ENTRIES));
       return INITIAL_VOICE_ENTRIES;
     }
-    return JSON.parse(raw);
+    return [];
   } catch {
-    return INITIAL_VOICE_ENTRIES;
+    return (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") ? INITIAL_VOICE_ENTRIES : [];
   }
 }
 
 // ── SAVE VOICE & TYPED ENTRIES ──
-export function saveVoiceTypedEntries(entries: VoiceTypedEntry[]) {
+export function saveVoiceTypedEntries(entries: VoiceTypedEntry[], businessId?: string) {
   if (typeof window === "undefined") return;
+  const key = getScopedKey(VOICE_ENTRIES_STORAGE_KEY, businessId);
   try {
-    localStorage.setItem(VOICE_ENTRIES_STORAGE_KEY, JSON.stringify(entries));
-    window.dispatchEvent(new CustomEvent("moniepay:voice-entry-logged", { detail: { entries } }));
+    localStorage.setItem(key, JSON.stringify(entries));
+    window.dispatchEvent(new CustomEvent("moniepay:voice-entry-logged", { detail: { entries, businessId } }));
   } catch {}
 }
 
 // ─────────────────────────────────────────────────────────────────
 // Natural Language Item & Quantity Extractor (Hands-Off NLP Engine)
 // ─────────────────────────────────────────────────────────────────
-export function extractStockDetailsFromText(rawText: string): {
+export function extractStockDetailsFromText(rawText: string, businessId?: string): {
   detectedItem: string;
   quantity: number;
   unit: string;
@@ -294,7 +317,7 @@ export function extractStockDetailsFromText(rawText: string): {
   }
 
   // 2. Match with Existing Inventory Catalog
-  const inventory = getInventoryItems();
+  const inventory = getInventoryItems(businessId);
   let matchedItem = inventory.find((item) => {
     const itemWords = item.name.toLowerCase().split(/[\s(),]+/);
     return itemWords.some((word) => word.length >= 3 && lower.includes(word));
@@ -354,6 +377,7 @@ export function recordVoiceOrTypedStockEntry(params: {
   explicitQty?: number;
   paymentMethod?: string;
   counterparty?: string;
+  businessId?: string;
 }): { entry: VoiceTypedEntry; updatedInventory: InventoryItem[] } {
   const {
     method,
@@ -364,6 +388,7 @@ export function recordVoiceOrTypedStockEntry(params: {
     explicitQty,
     paymentMethod = "CASH",
     counterparty,
+    businessId,
   } = params;
 
   const lower = rawTranscript.toLowerCase();
@@ -386,7 +411,7 @@ export function recordVoiceOrTypedStockEntry(params: {
   const amount = explicitAmount ?? (parseSpokenMarketAmount(rawTranscript) || 15000);
 
   // 3. Extract Item & Quantity Details
-  const extracted = extractStockDetailsFromText(rawTranscript);
+  const extracted = extractStockDetailsFromText(rawTranscript, businessId);
   const itemName = explicitItem || extracted.detectedItem;
   const qty = explicitQty ?? extracted.quantity;
   const unit = extracted.unit;
@@ -400,7 +425,7 @@ export function recordVoiceOrTypedStockEntry(params: {
   }
 
   // 5. Update Inventory Item Balance
-  const inventory = getInventoryItems();
+  const inventory = getInventoryItems(businessId);
   let itemIndex = inventory.findIndex(
     (i) => i.id === extracted.matchedInventoryId || i.name.toLowerCase() === itemName.toLowerCase()
   );
@@ -434,7 +459,7 @@ export function recordVoiceOrTypedStockEntry(params: {
     inventory.unshift(newItem);
   }
 
-  saveInventoryItems(inventory);
+  saveInventoryItems(inventory, businessId);
 
   // 6. Create Log Entry
   const newEntry: VoiceTypedEntry = {
@@ -453,9 +478,9 @@ export function recordVoiceOrTypedStockEntry(params: {
     payment_method: paymentMethod,
   };
 
-  const existingEntries = getVoiceTypedEntries();
+  const existingEntries = getVoiceTypedEntries(businessId);
   const updatedEntries = [newEntry, ...existingEntries];
-  saveVoiceTypedEntries(updatedEntries);
+  saveVoiceTypedEntries(updatedEntries, businessId);
 
   // 7. 🔥 HANDS-OFF ALERT: Immediate Physical Phone Vibration + Cash Beep + Background Notification!
   const alertTitle =

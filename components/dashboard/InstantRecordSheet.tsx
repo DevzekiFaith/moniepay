@@ -232,6 +232,7 @@ export function InstantRecordSheet({
         explicitItem: txDesc,
         paymentMethod,
         counterparty: debtorName || undefined,
+        businessId,
       });
     } catch {}
 

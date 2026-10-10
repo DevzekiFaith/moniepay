@@ -27,6 +27,7 @@ import { motion } from "framer-motion";
 import type { Recommendation, DeterministicMetrics } from "@/types/moniepay.types";
 import { calculateDeterministicMetrics } from "@/lib/intelligence/deterministicEngine";
 import { generatePriorityRecommendations } from "@/lib/intelligence/diagnosticEngine";
+import { useAuth } from "@/context/AuthContext";
 import {
   getCachedTransactions,
   getCachedDebts,
@@ -41,20 +42,34 @@ import {
 import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
 
 export default function InsightsPage() {
+  const { user } = useAuth();
+  const currentBizId = user?.id
+    ? user.id === "user_owner_01"
+      ? "biz_mamachidi_01"
+      : `biz_${user.id}`
+    : DEFAULT_BUSINESS.id;
+  const isDemoShop = !user || user.id === "user_owner_01" || currentBizId === "biz_mamachidi_01";
+  const businessName = user?.businessName || (user?.name ? `${user.name} Provisions` : DEFAULT_BUSINESS.name);
+
   const [metrics, setMetrics] = useState<DeterministicMetrics | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
 
   useEffect(() => {
-    const txs = getCachedTransactions().length > 0 ? getCachedTransactions() : DEFAULT_TRANSACTIONS;
-    const debts = getCachedDebts().length > 0 ? getCachedDebts() : DEFAULT_DEBTS;
-    const accs = getCachedAccounts().length > 0 ? getCachedAccounts() : DEFAULT_ACCOUNTS;
+    const cachedTxs = getCachedTransactions(currentBizId);
+    const txs = cachedTxs.length > 0 ? cachedTxs : isDemoShop ? DEFAULT_TRANSACTIONS : [];
+
+    const cachedDebts = getCachedDebts(currentBizId);
+    const debts = cachedDebts.length > 0 ? cachedDebts : isDemoShop ? DEFAULT_DEBTS : [];
+
+    const cachedAccs = getCachedAccounts(currentBizId);
+    const accs = cachedAccs.length > 0 ? cachedAccs : isDemoShop ? DEFAULT_ACCOUNTS : [];
 
     const calcMetrics = calculateDeterministicMetrics(txs, debts, accs);
     setMetrics(calcMetrics);
 
-    const recs = generatePriorityRecommendations(calcMetrics, txs, debts, DEFAULT_BUSINESS.name);
+    const recs = generatePriorityRecommendations(calcMetrics, txs, debts, businessName);
     setRecommendations(recs);
-  }, []);
+  }, [currentBizId, isDemoShop, businessName]);
 
   return (
     <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20 transition-colors">

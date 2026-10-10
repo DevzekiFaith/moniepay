@@ -64,6 +64,13 @@ export default function ActivityPage() {
   const { user } = useAuth();
   const { notify } = useNotification();
 
+  const currentBizId = user?.id
+    ? user.id === "user_owner_01"
+      ? "biz_mamachidi_01"
+      : `biz_${user.id}`
+    : DEFAULT_BUSINESS.id;
+  const isDemoShop = !user || user.id === "user_owner_01" || currentBizId === "biz_mamachidi_01";
+
   const [transactions, setTransactions] = useState<BusinessTransaction[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState<string>("ALL");
@@ -81,14 +88,29 @@ export default function ActivityPage() {
   const [recordType, setRecordType] = useState<TransactionType>("SALE");
 
   useEffect(() => {
-    const cached = getCachedTransactions();
+    const cached = getCachedTransactions(currentBizId);
     if (cached.length > 0) {
       setTransactions(cached);
-    } else {
+    } else if (isDemoShop) {
       setTransactions(DEFAULT_TRANSACTIONS);
-      setCachedTransactions(DEFAULT_TRANSACTIONS);
+      setCachedTransactions(DEFAULT_TRANSACTIONS, currentBizId);
+    } else {
+      setTransactions([]);
     }
-  }, []);
+
+    const handleTxRecorded = (e: any) => {
+      if (e?.detail?.transaction) {
+        if (!e.detail.businessId || e.detail.businessId === currentBizId) {
+          setTransactions((prev) => [e.detail.transaction, ...prev]);
+        }
+      }
+    };
+
+    window.addEventListener("moniepay:transaction-recorded", handleTxRecorded);
+    return () => {
+      window.removeEventListener("moniepay:transaction-recorded", handleTxRecorded);
+    };
+  }, [currentBizId, isDemoShop]);
 
   // Reset to page 1 when any filter changes
   useEffect(() => {
@@ -616,7 +638,7 @@ export default function ActivityPage() {
         isOpen={isRecordOpen}
         onClose={() => setIsRecordOpen(false)}
         accounts={[]}
-        businessId="biz_default_01"
+        businessId={currentBizId}
         initialType={recordType}
       />
     </div>

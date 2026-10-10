@@ -27,49 +27,67 @@ export function generateClientTxId(): string {
   return "tx_" + Date.now() + "_" + Math.random().toString(36).substring(2, 9);
 }
 
+function getScopedKey(baseKey: string, businessId?: string): string {
+  if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
+    return baseKey;
+  }
+  return `${baseKey}_${businessId}`;
+}
+
 // ── Cache Helpers ────────────────────────────────────────────────
-export function getCachedTransactions(): BusinessTransaction[] {
+export function getCachedTransactions(businessId?: string): BusinessTransaction[] {
   if (typeof window === "undefined") return [];
+  const key = getScopedKey(TX_CACHE_KEY, businessId);
   try {
-    const raw = localStorage.getItem(TX_CACHE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+    return [];
   } catch {
     return [];
   }
 }
 
-export function setCachedTransactions(transactions: BusinessTransaction[]): void {
+export function setCachedTransactions(transactions: BusinessTransaction[], businessId?: string): void {
   if (typeof window === "undefined") return;
+  const key = getScopedKey(TX_CACHE_KEY, businessId);
   try {
-    localStorage.setItem(TX_CACHE_KEY, JSON.stringify(transactions));
+    localStorage.setItem(key, JSON.stringify(transactions));
+    if (key === TX_CACHE_KEY) {
+      localStorage.setItem("moniepay_transactions", JSON.stringify(transactions));
+    }
   } catch (err) {
     console.warn("Could not cache transactions:", err);
   }
 }
 
-export function getCachedDebts(): Debt[] {
+export function getCachedDebts(businessId?: string): Debt[] {
   if (typeof window === "undefined") return [];
+  const key = getScopedKey(DEBT_CACHE_KEY, businessId);
   try {
-    const raw = localStorage.getItem(DEBT_CACHE_KEY) || localStorage.getItem("moniepay_debts");
-    return raw ? JSON.parse(raw) : [];
+    const raw = localStorage.getItem(key) || (key === DEBT_CACHE_KEY ? localStorage.getItem("moniepay_debts") : null);
+    if (raw) return JSON.parse(raw);
+    return [];
   } catch {
     return [];
   }
 }
 
-export function setCachedDebts(debts: Debt[]): void {
+export function setCachedDebts(debts: Debt[], businessId?: string): void {
   if (typeof window === "undefined") return;
+  const key = getScopedKey(DEBT_CACHE_KEY, businessId);
   try {
-    localStorage.setItem(DEBT_CACHE_KEY, JSON.stringify(debts));
-    localStorage.setItem("moniepay_debts", JSON.stringify(debts));
-    window.dispatchEvent(new CustomEvent("moniepay:debts-updated", { detail: { debts } }));
+    localStorage.setItem(key, JSON.stringify(debts));
+    if (key === DEBT_CACHE_KEY) {
+      localStorage.setItem("moniepay_debts", JSON.stringify(debts));
+    }
+    window.dispatchEvent(new CustomEvent("moniepay:debts-updated", { detail: { debts, businessId } }));
   } catch (err) {
     console.warn("Could not cache debts:", err);
   }
 }
 
-export function settleCachedDebt(debtId: string, amount: number): Debt[] {
-  const debts = getCachedDebts();
+export function settleCachedDebt(debtId: string, amount: number, businessId?: string): Debt[] {
+  const debts = getCachedDebts(businessId);
   const updated = debts.map((d) =>
     d.id === debtId
       ? {
@@ -80,25 +98,28 @@ export function settleCachedDebt(debtId: string, amount: number): Debt[] {
         }
       : d
   );
-  setCachedDebts(updated);
+  setCachedDebts(updated, businessId);
   return updated;
 }
 
-export function getCachedAccounts(): BusinessAccount[] {
+export function getCachedAccounts(businessId?: string): BusinessAccount[] {
   if (typeof window === "undefined") return [];
+  const key = getScopedKey(ACCOUNT_CACHE_KEY, businessId);
   try {
-    const raw = localStorage.getItem(ACCOUNT_CACHE_KEY);
-    return raw ? JSON.parse(raw) : [];
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+    return [];
   } catch {
     return [];
   }
 }
 
-export function setCachedAccounts(accounts: BusinessAccount[]): void {
+export function setCachedAccounts(accounts: BusinessAccount[], businessId?: string): void {
   if (typeof window === "undefined") return;
+  const key = getScopedKey(ACCOUNT_CACHE_KEY, businessId);
   try {
-    localStorage.setItem(ACCOUNT_CACHE_KEY, JSON.stringify(accounts));
-    window.dispatchEvent(new CustomEvent("moniepay:accounts-updated", { detail: { accounts } }));
+    localStorage.setItem(key, JSON.stringify(accounts));
+    window.dispatchEvent(new CustomEvent("moniepay:accounts-updated", { detail: { accounts, businessId } }));
   } catch (err) {
     console.warn("Could not cache accounts:", err);
   }
@@ -136,6 +157,7 @@ export function recordOptimisticTransaction(
 ): BusinessTransaction {
   const clientTxId = payload.client_tx_id || generateClientTxId();
   const txDate = payload.transaction_date || new Date().toISOString();
+  const businessId = payload.business_id;
 
   const newTx: BusinessTransaction = {
     ...payload,
@@ -146,13 +168,13 @@ export function recordOptimisticTransaction(
   };
 
   // 1. Immediately update local transaction cache
-  const currentTxs = getCachedTransactions();
+  const currentTxs = getCachedTransactions(businessId);
   // Prepend new transaction
   const updatedTxs = [newTx, ...currentTxs];
-  setCachedTransactions(updatedTxs);
+  setCachedTransactions(updatedTxs, businessId);
 
   // 2. Adjust local account balances optimistically
-  const accounts = getCachedAccounts();
+  const accounts = getCachedAccounts(businessId);
   if (accounts.length > 0) {
     const targetAccountId = payload.account_id || accounts[0]?.id;
     const updatedAccounts = accounts.map((acc) => {
@@ -176,12 +198,12 @@ export function recordOptimisticTransaction(
       }
       return acc;
     });
-    setCachedAccounts(updatedAccounts);
+    setCachedAccounts(updatedAccounts, businessId);
   }
 
   // 3. If it's a credit sale (customer debt), create or update debt record
   if (payload.payment_method === "CREDIT" && payload.type === "SALE" && payload.description) {
-    const currentDebts = getCachedDebts();
+    const currentDebts = getCachedDebts(businessId);
     const newDebt: Debt = {
       id: "debt_" + clientTxId,
       business_id: payload.business_id,
@@ -193,7 +215,7 @@ export function recordOptimisticTransaction(
       status: "PENDING",
       created_at: txDate,
     };
-    setCachedDebts([newDebt, ...currentDebts]);
+    setCachedDebts([newDebt, ...currentDebts], businessId);
   }
 
   // 4. Add to offline sync queue
@@ -211,7 +233,7 @@ export function recordOptimisticTransaction(
   if (typeof window !== "undefined") {
     window.dispatchEvent(
       new CustomEvent("moniepay:transaction-recorded", {
-        detail: { transaction: newTx, isOptimistic: true },
+        detail: { transaction: newTx, isOptimistic: true, businessId },
       })
     );
   }

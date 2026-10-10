@@ -50,6 +50,13 @@ export default function AccountsPage() {
   const { user } = useAuth();
   const { notify } = useNotification();
 
+  const currentBizId = user?.id
+    ? user.id === "user_owner_01"
+      ? "biz_mamachidi_01"
+      : `biz_${user.id}`
+    : DEFAULT_BUSINESS.id;
+  const isDemoShop = !user || user.id === "user_owner_01" || currentBizId === "biz_mamachidi_01";
+
   const [accounts, setAccounts] = useState<Account[]>([]);
 
   const [isConnectModalOpen, setIsConnectModalOpen] = useState(false);
@@ -58,7 +65,7 @@ export default function AccountsPage() {
   const [newAccBalance, setNewAccBalance] = useState("");
 
   const loadAccounts = () => {
-    const cached = getCachedAccounts();
+    const cached = getCachedAccounts(currentBizId);
     if (cached.length > 0) {
       setAccounts(
         cached.map((a) => ({
@@ -72,7 +79,7 @@ export default function AccountsPage() {
           mask: a.account_number ? a.account_number.slice(-4) : undefined,
         }))
       );
-    } else {
+    } else if (isDemoShop) {
       setAccounts(
         DEFAULT_ACCOUNTS.map((a) => ({
           id: a.id,
@@ -85,19 +92,54 @@ export default function AccountsPage() {
           mask: a.account_number ? a.account_number.slice(-4) : undefined,
         }))
       );
-      setCachedAccounts(DEFAULT_ACCOUNTS);
+      setCachedAccounts(DEFAULT_ACCOUNTS, currentBizId);
+    } else {
+      const cleanAccounts: BusinessAccount[] = [
+        {
+          id: `acc_cash_${currentBizId}`,
+          business_id: currentBizId,
+          name: "Cash at Hand / Drawer",
+          account_type: "CASH",
+          current_balance: 0,
+          is_primary: true,
+        },
+        {
+          id: `acc_pos_${currentBizId}`,
+          business_id: currentBizId,
+          name: "POS Terminal",
+          account_type: "POS",
+          current_balance: 0,
+          is_primary: false,
+        },
+      ];
+      setAccounts(
+        cleanAccounts.map((a) => ({
+          id: a.id,
+          name: a.name,
+          accountType: a.account_type,
+          currency: "NGN",
+          currentBalance: 0,
+          isPrimary: !!a.is_primary,
+          syncStatus: "ACTIVE",
+        }))
+      );
+      setCachedAccounts(cleanAccounts, currentBizId);
     }
   };
 
   useEffect(() => {
     loadAccounts();
 
-    const handleAccountsUpdated = () => loadAccounts();
+    const handleAccountsUpdated = (e: any) => {
+      if (!e?.detail?.businessId || e.detail.businessId === currentBizId) {
+        loadAccounts();
+      }
+    };
     window.addEventListener("moniepay:accounts-updated", handleAccountsUpdated);
     return () => {
       window.removeEventListener("moniepay:accounts-updated", handleAccountsUpdated);
     };
-  }, []);
+  }, [currentBizId, isDemoShop]);
 
   const totalBalance = accounts.reduce((sum, a) => sum + a.currentBalance, 0);
 
@@ -108,16 +150,16 @@ export default function AccountsPage() {
     const parsedBal = parseFloat(newAccBalance.replace(/,/g, "")) || 0;
     const newBizAcc: BusinessAccount = {
       id: `acc_${Date.now()}`,
-      business_id: "biz_default_01",
+      business_id: currentBizId,
       name: newAccName.trim(),
       account_type: newAccType as AccountType,
       current_balance: parsedBal,
       is_primary: accounts.length === 0,
     };
 
-    const currentCached = getCachedAccounts();
+    const currentCached = getCachedAccounts(currentBizId);
     const updated = [...currentCached, newBizAcc];
-    setCachedAccounts(updated);
+    setCachedAccounts(updated, currentBizId);
 
     notify("Account Added", `${newBizAcc.name} added to your active money pool.`, "success");
     setIsConnectModalOpen(false);

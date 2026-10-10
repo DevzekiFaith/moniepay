@@ -133,9 +133,9 @@ export function GbeseDebtSheet({
 
     // Save to local storage debts list
     try {
-      const existing = getCachedDebts();
+      const existing = getCachedDebts(businessId);
       const updated = [newDebtObj, ...existing];
-      setCachedDebts(updated);
+      setCachedDebts(updated, businessId);
     } catch {}
 
     if (onDebtCreated) {
