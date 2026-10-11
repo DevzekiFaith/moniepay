@@ -82,7 +82,7 @@ export default function ProfilePage() {
                 </p>
                 <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
                   <MapPin className="h-3 w-3 shrink-0" />
-                  <span className="truncate">{user?.marketLocation || "Balogun Market, Lagos"}</span>
+                  <span className="truncate">{user?.marketLocation || (!user || user.id === "user_owner_01" ? "Balogun Market, Lagos" : "Commercial Trading Shop, Nigeria")}</span>
                 </div>
               </div>
             </div>

@@ -107,7 +107,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               const finalLocation =
                 (data.business?.market_location && data.business?.market_location !== "Shop 14, Balogun Market, Lagos")
                   ? data.business.market_location
-                  : activeCachedUser?.marketLocation || data.business?.market_location || "Balogun Market, Lagos";
+                  : activeCachedUser?.marketLocation || data.business?.market_location || "Commercial Trading Shop, Nigeria";
 
               const verifiedUser: AuthUser = {
                 id: data.user.id || activeCachedUser?.id || "user_01",

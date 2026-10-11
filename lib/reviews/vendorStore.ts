@@ -142,6 +142,138 @@ export const INITIAL_VENDORS: Record<string, VendorProfile> = {
     verified: true,
     tags: ["Original Lace", "Fair Price", "Polite & Patient", "Quality Aso-Ebi"],
   },
+  malam_sanusi: {
+    id: "malam_sanusi",
+    name: "Malam Sanusi Dahiru",
+    shopName: "Malam Sanusi Grains & Legumes Depot",
+    category: "Wholesale Foodstuff & Grains",
+    market: "Dawanau International Grains Depot, Kano",
+    fullAddress: "Shed 19, Main Grains Terminal, Dawanau Market, Kano",
+    landmark: "Northern Grain Trailers Bay, Gate 3, Katsina Road",
+    phone: "+234 803 444 8899",
+    whatsapp: "2348034448899",
+    image: "/images/traders/alhaji_garba.jpg",
+    code: "MP-KAN-91024",
+    coordinates: {
+      lat: 12.0625,
+      lng: 8.4419,
+      mapX: 60,
+      mapY: 16,
+    },
+    openingHours: "Mon - Sun: 6:00 AM - 6:30 PM",
+    verified: true,
+    tags: ["Wholesale Bags", "Clean Measure", "Accurate Weighing", "Direct Farm Supply"],
+  },
+  hajiya_zainab: {
+    id: "hajiya_zainab",
+    name: "Hajiya Zainab Umar",
+    shopName: "Zainab Gold & Royal Fabrics Hub",
+    category: "Fabrics, Lace & Aso-Ebi",
+    market: "Wuse Modern Market, Abuja FCT",
+    fullAddress: "Block C, Shop 18, Textile Plaza, Wuse Modern Market, Zone 5, Abuja",
+    landmark: "Opposite Kashim Ibrahim Way Main Entrance Gate",
+    phone: "+234 812 666 3322",
+    whatsapp: "2348126663322",
+    image: "/images/traders/blessing_fabrics.jpg",
+    code: "MP-ABJ-82015",
+    coordinates: {
+      lat: 9.0643,
+      lng: 7.4665,
+      mapX: 52,
+      mapY: 42,
+    },
+    openingHours: "Mon - Sat: 8:00 AM - 7:00 PM",
+    verified: true,
+    tags: ["Quality Swiss Lace", "Wholesale Aso-Ebi", "Polite & Respectful", "Original Ankara"],
+  },
+  chief_okeke: {
+    id: "chief_okeke",
+    name: "Chief Innocent Okeke",
+    shopName: "Okeke & Sons Hardware & Machinery Tools",
+    category: "Auto Parts & Hardware",
+    market: "Onitsha Main / Relief Market, Anambra",
+    fullAddress: "Line 4, Shop 28, Industrial Tools Section, Onitsha Main Market, Anambra",
+    landmark: "Beside Holy Trinity Cathedral axis, along River Niger bank road",
+    phone: "+234 806 777 4411",
+    whatsapp: "2348067774411",
+    image: "/images/traders/emeka_electronics.jpg",
+    code: "MP-ONT-73910",
+    coordinates: {
+      lat: 6.1519,
+      lng: 6.7758,
+      mapX: 62,
+      mapY: 68,
+    },
+    openingHours: "Mon - Sat: 7:30 AM - 6:00 PM",
+    verified: true,
+    tags: ["Heavy Industrial Grade", "Tested & Working", "Direct Importer", "Warranty Included"],
+  },
+  ugochi_leather: {
+    id: "ugochi_leather",
+    name: "Ugochi Nnamdi",
+    shopName: "Ugochi Handmade Footwear & Leather Works",
+    category: "General Retail & Provisions",
+    market: "Ariaria International Market, Aba, Abia",
+    fullAddress: "A-Line, Shop 45, Leather & Shoe Section, Ariaria Int'l Market, Aba, Abia",
+    landmark: "Faulks Road Gate 1, beside Powerline transformer",
+    phone: "+234 813 888 9955",
+    whatsapp: "2348138889955",
+    image: "/images/traders/mama_chidi.jpg",
+    code: "MP-ABA-65230",
+    coordinates: {
+      lat: 5.1278,
+      lng: 7.3392,
+      mapX: 64,
+      mapY: 80,
+    },
+    openingHours: "Mon - Sat: 8:00 AM - 6:30 PM",
+    verified: true,
+    tags: ["100% Genuine Leather", "Bulk Export Quality", "Fast Production", "Fair Deal"],
+  },
+  tamuno_stores: {
+    id: "tamuno_stores",
+    name: "Tamuno Briggs",
+    shopName: "Tamuno Oil Mill & Provisions Store",
+    category: "Provisions & Groceries",
+    market: "Oil Mill / Mile 1 Market, Port Harcourt",
+    fullAddress: "Shop 12, Block B, Oil Mill Commercial Depot, Port Harcourt, Rivers",
+    landmark: "Near Aba-Port Harcourt Expressway Flyover Ramp",
+    phone: "+234 805 111 2244",
+    whatsapp: "2348051112244",
+    image: "/images/traders/emeka_electronics.jpg",
+    code: "MP-PHC-51920",
+    coordinates: {
+      lat: 4.8431,
+      lng: 7.0398,
+      mapX: 54,
+      mapY: 85,
+    },
+    openingHours: "Mon - Sat: 7:00 AM - 7:00 PM",
+    verified: true,
+    tags: ["Clean Palm Oil", "Original Goods Only", "Always Has Change", "Prompt Service"],
+  },
+  iyabo_foodstuff: {
+    id: "iyabo_foodstuff",
+    name: "Alhaja Iyabo Adewale",
+    shopName: "Iyabo Farm Produce & Yam Flour Store",
+    category: "Wholesale Foodstuff & Grains",
+    market: "Bodija Market, Ibadan, Oyo State",
+    fullAddress: "Line 7, Shed 33, Foodstuff & Grains Wing, Bodija Market, Ibadan, Oyo",
+    landmark: "Directly beside Bodija Railway Station Loading Bay",
+    phone: "+234 802 333 7788",
+    whatsapp: "2348023337788",
+    image: "/images/traders/blessing_fabrics.jpg",
+    code: "MP-IBD-42810",
+    coordinates: {
+      lat: 7.4345,
+      lng: 3.9042,
+      mapX: 28,
+      mapY: 62,
+    },
+    openingHours: "Mon - Sat: 7:00 AM - 6:30 PM",
+    verified: true,
+    tags: ["Zero Dirt / Clean Elubo", "Accurate Measure", "Fresh Farm Supply", "Wholesale Bags"],
+  },
 };
 
 // ── 2. SEED REALISTIC REVIEWS ──────────────────────────────────────
@@ -155,7 +287,7 @@ export const SEED_REVIEWS: CustomerReview[] = [
     tags: ["Original Goods Only", "Fair Market Price", "Always Has Change"],
     customerName: "Mrs. Nkechi E.",
     isVerifiedCustomer: true,
-    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(), // 2 days ago
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
     reply: {
       id: "rep_1",
       text: "Thank you so much Mrs. Nkechi! We always appreciate your customer loyalty. May God bless your business too! 🙏",
@@ -228,6 +360,54 @@ export const SEED_REVIEWS: CustomerReview[] = [
     customerName: "Folashade A.",
     isVerifiedCustomer: true,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 6).toISOString(),
+    moderationStatus: "published",
+  },
+  {
+    id: "rev_seed_7",
+    shopKey: "malam_sanusi",
+    shopName: "Malam Sanusi Grains & Legumes Depot",
+    rating: 5,
+    comment: "Best grains supplier in Dawanau Kano! Supplied 50 bags of white beans and sorghum. Zero weevils, honest weighing scale.",
+    tags: ["Wholesale Bags", "Accurate Weighing", "Direct Farm Supply"],
+    customerName: "Aliyu Danladi",
+    isVerifiedCustomer: true,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2).toISOString(),
+    moderationStatus: "published",
+  },
+  {
+    id: "rev_seed_8",
+    shopKey: "hajiya_zainab",
+    shopName: "Zainab Gold & Royal Fabrics Hub",
+    rating: 5,
+    comment: "Hajiya Zainab is the number one fabric store in Wuse Market Abuja. Original Swiss voile and fast invoice receipt.",
+    tags: ["Quality Swiss Lace", "Wholesale Aso-Ebi", "Polite & Respectful"],
+    customerName: "Halima B.",
+    isVerifiedCustomer: true,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 4).toISOString(),
+    moderationStatus: "published",
+  },
+  {
+    id: "rev_seed_9",
+    shopKey: "chief_okeke",
+    shopName: "Okeke & Sons Hardware & Machinery Tools",
+    rating: 5,
+    comment: "Chief Okeke is the most trusted machinery dealer in Onitsha Main Market. Tested our industrial generator before dispatch.",
+    tags: ["Heavy Industrial Grade", "Tested & Working", "Warranty Included"],
+    customerName: "Chibueze M.",
+    isVerifiedCustomer: true,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 3).toISOString(),
+    moderationStatus: "published",
+  },
+  {
+    id: "rev_seed_10",
+    shopKey: "tamuno_stores",
+    shopName: "Tamuno Oil Mill & Provisions Store",
+    rating: 5,
+    comment: "Top quality unadulterated red palm oil and wholesale provisions in Port Harcourt. Smooth QR payment confirmation.",
+    tags: ["Clean Palm Oil", "Original Goods Only", "Prompt Service"],
+    customerName: "Precious D.",
+    isVerifiedCustomer: true,
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5).toISOString(),
     moderationStatus: "published",
   },
 ];
@@ -348,7 +528,7 @@ export function resolveMarketCoordinates(addressOrMarket: string): {
       mapY: 28,
     };
   }
-  if (text.includes("alaba") || text.includes("ojo") || text.includes("alaba int")) {
+  if ((text.includes("alaba") && !text.includes("calabar")) || /\bojo\b/i.test(text) || text.includes("alaba int")) {
     return {
       market: "Alaba International Market, Ojo",
       landmark: withSpecific("Near St. Patrick's Cathedral entrance, Alaba expressway"),
@@ -438,7 +618,7 @@ export function resolveMarketCoordinates(addressOrMarket: string): {
       mapY: 32,
     };
   }
-  if (text.includes("lekki") || text.includes("ajah") || text.includes("victoria island") || text.includes("vi") || text.includes("ikoyi")) {
+  if (text.includes("lekki") || text.includes("ajah") || text.includes("victoria island") || /\bvi\b/i.test(text) || text.includes("ikoyi")) {
     return {
       market: "Lekki Commercial District & Palms Hub, Lagos",
       landmark: withSpecific("Admiralty Way / Lekki Phase 1 Junction"),
@@ -502,7 +682,7 @@ export function resolveMarketCoordinates(addressOrMarket: string): {
       mapY: 62,
     };
   }
-  if (text.includes("ariaria") || text.includes("aba") || text.includes("ekeoha") || text.includes("faulks")) {
+  if (text.includes("ariaria") || (/\baba\b/i.test(text) && !text.includes("calabar")) || text.includes("ekeoha") || text.includes("faulks")) {
     return {
       market: "Ariaria International Market, Aba, Abia",
       landmark: withSpecific("Faulks Road Gate, near A-Line Leather Section"),
@@ -608,52 +788,96 @@ export function resolveMarketCoordinates(addressOrMarket: string): {
   }
 
   // ── DYNAMIC EXTRACTION FOR CUSTOM ADDRESSES ──
-  // Extract clean landmark and location centroid from trader's real custom address
+  // Extract clean landmark and location centroid from trader's real custom address anywhere in Nigeria
   const dynamicMapX = hashStringToRange(addressOrMarket || "default", 28, 72);
   const dynamicMapY = hashStringToRange(addressOrMarket || "default_y", 28, 72);
 
-  // Detect state / city coordinates if mentioned
-  let lat = 6.5244;
-  let lng = 3.3792;
+  // Detect state / city coordinates across all 36 States + FCT
+  let lat = 9.0765; // Nigeria Central Centroid (Abuja)
+  let lng = 7.3986;
+  let defaultX = dynamicMapX;
+  let defaultY = dynamicMapY;
+
+  // North-West
   if (text.includes("kano")) {
-    lat = 12.0022;
-    lng = 8.5291;
-  } else if (text.includes("abuja") || text.includes("fct")) {
-    lat = 9.0643;
-    lng = 7.4665;
-  } else if (text.includes("ibadan") || text.includes("oyo")) {
-    lat = 7.3775;
-    lng = 3.9470;
-  } else if (text.includes("onitsha") || text.includes("anambra")) {
-    lat = 6.1519;
-    lng = 6.7758;
-  } else if (text.includes("aba") || text.includes("abia")) {
-    lat = 5.1278;
-    lng = 7.3392;
-  } else if (text.includes("port harcourt") || text.includes("rivers")) {
-    lat = 4.8156;
-    lng = 7.0498;
-  } else if (text.includes("enugu")) {
-    lat = 6.4413;
-    lng = 7.4988;
-  } else if (text.includes("jos") || text.includes("plateau")) {
-    lat = 9.9285;
-    lng = 8.8921;
+    lat = 12.0022; lng = 8.5291; defaultX = 64; defaultY = 16;
   } else if (text.includes("kaduna")) {
-    lat = 10.5105;
-    lng = 7.4165;
-  } else if (text.includes("calabar") || text.includes("cross river")) {
-    lat = 4.9757;
-    lng = 8.3417;
-  } else if (text.includes("uyo") || text.includes("akwa ibom")) {
-    lat = 5.0377;
-    lng = 7.9128;
+    lat = 10.5105; lng = 7.4165; defaultX = 54; defaultY = 28;
+  } else if (text.includes("katsina")) {
+    lat = 12.9908; lng = 7.6018; defaultX = 58; defaultY = 12;
+  } else if (text.includes("sokoto")) {
+    lat = 13.0059; lng = 5.2476; defaultX = 35; defaultY = 12;
+  } else if (text.includes("kebbi") || text.includes("birnin kebbi")) {
+    lat = 12.4539; lng = 4.1975; defaultX = 25; defaultY = 18;
+  } else if (text.includes("zamfara") || text.includes("gusau")) {
+    lat = 12.1628; lng = 6.6614; defaultX = 46; defaultY = 16;
+  } else if (text.includes("jigawa") || text.includes("dutse")) {
+    lat = 11.7583; lng = 9.3389; defaultX = 72; defaultY = 18;
+  // North-East
+  } else if (text.includes("maiduguri") || text.includes("borno")) {
+    lat = 11.8333; lng = 13.1500; defaultX = 88; defaultY = 18;
+  } else if (text.includes("bauchi")) {
+    lat = 10.3158; lng = 9.8442; defaultX = 75; defaultY = 28;
+  } else if (text.includes("gombe")) {
+    lat = 10.2897; lng = 11.1673; defaultX = 82; defaultY = 29;
+  } else if (text.includes("adamawa") || text.includes("yola") || text.includes("jimeta")) {
+    lat = 9.2035; lng = 12.4954; defaultX = 86; defaultY = 40;
+  } else if (text.includes("taraba") || text.includes("jalingo")) {
+    lat = 8.8937; lng = 11.3596; defaultX = 80; defaultY = 48;
+  } else if (text.includes("yobe") || text.includes("damaturu")) {
+    lat = 11.7470; lng = 11.9608; defaultX = 84; defaultY = 16;
+  // North-Central / Middle Belt
+  } else if (text.includes("abuja") || text.includes("fct")) {
+    lat = 9.0765; lng = 7.3986; defaultX = 54; defaultY = 38;
+  } else if (text.includes("jos") || text.includes("plateau")) {
+    lat = 9.9285; lng = 8.8921; defaultX = 68; defaultY = 32;
+  } else if (text.includes("minna") || text.includes("niger state") || text.includes("suleja")) {
+    lat = 9.6139; lng = 6.5569; defaultX = 44; defaultY = 36;
+  } else if (text.includes("benue") || text.includes("makurdi") || text.includes("gboko")) {
+    lat = 7.7322; lng = 8.5218; defaultX = 66; defaultY = 52;
+  } else if (text.includes("kogi") || text.includes("lokoja") || text.includes("okene")) {
+    lat = 7.8023; lng = 6.7430; defaultX = 52; defaultY = 52;
+  } else if (text.includes("nasarawa") || text.includes("lafia") || text.includes("karu")) {
+    lat = 8.4932; lng = 8.5153; defaultX = 62; defaultY = 44;
   } else if (text.includes("ilorin") || text.includes("kwara")) {
-    lat = 8.4966;
-    lng = 4.5421;
-  } else if (text.includes("abeokuta") || text.includes("ogun")) {
-    lat = 7.1557;
-    lng = 3.3458;
+    lat = 8.4966; lng = 4.5421; defaultX = 36; defaultY = 48;
+  // South-West
+  } else if (text.includes("lagos") || text.includes("ikeja") || text.includes("lekki") || text.includes("surulere")) {
+    lat = 6.5244; lng = 3.3792; defaultX = 30; defaultY = 70;
+  } else if (text.includes("ibadan") || /\boyo\b/i.test(text)) {
+    lat = 7.3775; lng = 3.9470; defaultX = 35; defaultY = 62;
+  } else if (text.includes("abeokuta") || text.includes("ogun") || text.includes("sagamu") || text.includes("ijebu")) {
+    lat = 7.1557; lng = 3.3458; defaultX = 31; defaultY = 64;
+  } else if (text.includes("akure") || text.includes("ondo")) {
+    lat = 7.2571; lng = 5.2058; defaultX = 44; defaultY = 62;
+  } else if (text.includes("osogbo") || text.includes("osun") || text.includes("ilesa") || text.includes("ife")) {
+    lat = 7.7827; lng = 4.5418; defaultX = 39; defaultY = 58;
+  } else if (text.includes("ado") || text.includes("ekiti")) {
+    lat = 7.6211; lng = 5.2215; defaultX = 43; defaultY = 59;
+  // South-East
+  } else if (text.includes("onitsha") || text.includes("anambra") || text.includes("awka") || text.includes("nnewi")) {
+    lat = 6.1519; lng = 6.7758; defaultX = 64; defaultY = 68;
+  } else if ((/\baba\b/i.test(text) && !text.includes("calabar")) || text.includes("abia") || text.includes("umuahia")) {
+    lat = 5.1278; lng = 7.3392; defaultX = 68; defaultY = 75;
+  } else if (text.includes("enugu") || text.includes("nsukka")) {
+    lat = 6.4413; lng = 7.4988; defaultX = 68; defaultY = 62;
+  } else if (text.includes("owerri") || text.includes("imo")) {
+    lat = 5.4832; lng = 7.0358; defaultX = 66; defaultY = 73;
+  } else if (text.includes("abakaliki") || text.includes("ebonyi")) {
+    lat = 6.3249; lng = 8.1137; defaultX = 74; defaultY = 64;
+  // South-South
+  } else if (text.includes("port harcourt") || text.includes("rivers") || text.includes("obio-akpor")) {
+    lat = 4.8156; lng = 7.0498; defaultX = 65; defaultY = 82;
+  } else if (text.includes("benin") || /\bedo\b/i.test(text)) {
+    lat = 6.3382; lng = 5.6258; defaultX = 52; defaultY = 68;
+  } else if (text.includes("warri") || text.includes("asaba") || text.includes("delta")) {
+    lat = 5.5174; lng = 5.7501; defaultX = 55; defaultY = 76;
+  } else if (text.includes("calabar") || text.includes("cross river")) {
+    lat = 4.9757; lng = 8.3417; defaultX = 78; defaultY = 80;
+  } else if (text.includes("uyo") || text.includes("eket") || text.includes("akwa ibom")) {
+    lat = 5.0377; lng = 7.9128; defaultX = 72; defaultY = 82;
+  } else if (text.includes("yenagoa") || text.includes("bayelsa")) {
+    lat = 4.9267; lng = 6.2676; defaultX = 58; defaultY = 84;
   }
 
   const cleanMarket = (addressOrMarket || "").trim() || "Commercial Trading Market, Nigeria";
@@ -663,8 +887,8 @@ export function resolveMarketCoordinates(addressOrMarket: string): {
     landmark: dynamicLandmark,
     lat,
     lng,
-    mapX: dynamicMapX,
-    mapY: dynamicMapY,
+    mapX: defaultX,
+    mapY: defaultY,
   };
 }
 
@@ -722,7 +946,7 @@ export function getCurrentUserVendor(user?: {
     activeUser?.marketLocation?.trim() ||
     (isExplicitDemoMamaChidi
       ? "Shop 14, Line 3, Main Plaza, Balogun Market, Lagos Island, Lagos"
-      : "Commercial Market Stall, Lagos, Nigeria");
+      : "Commercial Market Stall, Nigeria");
   const avatarUrl = activeUser?.avatarUrl || "/images/traders/mama_chidi.jpg";
 
   const resolved = resolveMarketCoordinates(fullAddress);

@@ -58,9 +58,10 @@ export function DaylightHeader({
   const [isRatingStandOpen, setIsRatingStandOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
+  const isDemoMamaChidi = !user || user.id === "user_owner_01" || (user.name === "Mama Chidi" && (!user.marketLocation || user.marketLocation.includes("Balogun")));
   const displayName = user?.name || "Mama Chidi";
-  const shopName = user?.businessName || business.name;
-  const location = user?.marketLocation || business.market_location || "Shop 14, Balogun Market, Lagos";
+  const shopName = user?.businessName || (isDemoMamaChidi ? business.name : `${displayName}'s Store`);
+  const location = user?.marketLocation || (isDemoMamaChidi ? business.market_location || "Shop 14, Balogun Market, Lagos" : "Commercial Trading Shop, Nigeria");
   const profilePhoto = user?.avatarUrl || "/images/traders/mama_chidi.jpg";
 
   return (

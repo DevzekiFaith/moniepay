@@ -50,7 +50,7 @@ interface LiveMarketFeedCardProps {
 
 export function LiveMarketFeedCard({
   tradeType = "retail_provisions",
-  marketLocation = "Balogun / Mile 12 Market, Lagos",
+  marketLocation = "National Depots & Wholesale Hubs, Nigeria",
   onSelectCommodityForDecision,
   onOpenRestockRecord,
 }: LiveMarketFeedCardProps) {

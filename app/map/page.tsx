@@ -46,12 +46,26 @@ const CATEGORIES = [
   "Fabrics, Lace & Aso-Ebi",
 ];
 
+const REGIONS = [
+  { id: "ALL", name: "All Nigeria", short: "All Nigeria" },
+  { id: "NORTH", name: "Northern Belt", short: "North (Kano/Jos/Kaduna)" },
+  { id: "CENTRAL", name: "Abuja & Middle Belt", short: "Abuja / FCT" },
+  { id: "EAST", name: "Eastern Axis", short: "East (Onitsha/Aba)" },
+  { id: "SOUTH_SOUTH", name: "South-South Hubs", short: "South-South (PH/Warri)" },
+  { id: "SOUTH_WEST", name: "South-West Corridors", short: "South-West (Lagos/Ibadan)" },
+];
+
 const MARKETS = [
-  "All Markets",
-  "Balogun Market, Lagos Island",
-  "Mile 12 Wholesale Market, Ketu",
-  "Alaba International Market, Ojo",
-  "Tejuosho Ultra-Modern Market, Yaba",
+  "All Markets Across Nigeria",
+  "Wuse & Utako Markets, Abuja FCT",
+  "Dawanau & Singer Grains Depots, Kano",
+  "Onitsha Main & Relief Markets, Anambra",
+  "Ariaria International Market, Aba",
+  "Bodija & Dugbe Markets, Ibadan",
+  "Oil Mill & Mile 1 Markets, Port Harcourt",
+  "Balogun & Alaba Markets, Lagos",
+  "Terminus Market, Jos",
+  "Sheikh Gumi Central Market, Kaduna",
 ];
 
 function VendorMapContent() {
@@ -62,7 +76,8 @@ function VendorMapContent() {
   const [selectedVendorId, setSelectedVendorId] = useState<string | null>(initialVendorId);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
-  const [selectedMarket, setSelectedMarket] = useState("All Markets");
+  const [selectedRegion, setSelectedRegion] = useState("ALL");
+  const [selectedMarket, setSelectedMarket] = useState("All Markets Across Nigeria");
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
 
   useEffect(() => {
@@ -79,18 +94,118 @@ function VendorMapContent() {
         v.shopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
         v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         v.market.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        v.fullAddress.toLowerCase().includes(searchQuery.toLowerCase()) ||
         v.category.toLowerCase().includes(searchQuery.toLowerCase()) ||
         v.tags.some((t) => t.toLowerCase().includes(searchQuery.toLowerCase()));
 
       const matchCategory =
         selectedCategory === "All Categories" || v.category === selectedCategory;
 
-      const matchMarket =
-        selectedMarket === "All Markets" || v.market.includes(selectedMarket.split(",")[0]);
+      const matchRegion = (() => {
+        if (selectedRegion === "ALL") return true;
+        const m = (v.market + " " + v.fullAddress + " " + v.landmark).toLowerCase();
+        if (selectedRegion === "NORTH") {
+          return (
+            m.includes("kano") ||
+            m.includes("kaduna") ||
+            m.includes("jos") ||
+            m.includes("plateau") ||
+            m.includes("katsina") ||
+            m.includes("sokoto") ||
+            m.includes("borno") ||
+            m.includes("maiduguri") ||
+            m.includes("bauchi") ||
+            m.includes("gombe") ||
+            m.includes("yobe") ||
+            m.includes("kebbi") ||
+            m.includes("zamfara") ||
+            m.includes("jigawa") ||
+            m.includes("taraba") ||
+            m.includes("adamawa") ||
+            m.includes("dawanau") ||
+            m.includes("singer")
+          );
+        }
+        if (selectedRegion === "CENTRAL") {
+          return (
+            m.includes("abuja") ||
+            m.includes("fct") ||
+            m.includes("wuse") ||
+            m.includes("utako") ||
+            m.includes("garki") ||
+            m.includes("minna") ||
+            m.includes("niger") ||
+            m.includes("benue") ||
+            m.includes("makurdi") ||
+            m.includes("kogi") ||
+            m.includes("lokoja") ||
+            m.includes("kwara") ||
+            m.includes("ilorin") ||
+            m.includes("nasarawa")
+          );
+        }
+        if (selectedRegion === "EAST") {
+          return (
+            m.includes("onitsha") ||
+            m.includes("anambra") ||
+            m.includes("aba") ||
+            m.includes("abia") ||
+            m.includes("ariaria") ||
+            m.includes("enugu") ||
+            m.includes("ogbete") ||
+            m.includes("owerri") ||
+            m.includes("imo") ||
+            m.includes("abakaliki") ||
+            m.includes("ebonyi")
+          );
+        }
+        if (selectedRegion === "SOUTH_SOUTH") {
+          return (
+            m.includes("port harcourt") ||
+            m.includes("rivers") ||
+            m.includes("oil mill") ||
+            m.includes("benin") ||
+            m.includes("edo") ||
+            m.includes("warri") ||
+            m.includes("delta") ||
+            m.includes("asaba") ||
+            m.includes("calabar") ||
+            m.includes("cross river") ||
+            m.includes("uyo") ||
+            m.includes("akwa ibom") ||
+            m.includes("bayelsa") ||
+            m.includes("yenagoa")
+          );
+        }
+        if (selectedRegion === "SOUTH_WEST") {
+          return (
+            m.includes("lagos") ||
+            m.includes("balogun") ||
+            m.includes("alaba") ||
+            m.includes("mile 12") ||
+            m.includes("ibadan") ||
+            m.includes("bodija") ||
+            m.includes("oyo") ||
+            m.includes("ogun") ||
+            m.includes("abeokuta") ||
+            m.includes("akure") ||
+            m.includes("ondo") ||
+            m.includes("osun") ||
+            m.includes("ekiti")
+          );
+        }
+        return true;
+      })();
 
-      return matchSearch && matchCategory && matchMarket;
+      const matchMarket =
+        selectedMarket === "All Markets Across Nigeria" ||
+        selectedMarket === "All Markets" ||
+        v.market.toLowerCase().includes(selectedMarket.split(",")[0].toLowerCase().trim()) ||
+        selectedMarket.toLowerCase().includes(v.market.toLowerCase().split(",")[0].trim());
+
+      return matchSearch && matchCategory && matchRegion && matchMarket;
     });
-  }, [vendors, searchQuery, selectedCategory, selectedMarket]);
+  }, [vendors, searchQuery, selectedCategory, selectedRegion, selectedMarket]);
 
   const activeVendor = selectedVendorId
     ? vendors.find((v) => v.id === selectedVendorId) || filteredVendors[0]
@@ -122,7 +237,7 @@ function VendorMapContent() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search shop, market (e.g. Balogun, Alaba) or goods..."
+              placeholder="Search shop across Nigeria (Wuse, Dawanau, Onitsha, Ariaria, Balogun)..."
               className="w-full pl-9 pr-4 py-2 rounded-xl clay-input text-xs font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 focus:outline-none"
             />
             {searchQuery && (
@@ -182,7 +297,7 @@ function VendorMapContent() {
         </div>
 
         {/* Category Filter Pills */}
-        <div className="max-w-5xl mx-auto flex items-center gap-1.5 overflow-x-auto pt-2.5 pb-0.5 scrollbar-none text-xs">
+        <div className="max-w-5xl mx-auto flex items-center gap-1.5 overflow-x-auto pt-2 pb-1 scrollbar-none text-xs">
           {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat;
             return (
@@ -201,53 +316,133 @@ function VendorMapContent() {
             );
           })}
         </div>
+
+        {/* Nationwide Regional Filter Pills */}
+        <div className="max-w-5xl mx-auto flex items-center gap-1.5 overflow-x-auto pt-1 pb-0.5 scrollbar-none text-xs border-t border-slate-200/50 dark:border-white/5 mt-1">
+          <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 shrink-0 uppercase tracking-wider mr-1">
+            Zone:
+          </span>
+          {REGIONS.map((r) => {
+            const isSelected = selectedRegion === r.id;
+            return (
+              <button
+                key={r.id}
+                type="button"
+                onClick={() => setSelectedRegion(r.id)}
+                className={`px-2.5 py-0.5 rounded-lg whitespace-nowrap font-black text-[10.5px] transition-all cursor-pointer shrink-0 border ${
+                  isSelected
+                    ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
+                    : "bg-white/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border-slate-200/80 dark:border-white/10 hover:border-emerald-400"
+                }`}
+              >
+                {r.short}
+              </button>
+            );
+          })}
+        </div>
       </header>
 
       {/* ── MAIN CONTENT AREA ── */}
       <main className="flex-1 max-w-5xl w-full mx-auto p-3 sm:p-4 grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
         {/* ── LEFT / MAIN: INTERACTIVE MARKET MAP STAGE (7 COLS ON DESKTOP) ── */}
         <div className={`lg:col-span-7 space-y-3 ${viewMode === "list" ? "hidden lg:block" : "block"}`}>
-          {/* Visual Interactive Lagos Market Hubs SVG Canvas */}
+          {/* Visual Interactive All-Nigeria Commercial Hubs SVG Canvas */}
           <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] rounded-[28px] overflow-hidden bg-slate-900 border-2 border-white dark:border-slate-800 shadow-2xl relative">
             {/* Ambient Map Grid Background */}
             <svg
-              className="absolute inset-0 w-full h-full opacity-40 pointer-events-none"
+              className="absolute inset-0 w-full h-full opacity-35 pointer-events-none"
               xmlns="http://www.w3.org/2000/svg"
             >
               <defs>
-                <pattern id="market-grid" width="36" height="36" patternUnits="userSpaceOnUse">
-                  <path d="M 36 0 L 0 0 0 36" fill="none" stroke="rgba(148, 163, 184, 0.25)" strokeWidth="1" />
+                <pattern id="market-grid" width="32" height="32" patternUnits="userSpaceOnUse">
+                  <path d="M 32 0 L 0 0 0 32" fill="none" stroke="rgba(148, 163, 184, 0.22)" strokeWidth="1" />
                 </pattern>
               </defs>
               <rect width="100%" height="100%" fill="url(#market-grid)" />
             </svg>
 
-            {/* Simulated Lagos Waterways / Lagoon Accents */}
+            {/* Authentic Nigeria Rivers & Commercial Trade Arteries (Niger-Benue Confluence & Atlantic Coast) */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+              {/* Atlantic Ocean / Bight of Benin / Biafra Coastline */}
               <path
-                d="M 0 65 Q 35 55 55 70 T 100 60 L 100 100 L 0 100 Z"
-                fill="#0f172a"
-                opacity="0.8"
+                d="M 0 88 Q 28 85 52 90 T 100 89 L 100 100 L 0 100 Z"
+                fill="#0a192f"
+                opacity="0.9"
               />
               <path
-                d="M 30 70 Q 50 62 75 75 T 100 70"
+                d="M 0 88 Q 28 85 52 90 T 100 89"
                 fill="none"
                 stroke="#0284c7"
-                strokeWidth="1"
-                opacity="0.4"
-                strokeDasharray="2 2"
+                strokeWidth="1.2"
+                opacity="0.6"
               />
+
+              {/* River Niger (North-West entering down to Lokoja Confluence) */}
+              <path
+                d="M 18 24 Q 32 38 42 46 T 52 54"
+                fill="none"
+                stroke="#38bdf8"
+                strokeWidth="1.8"
+                strokeDasharray="4 2"
+                opacity="0.45"
+              />
+
+              {/* River Benue (North-East entering to meet River Niger at Lokoja) */}
+              <path
+                d="M 90 38 Q 74 46 63 50 T 52 54"
+                fill="none"
+                stroke="#38bdf8"
+                strokeWidth="1.8"
+                strokeDasharray="4 2"
+                opacity="0.45"
+              />
+
+              {/* Combined River Niger Southward to Niger Delta */}
+              <path
+                d="M 52 54 Q 54 68 53 78 Q 49 85 45 92"
+                fill="none"
+                stroke="#38bdf8"
+                strokeWidth="2.2"
+                opacity="0.5"
+              />
+              <path
+                d="M 53 78 Q 59 84 66 92"
+                fill="none"
+                stroke="#38bdf8"
+                strokeWidth="1.8"
+                opacity="0.4"
+              />
+
+              {/* Lokoja Confluence Node Indicator */}
+              <circle cx="52" cy="54" r="2.2" fill="#38bdf8" opacity="0.7" />
+              <circle cx="52" cy="54" r="5" fill="none" stroke="#38bdf8" strokeWidth="0.8" opacity="0.3" />
             </svg>
 
+            {/* Stylized Nationwide Region Watermarks */}
+            <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between text-[9.5px] font-black tracking-widest text-slate-500/40 select-none">
+              <div className="flex justify-between items-start">
+                <span>NORTH-WEST (KANO / SOKOTO)</span>
+                <span>NORTH-EAST (MAIDUGURI / BAUCHI)</span>
+              </div>
+              <div className="flex justify-center items-center gap-2 text-slate-400/50">
+                <span>• ABUJA FCT • LOKOJA CONFLUENCE •</span>
+              </div>
+              <div className="flex justify-between items-end pb-3">
+                <span>SOUTH-WEST (LAGOS / IBADAN)</span>
+                <span>SOUTH-EAST (ONITSHA / ABA) • NIGER DELTA</span>
+              </div>
+            </div>
+
             {/* Market Area Landmarks Overlays */}
-            <div className="absolute top-4 left-4 pointer-events-none">
-              <span className="px-2.5 py-1 rounded-full bg-slate-800/90 text-sky-300 text-[10px] font-black border border-sky-500/30 backdrop-blur-md">
-                📍 Nigeria Commercial Trading Hubs & Market Map
+            <div className="absolute top-3 left-3 pointer-events-none">
+              <span className="px-2.5 py-1 rounded-full bg-slate-900/95 text-sky-300 text-[10px] font-black border border-sky-500/30 backdrop-blur-md flex items-center gap-1.5 shadow-lg">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span>All-Nigeria Commercial Trading Grid • 36 States & FCT</span>
               </span>
             </div>
 
-            <div className="absolute bottom-3 left-3 text-[10px] text-slate-400 font-bold pointer-events-none bg-slate-950/80 px-2 py-0.5 rounded-md backdrop-blur-sm border border-white/5">
-              Fixed Vendor Locations • {filteredVendors.length} Verified Shops
+            <div className="absolute bottom-2.5 left-3 text-[10px] text-slate-300 font-bold pointer-events-none bg-slate-950/90 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/10 shadow-md">
+              Nationwide Verified Merchants • {filteredVendors.length} Active Shops
             </div>
 
             {/* ── INTERACTIVE VENDOR MAP PINS ── */}

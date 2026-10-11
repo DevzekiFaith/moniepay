@@ -178,7 +178,7 @@ function LoginContent() {
         email: identifier.trim(),
         pass: password,
         businessName: shopTitle,
-        marketLocation: marketLocation.trim() || "Balogun Market, Lagos",
+        marketLocation: marketLocation.trim() || "Commercial Retail Shop, Nigeria",
         avatarUrl,
       });
 
@@ -194,7 +194,7 @@ function LoginContent() {
               businessName: shopTitle,
               ownerName: fullName.trim(),
               phone: identifier.trim(),
-              marketLocation: marketLocation.trim() || "Balogun Market, Lagos",
+              marketLocation: marketLocation.trim() || "Commercial Retail Shop, Nigeria",
             });
           } catch {}
         }
@@ -494,15 +494,39 @@ function LoginContent() {
                 </div>
 
                 {/* Market Location */}
-                <div className="relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
-                  <input
-                    type="text"
-                    value={marketLocation}
-                    onChange={(e) => setMarketLocation(e.target.value)}
-                    placeholder="Market Location (e.g. Balogun Market, Lagos)"
-                    className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
-                  />
+                <div className="space-y-1.5">
+                  <div className="relative">
+                    <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 dark:text-slate-500" />
+                    <input
+                      type="text"
+                      value={marketLocation}
+                      onChange={(e) => setMarketLocation(e.target.value)}
+                      placeholder="Shop/Market Location (e.g. Wuse Abuja, Dawanau Kano, Ariaria Aba)"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
+                    />
+                  </div>
+                  {/* Quick nationwide suggestion chips */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[10px] text-slate-500 dark:text-slate-400">
+                    <span className="shrink-0 font-bold text-slate-400">Quick hubs:</span>
+                    {[
+                      "Wuse Market, Abuja",
+                      "Dawanau Grains Depot, Kano",
+                      "Ariaria Intl Market, Aba",
+                      "Onitsha Main Market",
+                      "Bodija Market, Ibadan",
+                      "Oil Mill Market, Port Harcourt",
+                      "Balogun Market, Lagos",
+                    ].map((hub) => (
+                      <button
+                        key={hub}
+                        type="button"
+                        onClick={() => setMarketLocation(hub)}
+                        className="shrink-0 px-2 py-0.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-blue-50 dark:hover:bg-blue-900/40 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 transition-colors cursor-pointer"
+                      >
+                        {hub.split(",")[0]}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 {/* Who Invite You / Referral Code */}

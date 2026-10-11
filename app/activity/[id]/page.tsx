@@ -170,8 +170,9 @@ export default function TransactionDetailPage() {
 
   const isPositive = transaction?.type === "SALE" || transaction?.type === "DEBT_COLLECTION";
 
-  const shopName = user?.businessName || "Mama Chidi Super Provisions";
-  const shopLocation = user?.marketLocation || "Shop 14, Balogun Market, Lagos";
+  const isDemoMamaChidi = !user || user.id === "user_owner_01" || (user.name === "Mama Chidi" && (!user.marketLocation || user.marketLocation.includes("Balogun")));
+  const shopName = user?.businessName || (isDemoMamaChidi ? "Mama Chidi Super Provisions" : "Commercial Retail Store");
+  const shopLocation = user?.marketLocation || (isDemoMamaChidi ? "Shop 14, Balogun Market, Lagos" : "Commercial Trading Shop, Nigeria");
 
   const handleCopyReference = () => {
     if (!transaction) return;

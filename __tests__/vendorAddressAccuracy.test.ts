@@ -76,6 +76,45 @@ describe("Real Vendor Address & Shop Accuracy Suite", () => {
       expect(jos.landmark).toContain("Jos Central");
     });
 
+    it("accurately detects cities across all 6 geopolitical zones of Nigeria", () => {
+      // North-East: Maiduguri, Borno
+      const borno = resolveMarketCoordinates("Shop 5, Monday Market, Maiduguri");
+      expect(borno.lat).toBeCloseTo(11.8333, 2);
+      expect(borno.lng).toBeCloseTo(13.1500, 2);
+
+      // North-West: Sokoto
+      const sokoto = resolveMarketCoordinates("Old Market, Sokoto State");
+      expect(sokoto.lat).toBeCloseTo(13.0059, 2);
+      expect(sokoto.lng).toBeCloseTo(5.2476, 2);
+
+      // North-Central: Minna, Niger
+      const minna = resolveMarketCoordinates("Minna Central Market, Niger State");
+      expect(minna.lat).toBeCloseTo(9.6139, 2);
+
+      // South-South: Calabar, Cross River
+      const calabar = resolveMarketCoordinates("Watt Market, Calabar, Cross River");
+      expect(calabar.lat).toBeCloseTo(4.9757, 2);
+
+      // South-South: Benin City, Edo
+      const benin = resolveMarketCoordinates("Oba Market, Benin City");
+      expect(benin.lat).toBeCloseTo(6.3382, 2);
+
+      // South-East: Owerri, Imo
+      const owerri = resolveMarketCoordinates("Eke Ukwu Market, Owerri, Imo State");
+      expect(owerri.lat).toBeCloseTo(5.4832, 2);
+
+      // South-West: Akure, Ondo
+      const akure = resolveMarketCoordinates("Oja Oba, Akure, Ondo State");
+      expect(akure.lat).toBeCloseTo(7.2571, 2);
+    });
+
+    it("falls back to central Nigeria coordinates when location is generic, never forcing Lagos", () => {
+      const generic = resolveMarketCoordinates("Block 3, General Provisions Store");
+      expect(generic.lat).toBeCloseTo(9.0765, 2); // Nigeria Centroid (Abuja)
+      expect(generic.lng).toBeCloseTo(7.3986, 2);
+      expect(generic.market).not.toContain("Balogun");
+    });
+
     it("dynamically extracts landmark for custom plaza and street addresses without Balogun hardcoding", () => {
       const customPlaza = resolveMarketCoordinates("Shop 12, Silver Plaza, Admiralty Way, Lekki");
       expect(customPlaza.landmark).toContain("Inside Silver Plaza");
@@ -112,6 +151,19 @@ describe("Real Vendor Address & Shop Accuracy Suite", () => {
       expect(vendor.category).toBe("Auto Parts & Hardware");
       expect(vendor.phone).toBe("+234 812 345 6789");
       expect(vendor.whatsapp).toBe("2348123456789");
+    });
+
+    it("defaults new custom user without location to Commercial Market Stall, Nigeria", () => {
+      const newUser = {
+        id: "usr_kaduna_trader_55",
+        name: "Ibrahim Bello",
+        businessName: "Bello Agricultural Supplies",
+      };
+
+      const vendor = getCurrentUserVendor(newUser);
+      expect(vendor.fullAddress).toBe("Commercial Market Stall, Nigeria");
+      expect(vendor.coordinates.lat).toBeCloseTo(9.0765, 2); // Central Nigeria
+      expect(vendor.coordinates.lng).toBeCloseTo(7.3986, 2);
     });
 
     it("does not leak Mama Chidi contact or Balogun address for custom registered users", () => {

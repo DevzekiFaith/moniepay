@@ -36,7 +36,7 @@ export async function GET(request: NextRequest) {
     }
 
     const finalBusinessName = businessName || `${user.name || "My"}'s Business`;
-    const finalLocation = marketLocation || "Balogun Market, Lagos";
+    const finalLocation = marketLocation || "Commercial Retail Shop, Nigeria";
 
     return NextResponse.json({
       authenticated: true,

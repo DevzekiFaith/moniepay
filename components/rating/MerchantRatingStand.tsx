@@ -87,7 +87,7 @@ export function MerchantRatingStand({
   onClose,
   shopName = "Mama Chidi Super Provisions",
   traderName = "Mama Chidi",
-  marketLocation = "Balogun Market, Lagos",
+  marketLocation = "Commercial Trading Hub, Nigeria",
   shopId = "mama_chidi",
   avatarUrl = "/images/traders/mama_chidi.jpg",
   onOpenRatingForm,
