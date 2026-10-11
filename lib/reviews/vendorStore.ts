@@ -237,6 +237,84 @@ const COOLDOWN_KEY = "moniepay_review_cooldowns";
 const CUSTOM_VENDORS_KEY = "moniepay_custom_vendors";
 
 // ── Helper to resolve market coordinates & landmarks for any Nigerian address ──
+function hashStringToRange(str: string, min: number, max: number): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = (hash << 5) - hash + str.charCodeAt(i);
+    hash |= 0;
+  }
+  const normalized = (Math.abs(hash) % 1000) / 1000;
+  return Math.round(min + normalized * (max - min));
+}
+
+function extractDynamicLandmark(address: string): string {
+  const parts = address.split(/[,;\n]/).map((s) => s.trim()).filter(Boolean);
+  
+  // Find a part that sounds like a plaza, complex, building, junction, or street
+  const landmarkPart = parts.find((p) =>
+    /(plaza|complex|mall|shopping|building|centre|center|junction|bus stop|line|block|shed|gate|roundabout|expressway|street|road|avenue|close|way)/i.test(p)
+  );
+
+  if (landmarkPart) {
+    if (/(plaza|complex|mall|shopping|building|centre|center)/i.test(landmarkPart)) {
+      return `Inside ${landmarkPart}`;
+    }
+    if (/(junction|bus stop|roundabout|gate)/i.test(landmarkPart)) {
+      return `Close to ${landmarkPart}`;
+    }
+    if (/(street|road|avenue|close|way|expressway)/i.test(landmarkPart)) {
+      return `Located along ${landmarkPart}`;
+    }
+    return `Stall situated at ${landmarkPart}`;
+  }
+
+  if (parts.length >= 2) {
+    return `Directly within ${parts.slice(1).join(", ")}`;
+  }
+
+  return address.trim() ? `Stall situated at ${address.trim()}` : "Central Commercial Trading Stall";
+}
+
+export function inferCategory(nameOrGoods?: string): string {
+  const text = (nameOrGoods || "").toLowerCase();
+  if (/(grain|food|rice|bean|garri|semo|yam|flour|oil|grocer|foodstuff)/i.test(text)) {
+    return "Wholesale Foodstuff & Grains";
+  }
+  if (/(tech|phone|mobile|gadget|electronic|computer|laptop|charger|accessories|audio)/i.test(text)) {
+    return "Electronics & Gadgets";
+  }
+  if (/(fabric|lace|ankara|aso-ebi|fashion|textile|boutique|wear|cloth|tailor)/i.test(text)) {
+    return "Fabrics, Lace & Aso-Ebi";
+  }
+  if (/(pharmacy|chemist|drug|medicine|clinic|health)/i.test(text)) {
+    return "Pharmacy & Healthcare";
+  }
+  if (/(auto|spare|part|motor|car|vehicle|tyre|battery|hardware)/i.test(text)) {
+    return "Auto Parts & Hardware";
+  }
+  if (/(provision|super|market|retail|store|kiosk|mart)/i.test(text)) {
+    return "Provisions & Groceries";
+  }
+  return "General Retail & Provisions";
+}
+
+export function getCategoryTags(category: string): string[] {
+  switch (category) {
+    case "Wholesale Foodstuff & Grains":
+      return ["Accurate Measure / Derica", "Clean Bag / Zero Stones", "Fair Market Price", "Always Has Change"];
+    case "Electronics & Gadgets":
+      return ["100% Genuine Tech", "Warranty Included", "Fast Transfer Confirmation", "Original Accessories"];
+    case "Fabrics, Lace & Aso-Ebi":
+      return ["Original Lace", "Quality Aso-Ebi", "Polite & Patient", "Fair Price"];
+    case "Pharmacy & Healthcare":
+      return ["NAFDAC Approved", "Genuine Medicine", "Qualified Advice", "Fast Dispensing"];
+    case "Auto Parts & Hardware":
+      return ["Original Parts", "Tested & Working", "Direct Depot Supply", "Fair Deal"];
+    default:
+      return ["Original Goods Only", "Fair Market Price", "Always Has Change", "Fast Packaging"];
+  }
+}
+
 export function resolveMarketCoordinates(addressOrMarket: string): {
   market: string;
   landmark: string;
@@ -246,21 +324,34 @@ export function resolveMarketCoordinates(addressOrMarket: string): {
   mapY: number;
 } {
   const text = (addressOrMarket || "").toLowerCase();
+  const dynamicLandmark = extractDynamicLandmark(addressOrMarket || "");
 
+  const withSpecific = (defaultLandmark: string) => {
+    if (
+      dynamicLandmark.startsWith("Inside ") ||
+      dynamicLandmark.startsWith("Close to ") ||
+      dynamicLandmark.startsWith("Located along ")
+    ) {
+      return `${dynamicLandmark}, near ${defaultLandmark.replace(/^near\s+/i, "")}`;
+    }
+    return defaultLandmark;
+  };
+
+  // 1. Lagos Trading Hubs
   if (text.includes("mile 12") || text.includes("ketu") || text.includes("kosofe")) {
     return {
       market: "Mile 12 Wholesale Market, Ketu",
-      landmark: "Near Main Truck Offloading Bay, Gate 2",
+      landmark: withSpecific("Near Main Truck Offloading Bay, Gate 2"),
       lat: 6.6018,
       lng: 3.3958,
       mapX: 68,
       mapY: 28,
     };
   }
-  if (text.includes("alaba") || text.includes("ojo") || text.includes("electronics")) {
+  if (text.includes("alaba") || text.includes("ojo") || text.includes("alaba int")) {
     return {
       market: "Alaba International Market, Ojo",
-      landmark: "Near St. Patrick's Cathedral entrance, Alaba expressway",
+      landmark: withSpecific("Near St. Patrick's Cathedral entrance, Alaba expressway"),
       lat: 6.4623,
       lng: 3.1925,
       mapX: 20,
@@ -270,62 +361,310 @@ export function resolveMarketCoordinates(addressOrMarket: string): {
   if (text.includes("tejuosho") || text.includes("yaba") || text.includes("ojuelegba")) {
     return {
       market: "Tejuosho Ultra-Modern Market, Yaba",
-      landmark: "Right by Yaba train station flyover escalator",
+      landmark: withSpecific("Right by Yaba train station flyover escalator"),
       lat: 6.5165,
       lng: 3.3752,
       mapX: 52,
       mapY: 42,
     };
   }
-  if (text.includes("computer village") || text.includes("ikeja") || text.includes("otigba")) {
+  if (text.includes("computer village") || text.includes("otigba") || (text.includes("ikeja") && text.includes("village"))) {
     return {
       market: "Computer Village, Ikeja, Lagos",
-      landmark: "Otigba Street junction, opposite Medical Road",
+      landmark: withSpecific("Otigba Street junction, opposite Medical Road"),
       lat: 6.5956,
       lng: 3.3369,
       mapX: 48,
       mapY: 24,
     };
   }
-  if (text.includes("trade fair") || text.includes("badagry") || text.includes("festac")) {
+  if (text.includes("trade fair") || text.includes("badagry") || text.includes("aspamda") || text.includes("bba")) {
     return {
       market: "Trade Fair Complex, Badagry Expressway",
-      landmark: "BBA Hall 4, Trade Fair main gate",
+      landmark: withSpecific("BBA Hall 4, Trade Fair main gate"),
       lat: 6.4632,
       lng: 3.2384,
       mapX: 26,
       mapY: 65,
     };
   }
-  if (text.includes("idumota") || text.includes("dosunmu") || text.includes("nnamdi azikiwe")) {
+  if (text.includes("idumota") || text.includes("dosunmu") || text.includes("carter bridge")) {
     return {
       market: "Idumota Wholesale Market, Lagos Island",
-      landmark: "Beside Idumota cenotaph & Carter Bridge entrance",
+      landmark: withSpecific("Beside Idumota cenotaph & Carter Bridge entrance"),
       lat: 6.459,
       lng: 3.3892,
       mapX: 45,
       mapY: 55,
     };
   }
-  if (text.includes("lekki") || text.includes("ajah") || text.includes("victoria island") || text.includes("vi")) {
+  if (text.includes("daleko") || (text.includes("mushin") && text.includes("oil"))) {
     return {
-      market: "Lekki Market & Palms Hub, Lagos",
-      landmark: "Admiralty Way / Lekki Phase 1 Junction",
+      market: "Daleko Wholesale Oil & Rice Market, Mushin",
+      landmark: withSpecific("Daleko Main Gate, near Railway Line Crossing"),
+      lat: 6.5298,
+      lng: 3.3518,
+      mapX: 46,
+      mapY: 38,
+    };
+  }
+  if (text.includes("iddo") || text.includes("oyingbo") || text.includes("ebute metta")) {
+    return {
+      market: "Iddo Wholesale Food Depot, Lagos",
+      landmark: withSpecific("Near Railway Terminus & Carter Bridge Ramp"),
+      lat: 6.4789,
+      lng: 3.3802,
+      mapX: 44,
+      mapY: 50,
+    };
+  }
+  if (text.includes("ladipo") || (text.includes("toyota") && text.includes("parts"))) {
+    return {
+      market: "Ladipo International Auto Parts Market, Mushin",
+      landmark: withSpecific("Beside Toyota Bus Stop, Apapa-Oshodi Expressway"),
+      lat: 6.5367,
+      lng: 3.3442,
+      mapX: 45,
+      mapY: 36,
+    };
+  }
+  if (text.includes("oshodi") || text.includes("arena")) {
+    return {
+      market: "Oshodi Ultra-Modern / Arena Market, Lagos",
+      landmark: withSpecific("Oshodi Transport Interchange, Terminal 2"),
+      lat: 6.5562,
+      lng: 3.3533,
+      mapX: 49,
+      mapY: 32,
+    };
+  }
+  if (text.includes("lekki") || text.includes("ajah") || text.includes("victoria island") || text.includes("vi") || text.includes("ikoyi")) {
+    return {
+      market: "Lekki Commercial District & Palms Hub, Lagos",
+      landmark: withSpecific("Admiralty Way / Lekki Phase 1 Junction"),
       lat: 6.4474,
       lng: 3.4849,
       mapX: 78,
       mapY: 68,
     };
   }
+  if (text.includes("balogun") || text.includes("breadfruit") || text.includes("lagos island")) {
+    return {
+      market: "Balogun Market, Lagos Island",
+      landmark: withSpecific("Directly opposite First Bank junction, Beside Breadfruit street"),
+      lat: 6.4551,
+      lng: 3.3841,
+      mapX: 42,
+      mapY: 58,
+    };
+  }
 
-  // Default / Balogun Market with custom address
+  // 2. Kano State & Northern Hubs
+  if (text.includes("dawanau") || text.includes("dawakin tofa")) {
+    return {
+      market: "Dawanau International Grains Depot, Kano",
+      landmark: withSpecific("Main Grains Offloading Bay, Katsina Road, Kano"),
+      lat: 12.0625,
+      lng: 8.4419,
+      mapX: 62,
+      mapY: 15,
+    };
+  }
+  if (text.includes("singer") || text.includes("kurmi") || text.includes("sabon gari") || text.includes("fagge")) {
+    return {
+      market: "Singer Wholesale Market, Kano",
+      landmark: withSpecific("Bompai Road / Fagge Central Mosque Axis"),
+      lat: 12.0022,
+      lng: 8.5291,
+      mapX: 65,
+      mapY: 18,
+    };
+  }
+
+  // 3. Anambra & South-East Hubs
+  if (text.includes("onitsha") || text.includes("relief market") || text.includes("bridgehead") || text.includes("ogbaru")) {
+    return {
+      market: "Onitsha Main / Relief Market, Anambra",
+      landmark: withSpecific("Beside Holy Trinity Cathedral & River Niger Bank"),
+      lat: 6.1519,
+      lng: 6.7758,
+      mapX: 72,
+      mapY: 60,
+    };
+  }
+  if (text.includes("nnewi") || text.includes("nkwo nnewi")) {
+    return {
+      market: "Nkwo Nnewi Industrial Market, Anambra",
+      landmark: withSpecific("Near Nkwo Nnewi Triangle & Bank Road"),
+      lat: 6.0198,
+      lng: 6.9167,
+      mapX: 74,
+      mapY: 62,
+    };
+  }
+  if (text.includes("ariaria") || text.includes("aba") || text.includes("ekeoha") || text.includes("faulks")) {
+    return {
+      market: "Ariaria International Market, Aba, Abia",
+      landmark: withSpecific("Faulks Road Gate, near A-Line Leather Section"),
+      lat: 5.1278,
+      lng: 7.3392,
+      mapX: 76,
+      mapY: 66,
+    };
+  }
+  if (text.includes("ogbete") || text.includes("enugu")) {
+    return {
+      market: "Ogbete Main Market, Enugu",
+      landmark: withSpecific("Near Holy Ghost Cathedral & Peace Mass Park"),
+      lat: 6.4413,
+      lng: 7.4988,
+      mapX: 78,
+      mapY: 55,
+    };
+  }
+
+  // 4. Oyo State & South-West Hubs
+  if (text.includes("bodija") || text.includes("dugbe") || text.includes("gbagi") || text.includes("ibadan") || text.includes("ogunpa")) {
+    return {
+      market: "Bodija Market, Ibadan, Oyo State",
+      landmark: withSpecific("Near Bodija Railway Station & Foodstuff Depot"),
+      lat: 7.4345,
+      lng: 3.9042,
+      mapX: 38,
+      mapY: 34,
+    };
+  }
+
+  // 5. Abuja (FCT) Hubs
+  if (text.includes("wuse") || text.includes("utako") || text.includes("garki") || text.includes("abuja") || text.includes("banex")) {
+    return {
+      market: "Wuse Modern Market, Abuja FCT",
+      landmark: withSpecific("Kashim Ibrahim Way Gate, Wuse Zone 5"),
+      lat: 9.0643,
+      lng: 7.4665,
+      mapX: 58,
+      mapY: 38,
+    };
+  }
+
+  // 6. Rivers & South-South Hubs
+  if (text.includes("oil mill") || text.includes("mile 1") || text.includes("port harcourt") || text.includes("trans amadi") || text.includes("rivers")) {
+    return {
+      market: "Oil Mill / Mile 1 Market, Port Harcourt",
+      landmark: withSpecific("Aba-Port Harcourt Expressway Flyover Junction"),
+      lat: 4.8431,
+      lng: 7.0398,
+      mapX: 70,
+      mapY: 82,
+    };
+  }
+
+  // 7. Plateau State
+  if (text.includes("terminus") || text.includes("jos") || text.includes("plateau")) {
+    return {
+      market: "Terminus Main Market, Jos, Plateau",
+      landmark: withSpecific("Ahmadu Bello Way, Jos Central"),
+      lat: 9.9285,
+      lng: 8.8921,
+      mapX: 68,
+      mapY: 32,
+    };
+  }
+
+  // 8. Kaduna State
+  if (text.includes("kaduna") || text.includes("sheikh gumi") || text.includes("kasuwan barci")) {
+    return {
+      market: "Sheikh Gumi Central Market, Kaduna",
+      landmark: withSpecific("Ahmadu Bello Way / Station Roundabout, Kaduna"),
+      lat: 10.5105,
+      lng: 7.4165,
+      mapX: 55,
+      mapY: 26,
+    };
+  }
+
+  // 9. Edo State
+  if (text.includes("benin") || text.includes("oba market") || text.includes("edo")) {
+    return {
+      market: "Oba Market, Benin City, Edo State",
+      landmark: withSpecific("Ring Road Roundabout, opposite Oba's Palace"),
+      lat: 6.3382,
+      lng: 5.6258,
+      mapX: 60,
+      mapY: 64,
+    };
+  }
+
+  // 10. Delta State
+  if (text.includes("asaba") || text.includes("warri") || text.includes("delta") || text.includes("ogbeogonogo")) {
+    return {
+      market: "Ogbeogonogo / Igbudu Market, Delta State",
+      landmark: withSpecific("Nnebisi Road / Warri Sapele Road Axis"),
+      lat: 6.1982,
+      lng: 6.7328,
+      mapX: 64,
+      mapY: 70,
+    };
+  }
+
+  // ── DYNAMIC EXTRACTION FOR CUSTOM ADDRESSES ──
+  // Extract clean landmark and location centroid from trader's real custom address
+  const dynamicMapX = hashStringToRange(addressOrMarket || "default", 28, 72);
+  const dynamicMapY = hashStringToRange(addressOrMarket || "default_y", 28, 72);
+
+  // Detect state / city coordinates if mentioned
+  let lat = 6.5244;
+  let lng = 3.3792;
+  if (text.includes("kano")) {
+    lat = 12.0022;
+    lng = 8.5291;
+  } else if (text.includes("abuja") || text.includes("fct")) {
+    lat = 9.0643;
+    lng = 7.4665;
+  } else if (text.includes("ibadan") || text.includes("oyo")) {
+    lat = 7.3775;
+    lng = 3.9470;
+  } else if (text.includes("onitsha") || text.includes("anambra")) {
+    lat = 6.1519;
+    lng = 6.7758;
+  } else if (text.includes("aba") || text.includes("abia")) {
+    lat = 5.1278;
+    lng = 7.3392;
+  } else if (text.includes("port harcourt") || text.includes("rivers")) {
+    lat = 4.8156;
+    lng = 7.0498;
+  } else if (text.includes("enugu")) {
+    lat = 6.4413;
+    lng = 7.4988;
+  } else if (text.includes("jos") || text.includes("plateau")) {
+    lat = 9.9285;
+    lng = 8.8921;
+  } else if (text.includes("kaduna")) {
+    lat = 10.5105;
+    lng = 7.4165;
+  } else if (text.includes("calabar") || text.includes("cross river")) {
+    lat = 4.9757;
+    lng = 8.3417;
+  } else if (text.includes("uyo") || text.includes("akwa ibom")) {
+    lat = 5.0377;
+    lng = 7.9128;
+  } else if (text.includes("ilorin") || text.includes("kwara")) {
+    lat = 8.4966;
+    lng = 4.5421;
+  } else if (text.includes("abeokuta") || text.includes("ogun")) {
+    lat = 7.1557;
+    lng = 3.3458;
+  }
+
+  const cleanMarket = (addressOrMarket || "").trim() || "Commercial Trading Market, Nigeria";
+
   return {
-    market: addressOrMarket || "Balogun Market, Lagos Island",
-    landmark: "Directly opposite First Bank junction, Beside Breadfruit street",
-    lat: 6.4551,
-    lng: 3.3841,
-    mapX: 42,
-    mapY: 58,
+    market: cleanMarket,
+    landmark: dynamicLandmark,
+    lat,
+    lng,
+    mapX: dynamicMapX,
+    mapY: dynamicMapY,
   };
 }
 
@@ -349,11 +688,13 @@ export function saveCustomVendor(vendor: VendorProfile) {
 }
 
 /**
- * Synchronizes the logged-in merchant's active profile and address across the entire app
+ * Synchronizes the logged-in merchant's active profile and real address across the entire app
  */
 export function getCurrentUserVendor(user?: {
   id?: string;
   name?: string;
+  email?: string;
+  phone?: string;
   businessName?: string;
   marketLocation?: string;
   avatarUrl?: string;
@@ -366,24 +707,60 @@ export function getCurrentUserVendor(user?: {
     } catch {}
   }
 
+  const isExplicitDemoMamaChidi =
+    activeUser?.id === "user_owner_01" ||
+    (activeUser?.name === "Mama Chidi" &&
+      activeUser?.businessName === "Mama Chidi Super Provisions" &&
+      (!activeUser.marketLocation || activeUser.marketLocation.includes("Balogun")));
+
   const shopId = activeUser?.id || "mama_chidi";
-  const shopName = activeUser?.businessName || "Mama Chidi Super Provisions";
+  const shopName =
+    activeUser?.businessName ||
+    (activeUser?.name ? `${activeUser.name}'s Shop` : "Mama Chidi Super Provisions");
   const traderName = activeUser?.name || "Mama Chidi";
-  const fullAddress = activeUser?.marketLocation || "Shop 14, Line 3, Main Plaza, Balogun Market, Lagos Island, Lagos";
+  const fullAddress =
+    activeUser?.marketLocation?.trim() ||
+    (isExplicitDemoMamaChidi
+      ? "Shop 14, Line 3, Main Plaza, Balogun Market, Lagos Island, Lagos"
+      : "Commercial Market Stall, Lagos, Nigeria");
   const avatarUrl = activeUser?.avatarUrl || "/images/traders/mama_chidi.jpg";
 
   const resolved = resolveMarketCoordinates(fullAddress);
+  const category = inferCategory(shopName);
+  const tags = getCategoryTags(category);
+
+  // Phone and WhatsApp resolution for real trader without leaking Mama Chidi
+  let phone = activeUser?.phone || "";
+  if (!phone && activeUser?.email && /^(\+?234|0)\d{9,10}$/.test(activeUser.email.replace(/\s+/g, ""))) {
+    phone = activeUser.email.trim();
+  }
+  if (!phone) {
+    if (activeUser?.id === "user_owner_01" || activeUser?.id === "mama_chidi") {
+      phone = "+234 803 123 4567";
+    } else if (activeUser?.id === "user_garba_02" || activeUser?.id === "alhaji_garba") {
+      phone = "+234 802 987 6543";
+    } else if (activeUser?.id === "user_emeka_03" || activeUser?.id === "emeka") {
+      phone = "+234 814 555 7890";
+    } else if (activeUser?.id === "user_blessing_04" || activeUser?.id === "blessing") {
+      phone = "+234 809 333 1122";
+    } else {
+      phone = "+234 800 000 0000";
+    }
+  }
+
+  const cleanDigits = phone.replace(/\D/g, "");
+  const whatsapp = cleanDigits.startsWith("0") ? `234${cleanDigits.slice(1)}` : cleanDigits || "2348031234567";
 
   const vendorProfile: VendorProfile = {
     id: shopId,
     name: traderName,
     shopName,
-    category: "Provisions & Groceries",
+    category,
     market: resolved.market,
     fullAddress,
     landmark: resolved.landmark,
-    phone: "+234 803 123 4567",
-    whatsapp: "2348031234567",
+    phone,
+    whatsapp,
     image: avatarUrl,
     code: `MP-${shopId.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase() || "84920"}`,
     coordinates: {
@@ -394,7 +771,7 @@ export function getCurrentUserVendor(user?: {
     },
     openingHours: "Mon - Sat: 7:30 AM - 6:30 PM",
     verified: true,
-    tags: ["Original Goods Only", "Fair Market Price", "Always Has Change", "Fast Packaging"],
+    tags,
   };
 
   saveCustomVendor(vendorProfile);
@@ -407,34 +784,108 @@ export function getAllVendors(): VendorProfile[] {
   const initial = Object.values(INITIAL_VENDORS);
 
   const activeUserVendor = getCurrentUserVendor();
-  const otherVendors = initial.filter((v) => v.id !== activeUserVendor.id && v.id !== "mama_chidi");
+  
+  // Combine custom vendors, active user vendor, and seed vendors, deduplicated by id
+  const vendorMap = new Map<string, VendorProfile>();
+  
+  // Put active user vendor first
+  vendorMap.set(activeUserVendor.id, activeUserVendor);
+  
+  // Add other custom vendors
+  custom.forEach((v) => {
+    if (!vendorMap.has(v.id)) {
+      vendorMap.set(v.id, v);
+    }
+  });
 
-  // Put the active owner's shop first, followed by custom and other market shops
-  return [activeUserVendor, ...otherVendors];
+  // Add initial demo vendors (if activeUserVendor took over mama_chidi id, skip initial mama_chidi)
+  initial.forEach((v) => {
+    if (!vendorMap.has(v.id) && v.id !== activeUserVendor.id) {
+      vendorMap.set(v.id, v);
+    }
+  });
+
+  return Array.from(vendorMap.values());
 }
 
-export function getVendor(id?: string | null): VendorProfile {
+export function getVendor(
+  id?: string | null,
+  fallbackMeta?: {
+    name?: string;
+    shopName?: string;
+    marketLocation?: string;
+    phone?: string;
+  }
+): VendorProfile {
   if (!id) return getCurrentUserVendor();
 
   const custom = getCustomVendors();
-  if (custom[id]) return custom[id];
+  if (custom[id]) {
+    // If fallbackMeta has more accurate address or name, update it
+    if (fallbackMeta?.marketLocation && fallbackMeta.marketLocation !== custom[id].fullAddress) {
+      const resolved = resolveMarketCoordinates(fallbackMeta.marketLocation);
+      custom[id].fullAddress = fallbackMeta.marketLocation;
+      custom[id].market = resolved.market;
+      custom[id].landmark = resolved.landmark;
+      custom[id].coordinates = {
+        lat: resolved.lat,
+        lng: resolved.lng,
+        mapX: resolved.mapX,
+        mapY: resolved.mapY,
+      };
+      saveCustomVendor(custom[id]);
+    }
+    return custom[id];
+  }
 
   const activeUserVendor = getCurrentUserVendor();
   if (id === activeUserVendor.id || id === "current" || id === "my_shop" || id === "user_owner_01") {
     return activeUserVendor;
   }
 
-  if (id === "mama_chidi") {
-    if (
-      activeUserVendor.shopName !== INITIAL_VENDORS.mama_chidi.shopName ||
-      activeUserVendor.fullAddress !== INITIAL_VENDORS.mama_chidi.fullAddress
-    ) {
-      return activeUserVendor;
-    }
-    return INITIAL_VENDORS.mama_chidi;
+  if (INITIAL_VENDORS[id]) {
+    return INITIAL_VENDORS[id];
   }
 
-  return INITIAL_VENDORS[id] || activeUserVendor;
+  // If fallback metadata is provided (e.g. from URL query params or stand props):
+  if (fallbackMeta?.marketLocation || fallbackMeta?.shopName) {
+    const fullAddress = fallbackMeta.marketLocation || "Commercial Stall, Lagos, Nigeria";
+    const resolved = resolveMarketCoordinates(fullAddress);
+    const shopName = fallbackMeta.shopName || `${fallbackMeta.name || "Merchant"}'s Shop`;
+    const traderName = fallbackMeta.name || "Shop Owner";
+    
+    const phone = fallbackMeta.phone || "+234 800 000 0000";
+    const cleanDigits = phone.replace(/\D/g, "");
+    const whatsapp = cleanDigits.startsWith("0") ? `234${cleanDigits.slice(1)}` : cleanDigits || "2348000000000";
+
+    const dynamicVendor: VendorProfile = {
+      id,
+      name: traderName,
+      shopName,
+      category: inferCategory(shopName),
+      market: resolved.market,
+      fullAddress,
+      landmark: resolved.landmark,
+      phone,
+      whatsapp,
+      image: "/images/traders/mama_chidi.jpg",
+      code: `MP-${id.replace(/[^a-zA-Z0-9]/g, "").slice(-5).toUpperCase() || "84920"}`,
+      coordinates: {
+        lat: resolved.lat,
+        lng: resolved.lng,
+        mapX: resolved.mapX,
+        mapY: resolved.mapY,
+      },
+      openingHours: "Mon - Sat: 7:30 AM - 6:30 PM",
+      verified: true,
+      tags: ["Verified Shop", "Fair Market Price", "Fast Transfer Confirmation"],
+    };
+
+    saveCustomVendor(dynamicVendor);
+    return dynamicVendor;
+  }
+
+  return activeUserVendor;
 }
 
 export function getAllReviews(): CustomerReview[] {
@@ -662,8 +1113,15 @@ export function getVendorShareLinks(vendorId: string, customOrigin?: string) {
   const vendor = getVendor(vendorId) || INITIAL_VENDORS.mama_chidi;
   const baseUrl = customOrigin || "https://moniepay.app";
   
-  const reviewUrl = `${baseUrl}/rate?shop=${encodeURIComponent(vendor.id)}`;
-  const profileUrl = `${baseUrl}/vendors/${encodeURIComponent(vendor.id)}`;
+  const params = new URLSearchParams();
+  params.set("shop", vendor.id);
+  if (vendor.shopName) params.set("name", vendor.shopName);
+  if (vendor.name) params.set("trader", vendor.name);
+  if (vendor.fullAddress) params.set("loc", vendor.fullAddress);
+
+  const queryStr = params.toString();
+  const reviewUrl = `${baseUrl}/rate?${queryStr}`;
+  const profileUrl = `${baseUrl}/vendors/${encodeURIComponent(vendor.id)}?${queryStr}`;
   const mapUrl = `${baseUrl}/map?vendor=${encodeURIComponent(vendor.id)}`;
 
   const whatsappReviewMessage = `Hello! Thank you for buying from *${vendor.shopName}* (${vendor.market}). 🙏\n\nPlease tap here to leave us a quick review on MoniePay:\n${reviewUrl}`;

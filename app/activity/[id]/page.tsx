@@ -437,11 +437,10 @@ _Powered by MoniePay_`;
                 type="button"
                 onClick={handleDownloadReceipt}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1.5 sm:px-3 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-bold shadow-xs active:scale-95 transition-all cursor-pointer"
-                title="Download Receipt PNG"
+                title="Download Receipt PNG Image"
               >
                 <Download className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="hidden sm:inline">Download Slip</span>
-                <span className="inline sm:hidden text-[11px]">Save</span>
+                <span className="text-[11px] sm:text-xs">Download Slip</span>
               </button>
 
               <button
@@ -450,8 +449,7 @@ _Powered by MoniePay_`;
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-black shadow-sm active:scale-95 transition-all cursor-pointer"
               >
                 <Share2 className="h-3.5 w-3.5" />
-                <span className="hidden min-[360px]:inline">Share Slip</span>
-                <span className="inline min-[360px]:hidden">Share</span>
+                <span className="text-[11px] sm:text-xs">WhatsApp</span>
               </button>
             </div>
           </div>
@@ -582,8 +580,12 @@ _Powered by MoniePay_`;
                       </span>
                       <button
                         type="button"
-                        onClick={handleCopyReference}
-                        className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCopyReference();
+                        }}
+                        className="inline-flex items-center gap-1 text-[11px] font-mono font-bold text-emerald-700 dark:text-emerald-400 hover:text-emerald-900 dark:hover:text-emerald-300 hover:underline cursor-pointer px-2 py-0.5 rounded-lg hover:bg-emerald-50 dark:hover:bg-emerald-950/60 transition-colors"
+                        title="Click to copy slip reference"
                       >
                         <span>
                           #{(transaction.client_tx_id || transaction.id).slice(0, 8).toUpperCase()}

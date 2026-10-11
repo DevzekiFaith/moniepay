@@ -50,7 +50,11 @@ function CustomerRatingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const shopKey = searchParams?.get("shop") || "mama_chidi";
-  const vendor = getVendor(shopKey);
+  const vendor = getVendor(shopKey, {
+    shopName: searchParams?.get("name") || undefined,
+    name: searchParams?.get("trader") || undefined,
+    marketLocation: searchParams?.get("loc") || undefined,
+  });
 
   // Rating Form State
   const [overallScore, setOverallScore] = useState<number>(5);
@@ -209,10 +213,15 @@ function CustomerRatingContent() {
                   <h1 className="text-base font-black text-slate-900 dark:text-white truncate">
                     {vendor?.shopName}
                   </h1>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-1 truncate">
-                    <MapPin className="h-3 w-3 text-slate-400 shrink-0" />
-                    <span>{vendor?.market}</span>
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 flex items-center gap-1">
+                    <MapPin className="h-3 w-3 text-blue-600 dark:text-sky-400 shrink-0" />
+                    <span className="truncate">{vendor?.fullAddress || vendor?.market}</span>
                   </p>
+                  {vendor?.landmark && (
+                    <p className="text-[10px] text-slate-500 dark:text-slate-400 pl-4 truncate">
+                      <strong>Landmark:</strong> {vendor.landmark}
+                    </p>
+                  )}
                 </div>
               </div>
 

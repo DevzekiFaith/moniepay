@@ -103,12 +103,16 @@ export function MerchantRatingStand({
 
   // Construct rating portal URL
   const getRatingUrl = () => {
-    if (typeof window === "undefined") return `https://moniepay.app/rate?shop=${encodeURIComponent(shopId)}`;
-    let origin = window.location.origin;
-    if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+    let origin = typeof window !== "undefined" ? window.location.origin : "https://moniepay.app";
+    if (typeof window !== "undefined" && (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")) {
       origin = `http://192.168.149.225:${window.location.port || "3001"}`;
     }
-    return `${origin}/rate?shop=${encodeURIComponent(shopId)}`;
+    const params = new URLSearchParams();
+    params.set("shop", shopId);
+    if (shopName) params.set("name", shopName);
+    if (traderName) params.set("trader", traderName);
+    if (marketLocation) params.set("loc", marketLocation);
+    return `${origin}/rate?${params.toString()}`;
   };
 
   const ratingUrl = getRatingUrl();

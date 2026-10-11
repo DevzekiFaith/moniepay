@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   ShieldCheck,
@@ -36,11 +36,16 @@ import {
   CustomerReview,
 } from "@/lib/reviews/vendorStore";
 
-export default function PublicVendorProfilePage() {
+function VendorProfileContent() {
   const params = useParams();
+  const searchParams = useSearchParams();
   const router = useRouter();
   const vendorId = (params?.id as string) || "mama_chidi";
-  const vendor = getVendor(vendorId);
+  const vendor = getVendor(vendorId, {
+    shopName: searchParams?.get("name") || undefined,
+    name: searchParams?.get("trader") || undefined,
+    marketLocation: searchParams?.get("loc") || undefined,
+  });
 
   const [reviews, setReviews] = useState<CustomerReview[]>([]);
   const [stats, setStats] = useState(calculateVendorStats(vendorId));
@@ -158,7 +163,7 @@ export default function PublicVendorProfilePage() {
 
               <p className="text-xs text-slate-600 dark:text-slate-300 font-medium flex items-center justify-center sm:justify-start gap-1 pt-0.5">
                 <MapPin className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400 shrink-0" />
-                <span>{vendor.market}</span>
+                <span className="truncate">{vendor.fullAddress || vendor.market}</span>
               </p>
             </div>
           </div>
@@ -305,7 +310,9 @@ export default function PublicVendorProfilePage() {
             </Link>
 
             <a
-              href={`https://www.google.com/maps/dir/?api=1&destination=${vendor.coordinates.lat},${vendor.coordinates.lng}`}
+              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                vendor.fullAddress || `${vendor.coordinates.lat},${vendor.coordinates.lng}`
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="py-2.5 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1 active:scale-95 transition-all"
@@ -428,5 +435,19 @@ export default function PublicVendorProfilePage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function PublicVendorProfilePage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600" />
+        </div>
+      }
+    >
+      <VendorProfileContent />
+    </React.Suspense>
   );
 }

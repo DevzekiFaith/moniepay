@@ -242,7 +242,7 @@ function VendorMapContent() {
             {/* Market Area Landmarks Overlays */}
             <div className="absolute top-4 left-4 pointer-events-none">
               <span className="px-2.5 py-1 rounded-full bg-slate-800/90 text-sky-300 text-[10px] font-black border border-sky-500/30 backdrop-blur-md">
-                📍 Lagos Commercial Markets Map
+                📍 Nigeria Commercial Trading Hubs & Market Map
               </span>
             </div>
 
@@ -388,7 +388,9 @@ function VendorMapContent() {
                   </Link>
 
                   <a
-                    href={`https://www.google.com/maps/dir/?api=1&destination=${activeVendor.coordinates.lat},${activeVendor.coordinates.lng}`}
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                      activeVendor.fullAddress || `${activeVendor.coordinates.lat},${activeVendor.coordinates.lng}`
+                    )}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="py-3 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center justify-center gap-1.5 shadow-sm active:scale-95 transition-all text-center"
