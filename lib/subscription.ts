@@ -8,6 +8,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { SubscriptionDetails, SubscriptionStatus, PlanType, BillingCycle } from "@/types/subscription.types";
+import { getPersistedTrialDates, savePersistedTrialDates } from "@/lib/data/trialPersistence";
 
 export const SUBSCRIPTION_CONSTANTS = {
   FREE_TRIAL_DAYS: 7,
@@ -36,7 +37,7 @@ export function calculateSubscriptionDetails(params: {
   } | null;
 }): SubscriptionDetails {
   const now = new Date();
-  const created = params.createdAt ? new Date(params.createdAt) : new Date(Date.now() - 24 * 60 * 60 * 1000);
+  const created = params.createdAt ? new Date(params.createdAt) : new Date(Date.now() - 4 * 24 * 60 * 60 * 1000);
 
   // Compute trial end date: default to createdAt + 7 days
   const trialEnd = params.trialEndsAt
@@ -138,13 +139,25 @@ export function calculateSubscriptionDetails(params: {
  * Fetch current user's subscription details from Prisma / local cache
  */
 export async function getUserSubscription(userId: string): Promise<SubscriptionDetails> {
+  const persisted = getPersistedTrialDates(userId);
+
   if (!userId) {
-    return calculateSubscriptionDetails({});
+    return calculateSubscriptionDetails({
+      createdAt: persisted.createdAt,
+      trialEndsAt: persisted.trialEndsAt,
+      subscriptionStatus: persisted.subscriptionStatus,
+    });
   }
 
   try {
-    const user = await (prisma.user as any).findUnique({
-      where: { id: userId },
+    const user = await (prisma.user as any).findFirst({
+      where: {
+        OR: [
+          { id: userId },
+          { email: "demo@monielite.app" },
+          { email: "demo@moniepay.app" },
+        ],
+      },
       include: {
         subscriptions: {
           where: { status: "SUCCESSFUL" },
@@ -155,11 +168,28 @@ export async function getUserSubscription(userId: string): Promise<SubscriptionD
     });
 
     if (user) {
+      const userPersisted = getPersistedTrialDates(user.id, user.createdAt);
+      let effectiveTrialEndsAt = user.trialEndsAt ? new Date(user.trialEndsAt) : new Date(userPersisted.trialEndsAt);
+      let effectiveCreatedAt = user.createdAt ? new Date(user.createdAt) : new Date(userPersisted.createdAt);
+
+      // If user had no trialEndsAt in Prisma, sync it to persistent fixed date
+      if (!user.trialEndsAt) {
+        try {
+          await (prisma.user as any).update({
+            where: { id: user.id },
+            data: {
+              trialEndsAt: effectiveTrialEndsAt,
+              subscriptionStatus: user.subscriptionStatus || userPersisted.subscriptionStatus || "trialing",
+            },
+          });
+        } catch {}
+      }
+
       const latestPayment = Array.isArray(user.subscriptions) ? user.subscriptions[0] : null;
       return calculateSubscriptionDetails({
-        createdAt: user.createdAt,
-        trialEndsAt: user.trialEndsAt,
-        subscriptionStatus: user.subscriptionStatus || "trialing",
+        createdAt: effectiveCreatedAt,
+        trialEndsAt: effectiveTrialEndsAt,
+        subscriptionStatus: user.subscriptionStatus || userPersisted.subscriptionStatus || "trialing",
         subscriptionEndsAt: user.subscriptionEndsAt,
         planType: user.planType,
         lastPayment: latestPayment
@@ -176,12 +206,11 @@ export async function getUserSubscription(userId: string): Promise<SubscriptionD
     console.warn("Could not query user subscription from Prisma:", err);
   }
 
-  // Demo fallback user (e.g. user_owner_01 / local offline)
-  const defaultTrialEnd = new Date(Date.now() + 6 * 24 * 60 * 60 * 1000);
+  // Fallback user with stable persistent trial dates
   return calculateSubscriptionDetails({
-    createdAt: new Date(),
-    trialEndsAt: defaultTrialEnd,
-    subscriptionStatus: "trialing",
+    createdAt: persisted.createdAt,
+    trialEndsAt: persisted.trialEndsAt,
+    subscriptionStatus: persisted.subscriptionStatus || "trialing",
   });
 }
 

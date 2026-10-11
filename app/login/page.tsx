@@ -22,11 +22,13 @@ import {
   AlertCircle,
   Loader2,
   Camera,
+  Gift,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { WelcomeIntroScreen } from "@/components/intro/WelcomeIntroScreen";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { recordNewReferredTrader } from "@/lib/referral/referralStore";
 
 function LoginContent() {
   const router = useRouter();
@@ -70,6 +72,7 @@ function LoginContent() {
   const [fullName, setFullName] = useState("");
   const [businessName, setBusinessName] = useState("");
   const [marketLocation, setMarketLocation] = useState("");
+  const [referralCode, setReferralCode] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string>("/images/traders/mama_chidi.jpg");
   const [isCustomPhoto, setIsCustomPhoto] = useState(false);
 
@@ -89,9 +92,14 @@ function LoginContent() {
     }
   }, [isAuthenticated, authLoading, router]);
 
-  // Handle ?register=1
+  // Handle ?register=1 and ?ref=CODE
   useEffect(() => {
     if (searchParams?.get("register") === "1") setMode("register");
+    const refParam = searchParams?.get("ref");
+    if (refParam) {
+      setReferralCode(refParam.toUpperCase());
+      setMode("register");
+    }
   }, [searchParams]);
 
   // Handle live file/camera upload for store & headshot
@@ -164,11 +172,12 @@ function LoginContent() {
         return;
       }
 
+      const shopTitle = businessName.trim() || `${fullName.trim()}'s Shop`;
       const res = await registerShop({
         name: fullName.trim(),
         email: identifier.trim(),
         pass: password,
-        businessName: businessName.trim() || `${fullName.trim()}'s Shop`,
+        businessName: shopTitle,
         marketLocation: marketLocation.trim() || "Balogun Market, Lagos",
         avatarUrl,
       });
@@ -177,6 +186,18 @@ function LoginContent() {
         setErrorMessage(res.error || "Registration failed. Please try another email/phone.");
         setIsSubmitting(false);
       } else {
+        // Record referral attribution if provided
+        if (referralCode.trim()) {
+          try {
+            recordNewReferredTrader({
+              referralCode: referralCode.trim().toUpperCase(),
+              businessName: shopTitle,
+              ownerName: fullName.trim(),
+              phone: identifier.trim(),
+              marketLocation: marketLocation.trim() || "Balogun Market, Lagos",
+            });
+          } catch {}
+        }
         setSuccessMessage("Shop registered! Activating your decision intelligence…");
         setTimeout(() => router.replace("/"), 600);
       }
@@ -482,6 +503,24 @@ function LoginContent() {
                     placeholder="Market Location (e.g. Balogun Market, Lagos)"
                     className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
                   />
+                </div>
+
+                {/* Who Invite You / Referral Code */}
+                <div className="space-y-1">
+                  <div className="relative">
+                    <Gift className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <input
+                      type="text"
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                      placeholder="Who Invite You? / Referral Code (Optional)"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-900 dark:text-white placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
+                    />
+                  </div>
+                  <p className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold px-1 flex items-center gap-1">
+                    <span>🤝</span>
+                    <span>Paste code wey fellow trader give you make una two enjoy +14 days free MoniePay Plus!</span>
+                  </p>
                 </div>
               </div>
             )}

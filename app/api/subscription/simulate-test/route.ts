@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
 import { activateUserSubscription, calculateSubscriptionDetails } from "@/lib/subscription";
 import { prisma } from "@/lib/prisma";
+import { savePersistedTrialDates } from "@/lib/data/trialPersistence";
 
 export const dynamic = "force-dynamic";
 
@@ -12,19 +13,39 @@ export async function POST(request: NextRequest) {
     const action = body.action || "activate"; // "activate" | "activate_annual" | "enter_grace_period" | "expire_trial" | "reset_trial"
     const userId = body.userId || user?.id || "user_owner_01";
 
+    let dbUser: any = null;
+    try {
+      dbUser = await (prisma.user as any).findFirst({
+        where: {
+          OR: [
+            { id: userId },
+            { email: "demo@monielite.app" },
+            { email: "demo@moniepay.app" },
+          ],
+        },
+      });
+    } catch {}
+
     if (action === "enter_grace_period") {
       // Trial expired 1 day ago (within 3-day grace period)
       const pastTrial = new Date(Date.now() - 1 * 24 * 60 * 60 * 1000);
-      try {
-        await (prisma.user as any).update({
-          where: { id: userId },
-          data: {
-            trialEndsAt: pastTrial,
-            subscriptionStatus: "grace_period",
-            subscriptionEndsAt: null,
-          },
-        });
-      } catch {}
+      if (dbUser) {
+        try {
+          await (prisma.user as any).update({
+            where: { id: dbUser.id },
+            data: {
+              trialEndsAt: pastTrial,
+              subscriptionStatus: "grace_period",
+              subscriptionEndsAt: null,
+            },
+          });
+        } catch {}
+      }
+
+      savePersistedTrialDates({
+        trialEndsAt: pastTrial.toISOString(),
+        subscriptionStatus: "grace_period",
+      });
 
       const details = calculateSubscriptionDetails({
         trialEndsAt: pastTrial,
@@ -42,16 +63,23 @@ export async function POST(request: NextRequest) {
     if (action === "expire_trial") {
       // Expired 5 days ago (past 3-day grace period)
       const pastDate = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
-      try {
-        await (prisma.user as any).update({
-          where: { id: userId },
-          data: {
-            trialEndsAt: pastDate,
-            subscriptionStatus: "expired",
-            subscriptionEndsAt: null,
-          },
-        });
-      } catch {}
+      if (dbUser) {
+        try {
+          await (prisma.user as any).update({
+            where: { id: dbUser.id },
+            data: {
+              trialEndsAt: pastDate,
+              subscriptionStatus: "expired",
+              subscriptionEndsAt: null,
+            },
+          });
+        } catch {}
+      }
+
+      savePersistedTrialDates({
+        trialEndsAt: pastDate.toISOString(),
+        subscriptionStatus: "expired",
+      });
 
       const details = calculateSubscriptionDetails({
         trialEndsAt: pastDate,
@@ -67,19 +95,30 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === "reset_trial") {
-      const futureDate = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-      try {
-        await (prisma.user as any).update({
-          where: { id: userId },
-          data: {
-            trialEndsAt: futureDate,
-            subscriptionStatus: "trialing",
-            subscriptionEndsAt: null,
-          },
-        });
-      } catch {}
+      const now = new Date();
+      const futureDate = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+      if (dbUser) {
+        try {
+          await (prisma.user as any).update({
+            where: { id: dbUser.id },
+            data: {
+              createdAt: now,
+              trialEndsAt: futureDate,
+              subscriptionStatus: "trialing",
+              subscriptionEndsAt: null,
+            },
+          });
+        } catch {}
+      }
+
+      savePersistedTrialDates({
+        createdAt: now.toISOString(),
+        trialEndsAt: futureDate.toISOString(),
+        subscriptionStatus: "trialing",
+      });
 
       const details = calculateSubscriptionDetails({
+        createdAt: now,
         trialEndsAt: futureDate,
         subscriptionStatus: "trialing",
         subscriptionEndsAt: null,

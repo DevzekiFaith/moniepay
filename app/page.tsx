@@ -74,6 +74,7 @@ import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBanne
 import { BusinessWalletCard } from "@/components/wallet/BusinessWalletCard";
 import { ReceiveMoneyModal } from "@/components/wallet/ReceiveMoneyModal";
 import { LiveMarketFeedCard } from "@/components/intelligence/LiveMarketFeedCard";
+import { MarketDepotTickerBar } from "@/components/intelligence/MarketDepotTickerBar";
 import { ReferralDashboardBanner } from "@/components/dashboard/ReferralDashboardBanner";
 import { InviteShopModal } from "@/components/referral/InviteShopModal";
 import { useToast } from "@/context/NotificationContext";
@@ -419,6 +420,9 @@ export default function MoniePayDashboard() {
         {/* Soft Drag Handle */}
         <div className="mx-auto h-1 w-10 rounded-full bg-slate-300 dark:bg-slate-700 mb-1" />
 
+        {/* ── LIVE DEPOT TICKER RADAR (Marquee Stream Across Nigerian Hubs) ── */}
+        <MarketDepotTickerBar onOpenFeed={() => handleTabChange("decisions")} />
+
         {/* ── INTERACTIVE TAB SWITCHER (3D Soft Glass Sliding Pill) ── */}
         <div className="flex rounded-2xl clay-card-sm p-1 relative">
           {(
@@ -568,6 +572,7 @@ export default function MoniePayDashboard() {
               <LiveMarketFeedCard
                 tradeType={business.trade_type}
                 marketLocation={business.market_location}
+                onOpenRestockRecord={() => handleOpenRecord("STOCK_PURCHASE")}
               />
 
               {/* 2. 7 Core Trader Decisions in Authentic Informal Market Voice */}

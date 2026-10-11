@@ -306,11 +306,13 @@ export function extractStockDetailsFromText(rawText: string, businessId?: string
     else if (rawUnit.startsWith("rubber")) unit = "Rubbers";
     else unit = "Pcs";
   } else {
-    // Check standalone number before item
+    // Check standalone number before item, ensuring it's not the monetary transaction amount
+    const spokenAmount = parseSpokenMarketAmount(rawText);
     const standaloneNum = lower.match(/\b(\d+)\b/);
     if (standaloneNum) {
       const parsedNum = parseInt(standaloneNum[1], 10);
-      if (parsedNum > 0 && parsedNum < 1000) {
+      const isMonetaryAmount = parsedNum === spokenAmount || parsedNum >= 100;
+      if (!isMonetaryAmount && parsedNum > 0 && parsedNum < 100) {
         quantity = parsedNum;
       }
     }

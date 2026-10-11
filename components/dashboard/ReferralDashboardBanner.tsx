@@ -52,16 +52,16 @@ export function ReferralDashboardBanner({
           <div className="min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
               <h3 className="text-xs sm:text-[13px] font-black text-slate-900 dark:text-white truncate leading-tight">
-                Invite Neighbor • +14d Free 🤝
+                Call Shop Neighbor • Win +14 Days Free 🤝
               </h3>
               {stats && stats.pending_claims_count > 0 && (
                 <span className="px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-black text-[9.5px] border border-amber-300 dark:border-amber-800">
-                  {stats.pending_claims_count} Ready
+                  {stats.pending_claims_count} Don Ready
                 </span>
               )}
             </div>
             <p className="text-[10.5px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
-              Tell neighbor make una two get +14 days free MoniePay Plus.
+              Tell your market neighbor make una two enjoy +14 days free MoniePay Plus.
             </p>
           </div>
         </div>
@@ -76,7 +76,7 @@ export function ReferralDashboardBanner({
           className="px-3 sm:px-3.5 py-2 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95 transition-all cursor-pointer"
         >
           <Share2 className="h-3.5 w-3.5" />
-          <span className="hidden min-[360px]:inline">Share Link</span>
+          <span className="hidden min-[360px]:inline">Share Code</span>
           <ArrowRight className="h-3 w-3" />
         </button>
       </div>

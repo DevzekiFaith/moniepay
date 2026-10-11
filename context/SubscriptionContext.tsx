@@ -230,13 +230,38 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     [user?.id, toast]
   );
 
-  const isTrialActive = Boolean(subscription?.isTrialActive);
-  const isSubscribed = Boolean(subscription?.isSubscriptionActive);
-  const isGracePeriodActive = Boolean(subscription?.isGracePeriodActive);
+  const nowMs = Date.now();
+  const trialEndsAtMs = subscription?.trialEndsAt ? new Date(subscription.trialEndsAt).getTime() : 0;
+  const subEndsAtMs = subscription?.subscriptionEndsAt ? new Date(subscription.subscriptionEndsAt).getTime() : 0;
+
+  const isSubscribed = Boolean(
+    subscription?.isSubscriptionActive || (subEndsAtMs > nowMs)
+  );
+
+  const isTrialActive = Boolean(
+    !isSubscribed &&
+    trialEndsAtMs > nowMs
+  );
+
+  const trialDaysLeft = isTrialActive
+    ? Math.max(1, Math.ceil((trialEndsAtMs - nowMs) / (1000 * 60 * 60 * 24)))
+    : 0;
+
+  const graceEndsAtMs = trialEndsAtMs ? trialEndsAtMs + 3 * 24 * 60 * 60 * 1000 : 0;
+  const isGracePeriodActive = Boolean(
+    !isSubscribed &&
+    !isTrialActive &&
+    graceEndsAtMs > nowMs
+  );
+
+  const graceDaysLeft = isGracePeriodActive
+    ? Math.max(1, Math.ceil((graceEndsAtMs - nowMs) / (1000 * 60 * 60 * 24)))
+    : 0;
+
   const isExpired = !isTrialActive && !isSubscribed && !isGracePeriodActive;
-  const trialDaysLeft = subscription?.trialDaysLeft ?? 0;
-  const graceDaysLeft = subscription?.graceDaysLeft ?? 0;
-  const isRenewalDueSoon = Boolean(subscription?.isRenewalDueSoon);
+  const isRenewalDueSoon = isSubscribed
+    ? (subEndsAtMs > 0 && subEndsAtMs - nowMs <= 2 * 24 * 60 * 60 * 1000)
+    : (isTrialActive && trialDaysLeft <= 2);
   const canAccessFullFeatures = isTrialActive || isSubscribed || isGracePeriodActive;
 
   return (

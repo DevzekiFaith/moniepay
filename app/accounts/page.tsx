@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { getCachedAccounts, setCachedAccounts } from "@/lib/offline/offlineQueue";
-import { DEFAULT_ACCOUNTS } from "@/lib/data/initialBusinessData";
+import { DEFAULT_ACCOUNTS, DEFAULT_BUSINESS } from "@/lib/data/initialBusinessData";
 import type { BusinessAccount, AccountType } from "@/types/moniepay.types";
 
 interface Account {

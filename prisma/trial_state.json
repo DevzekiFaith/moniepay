@@ -1,0 +1,46 @@
+{
+  "defaultTrial": {
+    "createdAt": "2026-10-07T21:22:44.364Z",
+    "trialEndsAt": "2026-10-14T21:22:44.364Z",
+    "subscriptionStatus": "trialing",
+    "updatedAt": "2026-10-11T21:22:44.365Z"
+  },
+  "users": {
+    "user_owner_01": {
+      "createdAt": "2026-10-07T21:22:44.364Z",
+      "trialEndsAt": "2026-10-14T21:22:44.364Z",
+      "subscriptionStatus": "trialing",
+      "updatedAt": "2026-10-11T21:22:44.365Z"
+    },
+    "demo@monielite.app": {
+      "createdAt": "2026-10-07T21:22:44.364Z",
+      "trialEndsAt": "2026-10-14T21:22:44.364Z",
+      "subscriptionStatus": "trialing",
+      "updatedAt": "2026-10-11T21:22:44.365Z"
+    },
+    "new_trader_test_99": {
+      "createdAt": "2026-10-11T21:38:30.626Z",
+      "trialEndsAt": "2026-10-18T21:38:30.626Z",
+      "subscriptionStatus": "trialing",
+      "updatedAt": "2026-10-11T21:38:30.627Z"
+    },
+    "existing_trader_test_88": {
+      "createdAt": "2026-10-09T21:38:30.628Z",
+      "trialEndsAt": "2026-10-16T21:38:30.628Z",
+      "subscriptionStatus": "trialing",
+      "updatedAt": "2026-10-11T21:38:30.630Z"
+    },
+    "usr_7r1uyubl": {
+      "createdAt": "2026-10-11T21:41:47.569Z",
+      "trialEndsAt": "2026-10-18T21:41:47.569Z",
+      "subscriptionStatus": "trialing",
+      "updatedAt": "2026-10-11T21:41:47.570Z"
+    },
+    "cmtole43v000m6cug8rvexc3v": {
+      "createdAt": "2026-09-05T16:23:36.523Z",
+      "trialEndsAt": "2026-09-12T16:23:36.523Z",
+      "subscriptionStatus": "trialing",
+      "updatedAt": "2026-10-11T21:41:47.610Z"
+    }
+  }
+}

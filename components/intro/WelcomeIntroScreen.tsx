@@ -421,13 +421,13 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
     },
     {
       id: "referral",
-      badge: "Community Rewards • Free Days 🤝",
+      badge: "Call Shop Neighbor • Win Free Days 🤝",
       badgeColor: "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
-      title: "Invite Shop Neighbors",
-      highlight: "Earn +14 Days Free MoniePay Plus",
+      title: "Call Market Neighbor",
+      highlight: "Una Two Win +14 Days Free",
       highlightColor: "text-emerald-600 dark:text-emerald-400",
       description:
-        "Share your invite code with shop neighbors. When they record for 7 active days, you both unlock +14 days of free MoniePay Plus!",
+        "Give your neighbor your shop code. As dem record market for 7 active days, una two go immediately get +14 days free MoniePay Plus!",
       icon: <Users className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />,
       themeColor: "#059669",
       gradient: "from-emerald-800 via-emerald-600 to-teal-500",
@@ -451,7 +451,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             </div>
             <div>
               <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">1-Tap WhatsApp</p>
-              <p className="text-[11px] font-black text-emerald-700 dark:text-emerald-300">Invite Sent 🚀</p>
+              <p className="text-[11px] font-black text-emerald-700 dark:text-emerald-300">Invite Don Go 🚀</p>
             </div>
           </motion.div>
 
@@ -478,20 +478,20 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             className="relative z-10 w-72 p-4 rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(5,150,105,0.18)] dark:shadow-2xl space-y-2.5"
           >
             <div className="flex items-center justify-between">
-              <span className="text-xs font-black text-slate-900 dark:text-white">Shop Neighbor Referral</span>
+              <span className="text-xs font-black text-slate-900 dark:text-white">Shop Neighbor Code</span>
               <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-black">
-                Win-Win 🎁
+                Una Two Win 🎁
               </span>
             </div>
 
             <div className="p-2.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/80 border border-emerald-100 dark:border-emerald-800 space-y-1">
               <p className="text-xs font-black text-emerald-950 dark:text-emerald-100">Your Code: MONIE-SHOP-24</p>
-              <p className="text-[10px] text-emerald-700 dark:text-emerald-300 font-medium">Both of you get +14 days free when they record for 7 days</p>
+              <p className="text-[10px] text-emerald-700 dark:text-emerald-300 font-medium">Una two dey enjoy +14 days free once dem record for 7 days</p>
             </div>
 
             <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 pt-0.5">
-              <span>Zero wahala sharing</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-black">Instant Activation ✓</span>
+              <span>Zero long talk</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-black">Sharp Activation ✓</span>
             </div>
           </motion.div>
         </div>

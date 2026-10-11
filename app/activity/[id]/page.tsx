@@ -44,7 +44,7 @@ import {
   getCachedTransactions,
   setCachedTransactions,
 } from "@/lib/offline/offlineQueue";
-import { DEFAULT_TRANSACTIONS } from "@/lib/data/initialBusinessData";
+import { DEFAULT_TRANSACTIONS, DEFAULT_BUSINESS } from "@/lib/data/initialBusinessData";
 
 // Helper to format full human readable date
 function formatFullDate(dateStr: string) {

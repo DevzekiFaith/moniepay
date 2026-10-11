@@ -34,7 +34,7 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import type { BusinessTransaction, TransactionType, PaymentMethod } from "@/types/moniepay.types";
 import { getCachedTransactions, setCachedTransactions } from "@/lib/offline/offlineQueue";
-import { DEFAULT_TRANSACTIONS } from "@/lib/data/initialBusinessData";
+import { DEFAULT_TRANSACTIONS, DEFAULT_BUSINESS } from "@/lib/data/initialBusinessData";
 import { InstantRecordSheet } from "@/components/dashboard/InstantRecordSheet";
 
 type DateRangeFilter = "ALL" | "TODAY" | "YESTERDAY" | "THIS_WEEK" | "THIS_MONTH" | "CUSTOM";

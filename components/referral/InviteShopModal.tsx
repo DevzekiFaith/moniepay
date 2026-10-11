@@ -144,14 +144,14 @@ export function InviteShopModal({
               <div>
                 <div className="flex items-center gap-1.5">
                   <h2 className="text-sm sm:text-base font-black tracking-tight text-white">
-                    Invite Shop Neighbor
+                    Call Your Shop Neighbor 🤝
                   </h2>
                   <span className="px-2 py-0.5 rounded-full bg-emerald-400 text-slate-950 text-[10px] font-black uppercase">
-                    +14d Free
+                    +14d Free Pass
                   </span>
                 </div>
                 <p className="text-[11px] text-sky-100/90 font-medium">
-                  Una two go get +14 days free MoniePay Plus sharp-sharp!
+                  Una two go enjoy +14 days free MoniePay Plus sharp-sharp!
                 </p>
               </div>
             </div>
@@ -169,15 +169,15 @@ export function InviteShopModal({
           {/* Quick Metrics Bar */}
           <div className="grid grid-cols-3 gap-2 mt-3.5 pt-3 border-t border-white/15 text-center">
             <div className="bg-black/15 dark:bg-black/30 rounded-xl p-2 border border-white/10 backdrop-blur-xs">
-              <span className="text-[9.5px] text-sky-200 font-bold block uppercase tracking-wider">Invited</span>
+              <span className="text-[9.5px] text-sky-200 font-bold block uppercase tracking-wider">People You Call</span>
               <span className="text-sm sm:text-base font-black text-white">{stats.total_invited}</span>
             </div>
             <div className="bg-black/15 dark:bg-black/30 rounded-xl p-2 border border-white/10 backdrop-blur-xs">
-              <span className="text-[9.5px] text-sky-200 font-bold block uppercase tracking-wider">In 7-Day Trial</span>
+              <span className="text-[9.5px] text-sky-200 font-bold block uppercase tracking-wider">Dey Test-Run</span>
               <span className="text-sm sm:text-base font-black text-emerald-300">{stats.active_in_progress}</span>
             </div>
             <div className="bg-black/15 dark:bg-black/30 rounded-xl p-2 border border-white/10 backdrop-blur-xs">
-              <span className="text-[9.5px] text-sky-200 font-bold block uppercase tracking-wider">Days Earned</span>
+              <span className="text-[9.5px] text-sky-200 font-bold block uppercase tracking-wider">Free Days Won</span>
               <span className="text-sm sm:text-base font-black text-white">+{stats.bonus_days_earned}d</span>
             </div>
           </div>
@@ -190,7 +190,7 @@ export function InviteShopModal({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
               <div>
                 <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  Your Unique Referral Code
+                  Your Special Shop Code (Make You Give Neighbors)
                 </span>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-base sm:text-lg font-mono font-black text-[#1d4ed8] dark:text-sky-400 tracking-wider">
@@ -214,7 +214,7 @@ export function InviteShopModal({
                 className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm shadow-emerald-700/25 active:scale-95 transition-all cursor-pointer"
               >
                 <MessageCircle className="h-4 w-4" />
-                <span>Share on WhatsApp</span>
+                <span>Send Give Neighbor on WhatsApp 📲</span>
               </button>
             </div>
 
@@ -232,7 +232,7 @@ export function InviteShopModal({
                 className="px-3.5 py-2 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-black text-xs flex items-center gap-1.5 shrink-0 hover:opacity-90 active:scale-95 transition-all cursor-pointer shadow-2xs"
               >
                 {copiedLink ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
-                <span>{copiedLink ? "Copied!" : "Copy Link"}</span>
+                <span>{copiedLink ? "Don Copy! ✓" : "Copy Link"}</span>
               </button>
             </div>
           </div>
@@ -241,9 +241,9 @@ export function InviteShopModal({
           <div className="flex items-center rounded-xl bg-slate-100 dark:bg-slate-800/80 p-1">
             {(
               [
-                { id: "ACTIVE", label: `In Progress (${activeTraders.length})` },
-                { id: "COMPLETED", label: `Rewards (${completedTraders.length})` },
-                { id: "RULES", label: "How It Works" },
+                { id: "ACTIVE", label: `Dey Record Now (${activeTraders.length})` },
+                { id: "COMPLETED", label: `Collect Free Days (${completedTraders.length})` },
+                { id: "RULES", label: "How E Dey Work (No Wahala)" },
               ] as const
             ).map((tab) => {
               const isActive = activeTab === tab.id;
@@ -270,9 +270,9 @@ export function InviteShopModal({
               {activeTraders.length === 0 ? (
                 <div className="text-center py-6 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-800 space-y-2">
                   <Users className="h-7 w-7 mx-auto text-slate-400" />
-                  <p className="font-black text-slate-800 dark:text-slate-200 text-xs">No active invited traders yet</p>
+                  <p className="font-black text-slate-800 dark:text-slate-200 text-xs">You never invite any market neighbor yet o!</p>
                   <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto text-[11px]">
-                    Share your invite link with shop neighbors. Once they start recording transactions, their 7-day progress appears here.
+                    Share your code give fellow shop owners around you. Once dem begin record their daily market, their 7-day journey go show here sharp-sharp.
                   </p>
                 </div>
               ) : (
@@ -295,7 +295,7 @@ export function InviteShopModal({
                       </div>
 
                       <span className="px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-300 font-black text-[10px] shrink-0 border border-blue-200 dark:border-blue-900">
-                        Day {trader.active_days_count} of {trader.required_days}
+                        Day {trader.active_days_count} of {trader.required_days} don enter
                       </span>
                     </div>
 
@@ -325,7 +325,7 @@ export function InviteShopModal({
                     <div className="flex items-center justify-between text-[10.5px] pt-1 text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-slate-700/60">
                       <span className="flex items-center gap-1">
                         <Clock className="h-3 w-3 text-slate-400" />
-                        <span>{7 - trader.active_days_count} more active recording days left</span>
+                        <span>E remain {7 - trader.active_days_count} days make una two unlock +14 days free</span>
                       </span>
                       <span className="text-emerald-700 dark:text-emerald-400 font-black">+14d Reward</span>
                     </div>
@@ -340,9 +340,9 @@ export function InviteShopModal({
               {completedTraders.length === 0 ? (
                 <div className="text-center py-6 px-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-dashed border-slate-200 dark:border-slate-800 space-y-2">
                   <Gift className="h-7 w-7 mx-auto text-slate-400" />
-                  <p className="font-black text-slate-800 dark:text-slate-200 text-xs">No completed rewards yet</p>
+                  <p className="font-black text-slate-800 dark:text-slate-200 text-xs">No free days to claim yet</p>
                   <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto text-[11px]">
-                    When your referred traders log 7 active days on MoniePay, you can claim your +14 Days extension here!
+                    Once your neighbor record market reach 7 days on MoniePay, come press button here make your +14 free days enter your shop account sharp-sharp!
                   </p>
                 </div>
               ) : (
@@ -359,7 +359,7 @@ export function InviteShopModal({
                         </h4>
                       </div>
                       <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                        {trader.owner_name} completed 7 active days!
+                        {trader.owner_name} don record reach 7 days! Una reward don ready.
                       </p>
                     </div>
 
@@ -372,12 +372,12 @@ export function InviteShopModal({
                           className="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center gap-1.5 shadow-xs active:scale-95 transition-all cursor-pointer"
                         >
                           <Gift className="h-3.5 w-3.5" />
-                          <span>Claim +14 Days</span>
+                          <span>Collect +14 Days Free 🎁</span>
                         </button>
                       ) : (
                         <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 font-black text-[10.5px] border border-emerald-300 dark:border-emerald-800 flex items-center gap-1">
                           <Check className="h-3 w-3" />
-                          <span>Claimed ✓</span>
+                          <span>You Don Collect Am ✓</span>
                         </span>
                       )}
                     </div>
@@ -389,16 +389,32 @@ export function InviteShopModal({
 
           {activeTab === "RULES" && (
             <div className="space-y-3 text-slate-600 dark:text-slate-300 text-xs">
-              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-700/60 space-y-2">
-                <h4 className="font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+              <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/90 dark:border-slate-700/60 space-y-2.5">
+                <h4 className="font-black text-slate-900 dark:text-white flex items-center gap-1.5 text-xs">
                   <ShieldCheck className="h-4 w-4 text-[#1d4ed8] dark:text-sky-400" />
-                  How Referral Works
+                  How This Neighbor Reward Dey Work (Step-by-Step No Wahala)
                 </h4>
-                <ul className="space-y-1.5 text-[11px] list-disc list-inside leading-relaxed text-slate-600 dark:text-slate-300">
-                  <li><strong>7 Active Days:</strong> Invited shop owners must record shop sales/expenses on 7 separate days.</li>
-                  <li><strong>Win-Win:</strong> When they reach 7 days, you and your neighbor both get +14 Days MoniePay Plus for free.</li>
-                  <li><strong>Up to 10 Referrals/Month:</strong> You can earn up to 140 bonus days of MoniePay Plus every single month!</li>
-                  <li><strong>Zero Spam:</strong> Genuine shop recordings only. Fake duplicates are disqualified automatically.</li>
+                <ul className="space-y-2 text-[11px] list-none leading-relaxed text-slate-700 dark:text-slate-300">
+                  <li className="flex items-start gap-2">
+                    <span className="h-4 w-4 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-sky-300 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                    <span><strong>Give Neighbor Your Code:</strong> Send your special code or WhatsApp link give any fellow shop owner or market neighbor.</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="h-4 w-4 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-sky-300 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                    <span><strong>Make Dem Record Market for 7 Days:</strong> When dem use MoniePay record their daily market sales & expenses for 7 different days...</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="h-4 w-4 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                    <span><strong>Una Two Go Win +14 Days Free!:</strong> Both you and that your neighbor go get +14 Days free MoniePay Plus access without paying single kobo!</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="h-4 w-4 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">4</span>
+                    <span><strong>You Fit Win reach 140 Days Every Month:</strong> You fit invite reach 10 shop owners every month, wey mean say you fit enjoy full free access round the year!</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="h-4 w-4 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">5</span>
+                    <span><strong>Original Market Records Only:</strong> Genuine daily shop recording na him dey count. Fake or duplicate accounts no dey qualify.</span>
+                  </li>
                 </ul>
               </div>
             </div>

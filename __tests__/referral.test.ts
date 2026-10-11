@@ -101,7 +101,42 @@ describe("MoniePay — Referral & 7-Day Active Trader Reward System", () => {
     const decoded = decodeURIComponent(msg);
     expect(decoded).toContain("Mama Chidi");
     expect(decoded).toContain("MONIE-CHIDI-92");
-    expect(decoded).toContain("7 Days Free Full Access");
-    expect(decoded).toContain("MoniePay helps you understand your money");
+    expect(decoded).toContain("7 Days Full Free Access");
+    expect(decoded).toContain("MoniePay: Understand your money, no be just to record am!");
+  });
+
+  it("6. Successfully attributes incoming referred traders and masks their phone", async () => {
+    const { recordNewReferredTrader, getReferredTraders } = await import("@/lib/referral/referralStore");
+
+    const res = recordNewReferredTrader({
+      referralCode: "MONIE-CHIDI-92",
+      businessName: "Mama Funke Frozen Foods",
+      ownerName: "Mama Funke",
+      phone: "+2348039988776",
+      marketLocation: "Mile 12 Market",
+    });
+
+    expect(res.success).toBe(true);
+    expect(res.message).toContain("+14 days free");
+
+    const traders = getReferredTraders();
+    const newest = traders.find((t) => t.owner_name === "Mama Funke");
+    expect(newest).toBeDefined();
+    expect(newest?.phone_masked).toBe("+234 ••• 8776");
+    expect(newest?.status).toBe("ACTIVE_RECORDING");
+  });
+
+  it("7. Accepts case-insensitive referral codes during shop onboarding", async () => {
+    const { recordNewReferredTrader } = await import("@/lib/referral/referralStore");
+
+    // Lowercase code entered by trader
+    const res = recordNewReferredTrader({
+      referralCode: "monie-chidi-92",
+      businessName: "Iya Basira Kitchen",
+      ownerName: "Iya Basira",
+      phone: "+2348021122334",
+    });
+
+    expect(res.success).toBe(true);
   });
 });

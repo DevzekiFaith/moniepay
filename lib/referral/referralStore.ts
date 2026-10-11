@@ -187,12 +187,52 @@ export function claimReferralReward(traderId: string): { success: boolean; messa
 
   return {
     success: true,
-    message: `Reward Claimed! +${DEFAULT_REFERRAL_CONFIG.subscription_days_bonus} Days free MoniePay Plus added to your shop account!`,
+    message: `Oya congratulations! +${DEFAULT_REFERRAL_CONFIG.subscription_days_bonus} Days free MoniePay Plus don enter your shop account sharp-sharp! Enjoy full shop intelligence.`,
   };
 }
 
 /**
- * Generate authentic WhatsApp trader invite text with link
+ * Register a new incoming trader who signed up using a neighbor's referral code
+ */
+export function recordNewReferredTrader(params: {
+  referralCode: string;
+  businessName: string;
+  ownerName: string;
+  phone?: string;
+  marketLocation?: string;
+}): { success: boolean; message: string } {
+  const { referralCode, businessName, ownerName, phone = "", marketLocation = "Market Trader" } = params;
+  const validation = validateReferralEligibility({ referralCode, userPhone: phone });
+  if (!validation.eligible) {
+    return { success: false, message: validation.reason || "Referral code no dey valid." };
+  }
+
+  const traders = getReferredTraders();
+  const phoneMasked = phone && phone.length >= 7 ? phone.slice(0, 4) + " ••• " + phone.slice(-4) : "Market Trader";
+  const newTrader: ReferredTrader = {
+    id: `ref_${Date.now()}`,
+    business_name: businessName,
+    owner_name: ownerName,
+    phone_masked: phoneMasked,
+    market_location: marketLocation,
+    joined_date: new Date().toISOString(),
+    active_days_count: 1,
+    required_days: DEFAULT_REFERRAL_CONFIG.required_active_days,
+    status: "ACTIVE_RECORDING",
+    reward_amount: DEFAULT_REFERRAL_CONFIG.reward_value_naira,
+    reward_type: "SUBSCRIPTION_EXTENSION",
+  };
+
+  const updated = [newTrader, ...traders];
+  saveReferredTraders(updated);
+  return {
+    success: true,
+    message: "Welcome bonus activated! Una two go win +14 days free as you dey record market.",
+  };
+}
+
+/**
+ * Generate authentic WhatsApp trader invite text with link in easy local market language
  */
 export function generateWhatsAppInviteMessage(referralCode: string, ownerName?: string): string {
   const name = ownerName || "Your market neighbor";
@@ -200,11 +240,11 @@ export function generateWhatsAppInviteMessage(referralCode: string, ownerName?: 
   const link = `${baseUrl}/welcome?ref=${referralCode}`;
 
   return encodeURIComponent(
-    `Hello! Na ${name} from shop. 👋\n\n` +
-    `I dey use *MoniePay* track all my shop daily sales, customer gbese, and calculate my true profit so my money no go dey leak.\n\n` +
-    `Register your shop with my code *${referralCode}* to get *7 Days Free Full Access* plus free daily money diagnosis:\n\n` +
+    `Market greetings! Na ${name} from shop here 👋\n\n` +
+    `I dey use *MoniePay* arrange all my shop daily sales, track who dey owe me gbese, and calculate my true profit so my shop money no go leak again.\n\n` +
+    `Make you use my shop code *${referralCode}* register your own shop sharp-sharp! Una two go get *7 Days Full Free Access* plus *+14 Days Bonus*:\n\n` +
     `👉 ${link}\n\n` +
-    `MoniePay helps you understand your money — not just record am!`
+    `MoniePay: Understand your money, no be just to record am! 🚀`
   );
 }
 
@@ -218,9 +258,10 @@ export function validateReferralEligibility(params: {
   referrerPhone?: string;
 }): { eligible: boolean; reason?: string } {
   const { referralCode, userPhone, referrerPhone } = params;
+  const cleanCode = (referralCode || "").trim().toUpperCase();
 
-  if (!referralCode || !referralCode.startsWith("MONIE-")) {
-    return { eligible: false, reason: "Invalid referral code format." };
+  if (!cleanCode || !cleanCode.startsWith("MONIE-")) {
+    return { eligible: false, reason: "Invalid referral code format. Code must start with MONIE- (e.g. MONIE-MAMA-24)." };
   }
 
   // Self-referral guard

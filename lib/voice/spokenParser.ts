@@ -44,10 +44,13 @@ const NUMBER_WORDS: Record<string, number> = {
 
 const MULTIPLIERS: Record<string, number> = {
   hundred: 100,
+  hundreds: 100,
   k: 1000,
   thousand: 1000,
+  thousands: 1000,
   m: 1000000,
   million: 1000000,
+  millions: 1000000,
   mils: 1000000,
   mil: 1000000,
   b: 1000000000,
@@ -55,14 +58,14 @@ const MULTIPLIERS: Record<string, number> = {
 };
 
 /**
- * Converts English number word phrases (e.g. "twenty thousand five hundred") to a number.
+ * Converts English number word phrases (e.g. "twenty thousand five hundred", "four hundred thousand") to a number.
  */
 function wordsToNumber(phrase: string): number {
   const tokens = phrase
     .toLowerCase()
     .replace(/-/g, " ")
     .replace(/\band\b/g, " ")
-    .replace(/[,\.₦]/g, " ")
+    .replace(/[,\.₦#]/g, " ")
     .trim()
     .split(/\s+/)
     .filter(Boolean);
@@ -93,43 +96,76 @@ function wordsToNumber(phrase: string): number {
 }
 
 /**
- * Robustly parses spoken text to extract the Naira amount.
- * Handles digits, words, "k", "thousand", "million", "naira", currency symbols.
+ * Robustly parses spoken text to extract the exact Naira amount.
+ * Handles digits ("400000"), formatted ("400,000"), spoken numbers ("four hundred thousand"),
+ * "400k", "400 thousand", Pidgin speech patterns, and currency symbols.
  */
 export function parseSpokenMarketAmount(rawText: string): number {
   if (!rawText) return 0;
 
-  const text = rawText
+  // 1. Normalize comma-formatted numbers: e.g. "400,000" -> "400000", "1,500,000" -> "1500000"
+  let cleaned = rawText
+    .replace(/(\d),(\d)/g, "$1$2")
+    .replace(/(\d),(\d)/g, "$1$2");
+
+  // Normalize space-separated digit triplets: e.g. "400 000" -> "400000"
+  cleaned = cleaned.replace(/(\b\d{1,3})\s+(\d{3})(?!\d)/g, "$1$2");
+
+  // Remove currency symbols & currency names without breaking number sequences
+  const text = cleaned
     .toLowerCase()
-    .replace(/[₦#,]/g, " ")
+    .replace(/[₦#]/g, " ")
+    .replace(/\bngn\b/g, " ")
+    .replace(/\bnaira\b/g, " ")
+    .replace(/\bkobo\b/g, " ")
     .replace(/\s+/g, " ")
     .trim();
 
-  // Pattern 1: Decimal million/k formats e.g. "1.5m", "1.5 million", "2.5k"
-  const decMatch = text.match(/(\d+\.?\d*)\s*(m|million|mils|mil|k|thousand|b|billion)/i);
+  // Pattern 1: Decimal or integer with multiplier suffix, e.g. "400k", "400 k", "400 thousand", "1.5m", "1.5 million"
+  const decMatch = text.match(/(\d+\.?\d*)\s*(m|million|millions|mils|mil|k|thousand|thousands|b|billion|hundred|hundreds)\b/i);
   if (decMatch) {
     const val = parseFloat(decMatch[1]);
     const unit = decMatch[2].toLowerCase();
     if (unit.startsWith("m")) return Math.round(val * 1000000);
     if (unit.startsWith("k") || unit.startsWith("thous")) return Math.round(val * 1000);
     if (unit.startsWith("b")) return Math.round(val * 1000000000);
+    if (unit.startsWith("hund")) return Math.round(val * 100);
   }
 
-  // Pattern 2: Raw number directly followed by naira or stand-alone large number
-  const numMatch = text.match(/\b(\d{2,10})\b/);
-  if (numMatch) {
-    const parsed = parseInt(numMatch[1], 10);
+  // Pattern 2: Multi-word English number phrases e.g. "four hundred thousand", "twenty thousand five hundred"
+  // Scan all word sequences in the sentence (e.g. in "sold 3 bags for four hundred thousand", match "four hundred thousand")
+  const wordPhraseRegex = /\b((?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|hundreds|thousand|thousands|million|millions|k)(?:\s+(?:and\s+)?(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|hundreds|thousand|thousands|million|millions|k|\d+))*)\b/gi;
+  const wordMatches = Array.from(text.matchAll(wordPhraseRegex));
+  if (wordMatches.length > 0) {
+    const wordVals = wordMatches
+      .map((m) => wordsToNumber(m[1]))
+      .filter((v) => v > 0);
+    // If any parsed word value represents a substantial amount, return the largest or currency amount
+    const largeWordVals = wordVals.filter((v) => v >= 100);
+    if (largeWordVals.length > 0) {
+      return Math.max(...largeWordVals);
+    }
+    if (wordVals.length > 0) {
+      return wordVals[wordVals.length - 1];
+    }
+  }
+
+  // Pattern 3: Explicit contextual monetary amount e.g. "for 400000", "for 400", "worth 400000"
+  const contextNumMatch = text.match(/(?:for|at|worth|cost|sum of|amount of)\s+(\d+)/i);
+  if (contextNumMatch) {
+    const parsed = parseInt(contextNumMatch[1], 10);
     if (parsed > 0) return parsed;
   }
 
-  // Pattern 3: Hybrid text like "twenty thousand" or "forty five k"
-  const wordsMatch = text.match(
-    /\b((?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|k|\d+)(?:\s+(?:and\s+)?(?:one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy|eighty|ninety|hundred|thousand|million|k|\d+))*)\b/i
-  );
-
-  if (wordsMatch) {
-    const parsedFromWords = wordsToNumber(wordsMatch[1]);
-    if (parsedFromWords > 0) return parsedFromWords;
+  // Pattern 4: Raw standalone number (e.g. "400000" or largest number in transcript)
+  const allNums = Array.from(text.matchAll(/\b(\d+)\b/g)).map((m) => parseInt(m[1], 10));
+  if (allNums.length > 0) {
+    // If multiple numbers are detected (e.g. "sold 5 bags for 400000"), prioritize the monetary amount (>= 100)
+    const largeNums = allNums.filter((n) => n >= 100);
+    if (largeNums.length > 0) {
+      return Math.max(...largeNums);
+    }
+    return allNums[allNums.length - 1];
   }
 
   return 0;
