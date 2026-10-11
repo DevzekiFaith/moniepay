@@ -27,6 +27,8 @@ import {
   X,
   ThumbsUp,
   Award,
+  Crosshair,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
@@ -37,6 +39,11 @@ import {
   calculateVendorStats,
   VendorProfile,
 } from "@/lib/reviews/vendorStore";
+import {
+  calculateHaversineDistanceKm,
+  requestDeviceCoordinates,
+  findNearestNigerianHub,
+} from "@/lib/geo/geolocation";
 
 const CATEGORIES = [
   "All Categories",
@@ -80,6 +87,43 @@ function VendorMapContent() {
   const [selectedMarket, setSelectedMarket] = useState("All Markets Across Nigeria");
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
 
+  // GPS Device Geolocation State
+  const [userGps, setUserGps] = useState<{
+    lat: number;
+    lng: number;
+    mapX: number;
+    mapY: number;
+    hubName: string;
+    distanceKm: number;
+  } | null>(null);
+  const [isLocatingUser, setIsLocatingUser] = useState(false);
+  const [sortByDistance, setSortByDistance] = useState(false);
+  const [gpsNotice, setGpsNotice] = useState<string | null>(null);
+
+  const handleLocateUser = async () => {
+    setIsLocatingUser(true);
+    setGpsNotice(null);
+    try {
+      const coords = await requestDeviceCoordinates();
+      const { hub, distanceKm } = findNearestNigerianHub(coords.lat, coords.lng);
+      setUserGps({
+        lat: coords.lat,
+        lng: coords.lng,
+        mapX: hub.mapX,
+        mapY: hub.mapY,
+        hubName: `${hub.name}, ${hub.state}`,
+        distanceKm,
+      });
+      setSortByDistance(true);
+      setGpsNotice(`GPS Active: Nearest commercial hub is ${hub.name} (~${distanceKm} km away)`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Could not retrieve GPS coordinates.";
+      setGpsNotice(msg);
+    } finally {
+      setIsLocatingUser(false);
+    }
+  };
+
   useEffect(() => {
     if (initialVendorId) {
       setSelectedVendorId(initialVendorId);
@@ -88,7 +132,7 @@ function VendorMapContent() {
 
   // Filter vendors
   const filteredVendors = useMemo(() => {
-    return vendors.filter((v) => {
+    const list = vendors.filter((v) => {
       const matchSearch =
         !searchQuery.trim() ||
         v.shopName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -205,7 +249,17 @@ function VendorMapContent() {
 
       return matchSearch && matchCategory && matchRegion && matchMarket;
     });
-  }, [vendors, searchQuery, selectedCategory, selectedRegion, selectedMarket]);
+
+    if (sortByDistance && userGps) {
+      return [...list].sort((a, b) => {
+        const distA = calculateHaversineDistanceKm(userGps.lat, userGps.lng, a.coordinates.lat, a.coordinates.lng);
+        const distB = calculateHaversineDistanceKm(userGps.lat, userGps.lng, b.coordinates.lat, b.coordinates.lng);
+        return distA - distB;
+      });
+    }
+
+    return list;
+  }, [vendors, searchQuery, selectedCategory, selectedRegion, selectedMarket, sortByDistance, userGps]);
 
   const activeVendor = selectedVendorId
     ? vendors.find((v) => v.id === selectedVendorId) || filteredVendors[0]
@@ -252,6 +306,28 @@ function VendorMapContent() {
           </div>
 
           <div className="flex items-center gap-2">
+            {/* GPS Locate Me Button */}
+            <button
+              type="button"
+              onClick={handleLocateUser}
+              disabled={isLocatingUser}
+              className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                sortByDistance && userGps
+                  ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-white/10 hover:border-emerald-400"
+              }`}
+              title="Detect my GPS location and show nearby shops"
+            >
+              {isLocatingUser ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Crosshair className={`h-3.5 w-3.5 ${sortByDistance && userGps ? "text-white" : "text-emerald-600 dark:text-emerald-400"}`} />
+              )}
+              <span className="text-[11px] font-black hidden sm:inline">
+                {userGps ? "Near Me Active" : "Near Me GPS"}
+              </span>
+            </button>
+
             {/* View Mode Toggle */}
             <div className="flex p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-white/10">
               <button
@@ -340,6 +416,23 @@ function VendorMapContent() {
             );
           })}
         </div>
+
+        {/* GPS Active Notice Banner */}
+        {gpsNotice && (
+          <div className="max-w-5xl mx-auto mt-2 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-[11px] font-bold text-emerald-900 dark:text-emerald-200 flex items-center justify-between shadow-2xs">
+            <span className="flex items-center gap-1.5">
+              <Crosshair className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              <span>{gpsNotice}</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => { setGpsNotice(null); setSortByDistance(false); }}
+              className="text-emerald-700 dark:text-emerald-300 hover:underline text-[10.5px] font-black shrink-0 cursor-pointer ml-2"
+            >
+              Reset GPS
+            </button>
+          </div>
+        )}
       </header>
 
       {/* ── MAIN CONTENT AREA ── */}
@@ -445,10 +538,34 @@ function VendorMapContent() {
               Nationwide Verified Merchants • {filteredVendors.length} Active Shops
             </div>
 
+            {/* ── REAL-TIME USER GPS RADAR BEACON ── */}
+            {userGps && (
+              <div
+                style={{
+                  left: `${userGps.mapX}%`,
+                  top: `${userGps.mapY}%`,
+                }}
+                className="absolute -translate-x-1/2 -translate-y-1/2 z-35 pointer-events-none"
+              >
+                <div className="relative flex flex-col items-center">
+                  <span className="absolute -inset-2.5 rounded-full bg-emerald-400/40 animate-ping" />
+                  <div className="h-7 w-7 rounded-full bg-emerald-500 border-2 border-white shadow-xl flex items-center justify-center text-xs">
+                    📍
+                  </div>
+                  <span className="mt-1 px-2 py-0.5 rounded-full bg-emerald-950/95 text-emerald-200 border border-emerald-400/60 text-[9px] font-black shadow-lg whitespace-nowrap">
+                    You Are Here
+                  </span>
+                </div>
+              </div>
+            )}
+
             {/* ── INTERACTIVE VENDOR MAP PINS ── */}
             {filteredVendors.map((vendor) => {
               const isSelected = selectedVendorId === vendor.id;
               const stats = calculateVendorStats(vendor.id);
+              const distanceKm = userGps
+                ? calculateHaversineDistanceKm(userGps.lat, userGps.lng, vendor.coordinates.lat, vendor.coordinates.lng)
+                : null;
               return (
                 <div
                   key={vendor.id}
@@ -477,6 +594,11 @@ function VendorMapContent() {
                       <span className="flex items-center text-amber-300 font-black text-[9.5px]">
                         ★ {stats.average}
                       </span>
+                      {distanceKm !== null && (
+                        <span className="text-emerald-300 font-bold text-[9px]">
+                          • {distanceKm}km
+                        </span>
+                      )}
                     </div>
 
                     {/* Pin Icon & Pulse Ring */}
@@ -534,7 +656,7 @@ function VendorMapContent() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1 mb-0.5">
+                  <div className="flex items-center gap-1 mb-0.5 flex-wrap">
                     <span className="px-2 py-0.2 rounded-full bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-[10px] font-black uppercase">
                       {activeVendor.category.split("&")[0]}
                     </span>
@@ -542,6 +664,12 @@ function VendorMapContent() {
                       <ShieldCheck className="h-2.5 w-2.5" />
                       Verified
                     </span>
+                    {userGps && (
+                      <span className="px-2 py-0.2 rounded-full bg-emerald-50 dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-700/60 text-emerald-800 dark:text-emerald-200 text-[9.5px] font-black flex items-center gap-1">
+                        <Navigation className="h-2.5 w-2.5" />
+                        {calculateHaversineDistanceKm(userGps.lat, userGps.lng, activeVendor.coordinates.lat, activeVendor.coordinates.lng)} km away
+                      </span>
+                    )}
                   </div>
 
                   <h3 className="font-black text-slate-900 dark:text-white text-base leading-snug truncate">

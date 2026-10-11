@@ -23,12 +23,14 @@ import {
   Loader2,
   Camera,
   Gift,
+  Compass,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { WelcomeIntroScreen } from "@/components/intro/WelcomeIntroScreen";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { recordNewReferredTrader } from "@/lib/referral/referralStore";
+import { detectNigerianStallLocation } from "@/lib/geo/geolocation";
 
 function LoginContent() {
   const router = useRouter();
@@ -82,8 +84,25 @@ function LoginContent() {
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDemoLoading, setIsDemoLoading] = useState(false);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  // Auto-detect Nigerian stall location via GPS
+  const handleAutoDetectLocation = async () => {
+    setIsDetectingLocation(true);
+    setErrorMessage(null);
+    try {
+      const detected = await detectNigerianStallLocation();
+      setMarketLocation(detected.formattedLocation);
+      setSuccessMessage(`📍 Stall Located: ${detected.hub.name}, ${detected.hub.state} (±${Math.round(detected.accuracyMeters || 10)}m accuracy)`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Could not detect GPS location. Please select a market below.";
+      setErrorMessage(msg);
+    } finally {
+      setIsDetectingLocation(false);
+    }
+  };
 
   // Auto-redirect if already authenticated
   useEffect(() => {
@@ -502,8 +521,27 @@ function LoginContent() {
                       value={marketLocation}
                       onChange={(e) => setMarketLocation(e.target.value)}
                       placeholder="Shop/Market Location (e.g. Wuse Abuja, Dawanau Kano, Ariaria Aba)"
-                      className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
+                      className="w-full pl-11 pr-32 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
                     />
+                    <button
+                      type="button"
+                      onClick={handleAutoDetectLocation}
+                      disabled={isDetectingLocation}
+                      title="Auto-Detect My Stall Location using GPS"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 px-2.5 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 hover:bg-emerald-100 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-700/60 text-[10.5px] font-black flex items-center gap-1 transition-all active:scale-95 cursor-pointer shadow-2xs"
+                    >
+                      {isDetectingLocation ? (
+                        <>
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                          <span className="hidden sm:inline">Detecting…</span>
+                        </>
+                      ) : (
+                        <>
+                          <Compass className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                          <span>Auto GPS</span>
+                        </>
+                      )}
+                    </button>
                   </div>
                   {/* Quick nationwide suggestion chips */}
                   <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar text-[10px] text-slate-500 dark:text-slate-400">
