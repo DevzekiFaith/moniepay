@@ -141,8 +141,8 @@ export default function MoniePayDashboard() {
   const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false);
   const [isReceiveOpen, setIsReceiveOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
-  const [walletBalance, setWalletBalance] = useState(125000);
-  const [safeWithdrawalAmount, setSafeWithdrawalAmount] = useState(40000);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [safeWithdrawalAmount, setSafeWithdrawalAmount] = useState(0);
 
   // Activity Tab Search & Filter State
   const [activitySearch, setActivitySearch] = useState("");
@@ -162,6 +162,14 @@ export default function MoniePayDashboard() {
 
     window.addEventListener("online", handleOnline);
     window.addEventListener("offline", handleOffline);
+
+    if (isDemoShop) {
+      setWalletBalance(125000);
+      setSafeWithdrawalAmount(40000);
+    } else {
+      setWalletBalance(0);
+      setSafeWithdrawalAmount(0);
+    }
 
     const cachedTxs = getCachedTransactions(currentBizId);
     if (cachedTxs.length > 0) {
@@ -499,11 +507,13 @@ export default function MoniePayDashboard() {
                 recommendations={recommendations}
                 tradeType={business.trade_type}
                 businessName={business.name}
+                businessId={currentBizId}
                 onOpenGbeseBook={() => setIsGbeseOpen(true)}
                 onOpenWithdrawal={(safeAmt) => {
                   setSafeWithdrawalAmount(safeAmt);
                   setIsWithdrawalOpen(true);
                 }}
+                onOpenRecordSale={() => handleOpenRecord("SALE")}
               />
 
               {/* 3. DAILY BUSINESS VIEW (Today's Sales, Money Out, Money Available, Customers Owing) */}
@@ -590,7 +600,7 @@ export default function MoniePayDashboard() {
               />
 
               {/* 3. Decision Memory Tracking */}
-              <DecisionMemoryCard />
+              <DecisionMemoryCard businessId={currentBizId} />
             </motion.div>
           )}
 

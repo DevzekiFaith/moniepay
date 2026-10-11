@@ -141,17 +141,31 @@ export function generatePriorityRecommendations(
 
   // 6. Default Fallback Recommendation if everything is balanced
   if (recommendations.length === 0) {
-    recommendations.push({
-      id: "rec_steady_growth",
-      business_id: "default",
-      priority_rank: 1,
-      action_type: "GENERAL",
-      title: "Your shop rhythm dey balanced! Focus on high-margin fast movers.",
-      description: `Profit margin dey at ${metrics.profitMarginPercent}%, and cash inside drawer/bank cover all current restock needs. Keep recording every sale and expense!`,
-      impact_summary: "Maintains solid market momentum.",
-      status: "ACTIVE",
-      created_at: new Date().toISOString(),
-    });
+    if (metrics.totalRevenue === 0 && metrics.totalCosts === 0) {
+      recommendations.push({
+        id: "rec_onboarding",
+        business_id: "default",
+        priority_rank: 1,
+        action_type: "GENERAL",
+        title: "Welcome! Record your first shop transaction to get live diagnostics.",
+        description: "Talk on the mic or record cash sales make MoniePay start tracking your profit margin, safe chop money, and restock capital.",
+        impact_summary: "Initializes your shop intelligence ledger.",
+        status: "ACTIVE",
+        created_at: new Date().toISOString(),
+      });
+    } else {
+      recommendations.push({
+        id: "rec_steady_growth",
+        business_id: "default",
+        priority_rank: 1,
+        action_type: "GENERAL",
+        title: "Your shop rhythm dey balanced! Focus on high-margin fast movers.",
+        description: `Profit margin dey at ${metrics.profitMarginPercent}%, and cash inside drawer/bank cover all current restock needs. Keep recording every sale and expense!`,
+        impact_summary: "Maintains solid market momentum.",
+        status: "ACTIVE",
+        created_at: new Date().toISOString(),
+      });
+    }
   }
 
   // Ensure priority ranking order: rank 1 is top

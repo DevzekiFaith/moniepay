@@ -162,4 +162,18 @@ describe("MoniePay — Business Decision Intelligence OS", () => {
 
     expect(metrics.safeWithdrawalAmount).toBeGreaterThan(0);
   });
+
+  it("4. Guarantees 100% clean zero state for brand new users (no default data leakage)", () => {
+    // A brand new user starts with 0 transactions, 0 debts, clean ₦0 accounts
+    const cleanMetrics = calculateDeterministicMetrics([], [], []);
+    expect(cleanMetrics.totalRevenue).toBe(0);
+    expect(cleanMetrics.totalCosts).toBe(0);
+    expect(cleanMetrics.operatingProfit).toBe(0);
+    expect(cleanMetrics.customerDebtTotal).toBe(0);
+    expect(cleanMetrics.safeWithdrawalAmount).toBe(0);
+
+    const cleanRecs = generatePriorityRecommendations(cleanMetrics, [], [], "New Trader Store");
+    expect(cleanRecs.length).toBeGreaterThan(0);
+    expect(cleanRecs[0].title).toContain("Welcome! Record your first shop transaction");
+  });
 });

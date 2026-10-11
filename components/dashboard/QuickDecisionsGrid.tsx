@@ -63,33 +63,66 @@ export function QuickDecisionsGrid({
   const customerDebts = debts.filter((d) => d.debt_type === "CUSTOMER_CREDIT" && d.status !== "SETTLED");
   const liveMarket = getLiveMarketDecisionInsight(tradeType);
 
+  const workingCapital = Math.max(0, metrics.liquidCash - metrics.safeWithdrawalAmount);
+
   // The 7 Core Trader Decisions in Authentic Informal Nigerian Market Language
   const decisions: DecisionDetail[] = [
     {
       id: "withdraw",
       question: "I fit withdraw chop moni today?",
-      verdict: `YES O — ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe to Chop`,
-      statusType: "safe",
-      explanation: "Your shop capital, wholesaler money, and NEPA/fuel bills dey intact. This ₦" + metrics.safeWithdrawalAmount.toLocaleString() + " na clean gain wey you fit take chop life without shaking your business.",
-      nextStep: "Withdraw only this exact amount make tomorrow morning restock money no go suffer.",
-      buttonLabel: `Collect ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe Chop Moni`,
+      verdict:
+        metrics.safeWithdrawalAmount > 0
+          ? `YES O — ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe to Chop`
+          : "WAIT SMALL — ₦0 Safe to Chop (Record Sales First)",
+      statusType: metrics.safeWithdrawalAmount > 0 ? "safe" : "action_needed",
+      explanation:
+        metrics.safeWithdrawalAmount > 0
+          ? "Your shop capital, wholesaler money, and NEPA/fuel bills dey intact. This ₦" +
+            metrics.safeWithdrawalAmount.toLocaleString() +
+            " na clean gain wey you fit take chop life without shaking your business."
+          : "You never record sales or profit today. Record your shop transactions first make MoniePay calculate your safe chop money.",
+      nextStep:
+        metrics.safeWithdrawalAmount > 0
+          ? "Withdraw only this exact amount make tomorrow morning restock money no go suffer."
+          : "Record today cash sales or customer credit first.",
+      buttonLabel:
+        metrics.safeWithdrawalAmount > 0
+          ? `Collect ₦${metrics.safeWithdrawalAmount.toLocaleString()} Safe Chop Moni`
+          : "Record Daily Sale",
       onAction: () => {
         setActiveDecision(null);
-        if (onOpenWithdrawal) onOpenWithdrawal();
+        if (metrics.safeWithdrawalAmount > 0) {
+          if (onOpenWithdrawal) onOpenWithdrawal();
+        } else {
+          if (onOpenProfitDetail) onOpenProfitDetail();
+        }
       },
     },
     {
       id: "restock",
       question: "I fit buy new market/stock now?",
-      verdict: `YES O — ₦${Math.max(0, metrics.liquidCash - metrics.safeWithdrawalAmount).toLocaleString()} Working Capital Ready`,
-      statusType: "safe",
-      explanation: `You get ₦${Math.max(0, metrics.liquidCash - metrics.safeWithdrawalAmount).toLocaleString()} cash on hand ready to clear fresh wholesale cart cash-down with zero loan interest.`,
-      nextStep: "Rush target fast-moving goods wey customers dey ask every day (Rice, Sugar, Oil, Indomie).",
-      buttonLabel: "Plan Wholesale Restock",
-      badge: "Cash Ready",
+      verdict:
+        workingCapital > 0
+          ? `YES O — ₦${workingCapital.toLocaleString()} Working Capital Ready`
+          : "WAIT SMALL — ₦0 Working Capital (Record Available Cash)",
+      statusType: workingCapital > 0 ? "safe" : "action_needed",
+      explanation:
+        workingCapital > 0
+          ? `You get ₦${workingCapital.toLocaleString()} cash on hand ready to clear fresh wholesale cart cash-down with zero loan interest.`
+          : "No cash balance recorded inside your drawer or accounts yet. Record your cash-at-hand or today sales first.",
+      nextStep:
+        workingCapital > 0
+          ? "Rush target fast-moving goods wey customers dey ask every day (Rice, Sugar, Oil, Indomie)."
+          : "Record your cash drawer or today market sales first.",
+      buttonLabel: workingCapital > 0 ? "Plan Wholesale Restock" : "Record Cash / Sale",
+      badge: workingCapital > 0 ? "Cash Ready" : undefined,
       onAction: () => {
         setActiveDecision(null);
-        if (onOpenRestock) onOpenRestock();
+        if (workingCapital > 0) {
+          if (onOpenRestock) onOpenRestock();
+        } else {
+          if (onOpenProfitDetail) onOpenProfitDetail();
+        }
       },
     },
     {

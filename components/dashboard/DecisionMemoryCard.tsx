@@ -11,19 +11,25 @@ import {
 import type { DecisionMemoryItem } from "@/types/moniepay.types";
 import { getDecisionMemory } from "@/lib/intelligence/decisionMemory";
 
-export function DecisionMemoryCard() {
+interface DecisionMemoryCardProps {
+  businessId?: string;
+}
+
+export function DecisionMemoryCard({ businessId }: DecisionMemoryCardProps = {}) {
   const [memoryList, setMemoryList] = useState<DecisionMemoryItem[]>([]);
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    setMemoryList(getDecisionMemory());
+    setMemoryList(getDecisionMemory(businessId));
 
-    const handleUpdate = () => {
-      setMemoryList(getDecisionMemory());
+    const handleUpdate = (e: any) => {
+      if (!e?.detail?.businessId || e.detail.businessId === businessId) {
+        setMemoryList(getDecisionMemory(businessId));
+      }
     };
     window.addEventListener("moniepay:decision-recorded", handleUpdate);
     return () => window.removeEventListener("moniepay:decision-recorded", handleUpdate);
-  }, []);
+  }, [businessId]);
 
   if (memoryList.length === 0) return null;
 

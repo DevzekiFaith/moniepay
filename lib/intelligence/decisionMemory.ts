@@ -52,17 +52,27 @@ export const SEED_DECISION_MEMORY: DecisionMemoryItem[] = [
   },
 ];
 
-export function getDecisionMemory(): DecisionMemoryItem[] {
-  if (typeof window === "undefined") return SEED_DECISION_MEMORY;
+function getScopedKey(baseKey: string, businessId?: string): string {
+  if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
+    return baseKey;
+  }
+  return `${baseKey}_${businessId}`;
+}
+
+export function getDecisionMemory(businessId?: string): DecisionMemoryItem[] {
+  const isDemo = !businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01";
+  if (typeof window === "undefined") return isDemo ? SEED_DECISION_MEMORY : [];
+  const key = getScopedKey(DECISION_MEMORY_KEY, businessId);
   try {
-    const raw = localStorage.getItem(DECISION_MEMORY_KEY);
-    if (!raw) {
+    const raw = localStorage.getItem(key);
+    if (raw) return JSON.parse(raw);
+    if (isDemo) {
       localStorage.setItem(DECISION_MEMORY_KEY, JSON.stringify(SEED_DECISION_MEMORY));
       return SEED_DECISION_MEMORY;
     }
-    return JSON.parse(raw);
+    return [];
   } catch {
-    return SEED_DECISION_MEMORY;
+    return isDemo ? SEED_DECISION_MEMORY : [];
   }
 }
 
@@ -70,9 +80,10 @@ export function recordDecisionAction(
   decisionId: string,
   title: string,
   actionTakenText: string,
-  expectedOutcome: string
+  expectedOutcome: string,
+  businessId?: string
 ): DecisionMemoryItem {
-  const current = getDecisionMemory();
+  const current = getDecisionMemory(businessId);
   const newItem: DecisionMemoryItem = {
     id: `mem_${Date.now()}`,
     recommendationTitle: title,
@@ -86,8 +97,9 @@ export function recordDecisionAction(
 
   const updated = [newItem, ...current];
   if (typeof window !== "undefined") {
-    localStorage.setItem(DECISION_MEMORY_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent("moniepay:decision-recorded", { detail: newItem }));
+    const key = getScopedKey(DECISION_MEMORY_KEY, businessId);
+    localStorage.setItem(key, JSON.stringify(updated));
+    window.dispatchEvent(new CustomEvent("moniepay:decision-recorded", { detail: { item: newItem, businessId } }));
   }
   return newItem;
 }

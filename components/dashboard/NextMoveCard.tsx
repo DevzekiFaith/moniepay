@@ -23,8 +23,10 @@ interface NextMoveCardProps {
   recommendations: Recommendation[];
   tradeType?: TradeType;
   businessName?: string;
+  businessId?: string;
   onOpenGbeseBook?: () => void;
   onOpenWithdrawal?: (amount: number) => void;
+  onOpenRecordSale?: () => void;
 }
 
 export function NextMoveCard({
@@ -32,8 +34,10 @@ export function NextMoveCard({
   debts,
   tradeType = "retail_provisions",
   businessName = "Mama Chidi Provisions",
+  businessId,
   onOpenGbeseBook,
   onOpenWithdrawal,
+  onOpenRecordSale,
 }: NextMoveCardProps) {
   const [isDone, setIsDone] = useState<string | null>(null);
 
@@ -49,7 +53,12 @@ export function NextMoveCard({
   let actionLabel = topDebtor ? `Remind ${topDebtor.person_name} (₦${topDebtor.balance_due.toLocaleString()})` : "Open Gbese Book";
   let actionType = "COLLECT_DEBT";
 
-  if (liveMarket.trend === "UP") {
+  if (metrics.totalRevenue === 0 && metrics.totalCosts === 0 && activeCustomerDebts.length === 0) {
+    title = "Welcome! Record your first shop activity today.";
+    reason = "Talk on the mic 🎙️ or tap '+ Record Sale' make MoniePay begin calculate your true daily profit.";
+    actionLabel = "+ Record First Sale";
+    actionType = "RECORD_SALE";
+  } else if (liveMarket.trend === "UP") {
     title = liveMarket.headline;
     reason = liveMarket.explanation;
     actionLabel = "Plan Bulk Restock Now";
@@ -67,6 +76,11 @@ export function NextMoveCard({
   }
 
   const handleAction = () => {
+    if (actionType === "RECORD_SALE") {
+      if (onOpenRecordSale) onOpenRecordSale();
+      return;
+    }
+
     if (actionType === "COLLECT_DEBT") {
       if (topDebtor?.phone) {
         const cleanPhone = topDebtor.phone.replace(/[^0-9]/g, "");
@@ -81,7 +95,8 @@ export function NextMoveCard({
         "rec_collect",
         title,
         `Send WhatsApp reminder give ${topDebtor?.person_name || "customer"}`,
-        `Recover ₦${(topDebtor?.balance_due || 0).toLocaleString()} put back into cash drawer`
+        `Recover ₦${(topDebtor?.balance_due || 0).toLocaleString()} put back into cash drawer`,
+        businessId
       );
     } else if (actionType === "SAFE_WITHDRAWAL") {
       if (onOpenWithdrawal) onOpenWithdrawal(metrics.safeWithdrawalAmount);
@@ -89,7 +104,8 @@ export function NextMoveCard({
         "rec_withdraw",
         title,
         `Take ₦${metrics.safeWithdrawalAmount.toLocaleString()} safe chop moni for house`,
-        "Protected restock capital 100% intact"
+        "Protected restock capital 100% intact",
+        businessId
       );
     } else {
       if (onOpenGbeseBook) onOpenGbeseBook();
