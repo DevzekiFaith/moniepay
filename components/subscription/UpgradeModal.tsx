@@ -125,16 +125,16 @@ export function UpgradeModal() {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Top Sapphire Banner (Solid Blue) */}
-            <div className="bg-[#1e3a8a] px-5 sm:px-6 py-4 sm:py-5 text-white flex items-center justify-between border-b border-white/10 shrink-0 relative overflow-hidden">
-              <div className="flex items-center gap-3">
-                <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-inner shrink-0">
-                  <ShieldCheck className="h-6 w-6 text-sky-300" />
+            <div className="bg-[#1e3a8a] px-4 sm:px-6 py-3.5 sm:py-5 text-white flex items-center justify-between border-b border-white/10 shrink-0 relative overflow-hidden">
+              <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+                <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-inner shrink-0">
+                  <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6 text-sky-300" />
                 </div>
-                <div>
-                  <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-blue-400/20 border border-blue-400/30 text-blue-200 text-[10.5px] font-black uppercase tracking-wide">
+                <div className="min-w-0">
+                  <div className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-blue-400/20 border border-blue-400/30 text-blue-200 text-[9.5px] sm:text-[10.5px] font-black uppercase tracking-wide">
                     <span>Shop Intelligence Plan</span>
                   </div>
-                  <h3 id="upgrade-modal-title" className="text-base sm:text-lg font-black tracking-tight leading-tight text-white mt-0.5">
+                  <h3 id="upgrade-modal-title" className="text-sm sm:text-lg font-black tracking-tight leading-tight text-white mt-0.5 truncate">
                     MoniePay Plus
                   </h3>
                 </div>
@@ -143,15 +143,15 @@ export function UpgradeModal() {
               <button
                 type="button"
                 onClick={closeUpgradeModal}
-                className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white/15 hover:bg-white/25 text-white transition-all cursor-pointer backdrop-blur-md border border-white/20 active:scale-95 shrink-0"
+                className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center rounded-xl sm:rounded-2xl bg-white/15 hover:bg-white/25 text-white transition-all cursor-pointer backdrop-blur-md border border-white/20 active:scale-95 shrink-0"
                 aria-label="Close modal"
               >
-                <X className="h-4.5 w-4.5" />
+                <X className="h-4 w-4 sm:h-4.5 sm:w-4.5" />
               </button>
             </div>
 
             {/* Modal Body Scroll */}
-            <div className="p-4 sm:p-6 overflow-y-auto space-y-4 flex-1">
+            <div className="p-3.5 sm:p-6 overflow-y-auto space-y-3.5 sm:space-y-4 flex-1">
               {/* Context / Reason Notice if triggered by feature gate or expired */}
               {isExpired ? (
                 <div className="p-3.5 rounded-2xl bg-rose-500/10 dark:bg-rose-950/40 border border-rose-500/30 dark:border-rose-800 flex items-start gap-2.5">
@@ -237,12 +237,12 @@ export function UpgradeModal() {
                   Pick How You Wan Pay:
                 </label>
 
-                <div className="grid grid-cols-2 gap-2.5">
+                <div className="grid grid-cols-1 min-[340px]:grid-cols-2 gap-2 sm:gap-2.5">
                   {/* Monthly Plan Card */}
                   <button
                     type="button"
                     onClick={() => setSelectedPlan("monthly")}
-                    className={`p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
+                    className={`p-3 sm:p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
                       selectedPlan === "monthly"
                         ? "bg-white dark:bg-slate-800 border-blue-600 dark:border-blue-500 shadow-[0_8px_20px_rgba(37,99,235,0.15)] ring-2 ring-blue-600/30"
                         : "bg-white/60 dark:bg-slate-800/40 border-white/80 dark:border-slate-700 hover:bg-white/80 dark:hover:bg-slate-800/70"
@@ -254,15 +254,15 @@ export function UpgradeModal() {
                         <CheckCircle2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                       )}
                     </div>
-                    <p className="text-base font-black text-blue-900 dark:text-blue-300 mt-1">₦1,500</p>
-                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">Dey renew every month</p>
+                    <p className="text-sm sm:text-base font-black text-blue-900 dark:text-blue-300 mt-1">₦1,500</p>
+                    <p className="text-[10px] sm:text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">Dey renew every month</p>
                   </button>
 
                   {/* Annual Plan Card */}
                   <button
                     type="button"
                     onClick={() => setSelectedPlan("annual")}
-                    className={`p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
+                    className={`p-3 sm:p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
                       selectedPlan === "annual"
                         ? "bg-white dark:bg-slate-800 border-emerald-600 dark:border-emerald-500 shadow-[0_8px_20px_rgba(5,150,105,0.15)] ring-2 ring-emerald-600/30"
                         : "bg-white/60 dark:bg-slate-800/40 border-white/80 dark:border-slate-700 hover:bg-white/80 dark:hover:bg-slate-800/70"

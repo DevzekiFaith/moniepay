@@ -38,7 +38,7 @@ export function LogoutModal({
   return createPortal(
     <AnimatePresence>
       <div
-        className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md"
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto"
         onClick={onClose}
       >
         <motion.div
@@ -46,7 +46,7 @@ export function LogoutModal({
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.94, y: 14 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="relative w-full max-w-sm rounded-[32px] clay-card p-6 sm:p-7 text-slate-800 dark:text-slate-100 border border-white/80 dark:border-white/10"
+          className="relative w-full max-w-sm max-h-[92vh] overflow-y-auto rounded-[24px] sm:rounded-[32px] clay-card p-5 sm:p-7 text-slate-800 dark:text-slate-100 border border-white/80 dark:border-white/10"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Close button */}

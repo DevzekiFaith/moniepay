@@ -119,7 +119,7 @@ export function ReceiveMoneyModal({
 
   return createPortal(
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-2.5 sm:p-4 overflow-y-auto">
         {/* Backdrop */}
         <motion.div
           initial={{ opacity: 0 }}
@@ -135,7 +135,7 @@ export function ReceiveMoneyModal({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.94, opacity: 0, y: 15 }}
           transition={{ type: "spring", stiffness: 380, damping: 28 }}
-          className="relative w-full max-w-md max-h-[92vh] overflow-y-auto rounded-[32px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-5 sm:p-6 space-y-4 text-slate-900 dark:text-white"
+          className="relative w-full max-w-md max-h-[92vh] overflow-y-auto rounded-[24px] sm:rounded-[32px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-4 sm:p-6 space-y-3.5 sm:space-y-4 text-slate-900 dark:text-white"
         >
           {/* Header */}
           <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">

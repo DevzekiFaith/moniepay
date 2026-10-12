@@ -61,10 +61,12 @@ export function ConfirmModal({
           style={{
             width: "100%",
             maxWidth: "460px",
+            maxHeight: "92vh",
+            overflowY: "auto",
             background: "#0D1526",
             border: "1px solid rgba(255, 255, 255, 0.12)",
             borderRadius: "20px",
-            padding: "1.75rem",
+            padding: "1.25rem",
             boxShadow:
               "0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 35px rgba(244, 63, 94, 0.15)",
           }}
