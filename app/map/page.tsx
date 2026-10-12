@@ -294,6 +294,40 @@ function VendorMapContent() {
 
   const activeStats = activeVendor ? vendorStatsMap.get(activeVendor.id) || null : null;
 
+  if (!isClientMounted) {
+    return (
+      <div className="min-h-screen bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between transition-colors">
+        <header className="sticky top-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-white/10 px-4 py-3 shadow-xs">
+          <div className="max-w-5xl mx-auto flex items-center justify-between gap-3">
+            <Link href="/" className="flex items-center gap-2 group cursor-pointer shrink-0">
+              <MoniePayMark size={32} />
+              <div>
+                <span className="text-sm font-black text-slate-900 dark:text-white">MoniePay</span>
+                <span className="text-[10px] font-bold text-blue-600 dark:text-sky-400 block leading-none">Vendor Map</span>
+              </div>
+            </Link>
+            <ThemeToggle />
+          </div>
+        </header>
+
+        <main className="flex-1 max-w-5xl w-full mx-auto p-4 flex flex-col items-center justify-center min-h-[60vh]">
+          <div className="flex flex-col items-center gap-3 text-center">
+            <div className="h-12 w-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg animate-pulse">
+              <Store className="h-6 w-6" />
+            </div>
+            <div className="space-y-1">
+              <div className="flex items-center justify-center gap-2 text-slate-800 dark:text-slate-200 font-black text-sm">
+                <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+                <span>Loading Verified Market Stalls…</span>
+              </div>
+              <p className="text-xs text-slate-500 font-medium">Connecting nationwide trading corridors & stalls</p>
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between transition-colors">
       {/* ── TOP HEADER ── */}
@@ -621,7 +655,7 @@ function VendorMapContent() {
                       }`}
                     >
                       <span>{vendor.shopName.split(" ")[0]}</span>
-                      <span className="flex items-center text-amber-300 font-black text-[9.5px]">
+                      <span suppressHydrationWarning className="flex items-center text-amber-300 font-black text-[9.5px]">
                         ★ {stats.average}
                       </span>
                       {distanceKm !== null && (
@@ -713,9 +747,9 @@ function VendorMapContent() {
                   <div className="flex items-center gap-2 pt-0.5">
                     <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-black text-xs">
                       <ThumbsUp className="h-3.5 w-3.5" />
-                      <span>{activeStats?.average} pts</span>
+                      <span suppressHydrationWarning>{activeStats?.average} pts</span>
                     </div>
-                    <span className="text-[11px] text-slate-400 font-medium">
+                    <span suppressHydrationWarning className="text-[11px] text-slate-400 font-medium">
                       ({activeStats?.total} verified reviews)
                     </span>
                   </div>
@@ -865,10 +899,10 @@ function VendorMapContent() {
 
                     {/* Review Ratings Badge */}
                     <div className="text-right shrink-0">
-                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-black text-[11px]">
+                      <span suppressHydrationWarning className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-black text-[11px]">
                         ★ {stats.average}
                       </span>
-                      <span className="text-[9.5px] text-slate-400 dark:text-slate-500 block mt-0.5 font-medium">
+                      <span suppressHydrationWarning className="text-[9.5px] text-slate-400 dark:text-slate-500 block mt-0.5 font-medium">
                         {stats.total} reviews
                       </span>
                     </div>

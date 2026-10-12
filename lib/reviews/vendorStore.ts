@@ -1009,22 +1009,38 @@ export function getAllVendors(): VendorProfile[] {
 
   const activeUserVendor = getCurrentUserVendor();
   
-  // Combine custom vendors, active user vendor, and seed vendors, deduplicated by id
+  // Combine custom vendors, active user vendor, and seed vendors, deduplicated by id, shopName, and trader
   const vendorMap = new Map<string, VendorProfile>();
+  const seenShopNames = new Set<string>();
   
   // Put active user vendor first
   vendorMap.set(activeUserVendor.id, activeUserVendor);
+  seenShopNames.add(activeUserVendor.shopName.toLowerCase().trim());
   
-  // Add other custom vendors
+  // Add other custom vendors, preventing duplicates of the logged-in trader or duplicate shop names
   custom.forEach((v) => {
-    if (!vendorMap.has(v.id)) {
+    const normShop = v.shopName.toLowerCase().trim();
+    const isSameAsActive =
+      v.id === activeUserVendor.id ||
+      seenShopNames.has(normShop) ||
+      (v.name.toLowerCase().trim() === activeUserVendor.name.toLowerCase().trim() && activeUserVendor.name !== "Mama Chidi");
+
+    if (!isSameAsActive && !vendorMap.has(v.id)) {
+      seenShopNames.add(normShop);
       vendorMap.set(v.id, v);
     }
   });
 
-  // Add initial demo vendors (if activeUserVendor took over mama_chidi id, skip initial mama_chidi)
+  // Add initial demo vendors (if activeUserVendor or custom vendor took over, skip duplicate shop or id)
   initial.forEach((v) => {
-    if (!vendorMap.has(v.id) && v.id !== activeUserVendor.id) {
+    const normShop = v.shopName.toLowerCase().trim();
+    const isSameAsActive =
+      v.id === activeUserVendor.id ||
+      seenShopNames.has(normShop) ||
+      (v.name.toLowerCase().trim() === activeUserVendor.name.toLowerCase().trim() && activeUserVendor.name !== "Mama Chidi");
+
+    if (!isSameAsActive && !vendorMap.has(v.id)) {
+      seenShopNames.add(normShop);
       vendorMap.set(v.id, v);
     }
   });
