@@ -261,11 +261,20 @@ function VendorMapContent() {
     return list;
   }, [vendors, searchQuery, selectedCategory, selectedRegion, selectedMarket, sortByDistance, userGps]);
 
+  // Precompute vendor review stats to avoid recomputing during touch scroll gestures
+  const vendorStatsMap = useMemo(() => {
+    const map = new Map<string, { average: number; total: number }>();
+    for (const v of vendors) {
+      map.set(v.id, calculateVendorStats(v.id));
+    }
+    return map;
+  }, [vendors]);
+
   const activeVendor = selectedVendorId
     ? vendors.find((v) => v.id === selectedVendorId) || filteredVendors[0]
     : filteredVendors[0];
 
-  const activeStats = activeVendor ? calculateVendorStats(activeVendor.id) : null;
+  const activeStats = activeVendor ? vendorStatsMap.get(activeVendor.id) || null : null;
 
   return (
     <div className="min-h-screen bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between transition-colors">
@@ -640,9 +649,10 @@ function VendorMapContent() {
           {activeVendor && (
             <motion.div
               key={activeVendor.id}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="clay-card p-5 space-y-3.5 bg-white/95 dark:bg-slate-900/95 border border-white/80 dark:border-white/10 shadow-xl rounded-[28px]"
+              initial={{ opacity: 0.9 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.15 }}
+              className="clay-card p-4 sm:p-5 space-y-3.5 bg-white/95 dark:bg-slate-900/95 border border-white/80 dark:border-white/10 shadow-xl rounded-[24px] sm:rounded-[28px]"
             >
               {/* Card Header */}
               <div className="flex items-start gap-3.5">
@@ -747,15 +757,30 @@ function VendorMapContent() {
           )}
 
           {/* Directory List of All Matching Vendors */}
-          <div className="space-y-2 pt-2">
-            <h4 className="text-xs font-black uppercase text-slate-500 dark:text-slate-400 tracking-wider px-1">
-              All Verified Market Stalls ({filteredVendors.length})
-            </h4>
+          <div className="space-y-2.5 pt-2">
+            <div className="flex items-center justify-between px-1 flex-wrap gap-1.5 pb-0.5">
+              <div className="flex items-center gap-1.5">
+                <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                <h4 className="text-xs font-black uppercase text-slate-800 dark:text-slate-200 tracking-wider">
+                  All Verified Market Stalls ({filteredVendors.length})
+                </h4>
+              </div>
 
-            <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-black text-[9.5px] border border-emerald-300 dark:border-emerald-800 shadow-2xs whitespace-nowrap">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Verified Live Traders 🇳🇬</span>
+              </span>
+            </div>
+
+            {/* Glitch-free scrolling: Natural document scroll on mobile phones, smooth max-height scrollbox on tablets/desktops */}
+            <div className="space-y-2.5 sm:max-h-[520px] sm:overflow-y-auto pr-0 sm:pr-1 overscroll-contain [-webkit-overflow-scrolling:touch] touch-pan-y">
               {filteredVendors.map((vendor) => {
                 const isSelected = selectedVendorId === vendor.id;
-                const stats = calculateVendorStats(vendor.id);
+                const stats = vendorStatsMap.get(vendor.id) || { average: 5, total: 0 };
+                const distanceKm = userGps
+                  ? calculateHaversineDistanceKm(userGps.lat, userGps.lng, vendor.coordinates.lat, vendor.coordinates.lng)
+                  : null;
+
                 return (
                   <div
                     key={vendor.id}
@@ -763,34 +788,60 @@ function VendorMapContent() {
                       setSelectedVendorId(vendor.id);
                       if (viewMode === "list") setViewMode("map");
                     }}
-                    className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center gap-3 ${
+                    className={`p-3 rounded-2xl border transition-colors cursor-pointer flex items-center gap-3 touch-manipulation ${
                       isSelected
-                        ? "bg-blue-50/90 dark:bg-blue-950/70 border-blue-400 dark:border-blue-700 shadow-sm"
-                        : "bg-white/90 dark:bg-slate-900/90 hover:bg-white dark:hover:bg-slate-800 border-slate-200/80 dark:border-white/10"
+                        ? "bg-blue-50/95 dark:bg-blue-950/80 border-blue-500 dark:border-blue-600 shadow-sm ring-1 ring-blue-500/30"
+                        : "bg-white/95 dark:bg-slate-900/95 hover:bg-white dark:hover:bg-slate-800/90 border-slate-200/80 dark:border-white/10 shadow-2xs"
                     }`}
                   >
-                    <div className="relative h-11 w-11 rounded-xl overflow-hidden bg-slate-100 shrink-0">
+                    {/* Trader Avatar with Live Badge */}
+                    <div className="relative h-12 w-12 rounded-xl overflow-hidden bg-slate-100 dark:bg-slate-800 shrink-0 border border-slate-200/80 dark:border-slate-700">
                       <img
                         src={vendor.image}
                         alt={vendor.shopName}
+                        loading="lazy"
                         className="h-full w-full object-cover"
+                        onError={(e) => {
+                          e.currentTarget.src = "/images/traders/mama_chidi.jpg";
+                        }}
+                      />
+                      <span
+                        className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white dark:border-slate-900 shadow-xs"
+                        title="Verified Live Trader Online"
                       />
                     </div>
 
+                    {/* Trader Info & Verified Live Badge */}
                     <div className="flex-1 min-w-0">
-                      <p className="text-xs font-black text-slate-900 dark:text-white truncate">
-                        {vendor.shopName}
-                      </p>
-                      <p className="text-[10.5px] text-slate-500 dark:text-slate-400 truncate">
-                        {vendor.market}
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <p className="text-xs font-black text-slate-900 dark:text-white truncate leading-tight">
+                          {vendor.shopName}
+                        </p>
+                        <span className="inline-flex items-center gap-0.5 px-1.5 py-0.2 rounded-md bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 font-extrabold text-[9px] border border-emerald-200 dark:border-emerald-800/80 whitespace-nowrap">
+                          <ShieldCheck className="h-2.5 w-2.5 text-emerald-600 dark:text-emerald-400" />
+                          <span>Verified Live Trader</span>
+                        </span>
+                      </div>
+
+                      <p className="text-[10.5px] text-slate-500 dark:text-slate-400 truncate mt-0.5 flex items-center gap-1">
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">{vendor.name}</span>
+                        <span>•</span>
+                        <span className="truncate">{vendor.market}</span>
+                        {distanceKm !== null && (
+                          <>
+                            <span>•</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-black">{distanceKm}km</span>
+                          </>
+                        )}
                       </p>
                     </div>
 
+                    {/* Review Ratings Badge */}
                     <div className="text-right shrink-0">
-                      <span className="flex items-center gap-0.5 text-amber-500 font-black text-xs">
+                      <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-black text-[11px]">
                         ★ {stats.average}
                       </span>
-                      <span className="text-[10px] text-slate-400 block">
+                      <span className="text-[9.5px] text-slate-400 dark:text-slate-500 block mt-0.5 font-medium">
                         {stats.total} reviews
                       </span>
                     </div>
