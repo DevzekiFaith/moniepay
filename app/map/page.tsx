@@ -35,6 +35,7 @@ import { MoniePayMark } from "@/components/ui/MoniePayLogo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import {
   getAllVendors,
+  INITIAL_VENDORS,
   getVendor,
   calculateVendorStats,
   VendorProfile,
@@ -79,7 +80,24 @@ function VendorMapContent() {
   const searchParams = useSearchParams();
   const initialVendorId = searchParams?.get("vendor") || null;
 
-  const vendors = useMemo(() => getAllVendors(), []);
+  // Initialize with deterministic seed data during SSR to guarantee 100% hydration match,
+  // then hydrate with active user session/custom vendors in useEffect on client mount
+  const [vendors, setVendors] = useState<VendorProfile[]>(() => Object.values(INITIAL_VENDORS));
+  const [isClientMounted, setIsClientMounted] = useState(false);
+
+  useEffect(() => {
+    setIsClientMounted(true);
+    setVendors(getAllVendors());
+
+    const handleUpdate = () => setVendors(getAllVendors());
+    window.addEventListener("moniepay:vendors-updated", handleUpdate);
+    window.addEventListener("storage", handleUpdate);
+    return () => {
+      window.removeEventListener("moniepay:vendors-updated", handleUpdate);
+      window.removeEventListener("storage", handleUpdate);
+    };
+  }, []);
+
   const [selectedVendorId, setSelectedVendorId] = useState<string | null>(initialVendorId);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
@@ -543,7 +561,10 @@ function VendorMapContent() {
               </span>
             </div>
 
-            <div className="absolute bottom-2.5 left-3 text-[10px] text-slate-300 font-bold pointer-events-none bg-slate-950/90 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/10 shadow-md">
+            <div
+              suppressHydrationWarning
+              className="absolute bottom-2.5 left-3 text-[10px] text-slate-300 font-bold pointer-events-none bg-slate-950/90 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/10 shadow-md"
+            >
               Nationwide Verified Merchants • {filteredVendors.length} Active Shops
             </div>
 
@@ -637,7 +658,10 @@ function VendorMapContent() {
               <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
               <span>Tap any pin to see shop reviews, verified stall landmark & directions</span>
             </span>
-            <span className="text-[11px] font-black text-blue-600 dark:text-sky-400">
+            <span
+              suppressHydrationWarning
+              className="text-[11px] font-black text-blue-600 dark:text-sky-400"
+            >
               {filteredVendors.length} found
             </span>
           </div>
@@ -761,7 +785,10 @@ function VendorMapContent() {
             <div className="flex items-center justify-between px-1 flex-wrap gap-1.5 pb-0.5">
               <div className="flex items-center gap-1.5">
                 <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                <h4 className="text-xs font-black uppercase text-slate-800 dark:text-slate-200 tracking-wider">
+                <h4
+                  suppressHydrationWarning
+                  className="text-xs font-black uppercase text-slate-800 dark:text-slate-200 tracking-wider"
+                >
                   All Verified Market Stalls ({filteredVendors.length})
                 </h4>
               </div>
