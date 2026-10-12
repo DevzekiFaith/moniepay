@@ -35,6 +35,7 @@ import {
   getMarketReadingsForTrade,
   refreshMarketFeedPrices,
   getAudioMarketBriefingScript,
+  BASE_MARKET_FEED,
   getStoredMarketFeed,
 } from "@/lib/intelligence/marketIntelligence";
 import { TradeType } from "@/types/moniepay.types";
@@ -62,7 +63,12 @@ export function LiveMarketFeedCard({
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [marketItems, setMarketItems] = useState<MarketCommodityItem[]>(() =>
-    getMarketReadingsForTrade(tradeType, "", "ALL")
+    BASE_MARKET_FEED.filter(
+      (item) =>
+        tradeType === "general_merchant" ||
+        item.tradeTypes.includes(tradeType) ||
+        item.tradeTypes.includes("general_merchant")
+    )
   );
 
   const loadItems = () => {

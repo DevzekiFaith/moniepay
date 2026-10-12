@@ -9,6 +9,7 @@
 import React, { useState, useEffect } from "react";
 import { TrendingUp, TrendingDown, Minus, ChevronRight } from "lucide-react";
 import {
+  getBaseDepotTickerItems,
   getMarketDepotTickerItems,
   DepotTickerItem,
 } from "@/lib/intelligence/marketIntelligence";
@@ -18,9 +19,13 @@ interface MarketDepotTickerBarProps {
 }
 
 export function MarketDepotTickerBar({ onOpenFeed }: MarketDepotTickerBarProps) {
-  const [tickerItems, setTickerItems] = useState<DepotTickerItem[]>(getMarketDepotTickerItems);
+  // Always initialize with deterministic base items to guarantee 100% identical SSR & client hydration
+  const [tickerItems, setTickerItems] = useState<DepotTickerItem[]>(getBaseDepotTickerItems);
 
   useEffect(() => {
+    // Safely hydrate any client-stored or dynamic prices after mount
+    setTickerItems(getMarketDepotTickerItems());
+
     const handleUpdate = () => setTickerItems(getMarketDepotTickerItems());
     window.addEventListener("moniepay:market-feed-updated", handleUpdate);
     return () => {
@@ -67,12 +72,13 @@ export function MarketDepotTickerBar({ onOpenFeed }: MarketDepotTickerBarProps) 
                 </span>
 
                 {/* Price & Unit */}
-                <span className="font-mono font-black text-[11px] sm:text-xs text-[#1d4ed8] dark:text-sky-300">
+                <span suppressHydrationWarning className="font-mono font-black text-[11px] sm:text-xs text-[#1d4ed8] dark:text-sky-300">
                   {item.price}/{item.unit}
                 </span>
 
                 {/* Clean Financial Trend Pill */}
                 <span
+                  suppressHydrationWarning
                   className={`px-1 sm:px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black inline-flex items-center gap-0.5 ${
                     isUp
                       ? "bg-rose-50 dark:bg-rose-950/80 text-rose-600 dark:text-rose-400 border border-rose-200/60 dark:border-rose-900/60"
@@ -84,7 +90,7 @@ export function MarketDepotTickerBar({ onOpenFeed }: MarketDepotTickerBarProps) 
                   {isUp && <TrendingUp className="h-2.5 w-2.5 stroke-[2.5]" />}
                   {isDown && <TrendingDown className="h-2.5 w-2.5 stroke-[2.5]" />}
                   {!isUp && !isDown && <Minus className="h-2.5 w-2.5 stroke-[2.5]" />}
-                  <span>{item.change}</span>
+                  <span suppressHydrationWarning>{item.change}</span>
                 </span>
 
                 {/* Separator Bullet */}

@@ -440,6 +440,27 @@ export interface DepotTickerItem {
 }
 
 /**
+ * Returns static base ticker items for deterministic SSR & hydration matching
+ */
+export function getBaseDepotTickerItems(): DepotTickerItem[] {
+  return BASE_MARKET_FEED.map((i) => {
+    const hubShort = i.hub.split("/")[0].split(",")[0].trim();
+    const sign = i.changePercent > 0 ? `+${i.changePercent}%` : i.changePercent < 0 ? `${i.changePercent}%` : "Steady";
+    return {
+      id: i.id,
+      hub: hubShort,
+      product: i.name.split("(")[0].trim(),
+      price: `₦${i.currentPrice.toLocaleString()}`,
+      unit: i.unit.split(" ")[0],
+      trend: i.trend,
+      change: sign,
+      headline: i.informalHeadline,
+      label: `[${hubShort}] ${i.name.split("(")[0].trim()}: ₦${i.currentPrice.toLocaleString()}/${i.unit.split(" ")[0]}`,
+    };
+  });
+}
+
+/**
  * Returns formatted ticker items for calm, readable depot price display
  */
 export function getMarketDepotTickerItems(): DepotTickerItem[] {
