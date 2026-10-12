@@ -40,27 +40,27 @@ export function ReferralDashboardBanner({
       whileHover={{ scale: 1.008 }}
       whileTap={{ scale: 0.992 }}
       onClick={onOpenInviteModal}
-      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900/95 border border-slate-200/90 dark:border-white/10 p-3 sm:p-3.5 shadow-sm hover:shadow-md transition-all cursor-pointer group"
+      className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-white dark:bg-slate-900/95 border border-slate-200/90 dark:border-white/10 p-2.5 sm:p-3.5 shadow-sm hover:shadow-md transition-all cursor-pointer group"
     >
-      <div className="relative z-10 flex items-center justify-between gap-2.5 sm:gap-3">
-        {/* Left: Icon & Short Pidgin Copy */}
-        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-          <div className="h-10 w-10 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-blue-50 dark:bg-blue-950/80 text-[#1d4ed8] dark:text-sky-400 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
-            <Users className="h-5 w-5 stroke-[2.2]" />
+      <div className="relative z-10 flex items-center justify-between gap-2 sm:gap-3">
+        {/* Left: Icon & Pidgin Referral Copy */}
+        <div className="flex items-center gap-2 sm:gap-2.5 min-w-0 flex-1">
+          <div className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl sm:rounded-2xl bg-blue-50 dark:bg-blue-950/80 text-[#1d4ed8] dark:text-sky-400 border border-blue-100 dark:border-blue-900/60 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+            <Users className="h-4.5 w-4.5 sm:h-5 sm:w-5 stroke-[2.2]" />
           </div>
 
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <h3 className="text-xs sm:text-[13px] font-black text-slate-900 dark:text-white truncate leading-tight">
+              <h3 className="text-[11.5px] sm:text-[13px] font-black text-slate-900 dark:text-white leading-tight">
                 Call Shop Neighbor • Win +14 Days Free 🤝
               </h3>
               {stats && stats.pending_claims_count > 0 && (
-                <span className="px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-black text-[9.5px] border border-amber-300 dark:border-amber-800">
+                <span className="px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-black text-[9px] sm:text-[9.5px] border border-amber-300 dark:border-amber-800 whitespace-nowrap">
                   {stats.pending_claims_count} Don Ready
                 </span>
               )}
             </div>
-            <p className="text-[10.5px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
+            <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
               Tell your market neighbor make una two enjoy +14 days free MoniePay Plus.
             </p>
           </div>
@@ -73,11 +73,11 @@ export function ReferralDashboardBanner({
             e.stopPropagation();
             onOpenInviteModal();
           }}
-          className="px-3 sm:px-3.5 py-2 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1.5 shrink-0 shadow-sm active:scale-95 transition-all cursor-pointer"
+          className="px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-xs flex items-center gap-1 sm:gap-1.5 shrink-0 shadow-sm active:scale-95 transition-all cursor-pointer"
         >
-          <Share2 className="h-3.5 w-3.5" />
-          <span className="hidden min-[360px]:inline">Share Code</span>
-          <ArrowRight className="h-3 w-3" />
+          <Share2 className="h-3.5 w-3.5 shrink-0" />
+          <span className="hidden min-[380px]:inline">Share Code</span>
+          <ArrowRight className="h-3 w-3 shrink-0" />
         </button>
       </div>
     </motion.section>

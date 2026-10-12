@@ -576,11 +576,11 @@ function LoginContent() {
                       value={referralCode}
                       onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
                       placeholder="Who Invite You? / Referral Code (Optional)"
-                      className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-900 dark:text-white placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
+                      className="w-full pl-11 pr-4 py-3 rounded-2xl clay-input text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-900 dark:text-white placeholder:normal-case placeholder:tracking-normal placeholder:text-[11px] sm:placeholder:text-xs placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none transition-all"
                     />
                   </div>
-                  <p className="text-[10px] text-emerald-700 dark:text-emerald-400 font-bold px-1 flex items-center gap-1">
-                    <span>🤝</span>
+                  <p className="text-[9.5px] sm:text-[10.5px] text-emerald-700 dark:text-emerald-400 font-bold px-1 flex items-start gap-1.5 leading-snug">
+                    <span className="shrink-0 mt-0.5">🤝</span>
                     <span>Paste code wey fellow trader give you make una two enjoy +14 days free MoniePay Plus!</span>
                   </p>
                 </div>
