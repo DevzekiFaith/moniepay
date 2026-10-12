@@ -39,18 +39,18 @@ export interface VoiceTypedEntry {
 const INVENTORY_STORAGE_KEY = "moniepay_inventory_items";
 const VOICE_ENTRIES_STORAGE_KEY = "moniepay_voice_typed_entries";
 
-// ── Baseline Market Inventory (Realistic Nigerian Informal Shop) ──
+// ── Baseline Market Inventory (Empty Default Amounts Ready for Real Traders) ──
 export const INITIAL_INVENTORY: InventoryItem[] = [
   {
     id: "inv_rice_50kg",
     name: "50kg Rice (Mama Gold)",
     category: "Provisions & Grains",
     unit: "Bags",
-    current_stock: 22,
-    reorder_threshold: 5,
-    cost_price: 72000,
-    selling_price: 78000,
-    last_restocked_at: new Date(Date.now() - 48 * 3600 * 1000).toISOString(),
+    current_stock: 0,
+    reorder_threshold: 0,
+    cost_price: 0,
+    selling_price: 0,
+    last_restocked_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
   {
@@ -58,11 +58,11 @@ export const INITIAL_INVENTORY: InventoryItem[] = [
     name: "Indomie Super Pack (Carton)",
     category: "Provisions & FMCG",
     unit: "Cartons",
-    current_stock: 36,
-    reorder_threshold: 8,
-    cost_price: 8500,
-    selling_price: 9500,
-    last_restocked_at: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
+    current_stock: 0,
+    reorder_threshold: 0,
+    cost_price: 0,
+    selling_price: 0,
+    last_restocked_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
   {
@@ -70,11 +70,11 @@ export const INITIAL_INVENTORY: InventoryItem[] = [
     name: "Kings Vegetable Oil (25L)",
     category: "Provisions & FMCG",
     unit: "Jerrycans",
-    current_stock: 14,
-    reorder_threshold: 3,
-    cost_price: 42000,
-    selling_price: 46500,
-    last_restocked_at: new Date(Date.now() - 72 * 3600 * 1000).toISOString(),
+    current_stock: 0,
+    reorder_threshold: 0,
+    cost_price: 0,
+    selling_price: 0,
+    last_restocked_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
   {
@@ -82,11 +82,11 @@ export const INITIAL_INVENTORY: InventoryItem[] = [
     name: "Fast Charger Type-C (65W)",
     category: "Phones & Gadgets",
     unit: "Pcs",
-    current_stock: 28,
-    reorder_threshold: 6,
-    cost_price: 2200,
-    selling_price: 3500,
-    last_restocked_at: new Date(Date.now() - 96 * 3600 * 1000).toISOString(),
+    current_stock: 0,
+    reorder_threshold: 0,
+    cost_price: 0,
+    selling_price: 0,
+    last_restocked_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
   {
@@ -94,11 +94,11 @@ export const INITIAL_INVENTORY: InventoryItem[] = [
     name: "Cooking Gas (12.5kg Refill)",
     category: "Energy & Kitchen",
     unit: "Cylinders",
-    current_stock: 18,
-    reorder_threshold: 4,
-    cost_price: 13500,
-    selling_price: 15000,
-    last_restocked_at: new Date(Date.now() - 12 * 3600 * 1000).toISOString(),
+    current_stock: 0,
+    reorder_threshold: 0,
+    cost_price: 0,
+    selling_price: 0,
+    last_restocked_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
   {
@@ -106,11 +106,11 @@ export const INITIAL_INVENTORY: InventoryItem[] = [
     name: "Palm Oil (25L Yellow Jerrycan)",
     category: "Food & Canteen",
     unit: "Jerrycans",
-    current_stock: 8,
-    reorder_threshold: 3,
-    cost_price: 34000,
-    selling_price: 38000,
-    last_restocked_at: new Date(Date.now() - 120 * 3600 * 1000).toISOString(),
+    current_stock: 0,
+    reorder_threshold: 0,
+    cost_price: 0,
+    selling_price: 0,
+    last_restocked_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
   {
@@ -118,93 +118,17 @@ export const INITIAL_INVENTORY: InventoryItem[] = [
     name: "Dangote Sugar (50kg Bag)",
     category: "Provisions & Grains",
     unit: "Bags",
-    current_stock: 11,
-    reorder_threshold: 4,
-    cost_price: 68000,
-    selling_price: 74000,
-    last_restocked_at: new Date(Date.now() - 80 * 3600 * 1000).toISOString(),
+    current_stock: 0,
+    reorder_threshold: 0,
+    cost_price: 0,
+    selling_price: 0,
+    last_restocked_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
   },
 ];
 
-// ── Baseline Initial Spoken / Typed Entry Records ──
-export const INITIAL_VOICE_ENTRIES: VoiceTypedEntry[] = [
-  {
-    id: "entry_1",
-    method: "VOICE",
-    raw_transcript: "Sold 3 bags of Mama Gold Rice for ₦234,000 via bank transfer",
-    detected_item: "50kg Rice (Mama Gold)",
-    quantity: 3,
-    unit: "Bags",
-    amount: 234000,
-    type: "SALE",
-    stock_delta: -3,
-    stock_balance_after: 22,
-    timestamp: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
-    counterparty: "Chief Emeka",
-    payment_method: "TRANSFER",
-  },
-  {
-    id: "entry_2",
-    method: "VOICE",
-    raw_transcript: "Customer bought 4 cartons of Indomie for ₦38,000 cash",
-    detected_item: "Indomie Super Pack (Carton)",
-    quantity: 4,
-    unit: "Cartons",
-    amount: 38000,
-    type: "SALE",
-    stock_delta: -4,
-    stock_balance_after: 36,
-    timestamp: new Date(Date.now() - 90 * 60 * 1000).toISOString(),
-    counterparty: "Madam Blessing",
-    payment_method: "CASH",
-  },
-  {
-    id: "entry_3",
-    method: "TYPED",
-    raw_transcript: "Bought 10 cartons Indomie from wholesaler ₦85,000",
-    detected_item: "Indomie Super Pack (Carton)",
-    quantity: 10,
-    unit: "Cartons",
-    amount: 85000,
-    type: "STOCK_PURCHASE",
-    stock_delta: 10,
-    stock_balance_after: 40,
-    timestamp: new Date(Date.now() - 4 * 3600 * 1000).toISOString(),
-    counterparty: "Alaba Wholesaler",
-    payment_method: "TRANSFER",
-  },
-  {
-    id: "entry_4",
-    method: "VOICE",
-    raw_transcript: "Chidi took 2 Type-C chargers on credit ₦7,000",
-    detected_item: "Fast Charger Type-C (65W)",
-    quantity: 2,
-    unit: "Pcs",
-    amount: 7000,
-    type: "SALE",
-    stock_delta: -2,
-    stock_balance_after: 28,
-    timestamp: new Date(Date.now() - 6 * 3600 * 1000).toISOString(),
-    counterparty: "Chidi Electronics",
-    payment_method: "CREDIT",
-  },
-  {
-    id: "entry_5",
-    method: "VOICE",
-    raw_transcript: "Filled 3 cooking gas cylinders for ₦45,000 cash",
-    detected_item: "Cooking Gas (12.5kg Refill)",
-    quantity: 3,
-    unit: "Cylinders",
-    amount: 45000,
-    type: "SALE",
-    stock_delta: -3,
-    stock_balance_after: 18,
-    timestamp: new Date(Date.now() - 8 * 3600 * 1000).toISOString(),
-    counterparty: "Mama Nkechi Canteen",
-    payment_method: "CASH",
-  },
-];
+// ── Baseline Initial Spoken / Typed Entry Records (Clean Zero State) ──
+export const INITIAL_VOICE_ENTRIES: VoiceTypedEntry[] = [];
 
 function getScopedKey(baseKey: string, businessId?: string): string {
   if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
@@ -224,7 +148,23 @@ export function getInventoryItems(businessId?: string): InventoryItem[] {
   const key = getScopedKey(INVENTORY_STORAGE_KEY, businessId);
   try {
     const raw = localStorage.getItem(key);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed: InventoryItem[] = JSON.parse(raw);
+      // Migrate: If legacy demo items had non-zero demo stock (e.g. 22 bags Mama Gold), reset amounts to zero
+      const hasOldDemoStock = parsed.some((item) => item.id === "inv_rice_50kg" && item.current_stock === 22);
+      if (hasOldDemoStock) {
+        const zeroed = parsed.map((item) => ({
+          ...item,
+          current_stock: 0,
+          cost_price: 0,
+          selling_price: 0,
+          reorder_threshold: 0,
+        }));
+        localStorage.setItem(key, JSON.stringify(zeroed));
+        return zeroed;
+      }
+      return parsed;
+    }
     if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
       localStorage.setItem(INVENTORY_STORAGE_KEY, JSON.stringify(INITIAL_INVENTORY));
       return INITIAL_INVENTORY;
@@ -248,22 +188,24 @@ export function saveInventoryItems(items: InventoryItem[], businessId?: string) 
 // ── GET VOICE & TYPED ENTRIES ──
 export function getVoiceTypedEntries(businessId?: string): VoiceTypedEntry[] {
   if (typeof window === "undefined") {
-    if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
-      return INITIAL_VOICE_ENTRIES;
-    }
     return [];
   }
   const key = getScopedKey(VOICE_ENTRIES_STORAGE_KEY, businessId);
   try {
     const raw = localStorage.getItem(key);
-    if (raw) return JSON.parse(raw);
-    if (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") {
-      localStorage.setItem(VOICE_ENTRIES_STORAGE_KEY, JSON.stringify(INITIAL_VOICE_ENTRIES));
-      return INITIAL_VOICE_ENTRIES;
+    if (raw) {
+      const parsed: VoiceTypedEntry[] = JSON.parse(raw);
+      // Migrate: If legacy demo entries exist (entry_1 with ₦234k), clear to empty array for fresh recording
+      const hasOldDemoEntries = parsed.some((entry) => entry.id === "entry_1" && entry.amount === 234000);
+      if (hasOldDemoEntries) {
+        localStorage.setItem(key, JSON.stringify([]));
+        return [];
+      }
+      return parsed;
     }
     return [];
   } catch {
-    return (!businessId || businessId === "biz_mamachidi_01" || businessId === "user_owner_01") ? INITIAL_VOICE_ENTRIES : [];
+    return [];
   }
 }
 
@@ -318,29 +260,31 @@ export function extractStockDetailsFromText(rawText: string, businessId?: string
     }
   }
 
-  // 2. Match with Existing Inventory Catalog
+  // 2. Match with Existing Inventory Catalog (or default templates)
   const inventory = getInventoryItems(businessId);
-  let matchedItem = inventory.find((item) => {
-    const itemWords = item.name.toLowerCase().split(/[\s(),]+/);
-    return itemWords.some((word) => word.length >= 3 && lower.includes(word));
+  const catalog = inventory.length > 0 ? inventory : INITIAL_INVENTORY;
+  const unitStopWords = new Set(["carton", "cartons", "bag", "bags", "pcs", "piece", "pack", "packs", "super", "item", "goods", "refill"]);
+  let matchedItem = catalog.find((item) => {
+    const itemWords = item.name.toLowerCase().split(/[\s(),]+/).filter((w) => w.length >= 3 && !unitStopWords.has(w));
+    return itemWords.some((word) => lower.includes(word));
   });
 
   // Common Aliases
   if (!matchedItem) {
     if (lower.includes("rice")) {
-      matchedItem = inventory.find((i) => i.id === "inv_rice_50kg");
+      matchedItem = catalog.find((i) => i.id === "inv_rice_50kg");
     } else if (lower.includes("indomie") || lower.includes("noodles")) {
-      matchedItem = inventory.find((i) => i.id === "inv_indomie_ctn");
+      matchedItem = catalog.find((i) => i.id === "inv_indomie_ctn");
     } else if (lower.includes("vegetable oil") || lower.includes("kings oil") || lower.includes("groundnut oil")) {
-      matchedItem = inventory.find((i) => i.id === "inv_oil_25l");
+      matchedItem = catalog.find((i) => i.id === "inv_oil_25l");
     } else if (lower.includes("charger") || lower.includes("cable") || lower.includes("usb") || lower.includes("type-c")) {
-      matchedItem = inventory.find((i) => i.id === "inv_charger_65w");
+      matchedItem = catalog.find((i) => i.id === "inv_charger_65w");
     } else if (lower.includes("gas") || lower.includes("cylinder")) {
-      matchedItem = inventory.find((i) => i.id === "inv_gas_12kg");
+      matchedItem = catalog.find((i) => i.id === "inv_gas_12kg");
     } else if (lower.includes("palm oil") || lower.includes("red oil")) {
-      matchedItem = inventory.find((i) => i.id === "inv_palm_oil");
+      matchedItem = catalog.find((i) => i.id === "inv_palm_oil");
     } else if (lower.includes("sugar")) {
-      matchedItem = inventory.find((i) => i.id === "inv_sugar_bag");
+      matchedItem = catalog.find((i) => i.id === "inv_sugar_bag");
     }
   }
 
@@ -398,7 +342,7 @@ export function recordVoiceOrTypedStockEntry(params: {
   // 1. Determine Transaction Type
   let type: TransactionType = explicitType || "SALE";
   if (!explicitType) {
-    if (lower.includes("bought") || lower.includes("restock") || lower.includes("purchase") || lower.includes("wholesaler")) {
+    if (/\b(bought|buy|buys|buying|restock|restocked|purchase|purchased|wholesaler|supplier)\b/i.test(lower)) {
       type = "STOCK_PURCHASE";
     } else if (lower.includes("credit") || lower.includes("owe") || lower.includes("gbese")) {
       type = lower.includes("paid") || lower.includes("settled") ? "DEBT_COLLECTION" : "SALE";
@@ -409,14 +353,32 @@ export function recordVoiceOrTypedStockEntry(params: {
     }
   }
 
-  // 2. Extract Amount
-  const amount = explicitAmount ?? (parseSpokenMarketAmount(rawTranscript) || 15000);
-
-  // 3. Extract Item & Quantity Details
+  // 2. Extract Item & Quantity Details
   const extracted = extractStockDetailsFromText(rawTranscript, businessId);
   const itemName = explicitItem || extracted.detectedItem;
   const qty = explicitQty ?? extracted.quantity;
   const unit = extracted.unit;
+
+  // 3. Extract Monetary Amount (Default to 0 if not explicitly stated)
+  let amount = 0;
+  if (explicitAmount !== undefined) {
+    amount = explicitAmount;
+  } else {
+    // Check if there is an explicit monetary keyword or pattern
+    const hasMonetaryIndicator = /(?:[₦#]|naira|\b\d+(?:\.\d+)?\s*(?:k|thousand|million|m|hundred)\b|\bfor\s+\d+|\bworth\s+\d+|\bcost\s+\d+)/i.test(rawTranscript);
+    if (hasMonetaryIndicator) {
+      amount = parseSpokenMarketAmount(rawTranscript) || 0;
+    } else {
+      // If there are multiple numbers (e.g. "5 bags 75000"), the other number might be the amount
+      const allNums = Array.from(rawTranscript.matchAll(/\b(\d+)\b/g)).map((m) => parseInt(m[1], 10));
+      const nonQtyNums = allNums.filter((n) => n !== qty && n >= 100);
+      if (nonQtyNums.length > 0) {
+        amount = nonQtyNums[nonQtyNums.length - 1];
+      } else {
+        amount = 0;
+      }
+    }
+  }
 
   // 4. Calculate Stock Movement Delta
   let stockDelta = 0;
@@ -444,17 +406,17 @@ export function recordVoiceOrTypedStockEntry(params: {
       updated_at: new Date().toISOString(),
     };
   } else if (stockDelta !== 0) {
-    // Automatically create new catalog entry for newly discovered goods!
-    newBalance = Math.max(0, type === "STOCK_PURCHASE" ? qty : 20 - qty);
+    // Automatically create new catalog entry for newly discovered goods starting cleanly from zero!
+    newBalance = Math.max(0, type === "STOCK_PURCHASE" ? qty : 0);
     const newItem: InventoryItem = {
       id: `inv_${Date.now()}`,
       name: itemName,
       category: "General Market Goods",
       unit: unit,
       current_stock: newBalance,
-      reorder_threshold: 4,
-      cost_price: Math.round(amount / (qty || 1) * 0.88),
-      selling_price: Math.round(amount / (qty || 1)),
+      reorder_threshold: 0,
+      cost_price: qty > 0 ? Math.round(amount / qty * 0.88) : 0,
+      selling_price: qty > 0 ? Math.round(amount / qty) : 0,
       last_restocked_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };

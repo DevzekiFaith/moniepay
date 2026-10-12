@@ -78,10 +78,10 @@ export function StockDirectoryTable() {
   const [newItemName, setNewItemName] = useState("");
   const [newItemCategory, setNewItemCategory] = useState("Provisions & FMCG");
   const [newItemUnit, setNewItemUnit] = useState("Bags");
-  const [newItemStock, setNewItemStock] = useState("20");
-  const [newItemCost, setNewItemCost] = useState("50000");
-  const [newItemSell, setNewItemSell] = useState("58000");
-  const [newItemThreshold, setNewItemThreshold] = useState("5");
+  const [newItemStock, setNewItemStock] = useState("0");
+  const [newItemCost, setNewItemCost] = useState("0");
+  const [newItemSell, setNewItemSell] = useState("0");
+  const [newItemThreshold, setNewItemThreshold] = useState("0");
 
   // Hydrate from Storage
   const loadData = () => {
@@ -191,7 +191,7 @@ export function StockDirectoryTable() {
     const totalEntries = entries.length;
     const voiceCount = entries.filter((e) => e.method === "VOICE").length;
     const totalValuation = inventory.reduce((sum, item) => sum + item.current_stock * item.selling_price, 0);
-    const lowStockItems = inventory.filter((item) => item.current_stock <= item.reorder_threshold);
+    const lowStockItems = inventory.filter((item) => item.reorder_threshold > 0 && item.current_stock <= item.reorder_threshold);
 
     return {
       totalEntries,
@@ -234,15 +234,15 @@ export function StockDirectoryTable() {
   // Add New Stock Item
   const handleCreateStockItem = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newItemName) return;
+    if (!newItemName.trim()) return;
 
     const newItem: InventoryItem = {
       id: `inv_${Date.now()}`,
-      name: newItemName,
+      name: newItemName.trim(),
       category: newItemCategory,
       unit: newItemUnit,
       current_stock: parseInt(newItemStock, 10) || 0,
-      reorder_threshold: parseInt(newItemThreshold, 10) || 3,
+      reorder_threshold: parseInt(newItemThreshold, 10) || 0,
       cost_price: parseInt(newItemCost, 10) || 0,
       selling_price: parseInt(newItemSell, 10) || 0,
       last_restocked_at: new Date().toISOString(),
@@ -254,6 +254,10 @@ export function StockDirectoryTable() {
     setInventory(updated);
     setIsAddStockOpen(false);
     setNewItemName("");
+    setNewItemStock("0");
+    setNewItemCost("0");
+    setNewItemSell("0");
+    setNewItemThreshold("0");
 
     playCashChime();
     triggerCashHapticVibration("restock");
@@ -1086,9 +1090,11 @@ export function StockDirectoryTable() {
                     </label>
                     <input
                       type="number"
+                      min="0"
                       required
                       value={newItemStock}
                       onChange={(e) => setNewItemStock(e.target.value)}
+                      placeholder="0"
                       className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 min-h-[42px]"
                     />
                   </div>
@@ -1099,9 +1105,11 @@ export function StockDirectoryTable() {
                     </label>
                     <input
                       type="number"
+                      min="0"
                       required
                       value={newItemThreshold}
                       onChange={(e) => setNewItemThreshold(e.target.value)}
+                      placeholder="0"
                       className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 min-h-[42px]"
                     />
                   </div>
@@ -1114,9 +1122,11 @@ export function StockDirectoryTable() {
                     </label>
                     <input
                       type="number"
+                      min="0"
                       required
                       value={newItemCost}
                       onChange={(e) => setNewItemCost(e.target.value)}
+                      placeholder="0"
                       className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 min-h-[42px]"
                     />
                   </div>
@@ -1127,9 +1137,11 @@ export function StockDirectoryTable() {
                     </label>
                     <input
                       type="number"
+                      min="0"
                       required
                       value={newItemSell}
                       onChange={(e) => setNewItemSell(e.target.value)}
+                      placeholder="0"
                       className="w-full px-3 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-slate-900 dark:text-white focus:outline-none focus:border-emerald-600 min-h-[42px]"
                     />
                   </div>
