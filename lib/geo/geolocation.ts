@@ -674,3 +674,109 @@ export async function detectNigerianStallLocation(): Promise<DetectedGeoLocation
     detectedVia: "device_gps",
   };
 }
+
+/**
+ * Projects raw GPS coordinates (lat, lng) to the Nigerian Trading Map SVG percentage coordinates (mapX, mapY)
+ */
+export function projectGpsCoordinatesToMap(lat: number, lng: number): { mapX: number; mapY: number } {
+  // If outside Nigeria, snap to the nearest hub position
+  if (!isCoordinateInNigeria(lat, lng)) {
+    const { hub } = findNearestNigerianHub(lat, lng);
+    return { mapX: hub.mapX, mapY: hub.mapY };
+  }
+
+  // Linear interpolation across Nigeria map SVG bounding box:
+  // Longitude: 2.8°E (West) -> 26% mapX, 13.6°E (East) -> 88% mapX
+  // Latitude: 13.2°N (North) -> 12% mapY, 4.6°N (South) -> 83% mapY
+  const minLng = 2.8;
+  const maxLng = 13.6;
+  const minLat = 4.6;
+  const maxLat = 13.2;
+
+  const clampedLng = Math.max(minLng, Math.min(maxLng, lng));
+  const clampedLat = Math.max(minLat, Math.min(maxLat, lat));
+
+  const pctX = (clampedLng - minLng) / (maxLng - minLng);
+  const mapX = Math.round((26 + pctX * (88 - 26)) * 10) / 10;
+
+  const pctY = (maxLat - clampedLat) / (maxLat - minLat);
+  const mapY = Math.round((12 + pctY * (83 - 12)) * 10) / 10;
+
+  return { mapX, mapY };
+}
+
+export interface LiveGpsState {
+  lat: number;
+  lng: number;
+  accuracyMeters: number;
+  mapX: number;
+  mapY: number;
+  hub: NigerianHub;
+  distanceKm: number;
+  timestamp: number;
+  speedKmh?: number | null;
+  headingDeg?: number | null;
+  isInsideNigeria: boolean;
+}
+
+/**
+ * Initiates continuous live GPS tracking using navigator.geolocation.watchPosition
+ * Returns an unsubscribe cleanup callback that stops watching.
+ */
+export function startLiveGpsWatcher(
+  onUpdate: (state: LiveGpsState) => void,
+  onError: (error: Error) => void
+): () => void {
+  if (typeof window === "undefined" || !("geolocation" in navigator)) {
+    onError(new Error("Live GPS is not supported by your device browser."));
+    return () => {};
+  }
+
+  const watchId = navigator.geolocation.watchPosition(
+    (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      const accuracyMeters = pos.coords.accuracy || 10;
+      const { hub, distanceKm } = findNearestNigerianHub(lat, lng);
+      const { mapX, mapY } = projectGpsCoordinatesToMap(lat, lng);
+      const isInsideNigeria = isCoordinateInNigeria(lat, lng);
+
+      onUpdate({
+        lat,
+        lng,
+        accuracyMeters: Math.round(accuracyMeters),
+        mapX,
+        mapY,
+        hub,
+        distanceKm,
+        timestamp: pos.timestamp || Date.now(),
+        speedKmh: pos.coords.speed ? Math.round(pos.coords.speed * 3.6) : null,
+        headingDeg: pos.coords.heading ?? null,
+        isInsideNigeria,
+      });
+    },
+    (err) => {
+      let msg = "Could not acquire live GPS location. Please check device location settings.";
+      if (err.code === err.PERMISSION_DENIED) {
+        msg = "Location permission denied. Please enable location access in browser settings to use Live GPS.";
+      } else if (err.code === err.POSITION_UNAVAILABLE) {
+        msg = "GPS satellite signal unavailable. Please ensure device Location is turned on.";
+      } else if (err.code === err.TIMEOUT) {
+        msg = "GPS satellite acquisition timed out. Re-trying satellite fix...";
+      }
+      onError(new Error(msg));
+    },
+    {
+      enableHighAccuracy: true,
+      maximumAge: 2000,
+      timeout: 15000,
+    }
+  );
+
+  return () => {
+    try {
+      navigator.geolocation.clearWatch(watchId);
+    } catch {}
+  };
+}
+

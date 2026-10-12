@@ -5,7 +5,7 @@
 // Fast, Lightweight, Mobile-First • Fixed Business Locations • Directions
 // ─────────────────────────────────────────────────────────────────
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -44,6 +44,9 @@ import {
   calculateHaversineDistanceKm,
   requestDeviceCoordinates,
   findNearestNigerianHub,
+  startLiveGpsWatcher,
+  LiveGpsState,
+  projectGpsCoordinatesToMap,
 } from "@/lib/geo/geolocation";
 
 const CATEGORIES = [
@@ -105,7 +108,7 @@ function VendorMapContent() {
   const [selectedMarket, setSelectedMarket] = useState("All Markets Across Nigeria");
   const [viewMode, setViewMode] = useState<"map" | "list">("map");
 
-  // GPS Device Geolocation State
+  // Live GPS Device Geolocation State
   const [userGps, setUserGps] = useState<{
     lat: number;
     lng: number;
@@ -113,34 +116,86 @@ function VendorMapContent() {
     mapY: number;
     hubName: string;
     distanceKm: number;
+    accuracyMeters?: number;
+    speedKmh?: number | null;
+    timestamp?: number;
+    isLive?: boolean;
   } | null>(null);
   const [isLocatingUser, setIsLocatingUser] = useState(false);
+  const [isLiveTracking, setIsLiveTracking] = useState(false);
   const [sortByDistance, setSortByDistance] = useState(false);
   const [gpsNotice, setGpsNotice] = useState<string | null>(null);
+  const stopLiveWatcherRef = useRef<(() => void) | null>(null);
 
-  const handleLocateUser = async () => {
-    setIsLocatingUser(true);
-    setGpsNotice(null);
-    try {
-      const coords = await requestDeviceCoordinates();
-      const { hub, distanceKm } = findNearestNigerianHub(coords.lat, coords.lng);
-      setUserGps({
-        lat: coords.lat,
-        lng: coords.lng,
-        mapX: hub.mapX,
-        mapY: hub.mapY,
-        hubName: `${hub.name}, ${hub.state}`,
-        distanceKm,
-      });
-      setSortByDistance(true);
-      setGpsNotice(`GPS Active: Nearest commercial hub is ${hub.name} (~${distanceKm} km away)`);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Could not retrieve GPS coordinates.";
-      setGpsNotice(msg);
-    } finally {
+  // Toggle Live GPS continuous tracking with real-time satellite updates
+  const handleToggleLiveGps = () => {
+    // If currently active, user clicked to pause/stop tracking
+    if (isLiveTracking) {
+      if (stopLiveWatcherRef.current) {
+        stopLiveWatcherRef.current();
+        stopLiveWatcherRef.current = null;
+      }
+      setIsLiveTracking(false);
       setIsLocatingUser(false);
+      setGpsNotice("Live GPS paused. Showing all nationwide stalls.");
+      return;
     }
+
+    // Start continuous live tracking
+    setIsLocatingUser(true);
+    setGpsNotice("📡 Connecting to live GPS satellites across Nigeria...");
+
+    const stop = startLiveGpsWatcher(
+      (liveState: LiveGpsState) => {
+        setIsLocatingUser(false);
+        setIsLiveTracking(true);
+        setUserGps({
+          lat: liveState.lat,
+          lng: liveState.lng,
+          mapX: liveState.mapX,
+          mapY: liveState.mapY,
+          hubName: `${liveState.hub.name}, ${liveState.hub.state}`,
+          distanceKm: liveState.distanceKm,
+          accuracyMeters: liveState.accuracyMeters,
+          speedKmh: liveState.speedKmh,
+          timestamp: liveState.timestamp,
+          isLive: true,
+        });
+        setSortByDistance(true);
+        setGpsNotice(
+          `🟢 Live GPS Active: Nearest hub is ${liveState.hub.name} (~${liveState.distanceKm}km away) • ±${liveState.accuracyMeters}m accuracy`
+        );
+      },
+      (err: Error) => {
+        setIsLocatingUser(false);
+        setGpsNotice(err.message);
+      }
+    );
+
+    stopLiveWatcherRef.current = stop;
   };
+
+  const handleResetGps = () => {
+    if (stopLiveWatcherRef.current) {
+      stopLiveWatcherRef.current();
+      stopLiveWatcherRef.current = null;
+    }
+    setIsLiveTracking(false);
+    setIsLocatingUser(false);
+    setUserGps(null);
+    setSortByDistance(false);
+    setGpsNotice(null);
+  };
+
+  // Cleanup live watcher on unmount
+  useEffect(() => {
+    return () => {
+      if (stopLiveWatcherRef.current) {
+        stopLiveWatcherRef.current();
+        stopLiveWatcherRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (initialVendorId) {
@@ -367,25 +422,36 @@ function VendorMapContent() {
           </div>
 
           <div className="flex items-center gap-2">
-            {/* GPS Locate Me Button */}
+            {/* Live GPS Locate Me Button */}
             <button
               type="button"
-              onClick={handleLocateUser}
+              onClick={handleToggleLiveGps}
               disabled={isLocatingUser}
-              className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
-                sortByDistance && userGps
-                  ? "bg-emerald-600 text-white border-emerald-600 shadow-2xs"
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border ${
+                isLiveTracking
+                  ? "bg-emerald-600 text-white border-emerald-500 shadow-md ring-2 ring-emerald-500/30"
+                  : isLocatingUser
+                  ? "bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300"
                   : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200/80 dark:border-white/10 hover:border-emerald-400"
               }`}
-              title="Detect my GPS location and show nearby shops"
+              title={isLiveTracking ? "Live GPS Active - Click to pause tracking" : "Start Live GPS Location Tracking across Nigeria"}
             >
               {isLocatingUser ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-600 dark:text-emerald-400" />
+              ) : isLiveTracking ? (
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
+                </span>
               ) : (
-                <Crosshair className={`h-3.5 w-3.5 ${sortByDistance && userGps ? "text-white" : "text-emerald-600 dark:text-emerald-400"}`} />
+                <Crosshair className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
               )}
               <span className="text-[11px] font-black hidden sm:inline">
-                {userGps ? "Near Me Active" : "Near Me GPS"}
+                {isLocatingUser
+                  ? "Finding GPS..."
+                  : isLiveTracking
+                  ? `Live GPS (±${userGps?.accuracyMeters || 10}m)`
+                  : "Live GPS"}
               </span>
             </button>
 
@@ -480,18 +546,34 @@ function VendorMapContent() {
 
         {/* GPS Active Notice Banner */}
         {gpsNotice && (
-          <div className="max-w-5xl mx-auto mt-2 px-3 py-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-[11px] font-bold text-emerald-900 dark:text-emerald-200 flex items-center justify-between shadow-2xs">
-            <span className="flex items-center gap-1.5">
-              <Crosshair className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
-              <span>{gpsNotice}</span>
+          <div className="max-w-5xl mx-auto mt-2 px-3 py-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700/60 text-[11px] font-bold text-emerald-900 dark:text-emerald-200 flex items-center justify-between shadow-2xs">
+            <span className="flex items-center gap-2 min-w-0">
+              {isLiveTracking ? (
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
+                </span>
+              ) : isLocatingUser ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-600 dark:text-emerald-400 shrink-0" />
+              ) : (
+                <Crosshair className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+              )}
+              <span className="truncate">{gpsNotice}</span>
             </span>
-            <button
-              type="button"
-              onClick={() => { setGpsNotice(null); setSortByDistance(false); }}
-              className="text-emerald-700 dark:text-emerald-300 hover:underline text-[10.5px] font-black shrink-0 cursor-pointer ml-2"
-            >
-              Reset GPS
-            </button>
+            <div className="flex items-center gap-2 shrink-0 ml-2">
+              {isLiveTracking && (
+                <span className="text-[9px] font-black px-1.5 py-0.5 rounded-md bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100 uppercase tracking-wider">
+                  LIVE SATELLITE
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={handleResetGps}
+                className="text-emerald-700 dark:text-emerald-300 hover:underline text-[10.5px] font-black shrink-0 cursor-pointer"
+              >
+                Reset GPS
+              </button>
+            </div>
           </div>
         )}
       </header>
@@ -588,37 +670,86 @@ function VendorMapContent() {
             </div>
 
             {/* Market Area Landmarks Overlays */}
-            <div className="absolute top-3 left-3 pointer-events-none">
+            <div className="absolute top-3 left-3 pointer-events-none z-30">
               <span className="px-2.5 py-1 rounded-full bg-slate-900/95 text-sky-300 text-[10px] font-black border border-sky-500/30 backdrop-blur-md flex items-center gap-1.5 shadow-lg">
                 <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
                 <span>All-Nigeria Commercial Trading Grid • 36 States & FCT</span>
               </span>
             </div>
 
+            {/* Live GPS Map Canvas Controller */}
+            <div className="absolute top-3 right-3 z-30">
+              <button
+                type="button"
+                onClick={handleToggleLiveGps}
+                className={`px-2.5 py-1 rounded-xl text-[10px] font-black transition-all flex items-center gap-1.5 cursor-pointer shadow-lg backdrop-blur-md border ${
+                  isLiveTracking
+                    ? "bg-emerald-600/95 text-white border-emerald-300 ring-2 ring-emerald-400/50 shadow-emerald-500/30"
+                    : "bg-slate-950/90 text-slate-200 border-white/20 hover:bg-slate-900 hover:border-emerald-400"
+                }`}
+                title={isLiveTracking ? "Live GPS Active - Click to pause" : "Activate Live GPS Satellite Tracking"}
+              >
+                {isLocatingUser ? (
+                  <>
+                    <Loader2 className="h-3 w-3 animate-spin text-emerald-400" />
+                    <span>Finding GPS...</span>
+                  </>
+                ) : isLiveTracking ? (
+                  <>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-300 opacity-75" />
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-400" />
+                    </span>
+                    <span>Live GPS Active</span>
+                  </>
+                ) : (
+                  <>
+                    <Crosshair className="h-3 w-3 text-emerald-400" />
+                    <span>Live Radar GPS</span>
+                  </>
+                )}
+              </button>
+            </div>
+
             <div
               suppressHydrationWarning
-              className="absolute bottom-2.5 left-3 text-[10px] text-slate-300 font-bold pointer-events-none bg-slate-950/90 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/10 shadow-md"
+              className="absolute bottom-2.5 left-3 text-[10px] text-slate-300 font-bold pointer-events-none bg-slate-950/90 px-2.5 py-1 rounded-lg backdrop-blur-sm border border-white/10 shadow-md z-30"
             >
               Nationwide Verified Merchants • {filteredVendors.length} Active Shops
             </div>
 
-            {/* ── REAL-TIME USER GPS RADAR BEACON ── */}
+            {/* ── REAL-TIME USER LIVE GPS RADAR BEACON ── */}
             {userGps && (
               <div
                 style={{
                   left: `${userGps.mapX}%`,
                   top: `${userGps.mapY}%`,
                 }}
-                className="absolute -translate-x-1/2 -translate-y-1/2 z-35 pointer-events-none"
+                className="absolute -translate-x-1/2 -translate-y-1/2 z-35 pointer-events-none transition-all duration-700 ease-out"
               >
                 <div className="relative flex flex-col items-center">
-                  <span className="absolute -inset-2.5 rounded-full bg-emerald-400/40 animate-ping" />
-                  <div className="h-7 w-7 rounded-full bg-emerald-500 border-2 border-white shadow-xl flex items-center justify-center text-xs">
-                    📍
+                  {/* Concentric Expanding Live Radar Waves */}
+                  <span className="absolute -inset-8 rounded-full bg-emerald-400/20 animate-ping [animation-duration:2.5s]" />
+                  <span className="absolute -inset-4 rounded-full bg-cyan-400/30 animate-pulse [animation-duration:1.5s]" />
+
+                  {/* Accuracy aura */}
+                  <div className="absolute h-12 w-12 rounded-full border border-emerald-400/40 bg-emerald-500/10 backdrop-blur-[0.5px]" />
+
+                  {/* Core High-Precision Marker */}
+                  <div className="relative h-7 w-7 rounded-full bg-emerald-500 border-2 border-white shadow-2xl flex items-center justify-center ring-4 ring-emerald-400/40 text-white text-xs">
+                    <span className="h-2.5 w-2.5 rounded-full bg-white animate-pulse" />
                   </div>
-                  <span className="mt-1 px-2 py-0.5 rounded-full bg-emerald-950/95 text-emerald-200 border border-emerald-400/60 text-[9px] font-black shadow-lg whitespace-nowrap">
-                    You Are Here
-                  </span>
+
+                  {/* High-tech Live Location Chip */}
+                  <div className="mt-1.5 px-2 py-0.5 rounded-lg bg-slate-950/95 text-white border border-emerald-400/60 shadow-xl flex flex-col items-center backdrop-blur-md whitespace-nowrap">
+                    <div className="flex items-center gap-1 text-[8.5px] font-black text-emerald-300">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping shrink-0" />
+                      <span>LIVE GPS • YOU ARE HERE</span>
+                    </div>
+                    <span className="text-[7.5px] text-slate-300 font-bold">
+                      ±{userGps.accuracyMeters || 10}m precision
+                    </span>
+                  </div>
                 </div>
               </div>
             )}
@@ -817,7 +948,7 @@ function VendorMapContent() {
           {/* Directory List of All Matching Vendors */}
           <div className="space-y-2.5 pt-2">
             <div className="flex items-center justify-between px-1 flex-wrap gap-1.5 pb-0.5">
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 flex-wrap">
                 <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                 <h4
                   suppressHydrationWarning
@@ -825,6 +956,11 @@ function VendorMapContent() {
                 >
                   All Verified Market Stalls ({filteredVendors.length})
                 </h4>
+                {sortByDistance && userGps && (
+                  <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-black flex items-center gap-1">
+                    • Nearest to Live GPS
+                  </span>
+                )}
               </div>
 
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 font-black text-[9.5px] border border-emerald-300 dark:border-emerald-800 shadow-2xs whitespace-nowrap">

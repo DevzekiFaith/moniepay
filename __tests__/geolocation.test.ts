@@ -4,6 +4,7 @@ import {
   isCoordinateInNigeria,
   findNearestNigerianHub,
   NIGERIAN_COMMERCIAL_HUBS,
+  projectGpsCoordinatesToMap,
 } from "../lib/geo/geolocation";
 
 describe("Nationwide Geolocation Engine Suite", () => {
@@ -86,6 +87,26 @@ describe("Nationwide Geolocation Engine Suite", () => {
       expect(regions.has("EAST")).toBe(true);
       expect(regions.has("SOUTH_SOUTH")).toBe(true);
       expect(regions.has("SOUTH_WEST")).toBe(true);
+    });
+  });
+
+  describe("projectGpsCoordinatesToMap", () => {
+    it("accurately projects Nigerian GPS coordinates to map canvas percentages", () => {
+      // Lagos Island (6.45, 3.38) -> mapX ~ 25-35%, mapY ~ 65-75%
+      const lagos = projectGpsCoordinatesToMap(6.4551, 3.3841);
+      expect(lagos.mapX).toBeGreaterThanOrEqual(25);
+      expect(lagos.mapX).toBeLessThanOrEqual(35);
+      expect(lagos.mapY).toBeGreaterThanOrEqual(65);
+      expect(lagos.mapY).toBeLessThanOrEqual(75);
+
+      // Kano (12.00, 8.53) -> Northern quadrant (mapY ~ 15-25%)
+      const kano = projectGpsCoordinatesToMap(12.0022, 8.5291);
+      expect(kano.mapY).toBeGreaterThanOrEqual(15);
+      expect(kano.mapY).toBeLessThanOrEqual(28);
+
+      // Maiduguri (11.83, 13.15) -> Eastern quadrant (mapX > 75%)
+      const maiduguri = projectGpsCoordinatesToMap(11.8333, 13.1500);
+      expect(maiduguri.mapX).toBeGreaterThanOrEqual(75);
     });
   });
 });
