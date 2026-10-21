@@ -29,6 +29,7 @@ import {
   FileText,
   RotateCw,
   Zap,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import type { Recommendation, DeterministicMetrics, BusinessTransaction, Debt, BusinessAccount } from "@/types/moniepay.types";
@@ -51,7 +52,7 @@ import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/A
 import { CreditBalancePill } from "@/components/credits/CreditBalancePill";
 import { PaidInsightResult } from "@/types/credit.types";
 
-export default function InsightsPage() {
+function InsightsContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const {
@@ -605,3 +606,18 @@ export default function InsightsPage() {
     </div>
   );
 }
+
+export default function InsightsPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+          <Loader2 className="h-8 w-8 text-amber-500 animate-spin" />
+        </div>
+      }
+    >
+      <InsightsContent />
+    </React.Suspense>
+  );
+}
+
