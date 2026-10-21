@@ -26,7 +26,6 @@ import {
 } from "@/components/ui/tooltip";
 import type { TransactionType, PaymentMethod } from "@/types/moniepay.types";
 import { recordOptimisticTransaction } from "@/lib/offline/offlineQueue";
-import { useSubscription } from "@/context/SubscriptionContext";
 import {
   parseSpokenMarketAmount,
   playFemaleTraderVoice,
@@ -59,7 +58,6 @@ export function TellMoniePay({
   onActivityRecorded,
   businessId = "biz_mamachidi_01",
 }: TellMoniePayProps) {
-  const { requireSubscription } = useSubscription();
   const [inputVal, setInputVal] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [feedback, setFeedback] = useState<ValueFeedback | null>(null);
@@ -281,16 +279,12 @@ export function TellMoniePay({
 
   const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    requireSubscription(() => {
-      processTraderInput(inputVal);
-    }, "Sharp-Sharp Recording");
+    processTraderInput(inputVal);
   };
 
   const handleQuickExampleClick = (text: string) => {
-    requireSubscription(() => {
-      setInputVal(text);
-      processTraderInput(text);
-    }, "Sharp-Sharp Recording");
+    setInputVal(text);
+    processTraderInput(text);
   };
 
   const quickExamples = [

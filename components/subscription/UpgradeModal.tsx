@@ -22,12 +22,10 @@ import {
   CreditCard,
   ArrowRight,
   Loader2,
-  Clock,
   Radio,
   ExternalLink,
   Store,
   Calendar,
-  AlertTriangle,
 } from "lucide-react";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/context/AuthContext";
@@ -41,12 +39,7 @@ export function UpgradeModal() {
     subscription,
     selectedPlan,
     setSelectedPlan,
-    trialDaysLeft,
-    graceDaysLeft,
-    isTrialActive,
     isSubscribed,
-    isGracePeriodActive,
-    isExpired,
     initializePayment,
     simulateTestPayment,
   } = useSubscription();
@@ -132,10 +125,10 @@ export function UpgradeModal() {
                 </div>
                 <div className="min-w-0">
                   <div className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-blue-400/20 border border-blue-400/30 text-blue-200 text-[9.5px] sm:text-[10.5px] font-black uppercase tracking-wide">
-                    <span>Shop Intelligence Plan</span>
+                    <span>Staff & Anti-Theft Mode</span>
                   </div>
                   <h3 id="upgrade-modal-title" className="text-sm sm:text-lg font-black tracking-tight leading-tight text-white mt-0.5 truncate">
-                    MoniePay Plus
+                    Staff & Attendant Access
                   </h3>
                 </div>
               </div>
@@ -152,39 +145,32 @@ export function UpgradeModal() {
 
             {/* Modal Body Scroll */}
             <div className="p-3.5 sm:p-6 overflow-y-auto space-y-3.5 sm:space-y-4 flex-1">
-              {/* Context / Reason Notice if triggered by feature gate or expired */}
-              {isExpired ? (
-                <div className="p-3.5 rounded-2xl bg-rose-500/10 dark:bg-rose-950/40 border border-rose-500/30 dark:border-rose-800 flex items-start gap-2.5">
-                  <AlertTriangle className="h-5 w-5 text-rose-600 dark:text-rose-400 shrink-0 mt-0.5" />
+              {/* Context / Reason Notice */}
+              {modalReason ? (
+                <div className="p-3.5 rounded-2xl bg-blue-500/10 dark:bg-blue-950/40 border border-blue-500/25 dark:border-blue-800 flex items-start gap-2.5">
+                  <ShieldCheck className="h-5 w-5 text-blue-600 dark:text-sky-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-black text-rose-950 dark:text-rose-200">
-                      Your MoniePay Plus don expire.
+                    <p className="text-xs font-black text-blue-950 dark:text-sky-200">
+                      100% Free Core Ledger Active
                     </p>
-                    <p className="text-[11.5px] font-semibold text-rose-800 dark:text-rose-300 mt-0.5 leading-relaxed">
-                      Renew for ₦1,500/month or ₦15,000/year make you continue to record sales, track customer debt (gbese), and receive sharp shop advice.
+                    <p className="text-[11.5px] font-semibold text-blue-900/85 dark:text-sky-300 mt-0.5 leading-relaxed">
+                      {modalReason}
                     </p>
                   </div>
                 </div>
-              ) : isGracePeriodActive ? (
-                <div className="p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-950/40 border border-amber-500/30 dark:border-amber-800 flex items-start gap-2.5">
-                  <Clock className="h-5 w-5 text-amber-700 dark:text-amber-400 shrink-0 mt-0.5" />
+              ) : (
+                <div className="p-3.5 rounded-2xl bg-sky-500/10 dark:bg-sky-950/40 border border-sky-500/20 dark:border-sky-800 flex items-start gap-2.5">
+                  <ShieldCheck className="h-5 w-5 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-xs font-black text-amber-950 dark:text-amber-200">
-                      Grace Period Dey Active: {graceDaysLeft} {graceDaysLeft === 1 ? "Day" : "Days"} Remain
+                    <p className="text-xs font-black text-sky-950 dark:text-sky-200">
+                      Core Ledger Dey Free Forever
                     </p>
-                    <p className="text-[11.5px] font-semibold text-amber-900 dark:text-amber-300 mt-0.5 leading-relaxed">
-                      Full shop features still dey open! Renew now before the 3-day grace period complete.
+                    <p className="text-[11.5px] font-semibold text-sky-900/85 dark:text-sky-300 mt-0.5 leading-relaxed">
+                      Daily sales, expenses, and cash drawer never expire. Upgrading unlocks multi-phone apprentice sync, sales-girl logins, and cash-drawer anti-theft locks.
                     </p>
                   </div>
                 </div>
-              ) : modalReason ? (
-                <div className="p-3 rounded-2xl bg-blue-500/10 dark:bg-blue-950/40 border border-blue-500/25 dark:border-blue-800 flex items-start gap-2.5">
-                  <Clock className="h-4 w-4 text-blue-700 dark:text-blue-400 shrink-0 mt-0.5" />
-                  <p className="text-xs font-semibold text-blue-950 dark:text-blue-200 leading-relaxed">
-                    {modalReason}
-                  </p>
-                </div>
-              ) : null}
+              )}
 
               {/* Status Strip */}
               <div className="p-3.5 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-white/90 dark:border-slate-700 shadow-2xs flex items-center justify-between gap-3">
@@ -193,22 +179,14 @@ export function UpgradeModal() {
                     className={`h-3 w-3 rounded-full ${
                       isSubscribed
                         ? "bg-emerald-500"
-                        : isGracePeriodActive
-                        ? "bg-amber-500 animate-pulse"
-                        : isTrialActive
-                        ? "bg-blue-600 animate-pulse"
-                        : "bg-rose-500"
+                        : "bg-blue-500"
                     }`}
                   />
                   <div>
                     <p className="text-xs font-black text-slate-900 dark:text-white">
                       {isSubscribed
-                        ? `${subscription?.planName || "MoniePay Plus Active"}`
-                        : isGracePeriodActive
-                        ? `3-Day Grace Period: ${graceDaysLeft} days remain`
-                        : isTrialActive
-                        ? `7-Day Free Test-Run: ${trialDaysLeft} days remain`
-                        : "Subscription Don Expire (Read-Only)"}
+                        ? `${subscription?.planName || "Staff & Attendant Mode Active"}`
+                        : "100% Free Core Ledger Active"}
                     </p>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                       {isSubscribed
@@ -221,11 +199,7 @@ export function UpgradeModal() {
                                 })
                               : "Active"
                           }`
-                        : isGracePeriodActive
-                        ? "Full shop access open for 3 days to renew."
-                        : isTrialActive
-                        ? "Enjoying full sharp-sharp shop intelligence during your 7-day test-run."
-                        : "Renew for ₦1,500/month or ₦15,000/year to continue."}
+                        : "Daily recording & drawer calculations dey permanently free."}
                     </p>
                   </div>
                 </div>

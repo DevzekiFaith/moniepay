@@ -54,7 +54,7 @@ export function DaylightHeader({
   onChangePeriod,
 }: DaylightHeaderProps) {
   const { user, logout } = useAuth();
-  const { isGracePeriodActive, graceDaysLeft, isExpired, openUpgradeModal } = useSubscription();
+  const { openUpgradeModal } = useSubscription();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isRatingStandOpen, setIsRatingStandOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
@@ -284,34 +284,6 @@ export function DaylightHeader({
             </span>
           </div>
 
-          {/* ── GRACE PERIOD / EXPIRY NOTIFICATION STRIP ── */}
-          {isGracePeriodActive ? (
-            <div
-              onClick={() => openUpgradeModal("Grace period dey active. Renew your shop pass make your records dey intact.")}
-              className="p-2.5 rounded-2xl bg-amber-400/20 hover:bg-amber-400/25 border border-amber-300/40 text-amber-100 text-xs flex items-center justify-between gap-2 cursor-pointer transition-all backdrop-blur-md"
-            >
-              <div className="flex items-center gap-2">
-                <Clock className="h-4 w-4 text-amber-300 shrink-0 animate-pulse" />
-                <span className="font-bold">
-                  Grace Period: {graceDaysLeft} {graceDaysLeft === 1 ? "day" : "days"} remain to renew your shop pass.
-                </span>
-              </div>
-              <span className="underline font-black text-[11px] shrink-0 text-white">Renew ₦1,500 &rarr;</span>
-            </div>
-          ) : isExpired ? (
-            <div
-              onClick={() => openUpgradeModal("Your MoniePay Plus don expire. Renew sharp-sharp for ₦1,500/month to continue recording.")}
-              className="p-2.5 rounded-2xl bg-rose-500/25 hover:bg-rose-500/30 border border-rose-400/50 text-rose-100 text-xs flex items-center justify-between gap-2 cursor-pointer transition-all backdrop-blur-md"
-            >
-              <div className="flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-rose-300 shrink-0 animate-bounce" />
-                <span className="font-bold">
-                  Shop pass don expire o. Renew sharp-sharp make you continue.
-                </span>
-              </div>
-              <span className="underline font-black text-[11px] shrink-0 text-white">Renew Sharp-sharp &rarr;</span>
-            </div>
-          ) : null}
 
           {/* ── ROW 3: MARKET TIMELINE SWITCHER STRIP ── */}
           <div className="pt-0.5 flex items-center justify-between overflow-x-auto no-scrollbar">

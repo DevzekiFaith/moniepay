@@ -38,17 +38,17 @@ interface SubscriptionContextType {
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 const DEFAULT_SUBSCRIPTION: SubscriptionDetails = {
-  status: "trialing",
+  status: "active",
   planType: "FREE_TRIAL",
   billingCycle: "monthly",
-  planName: "Free Trial (7 days)",
+  planName: "100% Free Core Ledger",
   amount: 1500,
   currency: "NGN",
-  isTrialActive: true,
+  isTrialActive: false,
   isSubscriptionActive: false,
   isGracePeriodActive: false,
-  trialEndsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
-  trialDaysLeft: 7,
+  trialEndsAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
+  trialDaysLeft: 0,
   graceDaysLeft: 0,
   subscriptionEndsAt: null,
   nextRenewalDate: null,
@@ -195,11 +195,11 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         return true;
       }
 
-      // If expired beyond grace period, prompt user with explicit renewal message
+      // If feature requires subscription (Staff & Attendant multi-device mode)
       openUpgradeModal(
         featureName
-          ? `Your MoniePay Plus has expired. Renew for ₦1,500/month or ₦15,000/year to continue using ${featureName}.`
-          : "Your MoniePay Plus has expired. Renew for ₦1,500/month or ₦15,000/year to continue."
+          ? `${featureName} requires Staff & Multi-Attendant Mode. Upgrade for ₦1,500/month or ₦15,000/year to unlock anti-theft controls and multi-phone sync.`
+          : "Upgrade to Staff & Multi-Attendant Mode for ₦1,500/month or ₦15,000/year to unlock anti-theft controls and multi-phone sync."
       );
       return false;
     },

@@ -104,13 +104,9 @@ export function calculateSubscriptionDetails(params: {
   const nextRenewalDate = isSubscribed && subEnd ? subEnd.toISOString() : null;
 
   // Plan name display
-  let planName = "Free Trial (7 days)";
+  let planName = "100% Free Core Ledger";
   if (isSubscribed) {
-    planName = isAnnual ? "MoniePay Plus Annual" : "MoniePay Plus Monthly";
-  } else if (isGracePeriodActive) {
-    planName = `Grace Period (${graceDaysLeft} ${graceDaysLeft === 1 ? "day" : "days"} left)`;
-  } else if (!isTrialActive) {
-    planName = "MoniePay Plus (Expired)";
+    planName = isAnnual ? "Staff Mode (Annual)" : "Staff Mode (Monthly)";
   }
 
   return {
@@ -129,8 +125,8 @@ export function calculateSubscriptionDetails(params: {
     subscriptionEndsAt: subEnd ? subEnd.toISOString() : null,
     nextRenewalDate,
     isRenewalDueSoon,
-    canAccessFullFeatures: isSubscribed || isTrialActive || isGracePeriodActive,
-    hasUsedTrial: now.getTime() > trialEnd.getTime() || isSubscribed,
+    canAccessFullFeatures: true,
+    hasUsedTrial: false,
     lastPayment: params.lastPayment || null,
   };
 }

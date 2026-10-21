@@ -101,23 +101,15 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
                   }`}
                 >
                   {isSubscribed
-                    ? "Plus Active"
-                    : isGracePeriodActive
-                    ? `${graceDaysLeft}d Grace`
-                    : isTrialActive
-                    ? `${trialDaysLeft}d Remain`
-                    : "Renew Now"}
+                    ? "Staff Mode Active"
+                    : "100% Free Core"}
                 </span>
               </div>
 
               <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 leading-snug">
                 {isSubscribed
                   ? `Renews on ${nextRenewalFormatted || "Active"}`
-                  : isGracePeriodActive
-                  ? "Full access dey open. Renew make your record no pause."
-                  : isTrialActive
-                  ? `You get ${trialDaysLeft} days remaining of sharp-sharp shop intelligence.`
-                  : "Renew for ₦1,500/mo make you continue recording."}
+                  : "Core ledger is permanently free. Upgrade unlocks Staff & Multi-Attendant Mode."}
               </p>
             </div>
           </div>
@@ -203,14 +195,12 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
             type="button"
             onClick={() =>
               openUpgradeModal(
-                isExpired
-                  ? "Your MoniePay Plus don expire. Renew for ₦1,500/month or ₦15,000/year to continue recording."
-                  : undefined
+                "Upgrade to Staff & Multi-Attendant Mode for ₦1,500/month or ₦15,000/year to unlock anti-theft controls and multi-phone sync."
               )
             }
             className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-sm transition-all shrink-0"
           >
-            <span>{isSubscribed ? "Check Plan" : isExpired ? "Renew Plus" : "Upgrade Plan"}</span>
+            <span>{isSubscribed ? "Staff Active" : "Staff Mode"}</span>
             <ArrowRight className="h-3 w-3" />
           </button>
         </div>

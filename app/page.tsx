@@ -71,7 +71,6 @@ import { GbeseDebtSheet } from "@/components/dashboard/GbeseDebtSheet";
 import { DecisionTrackerSheet } from "@/components/dashboard/DecisionTrackerSheet";
 import { SafeWithdrawalModal } from "@/components/dashboard/SafeWithdrawalModal";
 import { FloatingActionDock } from "@/components/dashboard/FloatingActionDock";
-import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
 import { BusinessWalletCard } from "@/components/wallet/BusinessWalletCard";
 import { ReceiveMoneyModal } from "@/components/wallet/ReceiveMoneyModal";
 import { LiveMarketFeedCard } from "@/components/intelligence/LiveMarketFeedCard";
@@ -80,7 +79,6 @@ import { ReferralDashboardBanner } from "@/components/dashboard/ReferralDashboar
 import { InviteShopModal } from "@/components/referral/InviteShopModal";
 import { FinancialStatementModal } from "@/components/statement/FinancialStatementModal";
 import { useToast } from "@/context/NotificationContext";
-import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/context/AuthContext";
 
 type Period = "today" | "this_week" | "this_month";
@@ -89,7 +87,6 @@ type MainTab = "today" | "decisions" | "activity";
 export default function MoniePayDashboard() {
   const { user } = useAuth();
   const { toast } = useToast();
-  const { requireSubscription } = useSubscription();
 
   const currentBizId = user?.id
     ? user.id === "user_owner_01"
