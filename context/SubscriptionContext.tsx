@@ -199,8 +199,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
       // If feature requires subscription (Staff & Attendant multi-device mode)
       openUpgradeModal(
         featureName
-          ? `${featureName} requires Staff & Multi-Attendant Mode. Upgrade for ₦1,500/month or ₦15,000/year to unlock anti-theft controls and multi-phone sync.`
-          : "Upgrade to Staff & Multi-Attendant Mode for ₦1,500/month or ₦15,000/year to unlock anti-theft controls and multi-phone sync."
+          ? `${featureName} requires Staff & Multi-Attendant Mode. Unlock 30 days for 20 Coins or ₦1,500/month for anti-theft controls and multi-phone sync.`
+          : "Unlock Staff & Multi-Attendant Mode with 20 Coins (30-day pass) or ₦1,500/month to unlock anti-theft controls and multi-phone sync."
       );
       return false;
     },

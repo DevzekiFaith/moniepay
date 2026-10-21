@@ -184,7 +184,8 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
         <div className="flex items-center justify-between gap-2.5 pt-1 border-t border-slate-100 dark:border-slate-800">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 min-w-0">
             <span className="inline-flex items-center gap-1 text-slate-900 dark:text-white font-black bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-200 dark:border-slate-700 text-[10.5px] truncate">
-              <CheckCircle2 className="h-3 w-3 text-emerald-600 shrink-0" />
+              <span className="text-amber-500 font-bold">🪙 20 Coins</span>
+              <span className="text-slate-400 font-normal">or</span>
               <span>₦1,500/mo</span>
             </span>
             <span className="text-[10px] text-slate-400 dark:text-slate-500 hidden sm:inline">• Record safe forever</span>
@@ -195,7 +196,7 @@ export function SubscriptionBannerCard({ compact = false }: SubscriptionBannerCa
             type="button"
             onClick={() =>
               openUpgradeModal(
-                "Upgrade to Staff & Multi-Attendant Mode for ₦1,500/month or ₦15,000/year to unlock anti-theft controls and multi-phone sync."
+                "Unlock Staff & Multi-Attendant Mode with 20 Coins (30-day pass) or ₦1,500/month to unlock anti-theft controls and multi-phone sync."
               )
             }
             className="px-3.5 sm:px-4 py-2 rounded-xl bg-[#1d4ed8] hover:bg-[#1e40af] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-95 shadow-sm transition-all shrink-0"
