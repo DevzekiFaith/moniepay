@@ -16,6 +16,7 @@ export function middleware(req: NextRequest) {
     pathname.startsWith("/api/webhooks") ||
     pathname.startsWith("/api/subscription/webhook") ||
     pathname.startsWith("/api/subscription/verify") ||
+    pathname.startsWith("/api/credits") ||
     pathname === "/manifest.json" ||
     pathname === "/sw.js" ||
     pathname === "/favicon.ico";

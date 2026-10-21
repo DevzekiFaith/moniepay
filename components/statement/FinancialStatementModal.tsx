@@ -75,15 +75,29 @@ export function FinancialStatementModal({
   const [confirmPin, setConfirmPin] = useState("");
   const [pinError, setPinError] = useState<string | null>(null);
   const [bankAccessKey, setBankAccessKey] = useState<string>("");
+  const [statementId, setStatementId] = useState<string>("");
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
 
-  // Initialize or generate bank access key on modal open
+  // Initialize statement ID and generate bank access key on modal open
   useEffect(() => {
-    if (isOpen && !bankAccessKey) {
-      setBankAccessKey(generateBankAccessKey());
+    if (isOpen) {
+      if (!bankAccessKey) {
+        setBankAccessKey(generateBankAccessKey());
+      }
+      if (!statementId) {
+        setStatementId(`MNP-CERT-${Date.now().toString(36).toUpperCase().slice(-6)}`);
+      }
     }
-  }, [isOpen, bankAccessKey]);
+  }, [isOpen, bankAccessKey, statementId]);
+
+  // Regenerate security key before payment or download
+  const handleRegenerateKey = () => {
+    const newKey = generateBankAccessKey();
+    setBankAccessKey(newKey);
+    triggerCashHapticVibration("cash");
+    toast("New Security Key Generated! 🔑", `Generated: ${newKey}`, { type: "info" });
+  };
 
   if (!isOpen) return null;
 
@@ -392,10 +406,19 @@ export function FinancialStatementModal({
               </span>
               <span className="text-[10px] sm:text-[10.5px] text-slate-500 block mt-0.5">{dateFormatted}</span>
 
-              {isUnlocked && bankAccessKey && (
-                <div className="mt-1 inline-flex items-center gap-1 px-2 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-300 dark:border-emerald-700 text-[10px] font-mono font-bold text-emerald-800 dark:text-emerald-300">
-                  <KeyRound className="h-3 w-3 text-emerald-600" />
-                  <span>{bankAccessKey}</span>
+              {bankAccessKey && (
+                <div
+                  className={`mt-1.5 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-lg border text-[10px] font-mono font-bold ${
+                    isUnlocked
+                      ? "bg-emerald-50 dark:bg-emerald-950/80 border-emerald-300 dark:border-emerald-700 text-emerald-800 dark:text-emerald-300"
+                      : "bg-amber-50 dark:bg-amber-950/60 border-amber-300 dark:border-amber-700 text-amber-900 dark:text-amber-300"
+                  }`}
+                >
+                  <KeyRound className={`h-3 w-3 ${isUnlocked ? "text-emerald-600" : "text-amber-600"}`} />
+                  <span>Key: {bankAccessKey}</span>
+                  <span className="text-[8.5px] uppercase font-sans font-black">
+                    {isUnlocked ? "✓ Certified" : "• Generated"}
+                  </span>
                 </div>
               )}
             </div>
@@ -446,40 +469,132 @@ export function FinancialStatementModal({
 
           {/* ── LOCKED OVERLAY (When statement has not been authorized with Oga PIN) ── */}
           {!isUnlocked ? (
-            <div className="relative p-5 sm:p-7 rounded-3xl bg-gradient-to-b from-amber-50/90 to-amber-100/50 dark:from-amber-950/40 dark:to-amber-900/20 border-2 border-dashed border-amber-300 dark:border-amber-700 text-center space-y-3 sm:space-y-3.5">
-              <div className="h-12 w-12 rounded-2xl bg-amber-500 text-slate-950 flex items-center justify-center mx-auto shadow-md">
-                <Lock className="h-6 w-6" />
-              </div>
-
-              <div className="max-w-md mx-auto space-y-1">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-200/80 dark:bg-amber-900 text-amber-950 dark:text-amber-200 text-[10px] font-black uppercase">
-                  <ShieldCheck className="h-3 w-3" />
-                  <span>Oga Secret PIN Protection</span>
+            <div className="relative p-4 sm:p-6 rounded-3xl bg-gradient-to-b from-amber-50/95 via-amber-100/40 to-amber-50/90 dark:from-amber-950/40 dark:via-slate-900 dark:to-amber-950/20 border-2 border-dashed border-amber-300 dark:border-amber-700/80 space-y-4 sm:space-y-5">
+              
+              {/* Badge & Lock Title */}
+              <div className="text-center space-y-1.5">
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-200/90 dark:bg-amber-900/80 text-amber-950 dark:text-amber-200 text-[10.5px] font-black uppercase tracking-wide shadow-2xs">
+                  <ShieldCheck className="h-3.5 w-3.5 text-amber-700 dark:text-amber-400" />
+                  <span>Oga Secret PIN &amp; Generated Bank Key Protection</span>
                 </div>
-                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
-                  Unlock Official Certified Statement
+                <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
+                  Unlock Official Certified Financial Statement
                 </h3>
-                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-                  Generate full 30-day verified ledger audit with tamper-proof seal, bank verification passcode, and solvency certificate. Strictly protected with your Oga Secret PIN so apprentice or sales boy no go fit see your shop profit.
+                <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium max-w-lg mx-auto">
+                  Protect your shop turnover and profit records so only you and the bank officer fit view am. Once authorized with your 4-digit Oga PIN, the full ledger and tamper-proof PDF download go activate immediately.
                 </p>
               </div>
 
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-200/70 dark:bg-amber-950 text-amber-900 dark:text-amber-300 text-xs font-black">
-                <Coins className="h-3.5 w-3.5 text-amber-600" />
-                <span>Cost: {STATEMENT_EXPORT_CREDIT_COST} Decision Coins</span>
-                <span>• Balance: {balance} coins</span>
+              {/* ── PRE-PAYMENT & PRE-DOWNLOAD GENERATED SECURITY KEY CARD ── */}
+              <div className="p-4 sm:p-5 rounded-2xl bg-white dark:bg-slate-900/95 border-2 border-amber-400/90 dark:border-amber-500/70 shadow-lg shadow-amber-500/10 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-amber-100 dark:border-slate-800 pb-2.5">
+                  <div className="flex items-center gap-2">
+                    <div className="h-8 w-8 rounded-xl bg-amber-500 text-slate-950 flex items-center justify-center font-black shrink-0 shadow-2xs">
+                      <KeyRound className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] uppercase font-black tracking-wider text-amber-800 dark:text-amber-400 block">
+                        Generated Security Key (Pre-Payment)
+                      </span>
+                      <span className="text-[11px] font-bold text-slate-700 dark:text-slate-300">
+                        Official Bank Verification Passcode
+                      </span>
+                    </div>
+                  </div>
+
+                  <span className="self-start sm:self-auto inline-flex items-center gap-1 text-[9.5px] font-black uppercase px-2 py-0.5 rounded-md bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300">
+                    <CheckCircle2 className="h-3 w-3" />
+                    Key Ready for Payment
+                  </span>
+                </div>
+
+                {/* Big Key Display + Action Buttons */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 p-3 rounded-xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/80">
+                  <div className="min-w-0">
+                    <span className="text-[9.5px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+                      Statement Verification Key
+                    </span>
+                    <span className="font-mono text-xl sm:text-2xl font-black text-amber-950 dark:text-amber-200 tracking-wider">
+                      {bankAccessKey || "KEY-GENERATING..."}
+                    </span>
+                    <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block mt-0.5">
+                      Doc ID: {verificationCode}
+                    </span>
+                  </div>
+
+                  {/* Regenerate & Copy Key Buttons */}
+                  <div className="flex items-center gap-2 shrink-0">
+                    <button
+                      type="button"
+                      onClick={handleRegenerateKey}
+                      className="flex-1 sm:flex-none py-2 px-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-amber-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold flex items-center justify-center gap-1.5 border border-slate-200 dark:border-slate-700 cursor-pointer shadow-2xs active:scale-95 transition-all"
+                      title="Generate another security key"
+                    >
+                      <RotateCcw className="h-3.5 w-3.5 text-amber-600" />
+                      <span>Regenerate Key</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={handleCopyAccessKey}
+                      className="flex-1 sm:flex-none py-2 px-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-black flex items-center justify-center gap-1.5 cursor-pointer shadow-xs active:scale-95 transition-all"
+                      title="Copy security key"
+                    >
+                      {copiedKey ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                      <span>{copiedKey ? "Copied ✓" : "Copy Key"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Explanatory Note in Pidgin */}
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug font-medium">
+                  💡 <strong>How e dey work:</strong> Na this exact generated key go seal your PDF statement. When you send am give Bank or Cooperative, dem go use this key verify say your ₦{totalSales.toLocaleString()} turnover record original and clean.
+                </p>
               </div>
 
-              <div className="pt-1">
-                <button
-                  type="button"
-                  onClick={handleInitiateUnlock}
-                  disabled={isDeducting}
-                  className="py-3 px-6 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm shadow-md shadow-amber-500/25 transition-all active:scale-98 cursor-pointer disabled:opacity-50 inline-flex items-center gap-2"
-                >
-                  <KeyRound className="h-4 w-4" />
-                  <span>Authorize with Oga PIN (15 Coins)</span>
-                </button>
+              {/* ── COIN BALANCE & UNLOCK ACTION SECTION ── */}
+              <div className="space-y-3 pt-1">
+                <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-bold text-slate-700 dark:text-slate-300">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-200/70 dark:bg-amber-950 text-amber-950 dark:text-amber-300 font-black">
+                    <Coins className="h-3.5 w-3.5 text-amber-600" />
+                    <span>Cost: {STATEMENT_EXPORT_CREDIT_COST} Decision Coins</span>
+                  </div>
+                  <span className="text-slate-400">•</span>
+                  <span className={`px-2.5 py-1 rounded-full text-xs font-black ${
+                    balance >= STATEMENT_EXPORT_CREDIT_COST
+                      ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300"
+                      : "bg-rose-100 dark:bg-rose-950 text-rose-800 dark:text-rose-300"
+                  }`}>
+                    Your Balance: {balance} Coins {balance >= STATEMENT_EXPORT_CREDIT_COST ? "✓" : "(No Reach)"}
+                  </span>
+                </div>
+
+                {/* If balance is not enough, show prompt to Top Up */}
+                {balance < STATEMENT_EXPORT_CREDIT_COST ? (
+                  <div className="p-3.5 rounded-2xl bg-amber-100/70 dark:bg-amber-950/60 border border-amber-300 dark:border-amber-700 text-center space-y-2">
+                    <p className="text-xs font-black text-amber-950 dark:text-amber-200">
+                      Coins no reach to unlock! You need {STATEMENT_EXPORT_CREDIT_COST - balance} more coins.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={openPurchaseModal}
+                      className="py-2.5 px-5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-black text-xs shadow-md transition-all active:scale-95 cursor-pointer inline-flex items-center gap-2"
+                    >
+                      <Coins className="h-4 w-4" />
+                      <span>Top up Coins (Get 60 Coins for ₦500)</span>
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleInitiateUnlock}
+                    disabled={isDeducting}
+                    className="w-full sm:w-auto mx-auto py-3.5 px-7 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/25 transition-all active:scale-98 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                  >
+                    <KeyRound className="h-4 w-4" />
+                    <span>Pay 15 Coins &amp; Unlock with Oga PIN</span>
+                  </button>
+                )}
               </div>
             </div>
           ) : (
