@@ -77,67 +77,64 @@ export function DaylightHeader({
         <div className="relative z-10 mx-auto w-full max-w-4xl space-y-3">
           {/* ── ROW 1: TOP MAIN NAV BAR (Shop Identity on Left • Clean Action Hub on Right) ── */}
           <div className="flex items-center justify-between gap-2">
-            {/* Left: Merchant Profile & Identity */}
-            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
-              <InfoTooltip content="Your shop profile & lock shop">
-                <button
-                  type="button"
-                  onClick={() => setIsLogoutOpen(true)}
-                  aria-label="Account profile & Lock Shop"
-                  className="relative h-9 w-9 sm:h-10 sm:w-10 rounded-2xl overflow-hidden border-2 border-sky-300/80 dark:border-sky-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.3)] shrink-0 cursor-pointer active:scale-95 transition-all bg-blue-950"
-                >
-                  <img
-                    src={profilePhoto}
-                    alt={displayName}
-                    className="h-full w-full object-cover object-center"
-                    onError={(e) => {
-                      e.currentTarget.src = "/images/traders/mama_chidi.jpg";
-                    }}
-                  />
-                  <span className="absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full bg-emerald-400 border-2 border-blue-950 shadow-xs" />
-                </button>
-              </InfoTooltip>
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-1.5">
-                  <h1 className="text-xs xs:text-sm sm:text-base font-black text-white truncate tracking-tight leading-tight">
-                    {shopName}
-                  </h1>
-                </div>
-
-                <div className="flex items-center gap-1.5 xs:gap-2 text-[10.5px] sm:text-[11px] text-sky-100/90 mt-0.5">
-                  {/* Sync status button */}
+            {/* Left: Merchant Profile & Identity (Avatar + Docked Sync Pill, Shop Name & Location) */}
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              {/* Avatar + Docked Sync Status Chip */}
+              <div className="flex flex-col items-center shrink-0">
+                <InfoTooltip content="Your shop profile & lock shop">
                   <button
                     type="button"
-                    onClick={onManualSync}
-                    className="inline-flex items-center gap-1 text-[10px] xs:text-[10.5px] font-bold text-sky-200 hover:text-white cursor-pointer transition-colors"
-                    title={isOnline ? "All records backed up to cloud. Click to force sync." : "Device offline. Records safely stored locally and will sync once network is restored."}
+                    onClick={() => setIsLogoutOpen(true)}
+                    aria-label="Account profile & Lock Shop"
+                    className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-2xl overflow-hidden border-2 border-sky-300/80 dark:border-sky-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.3)] shrink-0 cursor-pointer active:scale-95 transition-all bg-blue-950"
                   >
-                    {isSyncing ? (
-                      <>
-                        <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-ping" />
-                        <span>Syncing…</span>
-                      </>
-                    ) : isOnline ? (
-                      <>
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>Backed Up ✓</span>
-                      </>
-                    ) : (
-                      <>
-                        <WifiOff className="h-3 w-3 text-amber-300" />
-                        <span className="text-amber-200">Saved Locally</span>
-                      </>
-                    )}
+                    <img
+                      src={profilePhoto}
+                      alt={displayName}
+                      className="h-full w-full object-cover object-center"
+                      onError={(e) => {
+                        e.currentTarget.src = "/images/traders/mama_chidi.jpg";
+                      }}
+                    />
+                    <span className="absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full bg-emerald-400 border-2 border-blue-950 shadow-xs" />
                   </button>
+                </InfoTooltip>
 
-                  <span className="text-sky-300/40 hidden xs:inline">•</span>
+                {/* Docked Sync status pill under photo */}
+                <button
+                  type="button"
+                  onClick={onManualSync}
+                  className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-white/15 dark:bg-white/10 hover:bg-white/25 border border-white/20 text-[9px] sm:text-[9.5px] font-black text-sky-100 hover:text-white cursor-pointer active:scale-95 transition-all shadow-2xs backdrop-blur-md whitespace-nowrap"
+                  title={isOnline ? "All records backed up to cloud. Click to force sync." : "Device offline. Records safely stored locally and will sync once network is restored."}
+                >
+                  {isSyncing ? (
+                    <>
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-ping" />
+                      <span>Syncing…</span>
+                    </>
+                  ) : isOnline ? (
+                    <>
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>Backed Up ✓</span>
+                    </>
+                  ) : (
+                    <>
+                      <WifiOff className="h-2.5 w-2.5 text-amber-300" />
+                      <span className="text-amber-200">Offline</span>
+                    </>
+                  )}
+                </button>
+              </div>
 
-                  {/* Location snippet */}
-                  <div className="hidden xs:flex items-center gap-1 text-sky-200/90 truncate">
-                    <MapPin className="h-3 w-3 text-sky-300 shrink-0" />
-                    <span className="truncate max-w-[120px] sm:max-w-[190px]">{location}</span>
-                  </div>
+              {/* Shop Name & Location to the right */}
+              <div className="min-w-0 flex-1">
+                <h1 className="text-xs xs:text-sm sm:text-base font-black text-white truncate tracking-tight leading-tight">
+                  {shopName}
+                </h1>
+
+                <div className="flex items-center gap-1 text-[10.5px] sm:text-[11px] text-sky-200/90 font-medium mt-0.5 truncate">
+                  <MapPin className="h-3 w-3 text-sky-300 shrink-0" />
+                  <span className="truncate max-w-[140px] sm:max-w-[220px]">{location}</span>
                 </div>
               </div>
             </div>
