@@ -24,11 +24,14 @@ import {
   MapPin,
   SunMoon,
   Coins,
+  KeyRound,
+  X,
 } from "lucide-react";
 import { useCredits } from "@/context/CreditContext";
 import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
 import { ReferralDashboardBanner } from "@/components/dashboard/ReferralDashboardBanner";
 import { InviteShopModal } from "@/components/referral/InviteShopModal";
+import { hasOwnerPin, setOwnerPin, getOwnerPin } from "@/lib/security/ownerPinService";
 
 export default function ProfilePage() {
   const { notify } = useNotification();
@@ -36,6 +39,10 @@ export default function ProfilePage() {
   const { balance, openPurchaseModal } = useCredits();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [newPin, setNewPin] = useState("");
+  const [confirmNewPin, setConfirmNewPin] = useState("");
+  const [pinModalError, setPinModalError] = useState<string | null>(null);
 
   // Settings
   const [currency, setCurrency] = useState("NGN (₦)");
@@ -43,6 +50,27 @@ export default function ProfilePage() {
   const [autoCategorization, setAutoCategorization] = useState(true);
   const [notifyTransactions, setNotifyTransactions] = useState(true);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  const isPinActive = hasOwnerPin(user?.id);
+
+  const handleSavePin = () => {
+    if (newPin.length !== 4) {
+      setPinModalError("Oga, PIN must be exactly 4 digits o!");
+      return;
+    }
+    if (newPin !== confirmNewPin) {
+      setPinModalError("The two PINs no match o! Type am again.");
+      return;
+    }
+    setOwnerPin(newPin, user?.id);
+    setIsPinModalOpen(false);
+    setNewPin("");
+    setConfirmNewPin("");
+    setPinModalError(null);
+    notify("Oga PIN Saved Successfully! 🛡️", "Your 4-digit secret PIN is now active for all bank exports and profit protection.", {
+      type: "success",
+    });
+  };
 
   const handleSave = () => {
     setSavedSuccess(true);
@@ -116,6 +144,45 @@ export default function ProfilePage() {
 
               <ThemeToggle variant="segmented" />
             </div>
+          </div>
+
+          {/* Oga Secret PIN Security Card */}
+          <div className="rounded-[28px] bg-white dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="h-10 w-10 rounded-2xl bg-blue-500/15 text-blue-700 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800">
+                <KeyRound className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                    Oga Secret PIN Security
+                  </h3>
+                  <span className={`text-[9.5px] font-black px-2 py-0.5 rounded-full ${
+                    isPinActive
+                      ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
+                      : "bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
+                  }`}>
+                    {isPinActive ? "PIN Active ✓" : "Default PIN (1234)"}
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  4-digit security code wey dey lock your profit, turnover, and certified bank statements so apprentice or sales boy no go fit view am.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setPinModalError(null);
+                setNewPin("");
+                setConfirmNewPin("");
+                setIsPinModalOpen(true);
+              }}
+              className="px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-black text-xs cursor-pointer active:scale-95 transition-all shadow-xs shrink-0 self-start sm:self-auto"
+            >
+              {isPinActive ? "Change Oga PIN" : "Set 4-Digit PIN"}
+            </button>
           </div>
 
           {/* Insight Credits Balance Card */}
@@ -226,6 +293,92 @@ export default function ProfilePage() {
           await logout();
         }}
       />
+      {/* ── OGA PIN UPDATE MODAL (PIDGIN LOCAL LANGUAGE) ── */}
+      {isPinModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-150">
+          <div className="relative w-full max-w-sm rounded-[28px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 sm:p-6 shadow-2xl space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="h-9 w-9 rounded-xl bg-blue-700 text-white flex items-center justify-center font-black">
+                  <KeyRound className="h-4.5 w-4.5" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black">Set Your Oga PIN</h3>
+                  <p className="text-[10px] text-blue-600 dark:text-blue-400 font-bold uppercase">
+                    Anti-Theft Protection
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsPinModalOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 text-xs text-blue-950 dark:text-blue-200 font-medium leading-relaxed">
+              Oga, enter <strong>4 secret numbers</strong> wey only you know. You go dey use am authorize certified turnover statements for banks.
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                  New 4-Digit Secret PIN
+                </label>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={4}
+                  value={newPin}
+                  onChange={(e) => setNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  placeholder="e.g. 1984"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-mono tracking-widest text-center focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 block mb-1">
+                  Confirm 4-Digit Secret PIN
+                </label>
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  maxLength={4}
+                  value={confirmNewPin}
+                  onChange={(e) => setConfirmNewPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  placeholder="Repeat your PIN"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm font-mono tracking-widest text-center focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            </div>
+
+            {pinModalError && (
+              <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-bold text-center">
+                {pinModalError}
+              </div>
+            )}
+
+            <div className="flex items-center gap-2 pt-1">
+              <button
+                type="button"
+                onClick={() => setIsPinModalOpen(false)}
+                className="flex-1 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSavePin}
+                className="flex-1 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-black text-xs shadow-xs"
+              >
+                Save Oga PIN
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
