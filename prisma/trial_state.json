@@ -1,16 +1,16 @@
 {
   "defaultTrial": {
-    "createdAt": "2026-10-07T21:22:44.364Z",
-    "trialEndsAt": "2026-10-14T21:22:44.364Z",
+    "createdAt": "2026-10-17T12:54:49.334Z",
+    "trialEndsAt": "2026-10-24T12:54:49.334Z",
     "subscriptionStatus": "trialing",
-    "updatedAt": "2026-10-11T21:22:44.365Z"
+    "updatedAt": "2026-10-21T12:54:49.335Z"
   },
   "users": {
     "user_owner_01": {
-      "createdAt": "2026-10-07T21:22:44.364Z",
-      "trialEndsAt": "2026-10-14T21:22:44.364Z",
+      "createdAt": "2026-10-17T12:54:49.334Z",
+      "trialEndsAt": "2026-10-24T12:54:49.334Z",
       "subscriptionStatus": "trialing",
-      "updatedAt": "2026-10-11T21:22:44.365Z"
+      "updatedAt": "2026-10-21T12:54:49.335Z"
     },
     "demo@monielite.app": {
       "createdAt": "2026-10-07T21:22:44.364Z",
@@ -19,16 +19,16 @@
       "updatedAt": "2026-10-11T21:22:44.365Z"
     },
     "new_trader_test_99": {
-      "createdAt": "2026-10-11T21:38:30.626Z",
-      "trialEndsAt": "2026-10-18T21:38:30.626Z",
+      "createdAt": "2026-10-21T13:20:32.644Z",
+      "trialEndsAt": "2026-10-28T13:20:32.644Z",
       "subscriptionStatus": "trialing",
-      "updatedAt": "2026-10-11T21:38:30.627Z"
+      "updatedAt": "2026-10-21T13:20:32.648Z"
     },
     "existing_trader_test_88": {
-      "createdAt": "2026-10-09T21:38:30.628Z",
-      "trialEndsAt": "2026-10-16T21:38:30.628Z",
+      "createdAt": "2026-10-19T13:20:32.650Z",
+      "trialEndsAt": "2026-10-26T13:20:32.650Z",
       "subscriptionStatus": "trialing",
-      "updatedAt": "2026-10-11T21:38:30.630Z"
+      "updatedAt": "2026-10-21T13:20:32.656Z"
     },
     "usr_7r1uyubl": {
       "createdAt": "2026-10-11T21:41:47.569Z",

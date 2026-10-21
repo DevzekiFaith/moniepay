@@ -23,7 +23,9 @@ import {
   Store,
   MapPin,
   SunMoon,
+  Coins,
 } from "lucide-react";
+import { useCredits } from "@/context/CreditContext";
 import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
 import { ReferralDashboardBanner } from "@/components/dashboard/ReferralDashboardBanner";
 import { InviteShopModal } from "@/components/referral/InviteShopModal";
@@ -31,6 +33,7 @@ import { InviteShopModal } from "@/components/referral/InviteShopModal";
 export default function ProfilePage() {
   const { notify } = useNotification();
   const { user, logout } = useAuth();
+  const { balance, openPurchaseModal } = useCredits();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
 
@@ -115,7 +118,35 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* MoniePay Plus Subscription & Free Trial Section */}
+          {/* Insight Credits Balance Card */}
+          <div className="rounded-[28px] bg-gradient-to-br from-amber-500/10 via-amber-400/5 to-transparent border border-amber-200 dark:border-amber-900/60 p-4 sm:p-5 shadow-xs flex items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-2xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0 border border-amber-200 dark:border-amber-800">
+                <Coins className="h-5 w-5" />
+              </div>
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-400 block">
+                  Prepaid Business Intelligence
+                </span>
+                <h3 className="text-sm sm:text-base font-black text-slate-900 dark:text-white">
+                  Insight Credits
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Affordable pay-as-you-go financial diagnosis. No compulsory subscription.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={openPurchaseModal}
+              className="px-3.5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs cursor-pointer active:scale-95 transition-all shadow-xs shrink-0"
+            >
+              Top Up / History
+            </button>
+          </div>
+
+          {/* MoniePay Plus Subscription & Free Trial Section (Optional) */}
           <SubscriptionBannerCard />
 
           {/* Referral & Invite Rewards Section */}

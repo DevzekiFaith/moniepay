@@ -12,6 +12,7 @@ import { MoniePayLogo, MoniePayMark } from "@/components/ui/MoniePayLogo";
 import { useAuth } from "@/context/AuthContext";
 import { LogoutModal } from "@/components/ui/LogoutModal";
 import { SubscriptionStatusPill } from "@/components/subscription/SubscriptionStatusPill";
+import { CreditBalancePill } from "@/components/credits/CreditBalancePill";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import {
   LayoutDashboard,
@@ -137,6 +138,9 @@ export function AppMobileHeader() {
       </Link>
 
       <div className="flex items-center gap-1.5 sm:gap-2">
+        {/* Insight Credits Balance Pill */}
+        <CreditBalancePill />
+
         {/* Real-Time Subscription Status Pill */}
         <SubscriptionStatusPill />
 
@@ -250,8 +254,9 @@ export function AppSidebar() {
             <ThemeToggle variant="segmented" className="w-full" />
           </div>
 
-          {/* Subscription Status Pill */}
-          <div className="px-0.5 flex justify-start">
+          {/* Insight Credits & Subscription Status */}
+          <div className="px-0.5 flex flex-wrap items-center gap-2">
+            <CreditBalancePill />
             <SubscriptionStatusPill />
           </div>
 

@@ -25,6 +25,7 @@ import { LogoutModal } from "@/components/ui/LogoutModal";
 import { MerchantRatingStand } from "@/components/rating/MerchantRatingStand";
 import { NotificationBellDrawer } from "@/components/notifications/NotificationBellDrawer";
 import { SubscriptionStatusPill } from "@/components/subscription/SubscriptionStatusPill";
+import { CreditBalancePill } from "@/components/credits/CreditBalancePill";
 import { triggerInstallPrompt } from "@/components/pwa/InstallAppBanner";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -144,6 +145,11 @@ export function DaylightHeader({
               <InfoTooltip content="Switch Daylight or Night Mode">
                 <ThemeToggle size="sm" />
               </InfoTooltip>
+
+              {/* 3. Insight Credits Balance Pill */}
+              <div className="inline-flex">
+                <CreditBalancePill />
+              </div>
 
               {/* 4. Pro Status Pill (Visible on md+ screens) */}
               <div className="hidden md:inline-flex">

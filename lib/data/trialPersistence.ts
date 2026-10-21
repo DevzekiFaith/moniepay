@@ -82,8 +82,21 @@ export function getPersistedTrialDates(userId?: string, createdAt?: Date | strin
     normalizedId.includes("demo") ||
     normalizedId.includes("mamachidi");
 
+  // If caller explicitly supplied a createdAt date, use that to compute fresh trial dates
+  if (createdAt) {
+    const customTrial = getFreshUserTrialBaseline(createdAt);
+    savePersistedTrialDates(customTrial, normalizedId);
+    return customTrial;
+  }
+
   if (store.users && store.users[normalizedId]) {
-    return store.users[normalizedId];
+    const userTrial = store.users[normalizedId];
+    if (new Date(userTrial.trialEndsAt).getTime() < Date.now()) {
+      const refreshed = isDemoUser ? getDemoTrialBaseline() : getFreshUserTrialBaseline();
+      savePersistedTrialDates(refreshed, normalizedId);
+      return refreshed;
+    }
+    return userTrial;
   }
 
   // If this is the demo account, initialize the 4-days-elapsed baseline

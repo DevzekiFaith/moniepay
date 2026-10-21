@@ -27,7 +27,8 @@ model User {
   subscriptionStatus    String    @default("trialing") // trialing | active | expired | past_due
   subscriptionEndsAt    DateTime?
   planType              String    @default("FREE_TRIAL") // FREE_TRIAL | MONIEPAY_PLUS_MONTHLY
-  flwCustomerId         String?
+  // Monetisation & Insight Credits
+  creditBalance         Int       @default(10) // 10 welcome bonus credits for live testing & diagnosis
 
   preferences   UserPreference?
   accounts      FinancialAccount[]
@@ -37,6 +38,8 @@ model User {
   imports       TransactionImport[]
   categoryRules UserCategoryRule[]
   subscriptions SubscriptionPayment[]
+  creditTransactions CreditTransaction[]
+  paidReports   PaidInsightReport[]
 
   @@index([email])
   @@index([subscriptionStatus])
@@ -326,5 +329,51 @@ model UserCategoryRule {
 
   @@unique([userId, merchantName])
   @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// MONIETISATION — INSIGHT CREDITS & AUDIT LOG
+// ─────────────────────────────────────────────
+
+model CreditTransaction {
+  id              String    @id @default(cuid())
+  userId          String
+  type            String    // PURCHASE | USAGE | BONUS | REFUND
+  credits         Int       // positive for credit additions, negative for deductions
+  balanceAfter    Int
+  description     String
+  referenceId     String?   @unique // txRef for purchases, insightId/idempotencyKey for usage
+  amountPaid      Float?    // NGN amount paid if PURCHASE
+  metadata        String?   // JSON
+  createdAt       DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([referenceId])
+}
+
+// ─────────────────────────────────────────────
+// MONIETISATION — PAID BUSINESS INSIGHT REPORTS
+// ─────────────────────────────────────────────
+
+model PaidInsightReport {
+  id                String    @id @default(cuid())
+  userId            String
+  creditsCost       Int       @default(5)
+  status            String    // COMPLETED | INSUFFICIENT_DATA
+  title             String
+  summary           String
+  spendingPatterns  String    // JSON
+  cashLeaks         String    // JSON
+  improvements      String    // JSON
+  metricsSnapshot   String    // JSON
+  createdAt         DateTime  @default(now())
+
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
 }
 

@@ -347,10 +347,8 @@ export default function MoniePayDashboard() {
   }, [metrics, filteredTransactions, debts, business.name]);
 
   const handleOpenRecord = (type: TransactionType = "SALE") => {
-    requireSubscription(() => {
-      setRecordInitialType(type);
-      setIsRecordOpen(true);
-    }, "Sharp-Sharp Recording");
+    setRecordInitialType(type);
+    setIsRecordOpen(true);
   };
 
   const handleManualSync = async () => {

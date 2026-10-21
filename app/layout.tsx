@@ -6,6 +6,8 @@ import { NotificationProvider } from "@/context/NotificationContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
 import { UpgradeModal } from "@/components/subscription/UpgradeModal";
+import { CreditProvider } from "@/context/CreditContext";
+import { CreditPurchaseModal } from "@/components/credits/CreditPurchaseModal";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { InstallAppBanner } from "@/components/pwa/InstallAppBanner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -198,13 +200,16 @@ export default function RootLayout({
           <AuthProvider>
             <NotificationProvider>
               <SubscriptionProvider>
-                <TooltipProvider delayDuration={150}>
-                  {children}
-                  <UpgradeModal />
-                  <InstallAppBanner />
-                  <ServiceWorkerRegister />
-                  <SpeedInsights />
-                </TooltipProvider>
+                <CreditProvider>
+                  <TooltipProvider delayDuration={150}>
+                    {children}
+                    <CreditPurchaseModal />
+                    <UpgradeModal />
+                    <InstallAppBanner />
+                    <ServiceWorkerRegister />
+                    <SpeedInsights />
+                  </TooltipProvider>
+                </CreditProvider>
               </SubscriptionProvider>
             </NotificationProvider>
           </AuthProvider>
