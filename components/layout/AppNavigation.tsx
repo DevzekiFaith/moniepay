@@ -124,20 +124,20 @@ export function AppMobileHeader() {
   const { user } = useAuth();
 
   return (
-    <header className="md:hidden sticky top-0 z-50 flex h-14 w-full items-center justify-between border-b border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 px-3.5 sm:px-4 backdrop-blur-2xl transition-colors shadow-xs">
-      <Link href="/" className="flex items-center gap-2">
-        <MoniePayMark size={28} />
+    <header className="md:hidden sticky top-0 z-50 flex h-14 w-full items-center justify-between border-b border-slate-200/80 dark:border-white/10 bg-white/95 dark:bg-slate-900/95 px-2.5 sm:px-4 backdrop-blur-2xl transition-colors shadow-2xs">
+      <Link href="/" className="flex items-center gap-1.5 sm:gap-2 shrink-0 min-w-0">
+        <MoniePayMark size={26} />
         <div className="flex flex-col">
           <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white leading-none">
             MoniePay
           </span>
-          <span className="text-[9.5px] font-bold text-blue-600 dark:text-blue-400">
+          <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 hidden min-[360px]:block leading-tight mt-0.5">
             Trader OS
           </span>
         </div>
       </Link>
 
-      <div className="flex items-center gap-1.5 sm:gap-2">
+      <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
         {/* Insight Credits Balance Pill */}
         <CreditBalancePill />
 
@@ -150,19 +150,20 @@ export function AppMobileHeader() {
         {user ? (
           <Link
             href="/profile"
-            className="flex items-center gap-1.5 px-2 py-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/80 text-blue-950 dark:text-blue-100 text-xs font-bold"
+            className="flex items-center gap-1 p-1 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200/80 dark:border-blue-800/80 text-blue-950 dark:text-blue-100 text-xs font-bold shrink-0 hover:bg-blue-100 dark:hover:bg-blue-900/60 transition-colors"
+            title={user.name || "Shop Owner"}
           >
-            <div className="h-5 w-5 rounded-full bg-blue-700 text-white flex items-center justify-center text-[10px] font-black">
+            <div className="h-6 w-6 rounded-lg bg-blue-700 text-white flex items-center justify-center text-[10px] font-black shrink-0">
               {(user.name?.[0] || "M").toUpperCase()}
             </div>
-            <span className="max-w-[70px] truncate hidden sm:inline">
+            <span className="max-w-[55px] truncate hidden md:inline text-[11px]">
               {user.name?.split(" ")[0]}
             </span>
           </Link>
         ) : (
           <Link
             href="/login"
-            className="px-3 py-1.5 rounded-xl bg-blue-700 text-white text-xs font-bold shadow-xs active:scale-95 transition-all"
+            className="px-2.5 py-1 rounded-xl bg-blue-700 text-white text-[11px] font-bold shadow-xs active:scale-95 transition-all shrink-0"
           >
             Sign In
           </Link>

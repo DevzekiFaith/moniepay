@@ -21,7 +21,7 @@ import {
   Coins,
   Users,
   Lock,
-  Sparkles,
+  Store,
   Check,
 } from "lucide-react";
 import { motion } from "framer-motion";
@@ -304,7 +304,7 @@ function UpgradeContent() {
                 <span><strong>Anti-Theft Drawer Lock:</strong> Staff can record sales, but cannot delete records or see private profit.</span>
               </div>
               <div className="flex items-start gap-2">
-                <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
+                <Coins className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
                 <span><strong>+25 Free Monthly Coins:</strong> Included free for certified loan statements &amp; market alerts.</span>
               </div>
             </div>
@@ -450,7 +450,7 @@ function UpgradeContent() {
                 desc: "Direct virtual account transfer matching with zero cashier errors.",
               },
               {
-                icon: <Sparkles className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
+                icon: <Coins className="h-4 w-4 text-amber-600 dark:text-amber-400" />,
                 title: "+25 Free Monthly Decision Coins",
                 desc: "Bundled coins for certified loan statements, wholesale depot arbitrage, and deep diagnostics.",
               },
