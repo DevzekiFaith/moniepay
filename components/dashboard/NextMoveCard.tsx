@@ -7,11 +7,13 @@
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ArrowRight,
   Compass,
   CheckCircle2,
+  Coins,
 } from "lucide-react";
 import type { DeterministicMetrics, Debt, Recommendation, TradeType } from "@/types/moniepay.types";
 import { recordDecisionAction } from "@/lib/intelligence/decisionMemory";
@@ -174,6 +176,15 @@ export function NextMoveCard({
             Open Gbese Book
           </motion.button>
         )}
+
+        <Link
+          href="/insights"
+          className="px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-xl sm:rounded-2xl bg-amber-400/20 hover:bg-amber-400/30 text-amber-100 font-bold text-[11.5px] sm:text-xs border border-amber-300/30 active:scale-95 transition-all cursor-pointer flex items-center gap-1.5 shrink-0"
+          title="Run 360° AI Shop Diagnostic (5 Coins)"
+        >
+          <Coins className="h-3.5 w-3.5 text-amber-300 shrink-0" />
+          <span>Deep Audit (5cr)</span>
+        </Link>
       </div>
 
       <AnimatePresence>

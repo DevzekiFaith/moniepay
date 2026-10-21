@@ -32,6 +32,7 @@ interface SubscriptionContextType {
   verifyPayment: (transactionId: string | number, txRef?: string) => Promise<{ success: boolean; message?: string }>;
   refreshSubscription: () => Promise<void>;
   requireSubscription: (onProceed: () => void, featureName?: string) => boolean;
+  activateStaffPassWithCoins: (days?: number) => void;
   simulateTestPayment: (action?: "activate" | "activate_annual" | "enter_grace_period" | "expire_trial" | "reset_trial") => Promise<void>;
 }
 
@@ -230,6 +231,39 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     [user?.id, toast]
   );
 
+  const activateStaffPassWithCoins = useCallback((days: number = 30) => {
+    const expiresAt = new Date(Date.now() + days * 24 * 60 * 60 * 1000).toISOString();
+    const updated: SubscriptionDetails = {
+      status: "active",
+      planType: "MONIEPAY_PLUS_MONTHLY",
+      billingCycle: "monthly",
+      planName: "Staff Mode (Coin Pass)",
+      amount: 0,
+      currency: "NGN",
+      isTrialActive: false,
+      isSubscriptionActive: true,
+      isGracePeriodActive: false,
+      trialEndsAt: expiresAt,
+      trialDaysLeft: 0,
+      graceDaysLeft: 0,
+      subscriptionEndsAt: expiresAt,
+      nextRenewalDate: expiresAt,
+      isRenewalDueSoon: false,
+      canAccessFullFeatures: true,
+      hasUsedTrial: true,
+      lastPayment: {
+        txRef: `coins_staff_${Date.now()}`,
+        amount: 20,
+        paymentType: "COINS",
+        paidAt: new Date().toISOString(),
+      },
+    };
+    setSubscription(updated);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("moniepay_subscription", JSON.stringify(updated));
+    }
+  }, []);
+
   const nowMs = Date.now();
   const trialEndsAtMs = subscription?.trialEndsAt ? new Date(subscription.trialEndsAt).getTime() : 0;
   const subEndsAtMs = subscription?.subscriptionEndsAt ? new Date(subscription.subscriptionEndsAt).getTime() : 0;
@@ -287,6 +321,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         verifyPayment,
         refreshSubscription,
         requireSubscription,
+        activateStaffPassWithCoins,
         simulateTestPayment,
       }}
     >

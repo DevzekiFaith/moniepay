@@ -28,6 +28,8 @@ import {
   Lightbulb,
   Layers,
   Info,
+  Coins,
+  Scale,
 } from "lucide-react";
 import {
   MarketCommodityItem,
@@ -41,6 +43,8 @@ import {
 import { TradeType } from "@/types/moniepay.types";
 import { playCashChime, triggerCashHapticVibration } from "@/lib/alerts/hapticSoundService";
 import { useToast } from "@/context/NotificationContext";
+import { useCredits } from "@/context/CreditContext";
+import { DEPOT_ARBITRAGE_CREDIT_COST } from "@/types/credit.types";
 
 interface LiveMarketFeedCardProps {
   tradeType?: TradeType;
@@ -56,6 +60,42 @@ export function LiveMarketFeedCard({
   onOpenRestockRecord,
 }: LiveMarketFeedCardProps) {
   const { toast } = useToast();
+  const { balance, useCreditsAction, openPurchaseModal } = useCredits();
+  const [unlockedArbitrages, setUnlockedArbitrages] = useState<Record<string, boolean>>({});
+  const [isUnlockingArbitrage, setIsUnlockingArbitrage] = useState(false);
+
+  const handleUnlockArbitrage = async (item: MarketCommodityItem) => {
+    if (balance < DEPOT_ARBITRAGE_CREDIT_COST) {
+      openPurchaseModal();
+      return;
+    }
+
+    setIsUnlockingArbitrage(true);
+    try {
+      const res = await useCreditsAction({
+        cost: DEPOT_ARBITRAGE_CREDIT_COST,
+        description: `Depot Arbitrage Unlock: ${item.name}`,
+      });
+
+      if (res.success) {
+        playCashChime();
+        triggerCashHapticVibration("cash");
+        setUnlockedArbitrages((prev) => ({ ...prev, [item.id]: true }));
+        toast(
+          "Depot Arbitrage Unlocked! 🪙",
+          `Wholesale hub price spread for ${item.name} revealed.`,
+          { type: "success" }
+        );
+      } else {
+        toast("Coin Action Failed", res.error || "Could not unlock arbitrage.", { type: "warning" });
+      }
+    } catch (err: any) {
+      toast("Error", err?.message || "Failed to unlock.", { type: "warning" });
+    } finally {
+      setIsUnlockingArbitrage(false);
+    }
+  };
+
   const [selectedTrade, setSelectedTrade] = useState<TradeType>(tradeType);
   const [selectedRegion, setSelectedRegion] = useState<MarketRegion>("ALL");
   const [searchQuery, setSearchQuery] = useState("");
@@ -473,6 +513,71 @@ export function LiveMarketFeedCard({
                     {selectedItem.informalAdvice}
                   </p>
                 </div>
+              </div>
+
+              {/* Wholesale Depot Arbitrage Radar (5 Coins) */}
+              <div className="p-3 sm:p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-950/40 border border-amber-500/30 dark:border-amber-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-black text-amber-950 dark:text-amber-200 flex items-center gap-1.5">
+                    <Scale className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                    <span>Wholesale Depot Arbitrage Spread</span>
+                  </span>
+                  {unlockedArbitrages[selectedItem.id] ? (
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 text-[9.5px] font-black uppercase">
+                      Unlocked ✓
+                    </span>
+                  ) : (
+                    <span className="text-[10px] font-extrabold text-amber-900 dark:text-amber-300">
+                      5 Coins
+                    </span>
+                  )}
+                </div>
+
+                {unlockedArbitrages[selectedItem.id] ? (
+                  <div className="space-y-2 pt-1 text-[11px]">
+                    <div className="grid grid-cols-2 gap-2 p-2 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-amber-500/20">
+                      <div>
+                        <span className="text-[9.5px] text-slate-500 uppercase font-bold">Cheapest Wholesale Hub</span>
+                        <p className="font-black text-slate-900 dark:text-white truncate">
+                          {selectedItem.id.includes("rice")
+                            ? "Daleko Market, Lagos"
+                            : selectedItem.id.includes("sugar")
+                            ? "Dawanau Depot, Kano"
+                            : "Onitsha Relief Terminal"}
+                        </p>
+                        <p className="font-mono text-xs font-black text-emerald-600">
+                          ₦{Math.round(selectedItem.currentPrice * 0.92).toLocaleString()}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-[9.5px] text-slate-500 uppercase font-bold">Arbitrage Spread</span>
+                        <p className="font-black text-emerald-600 dark:text-emerald-400">
+                          +₦{Math.round(selectedItem.currentPrice * 0.08).toLocaleString()} Margin
+                        </p>
+                        <p className="text-[9px] text-slate-500">Save 8% on bulk trailer orders</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 text-[10.5px]">
+                      <Truck className="h-3.5 w-3.5 text-blue-600 shrink-0" />
+                      <span><strong>Bulk Trailer Slot:</strong> Tuesdays & Thursdays 4:30 AM (Direct offload)</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-0.5">
+                    <p className="text-[10.5px] text-amber-900/90 dark:text-amber-200/90 font-medium">
+                      See verified direct trailer hubs, bulk discounts, and ₦2,500 - ₦6,000 price spreads across Nigeria.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => handleUnlockArbitrage(selectedItem)}
+                      disabled={isUnlockingArbitrage}
+                      className="py-1.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-[11px] flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-all shrink-0"
+                    >
+                      <Coins className="h-3.5 w-3.5" />
+                      <span>{balance >= DEPOT_ARBITRAGE_CREDIT_COST ? "Unlock Spread (5cr)" : "Get Coins (5cr)"}</span>
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Profit & Capital Impact */}

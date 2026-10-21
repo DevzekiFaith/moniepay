@@ -50,6 +50,7 @@ export const INSIGHT_CREDIT_COST = 5; // 5 credits per in-depth diagnostic analy
 export const DEBT_NOTICE_CREDIT_COST = 2; // 2 credits to dispatch official stamped debt reminder
 export const STATEMENT_EXPORT_CREDIT_COST = 15; // 15 credits to export certified financial turnover statement
 export const DEPOT_ARBITRAGE_CREDIT_COST = 5; // 5 credits to unlock wholesale depot price comparison
+export const STAFF_MODE_CREDIT_COST = 20; // 20 credits to unlock 30-day Staff & Attendant Multi-Device Mode
 export const WELCOME_BONUS_CREDITS = 10; // Free starter balance for immediate trial
 
 export interface CreditTransactionRecord {

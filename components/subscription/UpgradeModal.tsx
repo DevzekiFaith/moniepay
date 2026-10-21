@@ -1,10 +1,9 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoniePay Plus — Upgrade & Subscription Modal
-// 7-day Free Trial • ₦1,500/Month or ₦15,000/Year
-// 3-day Grace Period • Zero Data Deletion Guarantee
-// Soft 3D Frosted Ice-Glass Design System
+// MoniePay — Shop Tier & Staff Multi-Attendant Power-Up Modal
+// 100% Free Core Ledger Guarantee + Staff Anti-Theft Controls
+// Unlocks with 20 Coins or Optional Flutterwave Subscription
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState, useEffect } from "react";
@@ -12,24 +11,25 @@ import { createPortal } from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CheckCircle2,
-  Zap,
   ShieldCheck,
-  TrendingUp,
-  MessageSquare,
   BadgeCheck,
   Lock,
   X,
   CreditCard,
   ArrowRight,
   Loader2,
-  Radio,
-  ExternalLink,
-  Store,
-  Calendar,
+  Smartphone,
+  Coins,
+  Sparkles,
+  Users,
+  Check,
 } from "lucide-react";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/context/AuthContext";
-import { BillingCycle } from "@/types/subscription.types";
+import { useCredits } from "@/context/CreditContext";
+import { useToast } from "@/context/NotificationContext";
+import { STAFF_MODE_CREDIT_COST } from "@/types/credit.types";
+import { playCashChime, triggerCashHapticVibration } from "@/lib/alerts/hapticSoundService";
 
 export function UpgradeModal() {
   const {
@@ -41,12 +41,16 @@ export function UpgradeModal() {
     setSelectedPlan,
     isSubscribed,
     initializePayment,
-    simulateTestPayment,
+    activateStaffPassWithCoins,
   } = useSubscription();
 
+  const { balance, useCreditsAction, openPurchaseModal } = useCredits();
+  const { toast } = useToast();
   const { user } = useAuth();
+
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [isProcessingCard, setIsProcessingCard] = useState(false);
+  const [isActivatingCoins, setIsActivatingCoins] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
@@ -68,22 +72,60 @@ export function UpgradeModal() {
 
   if (!mounted || !isUpgradeModalOpen) return null;
 
-  const handlePay = async () => {
-    setIsProcessing(true);
+  // 1. Activate Staff Mode using 20 Coins
+  const handleActivateWithCoins = async () => {
+    if (balance < STAFF_MODE_CREDIT_COST) {
+      openPurchaseModal();
+      return;
+    }
+
+    setIsActivatingCoins(true);
+    setErrorMessage(null);
+
+    try {
+      const res = await useCreditsAction({
+        cost: STAFF_MODE_CREDIT_COST,
+        description: "30-Day Staff & Attendant Multi-Device Mode Pass",
+      });
+
+      if (res.success) {
+        playCashChime();
+        triggerCashHapticVibration("cash");
+        activateStaffPassWithCoins(30);
+
+        toast(
+          "Staff Mode Activated! 🛡️",
+          "30-day multi-phone sync and anti-theft apprentice logins unlocked with 20 Coins.",
+          { type: "success" }
+        );
+
+        closeUpgradeModal();
+      } else {
+        setErrorMessage(res.error || "Could not activate Staff Mode with coins.");
+      }
+    } catch (err: any) {
+      setErrorMessage(err?.message || "Coin activation failed.");
+    } finally {
+      setIsActivatingCoins(false);
+    }
+  };
+
+  // 2. Pay via Flutterwave
+  const handlePayFlutterwave = async () => {
+    setIsProcessingCard(true);
     setErrorMessage(null);
 
     try {
       const res = await initializePayment(phoneNumber, selectedPlan);
       if (res.success && res.paymentLink) {
-        // Redirect user to Flutterwave hosted checkout
         window.location.href = res.paymentLink;
       } else {
         setErrorMessage(res.error || "Could not start Flutterwave checkout. Please try again.");
-        setIsProcessing(false);
+        setIsProcessingCard(false);
       }
     } catch (err: any) {
       setErrorMessage(err?.message || "Payment initialization failed.");
-      setIsProcessing(false);
+      setIsProcessingCard(false);
     }
   };
 
@@ -108,27 +150,27 @@ export function UpgradeModal() {
             onClick={closeUpgradeModal}
           />
 
-          {/* 3D Soft Frosted Ice Card Container */}
+          {/* 3D Soft Frosted Card Container */}
           <motion.div
             initial={{ opacity: 0, y: 40, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 30, scale: 0.95 }}
             transition={{ type: "spring", stiffness: 380, damping: 32 }}
-            className="relative w-full sm:max-w-lg max-h-[94vh] sm:max-h-[92vh] rounded-t-[36px] sm:rounded-[36px] overflow-hidden flex flex-col z-20 shadow-[0_24px_60px_rgba(154,180,214,0.45)] dark:shadow-2xl border-t sm:border border-white/70 dark:border-white/10 backdrop-blur-2xl bg-[#edf3fb]/98 dark:bg-slate-900/98 text-slate-800 dark:text-slate-100 transition-colors"
+            className="relative w-full sm:max-w-xl max-h-[94vh] sm:max-h-[92vh] rounded-t-[36px] sm:rounded-[36px] overflow-hidden flex flex-col z-20 shadow-[0_24px_60px_rgba(154,180,214,0.45)] dark:shadow-2xl border-t sm:border border-white/70 dark:border-white/10 backdrop-blur-2xl bg-[#edf3fb]/98 dark:bg-slate-900/98 text-slate-800 dark:text-slate-100 transition-colors"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Top Sapphire Banner (Solid Blue) */}
-            <div className="bg-[#1e3a8a] px-4 sm:px-6 py-3.5 sm:py-5 text-white flex items-center justify-between border-b border-white/10 shrink-0 relative overflow-hidden">
+            {/* Top Sapphire Banner */}
+            <div className="bg-[#1e3a8a] px-4 sm:px-6 py-4 text-white flex items-center justify-between border-b border-white/10 shrink-0 relative overflow-hidden">
               <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
                 <div className="flex h-10 w-10 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl bg-white/15 backdrop-blur-md border border-white/20 shadow-inner shrink-0">
                   <ShieldCheck className="h-5 w-5 sm:h-6 sm:w-6 text-sky-300" />
                 </div>
                 <div className="min-w-0">
-                  <div className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-blue-400/20 border border-blue-400/30 text-blue-200 text-[9.5px] sm:text-[10.5px] font-black uppercase tracking-wide">
-                    <span>Staff & Anti-Theft Mode</span>
+                  <div className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-0.5 rounded-full bg-blue-400/20 border border-blue-400/30 text-blue-200 text-[9.5px] sm:text-[10px] font-black uppercase tracking-wide">
+                    <span>Shop Plan & Power-Ups</span>
                   </div>
-                  <h3 id="upgrade-modal-title" className="text-sm sm:text-lg font-black tracking-tight leading-tight text-white mt-0.5 truncate">
-                    Staff & Attendant Access
+                  <h3 id="upgrade-modal-title" className="text-base sm:text-lg font-black tracking-tight leading-tight text-white mt-0.5 truncate">
+                    Shop Tier & Staff Controls
                   </h3>
                 </div>
               </div>
@@ -144,147 +186,219 @@ export function UpgradeModal() {
             </div>
 
             {/* Modal Body Scroll */}
-            <div className="p-3.5 sm:p-6 overflow-y-auto space-y-3.5 sm:space-y-4 flex-1">
-              {/* Context / Reason Notice */}
-              {modalReason ? (
-                <div className="p-3.5 rounded-2xl bg-blue-500/10 dark:bg-blue-950/40 border border-blue-500/25 dark:border-blue-800 flex items-start gap-2.5">
-                  <ShieldCheck className="h-5 w-5 text-blue-600 dark:text-sky-400 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-black text-blue-950 dark:text-sky-200">
-                      100% Free Core Ledger Active
-                    </p>
-                    <p className="text-[11.5px] font-semibold text-blue-900/85 dark:text-sky-300 mt-0.5 leading-relaxed">
-                      {modalReason}
-                    </p>
-                  </div>
-                </div>
-              ) : (
-                <div className="p-3.5 rounded-2xl bg-sky-500/10 dark:bg-sky-950/40 border border-sky-500/20 dark:border-sky-800 flex items-start gap-2.5">
-                  <ShieldCheck className="h-5 w-5 text-sky-600 dark:text-sky-400 shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-black text-sky-950 dark:text-sky-200">
-                      Core Ledger Dey Free Forever
-                    </p>
-                    <p className="text-[11.5px] font-semibold text-sky-900/85 dark:text-sky-300 mt-0.5 leading-relaxed">
-                      Daily sales, expenses, and cash drawer never expire. Upgrading unlocks multi-phone apprentice sync, sales-girl logins, and cash-drawer anti-theft locks.
-                    </p>
-                  </div>
+            <div className="p-3.5 sm:p-5 overflow-y-auto space-y-4 flex-1">
+              {/* Optional Context Notice */}
+              {modalReason && (
+                <div className="p-3 rounded-2xl bg-blue-500/10 dark:bg-blue-950/40 border border-blue-500/25 dark:border-blue-800 flex items-start gap-2.5">
+                  <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                  <p className="text-xs font-semibold text-blue-950 dark:text-sky-200 leading-relaxed">
+                    {modalReason}
+                  </p>
                 </div>
               )}
 
-              {/* Status Strip */}
-              <div className="p-3.5 rounded-2xl bg-white/80 dark:bg-slate-800/80 border border-white/90 dark:border-slate-700 shadow-2xs flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2.5">
-                  <div
-                    className={`h-3 w-3 rounded-full ${
-                      isSubscribed
-                        ? "bg-emerald-500"
-                        : "bg-blue-500"
-                    }`}
-                  />
-                  <div>
-                    <p className="text-xs font-black text-slate-900 dark:text-white">
-                      {isSubscribed
-                        ? `${subscription?.planName || "Staff & Attendant Mode Active"}`
-                        : "100% Free Core Ledger Active"}
-                    </p>
-                    <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                      {isSubscribed
-                        ? `Next Renewal: ${
-                            subscription?.subscriptionEndsAt
-                              ? new Date(subscription.subscriptionEndsAt).toLocaleDateString("en-NG", {
-                                  year: "numeric",
-                                  month: "short",
-                                  day: "numeric",
-                                })
-                              : "Active"
-                          }`
-                        : "Daily recording & drawer calculations dey permanently free."}
-                    </p>
+              {/* ── CARD 1: 100% FREE CORE LEDGER (ACTIVE FOREVER) ── */}
+              <div className="p-4 rounded-3xl bg-white/90 dark:bg-slate-800/90 border border-emerald-500/30 dark:border-emerald-500/40 shadow-xs space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                      <ShieldCheck className="h-4 w-4" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white">
+                        100% Free Core Ledger
+                      </h4>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
+                        Permanent Lifetime Guarantee • ₦0 Forever
+                      </p>
+                    </div>
+                  </div>
+                  <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-950 dark:text-emerald-300 border border-emerald-400/40 text-[10px] font-black uppercase">
+                    Active
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                  <div className="flex items-center gap-1.5">
+                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>Unlimited voice & text sales entries</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>Cash drawer & daily chop-money</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>100% offline mode & auto cloud sync</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                    <span>Zero data deletion guarantee</span>
                   </div>
                 </div>
               </div>
 
-              {/* ── PLAN SELECTOR TABS (Monthly vs Annual) ── */}
-              <div className="space-y-1.5 pt-1">
-                <label className="text-[11px] font-black text-slate-700 dark:text-slate-300 uppercase tracking-wider px-1">
-                  Pick How You Wan Pay:
-                </label>
-
-                <div className="grid grid-cols-1 min-[340px]:grid-cols-2 gap-2 sm:gap-2.5">
-                  {/* Monthly Plan Card */}
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPlan("monthly")}
-                    className={`p-3 sm:p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
-                      selectedPlan === "monthly"
-                        ? "bg-white dark:bg-slate-800 border-blue-600 dark:border-blue-500 shadow-[0_8px_20px_rgba(37,99,235,0.15)] ring-2 ring-blue-600/30"
-                        : "bg-white/60 dark:bg-slate-800/40 border-white/80 dark:border-slate-700 hover:bg-white/80 dark:hover:bg-slate-800/70"
-                    }`}
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-slate-900 dark:text-white">Monthly Plan</span>
-                      {selectedPlan === "monthly" && (
-                        <CheckCircle2 className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      )}
+              {/* ── CARD 2: STAFF & ATTENDANT ANTI-THEFT POWER-UP ── */}
+              <div className="p-4 rounded-3xl bg-gradient-to-br from-[#1e3a8a]/10 via-[#1d4ed8]/5 to-transparent dark:from-blue-950/40 dark:via-slate-800/60 border border-blue-500/30 dark:border-blue-500/40 shadow-xs space-y-3.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-7 w-7 items-center justify-center rounded-xl bg-blue-600 text-white shadow-xs">
+                      <Users className="h-4 w-4" />
                     </div>
-                    <p className="text-sm sm:text-base font-black text-blue-900 dark:text-blue-300 mt-1">₦1,500</p>
-                    <p className="text-[10px] sm:text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">Dey renew every month</p>
-                  </button>
-
-                  {/* Annual Plan Card */}
-                  <button
-                    type="button"
-                    onClick={() => setSelectedPlan("annual")}
-                    className={`p-3 sm:p-3.5 rounded-2xl text-left transition-all relative border cursor-pointer ${
-                      selectedPlan === "annual"
-                        ? "bg-white dark:bg-slate-800 border-emerald-600 dark:border-emerald-500 shadow-[0_8px_20px_rgba(5,150,105,0.15)] ring-2 ring-emerald-600/30"
-                        : "bg-white/60 dark:bg-slate-800/40 border-white/80 dark:border-slate-700 hover:bg-white/80 dark:hover:bg-slate-800/70"
-                    }`}
-                  >
-                    <span className="absolute -top-2 right-2 px-2 py-0.5 rounded-full bg-emerald-600 text-white text-[9px] font-black uppercase tracking-wider shadow-xs">
-                      Save ₦3,000 Cash
+                    <div>
+                      <h4 className="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-1.5">
+                        <span>Staff & Attendant Multi-Device Mode</span>
+                        <span className="text-[9.5px] px-1.5 py-0.2 rounded-full bg-blue-600 text-white font-extrabold uppercase">
+                          Power-Up
+                        </span>
+                      </h4>
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 font-semibold">
+                        Multi-phone apprentice sync & sales-girl theft prevention
+                      </p>
+                    </div>
+                  </div>
+                  {isSubscribed && (
+                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-950 dark:text-emerald-300 border border-emerald-400/40 text-[10px] font-black uppercase">
+                      Unlocked ✓
                     </span>
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-black text-slate-900 dark:text-white">1 Full Year</span>
-                      {selectedPlan === "annual" && (
-                        <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                      )}
+                  )}
+                </div>
+
+                {/* Benefits */}
+                <div className="space-y-1.5 text-[11px] font-medium text-slate-700 dark:text-slate-300">
+                  <div className="flex items-start gap-2">
+                    <Smartphone className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                    <span><strong>Multi-Phone Live Sync:</strong> Apprentice records sales on their phone; your dashboard updates live.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Lock className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                    <span><strong>Anti-Theft Drawer Lock:</strong> Staff can record sales, but cannot delete records or see private profit.</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <Sparkles className="h-3.5 w-3.5 text-amber-500 shrink-0 mt-0.5" />
+                    <span><strong>+25 Free Monthly Coins:</strong> Included free for certified loan statements & market alerts.</span>
+                  </div>
+                </div>
+
+                {/* ── UNLOCK OPTION A: 20 COINS (RECOMMENDED) ── */}
+                <div className="p-3.5 rounded-2xl bg-amber-500/10 dark:bg-amber-950/40 border border-amber-500/30 dark:border-amber-700/60 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5 text-xs font-black text-amber-950 dark:text-amber-200">
+                      <Coins className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                      <span>Option 1: Unlock with 20 Coins</span>
                     </div>
-                    <p className="text-base font-black text-emerald-900 dark:text-emerald-300 mt-1">₦15,000</p>
-                    <p className="text-[10.5px] text-slate-500 dark:text-slate-400 font-medium">Dey renew every 12 months</p>
+                    <span className="text-[10.5px] font-extrabold text-amber-900 dark:text-amber-300">
+                      Your Balance: {balance} Coins
+                    </span>
+                  </div>
+
+                  {balance >= STAFF_MODE_CREDIT_COST ? (
+                    <button
+                      type="button"
+                      onClick={handleActivateWithCoins}
+                      disabled={isActivatingCoins}
+                      className="w-full py-2.5 sm:py-3 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-xs flex items-center justify-center gap-2 cursor-pointer shadow-sm active:scale-98 transition-all disabled:opacity-75"
+                    >
+                      {isActivatingCoins ? (
+                        <>
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                          <span>Activating Staff Pass…</span>
+                        </>
+                      ) : (
+                        <>
+                          <Coins className="h-4 w-4" />
+                          <span>Activate 30-Day Staff Mode (20 Coins)</span>
+                        </>
+                      )}
+                    </button>
+                  ) : (
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 pt-0.5">
+                      <p className="text-[10.5px] text-amber-900/90 dark:text-amber-200/90 font-medium">
+                        You need {STAFF_MODE_CREDIT_COST - balance} more coins to activate staff mode.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          closeUpgradeModal();
+                          openPurchaseModal();
+                        }}
+                        className="py-1.5 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-black text-[11px] flex items-center justify-center gap-1 cursor-pointer active:scale-95 transition-all shrink-0"
+                      >
+                        <Coins className="h-3 w-3" />
+                        <span>Get Coins (from ₦200)</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* ── UNLOCK OPTION B: FLUTTERWAVE SUBSCRIPTION ── */}
+                <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-slate-800 dark:text-slate-200 flex items-center gap-1.5">
+                      <CreditCard className="h-3.5 w-3.5 text-blue-600" />
+                      <span>Option 2: Pay with Debit Card / Transfer</span>
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPlan("monthly")}
+                      className={`p-2.5 rounded-2xl text-left border cursor-pointer transition-all ${
+                        selectedPlan === "monthly"
+                          ? "bg-white dark:bg-slate-800 border-blue-600 dark:border-blue-500 ring-2 ring-blue-600/20 shadow-xs"
+                          : "bg-white/60 dark:bg-slate-800/40 border-white/80 dark:border-slate-700"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-black text-slate-900 dark:text-white">Monthly</span>
+                        {selectedPlan === "monthly" && <CheckCircle2 className="h-3.5 w-3.5 text-blue-600" />}
+                      </div>
+                      <p className="text-xs sm:text-sm font-black text-blue-900 dark:text-blue-300 mt-0.5">₦1,500</p>
+                      <p className="text-[9.5px] text-slate-500 font-medium">Billed monthly</p>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setSelectedPlan("annual")}
+                      className={`p-2.5 rounded-2xl text-left border cursor-pointer transition-all relative ${
+                        selectedPlan === "annual"
+                          ? "bg-white dark:bg-slate-800 border-emerald-600 dark:border-emerald-500 ring-2 ring-emerald-600/20 shadow-xs"
+                          : "bg-white/60 dark:bg-slate-800/40 border-white/80 dark:border-slate-700"
+                      }`}
+                    >
+                      <span className="absolute -top-1.5 right-2 px-1.5 py-0.2 rounded-full bg-emerald-600 text-white text-[8px] font-black uppercase">
+                        Save ₦3k
+                      </span>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[11px] font-black text-slate-900 dark:text-white">1 Full Year</span>
+                        {selectedPlan === "annual" && <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />}
+                      </div>
+                      <p className="text-xs sm:text-sm font-black text-emerald-900 dark:text-emerald-300 mt-0.5">₦15,000</p>
+                      <p className="text-[9.5px] text-slate-500 font-medium">2 months free</p>
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handlePayFlutterwave}
+                    disabled={isProcessingCard}
+                    className="w-full py-2.5 sm:py-3 px-3 rounded-xl sm:rounded-2xl bg-[#1d4ed8] hover:bg-[#1e40af] text-white font-black text-xs flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-98 transition-all disabled:opacity-75"
+                  >
+                    {isProcessingCard ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin text-white" />
+                        <span>Connecting to Flutterwave…</span>
+                      </>
+                    ) : (
+                      <>
+                        <CreditCard className="h-4 w-4 text-white" />
+                        <span>Pay {amountToPay} with Flutterwave</span>
+                        <ArrowRight className="h-3.5 w-3.5 text-white" />
+                      </>
+                    )}
                   </button>
                 </div>
-              </div>
-
-              {/* Price Hero Summary Card (Solid Sapphire Blue) */}
-              <div className="p-4 sm:p-5 rounded-3xl bg-[#1e3a8a] text-white shadow-md space-y-2 text-center relative overflow-hidden">
-                <p className="text-[11px] text-blue-200 font-bold uppercase tracking-wider">
-                  {selectedPlan === "annual"
-                    ? "Annual Plan • 2 Months Free Shop Access Dey Inside"
-                    : "Monthly Plan • Cancel Anytime Without Wahala"}
-                </p>
-
-                <div className="flex items-baseline justify-center gap-1.5">
-                  <span className="text-4xl font-black text-white tracking-tight">
-                    {amountToPay}
-                  </span>
-                  <span className="text-sm font-bold text-blue-200">
-                    {planPeriodText}
-                  </span>
-                </div>
-
-                <p className="text-xs text-blue-100 max-w-sm mx-auto font-medium leading-relaxed">
-                  No hidden deductions or extra charges. Instant bank transfer, debit card, or USSD via Flutterwave.
-                </p>
-              </div>
-
-              {/* Zero Data Deletion Guarantee Box */}
-              <div className="p-3.5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-950 dark:text-emerald-200 flex items-start gap-2.5">
-                <ShieldCheck className="h-5 w-5 text-emerald-700 dark:text-emerald-400 shrink-0 mt-0.5" />
-                <p className="text-xs font-semibold leading-relaxed">
-                  <strong className="text-emerald-950 dark:text-emerald-200">Zero Data Deletion:</strong> All your past sales transactions, debt records, and drawer balance dey safe inside your account forever. We no dey delete anything even if subscription expire.
-                </p>
               </div>
 
               {/* Error Message */}
@@ -293,46 +407,21 @@ export function UpgradeModal() {
                   {errorMessage}
                 </div>
               )}
-
-              {/* Supported Payment Channels */}
-              <div className="p-3 rounded-2xl bg-slate-100/70 dark:bg-slate-800/70 border border-slate-200/60 dark:border-slate-700 text-center space-y-1.5">
-                <p className="text-[10.5px] font-black text-slate-600 dark:text-slate-300 uppercase tracking-wider">
-                  Supported Flutterwave Payment Methods:
-                </p>
-                <p className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
-                  💳 Debit Cards (Mastercard, Visa, Verve) • 🏦 Instant Bank Transfer • 📱 USSD • 👛 Barter
-                </p>
-              </div>
             </div>
 
-            {/* Modal Bottom CTA */}
-            <div className="p-4 sm:p-5 bg-[#edf3fb]/90 dark:bg-slate-900/95 border-t border-white/70 dark:border-white/10 backdrop-blur-md space-y-2.5 shrink-0">
+            {/* Modal Bottom Status */}
+            <div className="p-3 sm:p-4 bg-[#edf3fb]/90 dark:bg-slate-900/95 border-t border-white/70 dark:border-white/10 backdrop-blur-md flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 font-medium">
+              <span className="flex items-center gap-1">
+                <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
+                <span>Zero Data Deletion • Ledger 100% Free Forever</span>
+              </span>
               <button
                 type="button"
-                onClick={handlePay}
-                disabled={isProcessing}
-                className="w-full py-4 rounded-2xl bg-[#1d4ed8] hover:bg-[#1e40af] dark:bg-blue-600 dark:hover:bg-blue-500 text-white font-black text-sm tracking-wide transition-all flex items-center justify-center gap-2.5 cursor-pointer disabled:opacity-75 shadow-md active:scale-98"
+                onClick={closeUpgradeModal}
+                className="font-bold underline text-slate-700 dark:text-slate-300 cursor-pointer"
               >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 text-white animate-spin" />
-                    <span>Connecting to Flutterwave…</span>
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="h-4 w-4 text-white" />
-                    <span>Pay {amountToPay} with Flutterwave</span>
-                    <ArrowRight className="h-4 w-4 text-white" />
-                  </>
-                )}
+                Close
               </button>
-
-              <div className="flex items-center justify-center text-[11px] px-1 text-slate-500 dark:text-slate-400 font-medium">
-                <span className="flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                  Secured by Flutterwave (256-bit Bank-Grade Encryption)
-                </span>
-              </div>
             </div>
           </motion.div>
         </div>

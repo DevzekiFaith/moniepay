@@ -232,12 +232,12 @@ export function CreditPurchaseModal() {
                   <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
                   <span>Fair Pricing Guarantee</span>
                 </div>
-                <p className="leading-relaxed">
-                  • Credits never expire.
+                <p className="leading-relaxed space-y-1">
+                  <span>• <strong>Coin Utilities:</strong> Staff & Attendant Pass (20cr), Certified Loan Statements (15cr), Wholesale Depot Arbitrage (5cr), Deep AI Shop Diagnostic (5cr), Certified Gbese Notice (2cr).</span>
                   <br />
-                  • Deducted only after a diagnostic is generated successfully.
+                  <span>• Coins never expire and remain safe inside your account forever.</span>
                   <br />
-                  • Basic access (recording money, viewing history) is always 100% free.
+                  <span>• Core ledger (recording sales, cash drawer, offline sync) is permanently 100% free.</span>
                 </p>
               </div>
 
