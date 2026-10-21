@@ -19,7 +19,6 @@ import {
   Gift,
   HelpCircle,
   ExternalLink,
-  Zap,
 } from "lucide-react";
 import { useCredits } from "@/context/CreditContext";
 import { CREDIT_PACKS, INSIGHT_CREDIT_COST, CreditPack } from "@/types/credit.types";
@@ -33,7 +32,6 @@ export function CreditPurchaseModal() {
     isPurchaseModalOpen,
     closePurchaseModal,
     purchasePack,
-    simulateCreditPurchase,
   } = useCredits();
 
   const [activeTab, setActiveTab] = useState<"packs" | "history">("packs");
@@ -59,16 +57,6 @@ export function CreditPurchaseModal() {
       }
     } catch (err: any) {
       setErrorMessage(err?.message || "An unexpected error occurred.");
-      setIsProcessing(false);
-    }
-  };
-
-  const handleSimulate = async () => {
-    setIsProcessing(true);
-    setErrorMessage(null);
-    try {
-      await simulateCreditPurchase(selectedPack.id);
-    } finally {
       setIsProcessing(false);
     }
   };
@@ -254,17 +242,6 @@ export function CreditPurchaseModal() {
                       ? "Connecting..."
                       : `Pay ₦${selectedPack.priceNgn.toLocaleString()} for ${selectedPack.credits} Credits`}
                   </span>
-                </button>
-
-                {/* Instant Test Mode Simulator for Quick Verification */}
-                <button
-                  type="button"
-                  onClick={handleSimulate}
-                  disabled={isProcessing}
-                  className="w-full py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
-                >
-                  <Zap className="h-3.5 w-3.5 text-amber-500" />
-                  <span>Simulate Instant Test Credit ({selectedPack.credits} Credits)</span>
                 </button>
               </div>
             </div>
