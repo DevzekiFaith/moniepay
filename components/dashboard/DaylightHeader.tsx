@@ -111,16 +111,22 @@ export function DaylightHeader({
                     type="button"
                     onClick={onManualSync}
                     className="inline-flex items-center gap-1 text-[10px] xs:text-[10.5px] font-bold text-sky-200 hover:text-white cursor-pointer transition-colors"
+                    title={isOnline ? "All records backed up to cloud. Click to force sync." : "Device offline. Records safely stored locally and will sync once network is restored."}
                   >
-                    {isOnline ? (
+                    {isSyncing ? (
+                      <>
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-ping" />
+                        <span>Syncing…</span>
+                      </>
+                    ) : isOnline ? (
                       <>
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        <span>Online</span>
+                        <span>Backed Up ✓</span>
                       </>
                     ) : (
                       <>
                         <WifiOff className="h-3 w-3 text-amber-300" />
-                        <span className="text-amber-200">Offline</span>
+                        <span className="text-amber-200">Saved Locally</span>
                       </>
                     )}
                   </button>

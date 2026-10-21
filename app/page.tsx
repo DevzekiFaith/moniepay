@@ -24,6 +24,7 @@ import {
   Calendar,
   X,
   Package,
+  FileText,
 } from "lucide-react";
 
 // Types
@@ -77,6 +78,7 @@ import { LiveMarketFeedCard } from "@/components/intelligence/LiveMarketFeedCard
 import { MarketDepotTickerBar } from "@/components/intelligence/MarketDepotTickerBar";
 import { ReferralDashboardBanner } from "@/components/dashboard/ReferralDashboardBanner";
 import { InviteShopModal } from "@/components/referral/InviteShopModal";
+import { FinancialStatementModal } from "@/components/statement/FinancialStatementModal";
 import { useToast } from "@/context/NotificationContext";
 import { useSubscription } from "@/context/SubscriptionContext";
 import { useAuth } from "@/context/AuthContext";
@@ -141,6 +143,7 @@ export default function MoniePayDashboard() {
   const [isWithdrawalOpen, setIsWithdrawalOpen] = useState(false);
   const [isReceiveOpen, setIsReceiveOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [isStatementOpen, setIsStatementOpen] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
   const [safeWithdrawalAmount, setSafeWithdrawalAmount] = useState(0);
 
@@ -482,23 +485,19 @@ export default function MoniePayDashboard() {
                 onActivityRecorded={refreshTxs}
               />
 
-              {/* 1b. MONIEPAY BUSINESS WALLET (Minimalist Icon & Balance • 1-Tap Opens QR & Details) */}
-              <BusinessWalletCard
-                availableBalance={walletBalance}
-                onOpenReceiveModal={() => setIsReceiveOpen(true)}
+              {/* 2. DAILY BUSINESS PULSE (Today's Sales, Money Out, Money Available, Customers Owing) */}
+              <DailyBusinessPulse
+                metrics={metrics}
+                onOpenGbeseBook={() => setIsGbeseOpen(true)}
+                onOpenWithdrawal={() => {
+                  setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
+                  setIsWithdrawalOpen(true);
+                }}
+                onOpenSales={() => handleOpenRecord("SALE")}
+                onOpenCosts={() => handleOpenRecord("EXPENSE")}
               />
 
-              {/* 1c. MONIEPAY PLUS & FREE TRIAL DAYS REMAINING CARD */}
-              <SubscriptionBannerCard />
-
-              {/* 1d. REFERRAL & 7-DAY REWARD BANNER (Compact White Card) */}
-              <ReferralDashboardBanner
-                onOpenInviteModal={() => setIsInviteOpen(true)}
-                businessName={business.name}
-                userPhone={user?.phone || ""}
-              />
-
-              {/* 2. YOUR NEXT MOVE (The Single Priority Recommendation) */}
+              {/* 3. YOUR NEXT MOVE (The Single Priority Recommendation) */}
               <NextMoveCard
                 metrics={metrics}
                 debts={debts}
@@ -514,16 +513,44 @@ export default function MoniePayDashboard() {
                 onOpenRecordSale={() => handleOpenRecord("SALE")}
               />
 
-              {/* 3. DAILY BUSINESS VIEW (Today's Sales, Money Out, Money Available, Customers Owing) */}
-              <DailyBusinessPulse
-                metrics={metrics}
-                onOpenGbeseBook={() => setIsGbeseOpen(true)}
-                onOpenWithdrawal={() => {
-                  setSafeWithdrawalAmount(metrics.safeWithdrawalAmount || 30000);
-                  setIsWithdrawalOpen(true);
-                }}
-                onOpenSales={() => handleOpenRecord("SALE")}
-                onOpenCosts={() => handleOpenRecord("EXPENSE")}
+              {/* 4. WALLET & CERTIFIED FINANCIAL TOOLS */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <BusinessWalletCard
+                  availableBalance={walletBalance}
+                  onOpenReceiveModal={() => setIsReceiveOpen(true)}
+                />
+
+                <motion.button
+                  type="button"
+                  whileHover={{ scale: 1.008 }}
+                  whileTap={{ scale: 0.992 }}
+                  onClick={() => setIsStatementOpen(true)}
+                  className="w-full p-3.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between text-left transition-all hover:border-slate-300 dark:hover:border-slate-700 cursor-pointer group"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+                      <FileText className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <span className="text-xs sm:text-sm font-black text-slate-900 dark:text-white block tracking-tight">
+                        Certified Loan Statement
+                      </span>
+                      <span className="text-[10px] text-slate-500 dark:text-slate-400">
+                        Official turnover report for banks (15cr)
+                      </span>
+                    </div>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 text-[10px] font-black border border-blue-200/60 dark:border-blue-800">
+                    PDF 📄
+                  </span>
+                </motion.button>
+              </div>
+
+              {/* 5. REFERRAL & REWARD BANNER (Compact) */}
+              <ReferralDashboardBanner
+                onOpenInviteModal={() => setIsInviteOpen(true)}
+                businessName={business.name}
+                userPhone={user?.phone || ""}
               />
 
               {/* Quick Actions Row */}
@@ -867,6 +894,16 @@ export default function MoniePayDashboard() {
         businessName={business.name}
         ownerName={user?.name || business.name}
         userPhone={user?.phone || ""}
+      />
+
+      <FinancialStatementModal
+        isOpen={isStatementOpen}
+        onClose={() => setIsStatementOpen(false)}
+        businessName={business.name}
+        traderName={user?.name || "Mama Chidi"}
+        marketLocation={business.market_location || "Shop 14, Balogun Market, Lagos"}
+        metrics={metrics}
+        transactions={transactions}
       />
     </div>
   );

@@ -52,7 +52,7 @@ export function ReferralDashboardBanner({
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-1.5 flex-wrap">
               <h3 className="text-[11.5px] sm:text-[13px] font-black text-slate-900 dark:text-white leading-tight">
-                Call Shop Neighbor • Win +14 Days Free 🤝
+                Call Shop Neighbor • Win +25 Free Credits 🤝
               </h3>
               {stats && stats.pending_claims_count > 0 && (
                 <span className="px-1.5 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 font-black text-[9px] sm:text-[9.5px] border border-amber-300 dark:border-amber-800 whitespace-nowrap">
@@ -61,7 +61,7 @@ export function ReferralDashboardBanner({
               )}
             </div>
             <p className="text-[10px] sm:text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">
-              Tell your market neighbor make una two enjoy +14 days free MoniePay Plus.
+              Tell your market neighbor make una two enjoy +25 free credits to diagnose &amp; collect gbese.
             </p>
           </div>
         </div>

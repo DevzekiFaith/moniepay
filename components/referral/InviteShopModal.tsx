@@ -147,11 +147,11 @@ export function InviteShopModal({
                     Call Your Shop Neighbor 🤝
                   </h2>
                   <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-400 text-slate-950 text-[9px] sm:text-[10px] font-black uppercase whitespace-nowrap">
-                    +14d Free Pass
+                    +25 Free Credits
                   </span>
                 </div>
                 <p className="text-[10px] sm:text-[11px] text-sky-100/90 font-medium mt-0.5 line-clamp-1 sm:line-clamp-none">
-                  Una two go enjoy +14 days free MoniePay Plus sharp-sharp!
+                  Una two go enjoy +25 Free Insight Credits to diagnose your shop and collect gbese!
                 </p>
               </div>
             </div>

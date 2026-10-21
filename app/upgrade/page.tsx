@@ -155,10 +155,10 @@ function UpgradeContent() {
 
             <div className="flex-1 min-w-0">
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-50/90 border border-blue-200 text-blue-700 text-[10.5px] font-black uppercase tracking-wide">
-                <span>Shop Intelligence Plan</span>
+                <span>Multi-Staff &amp; Anti-Theft Control</span>
               </div>
               <h1 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight mt-0.5">
-                MoniePay Plus
+                MoniePay Staff Mode
               </h1>
             </div>
           </div>
@@ -189,12 +189,12 @@ function UpgradeContent() {
               <span>{errorMessage}</span>
             </div>
           ) : isExpired ? (
-            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-950 text-xs flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-rose-600 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-950 text-xs flex items-start gap-3">
+              <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <p className="font-black text-rose-950">Your MoniePay Plus don expire.</p>
-                <p className="font-semibold text-rose-800 mt-0.5">
-                  Renew for ₦1,500/month or ₦15,000/year make you continue recording sales and tracking customer debt (gbese).
+                <p className="font-black text-amber-950">Staff Mode Inactive.</p>
+                <p className="font-semibold text-amber-800 mt-0.5">
+                  Your core sales recording and cash drawer remain 100% free forever. Activate Staff Mode to manage apprentices and block employee theft.
                 </p>
               </div>
             </div>
@@ -350,23 +350,23 @@ function UpgradeContent() {
             {[
               {
                 icon: <Zap className="h-4 w-4 text-emerald-600" />,
-                title: "Sharp-Sharp Recording",
-                desc: "Record all transactions with voice & typing in seconds.",
+                title: "Anti-Theft Staff Logins",
+                desc: "Sales boys can record sales, but cannot view total profit or bank balance.",
               },
               {
                 icon: <TrendingUp className="h-4 w-4 text-blue-600" />,
-                title: "Daily Pulse & Net Profit",
-                desc: "Calculate safe personal withdrawals & true profits.",
+                title: "Multi-Phone Simultaneous Sync",
+                desc: "Run shop on owner phone, cashier phone, and counter tablet together.",
               },
               {
                 icon: <MessageSquare className="h-4 w-4 text-amber-600" />,
-                title: "Gbese Debt Reminders",
-                desc: "Auto-generate polite WhatsApp recovery messages.",
+                title: "Priority Auto-Reconciliation",
+                desc: "Direct virtual account transfer matching with zero cashier errors.",
               },
               {
                 icon: <BarChart3 className="h-4 w-4 text-indigo-600" />,
-                title: "7 Market Decisions",
-                desc: "Wholesale restock advice and price movement alerts.",
+                title: "30 Monthly Bonus Credits",
+                desc: "Bundled credits for deep diagnostic audits and certified statement exports.",
               },
             ].map((f, i) => (
               <div key={i} className="p-3 rounded-2xl bg-white/70 border border-white/90 shadow-2xs space-y-1">

@@ -27,9 +27,14 @@ interface CreditContextType {
   openPurchaseModal: () => void;
   closePurchaseModal: () => void;
   refreshCredits: () => Promise<void>;
-  purchasePack: (packId: "pack_10" | "pack_60" | "pack_140", phone?: string) => Promise<{ success: boolean; paymentLink?: string; error?: string }>;
+  purchasePack: (packId: CreditPack["id"], phone?: string) => Promise<{ success: boolean; paymentLink?: string; error?: string }>;
   verifyCreditPayment: (transactionId?: string | number, txRef?: string, packId?: string) => Promise<{ success: boolean; message?: string }>;
-  simulateCreditPurchase: (packId?: "pack_10" | "pack_60" | "pack_140") => Promise<{ success: boolean; message?: string }>;
+  simulateCreditPurchase: (packId?: CreditPack["id"]) => Promise<{ success: boolean; message?: string }>;
+  useCreditsAction: (params: {
+    cost: number;
+    description: string;
+    metadata?: Record<string, any>;
+  }) => Promise<{ success: boolean; error?: string; newBalance?: number }>;
   requestPaidInsight: (params: {
     transactions: any[];
     debts: any[];
@@ -99,7 +104,7 @@ export function CreditProvider({ children }: { children: React.ReactNode }) {
 
   // 2. Initialize Flutterwave Checkout for Credit Pack
   const purchasePack = useCallback(
-    async (packId: "pack_10" | "pack_60" | "pack_140", phone?: string) => {
+    async (packId: CreditPack["id"], phone?: string) => {
       try {
         const res = await fetch("/api/credits/initialize", {
           method: "POST",
@@ -162,7 +167,7 @@ export function CreditProvider({ children }: { children: React.ReactNode }) {
 
   // 4. Simulate Credit Purchase (Dev & Offline Demo Mode)
   const simulateCreditPurchase = useCallback(
-    async (packId: "pack_10" | "pack_60" | "pack_140" = "pack_10") => {
+    async (packId: CreditPack["id"] = "pack_15") => {
       try {
         const res = await fetch("/api/credits/simulate", {
           method: "POST",
@@ -269,6 +274,52 @@ export function CreditProvider({ children }: { children: React.ReactNode }) {
     [user?.id, openPurchaseModal, refreshCredits, toast]
   );
 
+  // 5. Deduct credits for arbitrary value actions (debt notice, statements, price alerts)
+  const useCreditsAction = useCallback(
+    async (params: { cost: number; description: string; metadata?: Record<string, any> }) => {
+      const { cost, description, metadata } = params;
+      if (balance < cost) {
+        openPurchaseModal();
+        return { success: false, error: "INSUFFICIENT_CREDITS" };
+      }
+
+      try {
+        const res = await fetch("/api/credits/use", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            userId: user?.id,
+            cost,
+            description,
+            metadata,
+          }),
+        });
+
+        const data = await res.json();
+        if (res.status === 402) {
+          openPurchaseModal();
+          return { success: false, error: "INSUFFICIENT_CREDITS" };
+        }
+
+        if (data?.success) {
+          if (typeof data.newBalance === "number") {
+            setBalance(data.newBalance);
+            if (typeof window !== "undefined") {
+              localStorage.setItem(LOCAL_STORAGE_CREDITS_KEY, String(data.newBalance));
+            }
+          }
+          await refreshCredits();
+          return { success: true, newBalance: data.newBalance };
+        }
+
+        return { success: false, error: data?.error || "Credit action could not be completed." };
+      } catch (err: any) {
+        return { success: false, error: err?.message || "Network error." };
+      }
+    },
+    [balance, openPurchaseModal, refreshCredits, user?.id]
+  );
+
   return (
     <CreditContext.Provider
       value={{
@@ -285,6 +336,7 @@ export function CreditProvider({ children }: { children: React.ReactNode }) {
         verifyCreditPayment,
         simulateCreditPurchase,
         requestPaidInsight,
+        useCreditsAction,
       }}
     >
       {children}

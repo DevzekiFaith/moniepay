@@ -51,6 +51,7 @@ import {
 import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/AppNavigation";
 import { CreditBalancePill } from "@/components/credits/CreditBalancePill";
 import { PaidInsightResult } from "@/types/credit.types";
+import { FinancialStatementModal } from "@/components/statement/FinancialStatementModal";
 
 function InsightsContent() {
   const { user } = useAuth();
@@ -83,6 +84,7 @@ function InsightsContent() {
   const [currentReport, setCurrentReport] = useState<PaidInsightResult | null>(null);
   const [pastReports, setPastReports] = useState<PaidInsightResult[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isStatementModalOpen, setIsStatementModalOpen] = useState(false);
 
   // 1. Initial Data Load
   useEffect(() => {
@@ -236,14 +238,24 @@ function InsightsContent() {
               </div>
 
               <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
-                <button
-                  onClick={handleStartInsight}
-                  disabled={isGenerating}
-                  className="px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
-                >
-                  <BrainCircuit className="h-4 w-4" />
-                  <span>{isGenerating ? "Analyzing Numbers..." : `Run Diagnosis (${costPerInsight} Credits)`}</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setIsStatementModalOpen(true)}
+                    className="px-3.5 py-2.5 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white font-black text-xs sm:text-sm flex items-center gap-1.5 shadow-md shadow-blue-600/20 active:scale-95 transition-all cursor-pointer"
+                  >
+                    <FileText className="h-4 w-4" />
+                    <span>Statement (15cr)</span>
+                  </button>
+
+                  <button
+                    onClick={handleStartInsight}
+                    disabled={isGenerating}
+                    className="px-4 py-2.5 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs sm:text-sm flex items-center gap-2 shadow-md shadow-amber-500/20 active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
+                  >
+                    <BrainCircuit className="h-4 w-4" />
+                    <span>{isGenerating ? "Analyzing Numbers..." : `Run Diagnosis (${costPerInsight} Credits)`}</span>
+                  </button>
+                </div>
 
                 <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
                   Balance: {balance} credits
@@ -603,6 +615,16 @@ function InsightsContent() {
           </div>
         </div>
       )}
+
+      <FinancialStatementModal
+        isOpen={isStatementModalOpen}
+        onClose={() => setIsStatementModalOpen(false)}
+        businessName={businessName}
+        traderName={user?.name || "Mama Chidi"}
+        marketLocation={user?.marketLocation || "Shop 14, Balogun Market, Lagos"}
+        metrics={metrics}
+        transactions={activeTxs}
+      />
     </div>
   );
 }

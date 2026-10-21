@@ -22,7 +22,7 @@ import {
   Zap,
 } from "lucide-react";
 import { useCredits } from "@/context/CreditContext";
-import { CREDIT_PACKS, INSIGHT_CREDIT_COST } from "@/types/credit.types";
+import { CREDIT_PACKS, INSIGHT_CREDIT_COST, CreditPack } from "@/types/credit.types";
 
 export function CreditPurchaseModal() {
   const {
@@ -37,7 +37,7 @@ export function CreditPurchaseModal() {
   } = useCredits();
 
   const [activeTab, setActiveTab] = useState<"packs" | "history">("packs");
-  const [selectedPackId, setSelectedPackId] = useState<"pack_10" | "pack_60" | "pack_140">("pack_60");
+  const [selectedPackId, setSelectedPackId] = useState<CreditPack["id"]>("pack_60");
   const [phone, setPhone] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -119,12 +119,16 @@ export function CreditPurchaseModal() {
           </div>
 
           <div className="text-right">
-            <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 block">
-              Cost per diagnosis
+            <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 block">
+              Flexible Utility
             </span>
-            <span className="text-xs font-black text-slate-700 dark:text-slate-300">
-              {costPerInsight} credits
-            </span>
+            <div className="flex items-center gap-1.5 text-[11px] font-black text-amber-700 dark:text-amber-400 justify-end">
+              <span>5cr Diagnosis</span>
+              <span>•</span>
+              <span>2cr Debt Ping</span>
+              <span>•</span>
+              <span>15cr PDF</span>
+            </div>
           </div>
         </div>
 

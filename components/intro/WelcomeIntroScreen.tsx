@@ -105,7 +105,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             </div>
           </motion.div>
 
-          {/* Floating Pill Right: 7-Day Free Trial */}
+          {/* Floating Pill Right: Free Core Ledger */}
           <motion.div
             animate={{ y: [6, -5, 6], rotate: [2, -2, 2] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
@@ -115,8 +115,8 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
               <ShieldCheck className="h-3.5 w-3.5" />
             </div>
             <div>
-              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Free Test-Run</p>
-              <p className="text-xs font-black text-blue-800 dark:text-blue-300">7 Days Free</p>
+              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Free Core Ledger</p>
+              <p className="text-xs font-black text-blue-800 dark:text-blue-300">0 Subscription</p>
             </div>
           </motion.div>
         </div>
@@ -421,13 +421,13 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
     },
     {
       id: "referral",
-      badge: "Call Shop Neighbor • Win Free Days 🤝",
+      badge: "Call Shop Neighbor • Win Free Credits 🤝",
       badgeColor: "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
       title: "Call Market Neighbor",
-      highlight: "Una Two Win +14 Days Free",
+      highlight: "Una Two Win +25 Free Credits",
       highlightColor: "text-emerald-600 dark:text-emerald-400",
       description:
-        "Give your neighbor your shop code. As dem record market for 7 active days, una two go immediately get +14 days free MoniePay Plus!",
+        "Give your neighbor your shop code. As dem record market for 7 active days, una two go immediately get +25 Free Insight Credits to diagnose your shop and collect gbese!",
       icon: <Users className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />,
       themeColor: "#059669",
       gradient: "from-emerald-800 via-emerald-600 to-teal-500",
@@ -465,8 +465,8 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
               <Gift className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </div>
             <div>
-              <p className="text-[8.5px] sm:text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Bonus Days</p>
-              <p className="text-[11px] sm:text-xs font-black text-amber-800 dark:text-amber-300 whitespace-nowrap">+14 Days Free</p>
+              <p className="text-[8.5px] sm:text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Bonus Credits</p>
+              <p className="text-[11px] sm:text-xs font-black text-amber-800 dark:text-amber-300 whitespace-nowrap">+25 Credits Free</p>
             </div>
           </motion.div>
 
@@ -486,7 +486,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
 
             <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/80 border border-emerald-100 dark:border-emerald-800 space-y-1">
               <p className="text-[11px] sm:text-xs font-black text-emerald-950 dark:text-emerald-100">Your Code: MONIE-SHOP-24</p>
-              <p className="text-[9.5px] sm:text-[10px] text-emerald-700 dark:text-emerald-300 font-medium leading-tight">Una two dey enjoy +14 days free once dem record for 7 days</p>
+              <p className="text-[9.5px] sm:text-[10px] text-emerald-700 dark:text-emerald-300 font-medium leading-tight">Una two dey enjoy +25 free credits once dem record for 7 days</p>
             </div>
 
             <div className="flex items-center justify-between text-[9.5px] sm:text-[10px] font-bold text-slate-500 pt-0.5">

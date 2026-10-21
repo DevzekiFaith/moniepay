@@ -106,7 +106,7 @@ export async function getUserCreditBalance(userId: string): Promise<{
  */
 export async function addCredits(params: {
   userId: string;
-  packId: "pack_10" | "pack_60" | "pack_140";
+  packId: CreditPack["id"];
   amountPaid: number;
   txRef: string;
   paymentType?: string;

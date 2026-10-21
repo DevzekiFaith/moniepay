@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 export interface CreditPack {
-  id: "pack_10" | "pack_60" | "pack_140";
+  id: "pack_10" | "pack_60" | "pack_140" | "pack_15" | "pack_50" | "pack_150" | "pack_350";
   credits: number;
   priceNgn: number;
   label: string;
@@ -14,31 +14,42 @@ export interface CreditPack {
 
 export const CREDIT_PACKS: CreditPack[] = [
   {
-    id: "pack_10",
-    credits: 10,
-    priceNgn: 100,
-    label: "Starter Pack",
-    description: "10 credits • Good for 2 full business diagnostics",
+    id: "pack_15",
+    credits: 15,
+    priceNgn: 200,
+    label: "Starter Test",
+    description: "15 credits • Good for 1 full diagnosis + 5 debt recovery notices",
   },
   {
     id: "pack_60",
     credits: 60,
     priceNgn: 500,
-    label: "Trader Pack",
+    label: "Market Standard",
     badge: "POPULAR",
-    description: "60 credits (20% bonus) • Good for 12 diagnostics",
+    description: "60 credits (20% bonus) • 12 diagnoses or 30 debt recovery notices",
   },
   {
-    id: "pack_140",
-    credits: 140,
+    id: "pack_150",
+    credits: 150,
     priceNgn: 1000,
-    label: "Market Leader",
+    label: "Master Trader",
     badge: "BEST VALUE",
-    description: "140 credits (40% bonus) • Good for 28 diagnostics",
+    description: "150 credits (50% bonus) • Unlocks certified statements & diagnostics",
+  },
+  {
+    id: "pack_350",
+    credits: 350,
+    priceNgn: 2000,
+    label: "Depot Merchant",
+    badge: "MAX SAVINGS",
+    description: "350 credits (75% bonus) • Full monthly shop intelligence coverage",
   },
 ];
 
 export const INSIGHT_CREDIT_COST = 5; // 5 credits per in-depth diagnostic analysis
+export const DEBT_NOTICE_CREDIT_COST = 2; // 2 credits to dispatch official stamped debt reminder
+export const STATEMENT_EXPORT_CREDIT_COST = 15; // 15 credits to export certified financial turnover statement
+export const DEPOT_ARBITRAGE_CREDIT_COST = 5; // 5 credits to unlock wholesale depot price comparison
 export const WELCOME_BONUS_CREDITS = 10; // Free starter balance for immediate trial
 
 export interface CreditTransactionRecord {

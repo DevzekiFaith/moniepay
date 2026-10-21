@@ -23,6 +23,9 @@ import {
   Calendar,
   Layers,
   Check,
+  Coins,
+  ShieldCheck,
+  FileText,
 } from "lucide-react";
 import type { Debt } from "@/types/moniepay.types";
 import {
@@ -33,6 +36,8 @@ import {
 } from "@/lib/offline/offlineQueue";
 import { useNotifications } from "@/context/NotificationContext";
 import { triggerCashHapticVibration, playCashChime } from "@/lib/alerts/hapticSoundService";
+import { useCredits } from "@/context/CreditContext";
+import { DEBT_NOTICE_CREDIT_COST } from "@/types/credit.types";
 
 interface GbeseDebtSheetProps {
   isOpen: boolean;
@@ -74,9 +79,11 @@ export function GbeseDebtSheet({
   onDebtCreated,
 }: GbeseDebtSheetProps) {
   const { sendDebtReminderNotification, toast } = useNotifications();
+  const { balance, useCreditsAction, openPurchaseModal } = useCredits();
   const [tab, setTab] = useState<"CUSTOMERS" | "SUPPLIERS">("CUSTOMERS");
   const [settlingId, setSettlingId] = useState<string | null>(null);
   const [remindedDebtIds, setRemindedDebtIds] = useState<Record<string, boolean>>({});
+  const [officialNoticesDispatched, setOfficialNoticesDispatched] = useState<Record<string, boolean>>({});
   
   // New Debt Form State
   const [isAddingNew, setIsAddingNew] = useState(false);
@@ -230,6 +237,35 @@ export function GbeseDebtSheet({
 
     const msg = encodeURIComponent(messageText);
     window.open(`https://wa.me/${phone}?text=${msg}`, "_blank");
+  };
+
+  const handleDispatchOfficialNotice = async (debt: Debt) => {
+    if (balance < DEBT_NOTICE_CREDIT_COST) {
+      openPurchaseModal();
+      return;
+    }
+
+    const res = await useCreditsAction({
+      cost: DEBT_NOTICE_CREDIT_COST,
+      description: `Official Stamped Debt Notice: ${debt.person_name}`,
+      metadata: { debtId: debt.id, debtor: debt.person_name, amount: debt.balance_due },
+    });
+
+    if (res.success) {
+      setOfficialNoticesDispatched((prev) => ({ ...prev, [debt.id]: true }));
+      playCashChime();
+      triggerCashHapticVibration("cash");
+      toast(
+        "Official Notice Certified! 💬",
+        `Dispatched formal stamped payment notice for ₦${Number(debt.balance_due).toLocaleString()} to ${debt.person_name} (${DEBT_NOTICE_CREDIT_COST} credits deducted).`,
+        { type: "success" }
+      );
+
+      const phone = (debt.phone || "").replace(/[^0-9]/g, "");
+      const formattedAmount = `₦${Number(debt.balance_due).toLocaleString()}`;
+      const messageText = `*OFFICIAL PAYMENT NOTICE — MONIEPAY VERIFIED LEDGER*\n\nAttention: *${debt.person_name}*\nFrom: *${businessName}*\n\nThis is an official system-generated balance statement.\nOutstanding Amount: *${formattedAmount}*\nReference: *MNP-GB-${Date.now().toString().slice(-6)}*\n\nPlease arrange settlement into the shop account promptly to maintain your market credit record. Thank you.`;
+      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(messageText)}`, "_blank");
+    }
   };
 
   const handleSettle = (debt: Debt) => {
@@ -540,40 +576,56 @@ export function GbeseDebtSheet({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-200/60 dark:border-white/10">
+                    <div className="grid grid-cols-4 gap-1.5 pt-2 border-t border-slate-200/60 dark:border-white/10">
                       {/* 1. Schedule In-App & Phone Alert */}
                       <button
                         type="button"
                         onClick={() => handleScheduleReminder(d)}
-                        className={`py-2 px-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                        className={`py-2 px-1.5 rounded-xl text-[11px] font-bold flex items-center justify-center gap-1 transition-all cursor-pointer ${
                           isReminded
                             ? "bg-amber-100 dark:bg-amber-950/90 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-700 font-black scale-95"
                             : "bg-white dark:bg-slate-900 hover:bg-amber-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-white/15 text-slate-700 dark:text-slate-200 hover:text-amber-800"
                         }`}
                         title="Set in-app & phone alert reminder for this debt"
                       >
-                        <BellRing className={`h-3.5 w-3.5 ${isReminded ? "text-amber-600 dark:text-amber-400 animate-bounce" : "text-amber-600 dark:text-amber-400"}`} />
-                        <span className="truncate">{isReminded ? "Alerted 🔔" : "Phone Alert"}</span>
+                        <BellRing className={`h-3 w-3 ${isReminded ? "text-amber-600 dark:text-amber-400 animate-bounce" : "text-amber-600 dark:text-amber-400"}`} />
+                        <span className="truncate">{isReminded ? "Alerted" : "Alert"}</span>
                       </button>
 
-                      {/* 2. Send 1-Tap WhatsApp Nudge */}
+                      {/* 2. Free 1-Tap WhatsApp Nudge */}
                       <button
                         type="button"
                         onClick={() => handleSendReminder(d)}
-                        className="py-2 px-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer active:scale-95"
+                        className="py-2 px-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 hover:bg-emerald-100 dark:hover:bg-emerald-900 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-[11px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer active:scale-95"
+                        title="Send free friendly WhatsApp reminder"
                       >
-                        <Send className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                        <Send className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                         <span>WhatsApp</span>
                       </button>
 
-                      {/* 3. Mark as Paid */}
+                      {/* 3. Official Stamped Notice (2 Credits) */}
+                      <button
+                        type="button"
+                        onClick={() => handleDispatchOfficialNotice(d)}
+                        className={`py-2 px-1.5 rounded-xl text-[11px] font-black flex items-center justify-center gap-1 transition-colors cursor-pointer active:scale-95 border ${
+                          officialNoticesDispatched[d.id]
+                            ? "bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-300 border-blue-400"
+                            : "bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 dark:text-amber-300 border-amber-300 dark:border-amber-800"
+                        }`}
+                        title="Dispatch formal stamped recovery statement with reference ID (2 Credits)"
+                      >
+                        <ShieldCheck className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                        <span className="truncate">{officialNoticesDispatched[d.id] ? "Sent ✓" : "Notice (2cr)"}</span>
+                      </button>
+
+                      {/* 4. Mark as Paid */}
                       <button
                         type="button"
                         onClick={() => handleSettle(d)}
                         disabled={settlingId === d.id}
-                        className="py-2 px-2 rounded-xl bg-slate-900 dark:bg-emerald-700 hover:bg-slate-800 dark:hover:bg-emerald-600 text-white text-xs font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-xs disabled:opacity-50 active:scale-95"
+                        className="py-2 px-1.5 rounded-xl bg-slate-900 dark:bg-emerald-700 hover:bg-slate-800 dark:hover:bg-emerald-600 text-white text-[11px] font-bold flex items-center justify-center gap-1 transition-colors cursor-pointer shadow-xs disabled:opacity-50 active:scale-95"
                       >
-                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400 dark:text-white" />
+                        <CheckCircle2 className="h-3 w-3 text-emerald-400 dark:text-white" />
                         <span>{settlingId === d.id ? "Paying..." : "Paid"}</span>
                       </button>
                     </div>
