@@ -10,6 +10,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
 
     const userId = body.userId || user?.id || "user_owner_01";
+    const userEmail = body.email || user?.email;
     const cost = Number(body.cost) || 0;
     const description = body.description || "Credit Action";
     const idempotencyKey = body.idempotencyKey || `act_${userId}_${Date.now()}`;
@@ -40,6 +41,7 @@ export async function POST(request: NextRequest) {
       idempotencyKey,
       description,
       metadata,
+      userEmail,
     });
 
     if (result.success) {

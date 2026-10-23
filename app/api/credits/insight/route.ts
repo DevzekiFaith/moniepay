@@ -22,6 +22,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
 
     const userId = body.userId || user?.id || "user_owner_01";
+    const userEmail = body.email || user?.email;
     const businessName = body.businessName || user?.businessName || DEFAULT_BUSINESS.name;
     const idempotencyKey = body.idempotencyKey || `ins_${userId}_${Date.now()}`;
 
@@ -120,6 +121,7 @@ export async function POST(request: NextRequest) {
         reportId: idempotencyKey,
         transactionCount: transactions.length,
       },
+      userEmail,
     });
 
     if (!deduction.success) {
