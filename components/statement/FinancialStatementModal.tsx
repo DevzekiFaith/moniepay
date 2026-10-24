@@ -30,7 +30,11 @@ import {
 } from "lucide-react";
 import { useCredits } from "@/context/CreditContext";
 import { useAuth } from "@/context/AuthContext";
-import { STATEMENT_EXPORT_CREDIT_COST } from "@/types/credit.types";
+import {
+  STATEMENT_EXPORT_CREDIT_COST,
+  STATEMENT_PAGE_ONE_CREDIT_COST,
+  STATEMENT_MULTI_PAGE_CREDIT_COST,
+} from "@/types/credit.types";
 import { DeterministicMetrics, BusinessTransaction } from "@/types/moniepay.types";
 import { useToast } from "@/context/NotificationContext";
 import { playCashChime, triggerCashHapticVibration } from "@/lib/alerts/hapticSoundService";
@@ -67,6 +71,7 @@ export function FinancialStatementModal({
   const { user } = useAuth();
 
   const [isUnlocked, setIsUnlocked] = useState(false);
+  const [statementScope, setStatementScope] = useState<"single" | "multi">("single");
   const [isDeducting, setIsDeducting] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [pinMode, setPinMode] = useState<"verify" | "setup" | "reset">("verify");
@@ -77,6 +82,8 @@ export function FinancialStatementModal({
   const [statementId, setStatementId] = useState<string>("");
   const [copiedKey, setCopiedKey] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
+
+  const requiredCredits = statementScope === "single" ? STATEMENT_PAGE_ONE_CREDIT_COST : STATEMENT_MULTI_PAGE_CREDIT_COST;
 
   // Initialize statement ID and generate bank access key on modal open
   useEffect(() => {
@@ -95,10 +102,10 @@ export function FinancialStatementModal({
 
   // 1. Trigger Unlock Flow: Checks credit balance and opens Oga PIN verification sheet
   const handleInitiateUnlock = () => {
-    if (balance < STATEMENT_EXPORT_CREDIT_COST) {
+    if (balance < requiredCredits) {
       toast(
         "Coins no reach o! 🪙",
-        `You need ${STATEMENT_EXPORT_CREDIT_COST} Decision Coins. Current balance: ${balance} coins.`,
+        `You need ${requiredCredits} Decision Coins for this ${statementScope === "single" ? "1-page bank copy" : "multi-page audit"}. Current balance: ${balance} coins.`,
         { type: "info" }
       );
       openPurchaseModal();
@@ -197,7 +204,7 @@ export function FinancialStatementModal({
     await executeUnlock();
   };
 
-  // 4. Deduct 15 credits and unlock statement
+  // 4. Deduct coins and unlock statement based on selected page scope
   const executeUnlock = async () => {
     setIsDeducting(true);
     setPinError(null);
@@ -207,11 +214,13 @@ export function FinancialStatementModal({
       setBankAccessKey(generatedKey);
 
       const res = await useCreditsAction({
-        cost: STATEMENT_EXPORT_CREDIT_COST,
-        description: `Certified Financial Statement Export (${businessName})`,
+        cost: requiredCredits,
+        description: `Certified ${statementScope === "single" ? "1-Page Executive Bank Copy" : "Multi-Page Detailed Audit Ledger"} (${businessName})`,
         metadata: {
           businessName,
           bankAccessKey: generatedKey,
+          scope: statementScope,
+          pages: statementScope === "single" ? 1 : Math.max(2, Math.ceil(transactions.length / 10)),
           totalRevenue: metrics?.totalRevenue,
           timestamp: new Date().toISOString(),
         },
@@ -225,7 +234,7 @@ export function FinancialStatementModal({
 
         toast(
           "Statement Certified! 📄",
-          `15 Decision Coins deducted. Official Bank Key: ${generatedKey}`,
+          `${requiredCredits} Decision Coins deducted. Official Bank Key: ${generatedKey}`,
           { type: "success" }
         );
       } else {
@@ -473,30 +482,83 @@ export function FinancialStatementModal({
                   Unlock Official Certified Financial Statement
                 </h3>
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed font-medium">
-                  Protect your shop turnover and profit records so only you and the bank officer fit view am. Authorize with your 4-digit Oga PIN to deduct 15 coins and generate your private bank verification passcode for download.
+                  Protect your shop turnover and profit records so only you and the bank officer fit view am. Authorize with your 4-digit Oga PIN to deduct coins and generate your private bank verification passcode for download.
                 </p>
+              </div>
+
+              {/* Statement Page Scope Selector */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-w-md mx-auto text-left">
+                {/* 1-Page Official Bank Executive Summary */}
+                <div
+                  onClick={() => setStatementScope("single")}
+                  className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                    statementScope === "single"
+                      ? "bg-amber-100/90 dark:bg-amber-950/60 border-amber-500 ring-2 ring-amber-500/30 shadow-xs"
+                      : "bg-white/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-800 hover:border-amber-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-slate-900 dark:text-white">
+                      1-Page Bank Copy 📄
+                    </span>
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950">
+                      {STATEMENT_PAGE_ONE_CREDIT_COST} Coins
+                    </span>
+                  </div>
+                  <p className="text-[10.5px] text-slate-600 dark:text-slate-300 mt-1">
+                    Turnover, Solvency grade, profit retentions &amp; QR verification seal.
+                  </p>
+                  <span className="text-[9.5px] font-bold text-emerald-700 dark:text-emerald-400 mt-1 block">
+                    {balance >= STATEMENT_PAGE_ONE_CREDIT_COST ? "✓ Your balance reaches!" : "Top up needed"}
+                  </span>
+                </div>
+
+                {/* Multi-Page Extended Ledger */}
+                <div
+                  onClick={() => setStatementScope("multi")}
+                  className={`p-3 rounded-2xl border cursor-pointer transition-all ${
+                    statementScope === "multi"
+                      ? "bg-amber-100/90 dark:bg-amber-950/60 border-amber-500 ring-2 ring-amber-500/30 shadow-xs"
+                      : "bg-white/80 dark:bg-slate-800/60 border-slate-200 dark:border-slate-800 hover:border-amber-300"
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-black text-slate-900 dark:text-white">
+                      Multi-Page Audit 📚
+                    </span>
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-500 text-slate-950">
+                      {STATEMENT_MULTI_PAGE_CREDIT_COST} Coins
+                    </span>
+                  </div>
+                  <p className="text-[10.5px] text-slate-600 dark:text-slate-300 mt-1">
+                    Executive Summary + Complete line-by-line itemized transaction ledger.
+                  </p>
+                  <span className="text-[9.5px] font-bold text-amber-700 dark:text-amber-400 mt-1 block">
+                    {balance >= STATEMENT_MULTI_PAGE_CREDIT_COST ? "✓ Your balance reaches!" : balance >= STATEMENT_PAGE_ONE_CREDIT_COST ? "Needs +5 more coins" : "Top up needed"}
+                  </span>
+                </div>
               </div>
 
               {/* Coin Balance Pill */}
               <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-bold">
                 <Coins className="h-4 w-4 text-amber-500" />
-                <span>Cost: {STATEMENT_EXPORT_CREDIT_COST} Decision Coins</span>
+                <span>Cost: {requiredCredits} Decision Coins ({statementScope === "single" ? "1-Page Copy" : "Multi-Page Audit"})</span>
                 <span>•</span>
-                <span className={balance >= STATEMENT_EXPORT_CREDIT_COST ? "text-emerald-600 dark:text-emerald-400 font-black" : "text-rose-600 font-black"}>
-                  Your Balance: {balance} Coins {balance >= STATEMENT_EXPORT_CREDIT_COST ? "✓" : "(No Reach)"}
+                <span className={balance >= requiredCredits ? "text-emerald-600 dark:text-emerald-400 font-black" : "text-rose-600 font-black"}>
+                  Your Balance: {balance} Coins {balance >= requiredCredits ? "✓" : "(No Reach)"}
                 </span>
               </div>
 
               {/* Action Button */}
               <div className="pt-1">
-                {balance < STATEMENT_EXPORT_CREDIT_COST ? (
+                {balance < requiredCredits ? (
                   <button
                     type="button"
                     onClick={openPurchaseModal}
                     className="py-3 px-6 rounded-2xl bg-blue-700 hover:bg-blue-600 text-white font-black text-xs sm:text-sm shadow-md transition-all active:scale-95 cursor-pointer inline-flex items-center gap-2"
                   >
                     <Coins className="h-4 w-4" />
-                    <span>Top up Coins (Get 60 Coins for ₦500)</span>
+                    <span>Top up Coins (Least Pack: ₦100 for 10 Coins)</span>
                   </button>
                 ) : (
                   <button
@@ -506,7 +568,7 @@ export function FinancialStatementModal({
                     className="w-full sm:w-auto mx-auto py-3.5 px-7 rounded-2xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/25 transition-all active:scale-98 cursor-pointer disabled:opacity-50 inline-flex items-center justify-center gap-2"
                   >
                     <KeyRound className="h-4 w-4" />
-                    <span>Authorize with Oga PIN (15 Coins)</span>
+                    <span>Authorize with Oga PIN ({requiredCredits} Coins)</span>
                   </button>
                 )}
               </div>
@@ -546,11 +608,19 @@ export function FinancialStatementModal({
               {/* Transactions Ledger Table */}
               <div className="border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden print:border-slate-300">
                 <div className="p-3 bg-slate-100 dark:bg-slate-800 text-xs font-black flex justify-between">
-                  <span>Recent Verified Inflows &amp; Dispatches</span>
-                  <span>{transactions.length} entries certified</span>
+                  <span>
+                    {statementScope === "single"
+                      ? "Verified Inflows & Dispatches Sample (Page 1 Executive Summary)"
+                      : "Full Certified Historical Ledger (Multi-Page)"}
+                  </span>
+                  <span>
+                    {statementScope === "single"
+                      ? `${Math.min(6, transactions.length)} certified entries`
+                      : `${transactions.length} entries certified`}
+                  </span>
                 </div>
                 <div className="divide-y divide-slate-100 dark:divide-slate-800 text-xs">
-                  {transactions.slice(0, 6).map((tx) => (
+                  {(statementScope === "single" ? transactions.slice(0, 6) : transactions).map((tx) => (
                     <div key={tx.id} className="p-2.5 sm:p-3 flex items-center justify-between">
                       <div>
                         <p className="font-bold">{tx.description || tx.category}</p>
@@ -645,7 +715,7 @@ export function FinancialStatementModal({
                     <span>Oga, choose <strong>4 numbers wey only you know</strong>. Make apprentice or counter girl no go fit print your turnover or see your profit.</span>
                   )
                 ) : (
-                  <span>Put your <strong>4-digit secret PIN</strong> make we deduct 15 coins and unlock your official certified bank statement.</span>
+                  <span>Put your <strong>4-digit secret PIN</strong> make we deduct {requiredCredits} coins and unlock your official certified bank statement ({statementScope === "single" ? "1-Page Bank Copy" : "Multi-Page Full Audit"}).</span>
                 )}
               </div>
 
@@ -728,7 +798,7 @@ export function FinancialStatementModal({
                 ) : (
                   <>
                     <KeyRound className="h-4 w-4" />
-                    <span>{pinMode === "setup" ? "Save PIN & Unlock (15 Coins)" : "Authorize Unlock (15 Coins)"}</span>
+                    <span>{pinMode === "setup" ? `Save PIN & Unlock (${requiredCredits} Coins)` : `Authorize Unlock (${requiredCredits} Coins)`}</span>
                   </>
                 )}
               </button>
