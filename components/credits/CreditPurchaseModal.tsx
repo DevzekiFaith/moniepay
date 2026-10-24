@@ -20,7 +20,13 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useCredits } from "@/context/CreditContext";
-import { CREDIT_PACKS, INSIGHT_CREDIT_COST, CreditPack } from "@/types/credit.types";
+import {
+  CREDIT_PACKS,
+  INSIGHT_CREDIT_COST,
+  MIN_CREDIT_PURCHASE_AMOUNT_NGN,
+  MIN_CREDITS_PER_PURCHASE,
+  CreditPack,
+} from "@/types/credit.types";
 
 export function CreditPurchaseModal() {
   const {
@@ -148,9 +154,14 @@ export function CreditPurchaseModal() {
           {activeTab === "packs" ? (
             <div className="space-y-4">
               <div className="space-y-2.5">
-                <label className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
-                  Select a Credit Pack
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 block">
+                    Select a Coin Pack
+                  </label>
+                  <span className="inline-flex items-center gap-1 text-[11px] font-black text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+                    Least amount: ₦{MIN_CREDIT_PURCHASE_AMOUNT_NGN.toLocaleString()} ({MIN_CREDITS_PER_PURCHASE} Coins)
+                  </span>
+                </div>
 
                 <div className="grid grid-cols-1 gap-2.5">
                   {packs.map((pack) => {

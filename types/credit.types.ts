@@ -12,13 +12,21 @@ export interface CreditPack {
   description: string;
 }
 
+/**
+ * Minimum purchase limits (Fintech Standard)
+ * Least amount a user can buy on Flutterwave gateway is ₦100 (10 Coins)
+ */
+export const MIN_CREDIT_PURCHASE_AMOUNT_NGN = 100;
+export const MIN_CREDITS_PER_PURCHASE = 10;
+
 export const CREDIT_PACKS: CreditPack[] = [
   {
     id: "pack_10",
     credits: 10,
     priceNgn: 100,
-    label: "Quick Test",
-    description: "10 credits • Good for 2 full business diagnoses",
+    label: "Quick Starter",
+    badge: "LEAST PACK",
+    description: "10 coins • Minimum ₦100 pack (Good for 2 full business diagnoses)",
   },
   {
     id: "pack_15",

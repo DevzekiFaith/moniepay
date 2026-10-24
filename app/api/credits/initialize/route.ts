@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
-import { CREDIT_PACKS } from "@/types/credit.types";
+import { CREDIT_PACKS, MIN_CREDIT_PURCHASE_AMOUNT_NGN, CreditPack } from "@/types/credit.types";
 import { FLUTTERWAVE_CONFIG } from "@/lib/flutterwave";
 
 export const dynamic = "force-dynamic";
@@ -14,12 +14,22 @@ export async function POST(request: NextRequest) {
     const email = body.email || user?.email || "trader@moniepay.app";
     const name = body.name || user?.name || "Market Trader";
     const phone = body.phone || "08000000000";
-    const packId = body.packId as "pack_10" | "pack_60" | "pack_140";
+    const packId = body.packId as CreditPack["id"];
 
     const pack = CREDIT_PACKS.find((p) => p.id === packId);
     if (!pack) {
       return NextResponse.json(
-        { success: false, error: "Please select a valid credit pack (₦100, ₦500, or ₦1,000)." },
+        { success: false, error: "Please select a valid credit pack." },
+        { status: 400 }
+      );
+    }
+
+    if (pack.priceNgn < MIN_CREDIT_PURCHASE_AMOUNT_NGN) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `The least amount of coins you can buy is ₦${MIN_CREDIT_PURCHASE_AMOUNT_NGN.toLocaleString()} (10 coins).`,
+        },
         { status: 400 }
       );
     }

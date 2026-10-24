@@ -124,7 +124,7 @@ export async function initializeFlutterwaveCheckout(params: InitPaymentParams) {
  */
 export async function verifyFlutterwaveTransaction(
   transactionId: string | number,
-  minAmount: number = 50
+  minAmount: number = 100
 ) {
   if (!transactionId) {
     return { success: false, error: "Transaction ID is required for verification." };
@@ -201,7 +201,7 @@ export async function verifyFlutterwaveTransaction(
  */
 export async function verifyFlutterwaveByReference(
   txRef: string,
-  minAmount: number = 50
+  minAmount: number = 100
 ) {
   if (!txRef) {
     return { success: false, error: "Transaction reference is required for verification." };

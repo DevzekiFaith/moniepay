@@ -6,7 +6,7 @@ import {
   FLUTTERWAVE_CONFIG,
 } from "@/lib/flutterwave";
 import { addCredits } from "@/lib/credits";
-import { CREDIT_PACKS } from "@/types/credit.types";
+import { CREDIT_PACKS, MIN_CREDIT_PURCHASE_AMOUNT_NGN } from "@/types/credit.types";
 
 export const dynamic = "force-dynamic";
 
@@ -76,14 +76,14 @@ export async function GET(request: NextRequest) {
 
     // 3. Live Flutterwave Server-to-Server Verification by Transaction ID
     if (transactionId) {
-      const flwResult = await verifyFlutterwaveTransaction(transactionId, 50);
+      const flwResult = await verifyFlutterwaveTransaction(transactionId, MIN_CREDIT_PURCHASE_AMOUNT_NGN);
 
-      if (!flwResult.success || flwResult.status !== "successful") {
+      if (!flwResult.success || flwResult.status !== "successful" || flwResult.amount < MIN_CREDIT_PURCHASE_AMOUNT_NGN) {
         return NextResponse.json(
           {
             success: false,
             status: flwResult.status || "failed",
-            error: flwResult.error || "Payment was not verified as successful by Flutterwave ledger.",
+            error: flwResult.error || `Payment was not verified as successful or is below minimum ₦${MIN_CREDIT_PURCHASE_AMOUNT_NGN}.`,
           },
           { status: 400 }
         );
@@ -128,14 +128,14 @@ export async function GET(request: NextRequest) {
     // 4. Live Flutterwave Server-to-Server Verification by Reference (tx_ref)
     // CRITICAL: NEVER assume a tx_ref is successful without Flutterwave ledger confirmation
     if (txRef) {
-      const flwResult = await verifyFlutterwaveByReference(txRef, 50);
+      const flwResult = await verifyFlutterwaveByReference(txRef, MIN_CREDIT_PURCHASE_AMOUNT_NGN);
 
-      if (!flwResult.success || flwResult.status !== "successful") {
+      if (!flwResult.success || flwResult.status !== "successful" || flwResult.amount < MIN_CREDIT_PURCHASE_AMOUNT_NGN) {
         return NextResponse.json(
           {
             success: false,
             status: flwResult.status || "failed",
-            error: flwResult.error || "Transaction reference could not be confirmed as successful on Flutterwave.",
+            error: flwResult.error || `Transaction reference could not be confirmed as successful or is below ₦${MIN_CREDIT_PURCHASE_AMOUNT_NGN}.`,
           },
           { status: 400 }
         );
@@ -220,13 +220,13 @@ export async function POST(request: NextRequest) {
 
     // 2. Server-to-Server Verification by Transaction ID
     if (transactionId) {
-      const flwResult = await verifyFlutterwaveTransaction(transactionId, 50);
-      if (!flwResult.success || flwResult.status !== "successful") {
+      const flwResult = await verifyFlutterwaveTransaction(transactionId, MIN_CREDIT_PURCHASE_AMOUNT_NGN);
+      if (!flwResult.success || flwResult.status !== "successful" || flwResult.amount < MIN_CREDIT_PURCHASE_AMOUNT_NGN) {
         return NextResponse.json(
           {
             success: false,
             status: flwResult.status || "failed",
-            error: flwResult.error || "Payment was not verified as successful on Flutterwave.",
+            error: flwResult.error || `Payment was not verified as successful or is below ₦${MIN_CREDIT_PURCHASE_AMOUNT_NGN}.`,
           },
           { status: 400 }
         );
@@ -263,13 +263,13 @@ export async function POST(request: NextRequest) {
     // 3. Server-to-Server Verification by Reference (tx_ref)
     // CRITICAL: NEVER credit without server confirmation from Flutterwave
     if (txRef) {
-      const flwResult = await verifyFlutterwaveByReference(txRef, 50);
-      if (!flwResult.success || flwResult.status !== "successful") {
+      const flwResult = await verifyFlutterwaveByReference(txRef, MIN_CREDIT_PURCHASE_AMOUNT_NGN);
+      if (!flwResult.success || flwResult.status !== "successful" || flwResult.amount < MIN_CREDIT_PURCHASE_AMOUNT_NGN) {
         return NextResponse.json(
           {
             success: false,
             status: flwResult.status || "failed",
-            error: flwResult.error || "Payment reference could not be verified on Flutterwave.",
+            error: flwResult.error || `Payment reference could not be verified or is below ₦${MIN_CREDIT_PURCHASE_AMOUNT_NGN}.`,
           },
           { status: 400 }
         );

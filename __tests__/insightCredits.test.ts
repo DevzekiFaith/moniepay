@@ -14,6 +14,8 @@ import {
   CREDIT_PACKS,
   INSIGHT_CREDIT_COST,
   WELCOME_BONUS_CREDITS,
+  MIN_CREDIT_PURCHASE_AMOUNT_NGN,
+  MIN_CREDITS_PER_PURCHASE,
 } from "@/types/credit.types";
 import {
   analyzeBusinessFinances,
@@ -42,6 +44,8 @@ describe("MoniePay — Insight Credits & Monetisation Engine", () => {
     expect(pack140?.credits).toBe(140);
 
     expect(INSIGHT_CREDIT_COST).toBe(5);
+    expect(MIN_CREDIT_PURCHASE_AMOUNT_NGN).toBe(100);
+    expect(MIN_CREDITS_PER_PURCHASE).toBe(10);
   });
 
   describe("Business Diagnostic Analysis Engine (Zero Hallucination Rule)", () => {
@@ -287,7 +291,7 @@ describe("MoniePay — Insight Credits & Monetisation Engine", () => {
       }
     });
 
-    it("verifyFlutterwaveTransaction strictly rejects transactions below minAmount (underpayment protection)", async () => {
+    it("verifyFlutterwaveTransaction strictly rejects transactions below ₦100 minimum floor", async () => {
       const originalFetch = global.fetch;
       global.fetch = vi.fn().mockResolvedValue({
         ok: true,
@@ -297,7 +301,7 @@ describe("MoniePay — Insight Credits & Monetisation Engine", () => {
             id: 99993,
             tx_ref: "tx_ref_underpaid",
             status: "successful",
-            amount: 20,
+            amount: 50,
             currency: "NGN",
           },
         }),
@@ -305,8 +309,8 @@ describe("MoniePay — Insight Credits & Monetisation Engine", () => {
 
       try {
         const { verifyFlutterwaveTransaction } = await import("@/lib/flutterwave");
-        const res = await verifyFlutterwaveTransaction(99993, 50); // min ₦50
-        expect(res.success).toBe(false); // ₦20 < ₦50
+        const res = await verifyFlutterwaveTransaction(99993, 100); // minimum ₦100
+        expect(res.success).toBe(false); // ₦50 < ₦100
       } finally {
         global.fetch = originalFetch;
       }
