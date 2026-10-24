@@ -38,7 +38,7 @@ export const CREDIT_PACKS: CreditPack[] = [
     priceNgn: 500,
     label: "Market Standard",
     badge: "POPULAR",
-    description: "60 credits (20% bonus) • 12 diagnoses, 4 certified statements, or 30 debt notices",
+    description: "60 coins (20% bonus) • 12 diagnoses, 4 certified statements, or 30 debt notices",
   },
   {
     id: "pack_140",
@@ -46,7 +46,7 @@ export const CREDIT_PACKS: CreditPack[] = [
     priceNgn: 1000,
     label: "Master Trader",
     badge: "BEST VALUE",
-    description: "140 credits (40% bonus) • Unlocks all certified statements & business diagnostics",
+    description: "140 coins (40% bonus) • Unlocks all certified statements & business diagnostics",
   },
 ];
 

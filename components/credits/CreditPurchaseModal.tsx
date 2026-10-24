@@ -80,10 +80,10 @@ export function CreditPurchaseModal() {
             </div>
             <div>
               <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white leading-tight">
-                Insight Credits
+                Decision Coins
               </h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">
-                Pay only when you request a business diagnosis
+                Pay only when you request certified statements or diagnoses
               </p>
             </div>
           </div>
@@ -108,7 +108,7 @@ export function CreditPurchaseModal() {
                 {balance.toLocaleString()}
               </span>
               <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
-                credits
+                Coins
               </span>
             </div>
           </div>
@@ -197,7 +197,7 @@ export function CreditPurchaseModal() {
                         <div className="mt-1 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
                           <span>{pack.description}</span>
                           <span className="font-bold text-amber-700 dark:text-amber-400">
-                            {pack.credits} Credits
+                            {pack.credits} Coins
                           </span>
                         </div>
                       </div>
@@ -252,7 +252,7 @@ export function CreditPurchaseModal() {
                   <span>
                     {isProcessing
                       ? "Connecting..."
-                      : `Pay ₦${selectedPack.priceNgn.toLocaleString()} for ${selectedPack.credits} Credits`}
+                      : `Pay ₦${selectedPack.priceNgn.toLocaleString()} for ${selectedPack.credits} Coins`}
                   </span>
                 </button>
               </div>
