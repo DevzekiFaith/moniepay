@@ -20,6 +20,7 @@ import {
   ExternalLink,
 } from "lucide-react";
 import { useCredits } from "@/context/CreditContext";
+import { useAuth } from "@/context/AuthContext";
 import {
   CREDIT_PACKS,
   INSIGHT_CREDIT_COST,
@@ -29,6 +30,7 @@ import {
 } from "@/types/credit.types";
 
 export function CreditPurchaseModal() {
+  const { user } = useAuth();
   const {
     balance,
     costPerInsight,
@@ -41,13 +43,13 @@ export function CreditPurchaseModal() {
 
   const [activeTab, setActiveTab] = useState<"packs" | "history">("packs");
   const [selectedPackId, setSelectedPackId] = useState<CreditPack["id"]>("pack_60");
-  const [phone, setPhone] = useState("");
+  const [phone, setPhone] = useState<string>((user as any)?.phone || "");
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   if (!isPurchaseModalOpen) return null;
 
-  const selectedPack = packs.find((p) => p.id === selectedPackId) || packs[1];
+  const selectedPack = packs.find((p) => p.id === selectedPackId) || packs[1] || packs[0];
 
   const handleCheckout = async () => {
     setIsProcessing(true);
@@ -231,7 +233,7 @@ export function CreditPurchaseModal() {
                   <span>Fair Pricing Guarantee</span>
                 </div>
                 <p className="leading-relaxed space-y-1">
-                  <span>• <strong>Coin Utilities:</strong> Staff & Attendant Pass (20cr), Certified Loan Statements (15cr), Wholesale Depot Arbitrage (5cr), Deep AI Shop Diagnostic (5cr), Certified Gbese Notice (2cr).</span>
+                  <span>• <strong>Coin Utilities:</strong> 1-Page Bank Statement (10cr), Multi-Page Audit Ledger (15cr), Deep AI Shop Diagnostic (5cr), Wholesale Depot Arbitrage (5cr), Stamped Debt Notice (2cr).</span>
                   <br />
                   <span>• Coins never expire and remain safe inside your account forever.</span>
                   <br />

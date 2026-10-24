@@ -4,7 +4,7 @@
 // ─────────────────────────────────────────────────────────────────
 
 export interface CreditPack {
-  id: "pack_10" | "pack_60" | "pack_140" | "pack_15" | "pack_50" | "pack_150" | "pack_350";
+  id: "pack_10" | "pack_60" | "pack_140" | string;
   credits: number;
   priceNgn: number;
   label: string;
@@ -19,6 +19,10 @@ export interface CreditPack {
 export const MIN_CREDIT_PURCHASE_AMOUNT_NGN = 100;
 export const MIN_CREDITS_PER_PURCHASE = 10;
 
+/**
+ * Exactly 3 Tiered Packs (Fintech & SaaS Marketing Standard: Good, Better, Best)
+ * Eliminates choice overload and analysis paralysis.
+ */
 export const CREDIT_PACKS: CreditPack[] = [
   {
     id: "pack_10",
@@ -26,14 +30,7 @@ export const CREDIT_PACKS: CreditPack[] = [
     priceNgn: 100,
     label: "Quick Starter",
     badge: "LEAST PACK",
-    description: "10 coins • Minimum ₦100 pack (Good for 2 full business diagnoses)",
-  },
-  {
-    id: "pack_15",
-    credits: 15,
-    priceNgn: 200,
-    label: "Starter Test",
-    description: "15 credits • Good for 1 full diagnosis + 5 debt recovery notices",
+    description: "10 coins • Minimum ₦100 pack (Good for 1-page bank statement or 2 diagnoses)",
   },
   {
     id: "pack_60",
@@ -41,31 +38,15 @@ export const CREDIT_PACKS: CreditPack[] = [
     priceNgn: 500,
     label: "Market Standard",
     badge: "POPULAR",
-    description: "60 credits (20% bonus) • 12 diagnoses or 30 debt recovery notices",
+    description: "60 credits (20% bonus) • 12 diagnoses, 4 certified statements, or 30 debt notices",
   },
   {
     id: "pack_140",
     credits: 140,
     priceNgn: 1000,
-    label: "Pro Trader",
-    badge: "RECOMMENDED",
-    description: "140 credits • Unlocks certified statements & diagnostics",
-  },
-  {
-    id: "pack_150",
-    credits: 150,
-    priceNgn: 1000,
     label: "Master Trader",
     badge: "BEST VALUE",
-    description: "150 credits (50% bonus) • Unlocks certified statements & diagnostics",
-  },
-  {
-    id: "pack_350",
-    credits: 350,
-    priceNgn: 2000,
-    label: "Depot Merchant",
-    badge: "MAX SAVINGS",
-    description: "350 credits (75% bonus) • Full monthly shop intelligence coverage",
+    description: "140 credits (40% bonus) • Unlocks all certified statements & business diagnostics",
   },
 ];
 

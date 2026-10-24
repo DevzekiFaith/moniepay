@@ -183,7 +183,7 @@ export function CreditProvider({ children }: { children: React.ReactNode }) {
 
   // 4. Simulate Credit Purchase (Dev & Offline Demo Mode)
   const simulateCreditPurchase = useCallback(
-    async (packId: CreditPack["id"] = "pack_15") => {
+    async (packId: CreditPack["id"] = "pack_10") => {
       try {
         const res = await fetch("/api/credits/simulate", {
           method: "POST",
