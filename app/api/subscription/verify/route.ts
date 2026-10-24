@@ -10,7 +10,19 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const transactionId = searchParams.get("transaction_id") || searchParams.get("id");
     const txRef = searchParams.get("tx_ref");
-    const statusParam = searchParams.get("status");
+    const statusParam = (searchParams.get("status") || "").toLowerCase();
+
+    // Cancellation or failure guard
+    if (statusParam === "cancelled" || statusParam === "failed") {
+      return NextResponse.json(
+        {
+          success: false,
+          status: statusParam,
+          error: `Payment was ${statusParam} on Flutterwave. Subscription not activated.`,
+        },
+        { status: 400 }
+      );
+    }
 
     if (!transactionId && !txRef) {
       return NextResponse.json(
@@ -19,9 +31,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 1. If we have a transaction ID, verify directly with Flutterwave API
+    // 1. If we have a transaction ID, verify directly with Flutterwave API (min ₦1,400)
     if (transactionId) {
-      const flwResult = await verifyFlutterwaveTransaction(transactionId);
+      const flwResult = await verifyFlutterwaveTransaction(transactionId, 1400);
 
       if (!flwResult.success || flwResult.status !== "successful") {
         return NextResponse.json(
@@ -86,6 +98,18 @@ export async function POST(request: NextRequest) {
     const body = await request.json().catch(() => ({}));
     const transactionId = body.transactionId || body.transaction_id;
     const txRef = body.txRef || body.tx_ref;
+    const statusParam = (body.status || "").toLowerCase();
+
+    if (statusParam === "cancelled" || statusParam === "failed") {
+      return NextResponse.json(
+        {
+          success: false,
+          status: statusParam,
+          error: `Payment was ${statusParam} on Flutterwave. Subscription not activated.`,
+        },
+        { status: 400 }
+      );
+    }
 
     if (!transactionId) {
       return NextResponse.json(
@@ -94,7 +118,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const flwResult = await verifyFlutterwaveTransaction(transactionId);
+    const flwResult = await verifyFlutterwaveTransaction(transactionId, 1400);
 
     if (!flwResult.success || flwResult.status !== "successful") {
       return NextResponse.json(

@@ -9,7 +9,7 @@
 // 6. Audit ledger records credit purchases and usage
 // ─────────────────────────────────────────────────────────────────
 
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   CREDIT_PACKS,
   INSIGHT_CREDIT_COST,
@@ -233,4 +233,125 @@ describe("MoniePay — Insight Credits & Monetisation Engine", () => {
       }
     });
   });
+
+  describe("Payment Gateway Leak Prevention & Zero Coin Leakage on Cancellation", () => {
+    it("verifyFlutterwaveTransaction marks cancelled status as success: false and status: 'cancelled'", async () => {
+      const originalFetch = global.fetch;
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          status: "success",
+          data: {
+            id: 99991,
+            tx_ref: "tx_cancel_test",
+            status: "cancelled",
+            amount: 100,
+            currency: "NGN",
+          },
+        }),
+      } as any);
+
+      try {
+        const { verifyFlutterwaveTransaction } = await import("@/lib/flutterwave");
+        const res = await verifyFlutterwaveTransaction(99991, 50);
+        expect(res.success).toBe(false);
+        expect(res.status).toBe("cancelled");
+      } finally {
+        global.fetch = originalFetch;
+      }
+    });
+
+    it("verifyFlutterwaveByReference marks cancelled status as success: false and status: 'cancelled'", async () => {
+      const originalFetch = global.fetch;
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          status: "success",
+          data: {
+            id: 99992,
+            tx_ref: "tx_ref_cancelled",
+            status: "cancelled",
+            amount: 100,
+            currency: "NGN",
+          },
+        }),
+      } as any);
+
+      try {
+        const { verifyFlutterwaveByReference } = await import("@/lib/flutterwave");
+        const res = await verifyFlutterwaveByReference("tx_ref_cancelled", 50);
+        expect(res.success).toBe(false);
+        expect(res.status).toBe("cancelled");
+      } finally {
+        global.fetch = originalFetch;
+      }
+    });
+
+    it("verifyFlutterwaveTransaction strictly rejects transactions below minAmount (underpayment protection)", async () => {
+      const originalFetch = global.fetch;
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          status: "success",
+          data: {
+            id: 99993,
+            tx_ref: "tx_ref_underpaid",
+            status: "successful",
+            amount: 20,
+            currency: "NGN",
+          },
+        }),
+      } as any);
+
+      try {
+        const { verifyFlutterwaveTransaction } = await import("@/lib/flutterwave");
+        const res = await verifyFlutterwaveTransaction(99993, 50); // min ₦50
+        expect(res.success).toBe(false); // ₦20 < ₦50
+      } finally {
+        global.fetch = originalFetch;
+      }
+    });
+
+    it("verifyFlutterwaveTransaction verifies valid successful transaction matching pack amount", async () => {
+      const originalFetch = global.fetch;
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        json: async () => ({
+          status: "success",
+          data: {
+            id: 99994,
+            tx_ref: "tx_ref_valid",
+            status: "successful",
+            amount: 100,
+            currency: "NGN",
+          },
+        }),
+      } as any);
+
+      try {
+        const { verifyFlutterwaveTransaction } = await import("@/lib/flutterwave");
+        const res = await verifyFlutterwaveTransaction(99994, 50);
+        expect(res.success).toBe(true);
+        expect(res.status).toBe("successful");
+        expect(res.amount).toBe(100);
+      } finally {
+        global.fetch = originalFetch;
+      }
+    });
+
+    it("verifyFlutterwaveTransaction rejects empty transactionId", async () => {
+      const { verifyFlutterwaveTransaction } = await import("@/lib/flutterwave");
+      const res = await verifyFlutterwaveTransaction("", 50);
+      expect(res.success).toBe(false);
+      expect(res.error).toContain("Transaction ID is required");
+    });
+
+    it("verifyFlutterwaveByReference rejects empty txRef", async () => {
+      const { verifyFlutterwaveByReference } = await import("@/lib/flutterwave");
+      const res = await verifyFlutterwaveByReference("", 50);
+      expect(res.success).toBe(false);
+      expect(res.error).toContain("reference is required");
+    });
+  });
 });
+

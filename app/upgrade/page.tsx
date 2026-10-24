@@ -65,7 +65,15 @@ function UpgradeContent() {
   useEffect(() => {
     const txRef = searchParams?.get("tx_ref");
     const transactionId = searchParams?.get("transaction_id") || searchParams?.get("id");
-    const statusParam = searchParams?.get("status");
+    const statusParam = (searchParams?.get("status") || "").toLowerCase();
+
+    if (statusParam === "cancelled") {
+      setErrorMessage("Payment was cancelled on Flutterwave. Your card was not charged.");
+      if (typeof window !== "undefined") {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      return;
+    }
 
     if ((transactionId || (statusParam === "successful" && txRef)) && !verifiedOnceRef.current) {
       verifiedOnceRef.current = true;

@@ -52,10 +52,12 @@ import { AppSidebar, AppBottomBar, AppMobileHeader } from "@/components/layout/A
 import { CreditBalancePill } from "@/components/credits/CreditBalancePill";
 import { PaidInsightResult } from "@/types/credit.types";
 import { FinancialStatementModal } from "@/components/statement/FinancialStatementModal";
+import { useToast } from "@/context/NotificationContext";
 
 function InsightsContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
+  const { toast } = useToast();
   const {
     balance,
     costPerInsight,
@@ -134,15 +136,41 @@ function InsightsContent() {
     const txRef = searchParams.get("tx_ref");
     const packId = searchParams.get("pack_id") || undefined;
     const transactionId = searchParams.get("transaction_id") || undefined;
+    const paymentStatus = (searchParams.get("status") || "").toLowerCase();
+
+    // Industry Standard: If user cancelled on Flutterwave, do NOT verify or credit coins
+    if (paymentStatus === "cancelled") {
+      toast(
+        "Payment Cancelled",
+        "You cancelled the payment on Flutterwave. Your account was not charged and no coins were added.",
+        { type: "info" }
+      );
+      if (typeof window !== "undefined") {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      return;
+    }
+
+    if (paymentStatus === "failed") {
+      toast(
+        "Payment Failed",
+        "Flutterwave reported this transaction as failed. No coins were added.",
+        { type: "error" }
+      );
+      if (typeof window !== "undefined") {
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+      return;
+    }
 
     if (statusParam === "callback" && (txRef || transactionId)) {
-      verifyCreditPayment(transactionId, txRef || undefined, packId);
+      verifyCreditPayment(transactionId, txRef || undefined, packId, paymentStatus);
       // Clean URL params cleanly
       if (typeof window !== "undefined") {
         window.history.replaceState({}, document.title, window.location.pathname);
       }
     }
-  }, [searchParams, verifyCreditPayment]);
+  }, [searchParams, verifyCreditPayment, toast]);
 
   // 4. Handle Insight Request
   const handleStartInsight = () => {

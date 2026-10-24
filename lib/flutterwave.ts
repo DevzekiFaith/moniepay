@@ -122,7 +122,10 @@ export async function initializeFlutterwaveCheckout(params: InitPaymentParams) {
  * Verify a transaction using Flutterwave's ledger (Server-to-Server)
  * Critical Security Rule: Never rely on client-side status.
  */
-export async function verifyFlutterwaveTransaction(transactionId: string | number) {
+export async function verifyFlutterwaveTransaction(
+  transactionId: string | number,
+  minAmount: number = 50
+) {
   if (!transactionId) {
     return { success: false, error: "Transaction ID is required for verification." };
   }
@@ -147,15 +150,16 @@ export async function verifyFlutterwaveTransaction(transactionId: string | numbe
       const isSuccessful =
         data.status === "successful" &&
         data.currency === FLUTTERWAVE_CONFIG.CURRENCY &&
-        data.amount >= 1400; // Allow ₦1,500 monthly or ₦15,000 annual
+        data.amount >= minAmount;
 
       const isAnnual = data.amount >= 10000;
 
       return {
         success: isSuccessful,
-        status: data.status as "successful" | "failed" | "pending",
+        status: data.status as "successful" | "failed" | "pending" | "cancelled",
         txRef: data.tx_ref,
         flwRef: data.flw_ref,
+        flwTransactionId: data.id,
         amount: data.amount,
         currency: data.currency,
         paymentType: data.payment_type || "Card/Transfer",
@@ -172,7 +176,7 @@ export async function verifyFlutterwaveTransaction(transactionId: string | numbe
 
     return {
       success: false,
-      status: (result?.data?.status || "failed") as "successful" | "failed" | "pending",
+      status: (result?.data?.status || "failed") as "successful" | "failed" | "pending" | "cancelled",
       txRef: result?.data?.tx_ref || "",
       amount: result?.data?.amount || 0,
       currency: "NGN",
@@ -184,6 +188,80 @@ export async function verifyFlutterwaveTransaction(transactionId: string | numbe
       success: false,
       status: "failed" as const,
       txRef: "",
+      amount: 0,
+      currency: "NGN",
+      error: err?.message || "Network error during verification.",
+    };
+  }
+}
+
+/**
+ * Verify a transaction by reference (tx_ref) using Flutterwave's ledger (Server-to-Server)
+ * Critical Security Rule: Never allocate credits/subscriptions without ledger confirmation.
+ */
+export async function verifyFlutterwaveByReference(
+  txRef: string,
+  minAmount: number = 50
+) {
+  if (!txRef) {
+    return { success: false, error: "Transaction reference is required for verification." };
+  }
+
+  try {
+    const res = await fetch(
+      `${FLUTTERWAVE_CONFIG.BASE_URL}/transactions/verify_by_reference?tx_ref=${encodeURIComponent(txRef)}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${FLUTTERWAVE_CONFIG.SECRET_KEY}`,
+        },
+        cache: "no-store",
+      }
+    );
+
+    const result = await res.json();
+
+    if (res.ok && result?.status === "success" && result?.data) {
+      const data = result.data;
+      const isSuccessful =
+        data.status === "successful" &&
+        data.currency === FLUTTERWAVE_CONFIG.CURRENCY &&
+        data.amount >= minAmount;
+
+      return {
+        success: isSuccessful,
+        status: data.status as "successful" | "failed" | "pending" | "cancelled",
+        txRef: data.tx_ref,
+        flwRef: data.flw_ref,
+        flwTransactionId: data.id,
+        amount: data.amount,
+        currency: data.currency,
+        paymentType: data.payment_type || "Card/Transfer",
+        customer: {
+          email: data.customer?.email,
+          name: data.customer?.name,
+          phone: data.customer?.phone_number,
+        },
+        meta: data.meta || {},
+        rawPayload: data,
+      };
+    }
+
+    return {
+      success: false,
+      status: (result?.data?.status || "failed") as "successful" | "failed" | "pending" | "cancelled",
+      txRef: result?.data?.tx_ref || txRef,
+      amount: result?.data?.amount || 0,
+      currency: "NGN",
+      error: result?.message || "Transaction reference could not be verified on Flutterwave.",
+    };
+  } catch (err: any) {
+    console.error("Flutterwave verify_by_reference error:", err);
+    return {
+      success: false,
+      status: "failed" as const,
+      txRef,
       amount: 0,
       currency: "NGN",
       error: err?.message || "Network error during verification.",

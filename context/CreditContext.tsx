@@ -28,7 +28,7 @@ interface CreditContextType {
   closePurchaseModal: () => void;
   refreshCredits: () => Promise<void>;
   purchasePack: (packId: CreditPack["id"], phone?: string) => Promise<{ success: boolean; paymentLink?: string; error?: string }>;
-  verifyCreditPayment: (transactionId?: string | number, txRef?: string, packId?: string) => Promise<{ success: boolean; message?: string }>;
+  verifyCreditPayment: (transactionId?: string | number, txRef?: string, packId?: string, status?: string) => Promise<{ success: boolean; message?: string }>;
   simulateCreditPurchase: (packId?: CreditPack["id"]) => Promise<{ success: boolean; message?: string }>;
   useCreditsAction: (params: {
     cost: number;
@@ -132,18 +132,32 @@ export function CreditProvider({ children }: { children: React.ReactNode }) {
 
   // 3. Verify Credit Payment
   const verifyCreditPayment = useCallback(
-    async (transactionId?: string | number, txRef?: string, packId?: string) => {
+    async (transactionId?: string | number, txRef?: string, packId?: string, status?: string) => {
+      // Immediate cancellation / failure rejection - zero balance update
+      const normalizedStatus = (status || "").toLowerCase();
+      if (normalizedStatus === "cancelled" || normalizedStatus === "failed") {
+        toast(
+          normalizedStatus === "cancelled" ? "Payment Cancelled" : "Payment Failed",
+          normalizedStatus === "cancelled"
+            ? "You cancelled the payment on Flutterwave. Your account was not charged and no credits were allocated."
+            : "Flutterwave reported this transaction as failed. No credits were allocated.",
+          { type: normalizedStatus === "cancelled" ? "info" : "error" }
+        );
+        return { success: false, message: `Payment was ${normalizedStatus}. No credits were allocated.` };
+      }
+
       try {
         const url = `/api/credits/verify?${new URLSearchParams({
           ...(transactionId ? { transaction_id: String(transactionId) } : {}),
           ...(txRef ? { tx_ref: txRef } : {}),
           ...(packId ? { pack_id: packId } : {}),
+          ...(status ? { status } : {}),
         }).toString()}`;
 
         const res = await fetch(url, { cache: "no-store" });
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
 
-        if (data?.success) {
+        if (res.ok && data?.success) {
           if (typeof data.newBalance === "number") {
             setBalance(data.newBalance);
             if (typeof window !== "undefined") {
@@ -157,9 +171,11 @@ export function CreditProvider({ children }: { children: React.ReactNode }) {
           return { success: true, message: data.message };
         }
 
-        return { success: false, message: data?.error || "Credit verification could not be completed." };
+        const errorMsg = data?.error || "Credit verification could not be confirmed on Flutterwave.";
+        toast("Payment Notice", errorMsg, { type: "info" });
+        return { success: false, message: errorMsg };
       } catch (err: any) {
-        return { success: false, message: err?.message || "Verification failed." };
+        return { success: false, message: err?.message || "Verification network error." };
       }
     },
     [refreshCredits, toast]

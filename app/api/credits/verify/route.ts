@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/auth";
-import { verifyFlutterwaveTransaction, FLUTTERWAVE_CONFIG } from "@/lib/flutterwave";
+import {
+  verifyFlutterwaveTransaction,
+  verifyFlutterwaveByReference,
+  FLUTTERWAVE_CONFIG,
+} from "@/lib/flutterwave";
 import { addCredits } from "@/lib/credits";
 import { CREDIT_PACKS } from "@/types/credit.types";
 
@@ -12,7 +16,22 @@ export async function GET(request: NextRequest) {
     const transactionId = searchParams.get("transaction_id") || searchParams.get("id");
     const txRef = searchParams.get("tx_ref");
     const packIdParam = searchParams.get("pack_id") as "pack_10" | "pack_60" | "pack_140" | null;
+    const statusParam = (searchParams.get("status") || "").toLowerCase();
     const isSimulated = searchParams.get("simulated") === "true";
+
+    // 1. Critical Security Rule: Instant Rejection on Cancellation or Failure
+    // If the customer clicks 'Cancel' on Flutterwave, Flutterwave appends ?status=cancelled.
+    // Under NO circumstances should coins or credits be allocated.
+    if (statusParam === "cancelled" || statusParam === "failed") {
+      return NextResponse.json(
+        {
+          success: false,
+          status: statusParam,
+          error: `Payment was ${statusParam} on Flutterwave. No insight credits have been added.`,
+        },
+        { status: 400 }
+      );
+    }
 
     const user = await getSessionUser();
     const userId = user?.id || "user_owner_01";
@@ -24,8 +43,9 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // A. If simulated test payment
-    if (isSimulated && txRef) {
+    // 2. Explicit Sandbox/Simulation Test Mode (Isolated Dev Feature)
+    // Only accepted if specifically flagged with simulated=true and never if cancelled
+    if (isSimulated && txRef && (txRef.startsWith("sim_") || !FLUTTERWAVE_CONFIG.SECRET_KEY)) {
       const packId =
         packIdParam ||
         (txRef.includes("pack_140")
@@ -46,6 +66,7 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         success: result.success,
+        status: "successful",
         newBalance: result.newBalance,
         creditsAdded: result.creditsAdded,
         alreadyProcessed: result.alreadyProcessed,
@@ -53,25 +74,26 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // B. Live Flutterwave Server-to-Server Verification by Transaction ID
+    // 3. Live Flutterwave Server-to-Server Verification by Transaction ID
     if (transactionId) {
-      const flwResult = await verifyFlutterwaveTransaction(transactionId);
+      const flwResult = await verifyFlutterwaveTransaction(transactionId, 50);
 
       if (!flwResult.success || flwResult.status !== "successful") {
         return NextResponse.json(
           {
             success: false,
             status: flwResult.status || "failed",
-            error: flwResult.error || "Payment was not verified as successful by Flutterwave.",
+            error: flwResult.error || "Payment was not verified as successful by Flutterwave ledger.",
           },
           { status: 400 }
         );
       }
 
-      // Infer or extract pack
+      // Infer or extract pack based on verified amount
       const amount = flwResult.amount;
       const matchedPack =
         CREDIT_PACKS.find((p) => p.priceNgn === amount) ||
+        CREDIT_PACKS.find((p) => p.id === packIdParam) ||
         (amount >= 1000 ? CREDIT_PACKS[2] : amount >= 500 ? CREDIT_PACKS[1] : CREDIT_PACKS[0]);
 
       const effectiveUserId = (flwResult as any).meta?.userId || userId;
@@ -103,64 +125,37 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // C. Verification by Reference (tx_ref)
+    // 4. Live Flutterwave Server-to-Server Verification by Reference (tx_ref)
+    // CRITICAL: NEVER assume a tx_ref is successful without Flutterwave ledger confirmation
     if (txRef) {
-      let flwVerified = false;
-      let amount = 0;
-      let effectiveUserId = userId;
-      let customerEmail = user?.email || "trader@moniepay.app";
-      let paymentType = "Card/Transfer";
+      const flwResult = await verifyFlutterwaveByReference(txRef, 50);
 
-      // 1. Try Flutterwave verify_by_reference if secret key is present
-      if (FLUTTERWAVE_CONFIG.SECRET_KEY) {
-        try {
-          const res = await fetch(
-            `${FLUTTERWAVE_CONFIG.BASE_URL}/transactions/verify_by_reference?tx_ref=${encodeURIComponent(txRef)}`,
-            {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${FLUTTERWAVE_CONFIG.SECRET_KEY}`,
-              },
-              cache: "no-store",
-            }
-          );
-          const flwData = await res.json();
-          if (res.ok && flwData?.status === "success" && flwData?.data?.status === "successful") {
-            flwVerified = true;
-            amount = flwData.data.amount;
-            effectiveUserId = flwData.data.meta?.userId || userId;
-            customerEmail = flwData.data.customer?.email || customerEmail;
-            paymentType = flwData.data.payment_type || paymentType;
-          }
-        } catch (err) {
-          console.warn("verify_by_reference attempt:", err);
-        }
+      if (!flwResult.success || flwResult.status !== "successful") {
+        return NextResponse.json(
+          {
+            success: false,
+            status: flwResult.status || "failed",
+            error: flwResult.error || "Transaction reference could not be confirmed as successful on Flutterwave.",
+          },
+          { status: 400 }
+        );
       }
 
-      // 2. Extract or infer pack
-      const packId =
-        packIdParam ||
-        (txRef.includes("pack_140")
-          ? "pack_140"
-          : txRef.includes("pack_60")
-          ? "pack_60"
-          : "pack_10");
-
+      const amount = flwResult.amount;
       const matchedPack =
-        CREDIT_PACKS.find((p) => p.id === packId) ||
         CREDIT_PACKS.find((p) => p.priceNgn === amount) ||
-        CREDIT_PACKS[1];
+        CREDIT_PACKS.find((p) => p.id === packIdParam) ||
+        (amount >= 1000 ? CREDIT_PACKS[2] : amount >= 500 ? CREDIT_PACKS[1] : CREDIT_PACKS[0]);
 
-      const creditAmount = amount || matchedPack.priceNgn;
+      const effectiveUserId = (flwResult as any).meta?.userId || userId;
 
       const creditResult = await addCredits({
         userId: effectiveUserId,
         packId: matchedPack.id,
-        amountPaid: creditAmount,
+        amountPaid: amount,
         txRef,
-        paymentType,
-        customerEmail,
+        paymentType: flwResult.paymentType || "Card/Transfer",
+        customerEmail: flwResult.customer?.email || user?.email || "trader@moniepay.app",
       });
 
       if (creditResult.success) {
@@ -199,6 +194,19 @@ export async function POST(request: NextRequest) {
     const transactionId = body.transactionId || body.transaction_id;
     const txRef = body.txRef || body.tx_ref;
     const packIdParam = body.packId as "pack_10" | "pack_60" | "pack_140" | undefined;
+    const statusParam = (body.status || "").toLowerCase();
+
+    // 1. Critical Security Rule: Instant Rejection on Cancellation or Failure
+    if (statusParam === "cancelled" || statusParam === "failed") {
+      return NextResponse.json(
+        {
+          success: false,
+          status: statusParam,
+          error: `Payment was ${statusParam} on Flutterwave. No insight credits have been added.`,
+        },
+        { status: 400 }
+      );
+    }
 
     const user = await getSessionUser();
     const userId = body.userId || user?.id || "user_owner_01";
@@ -210,14 +218,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 2. Server-to-Server Verification by Transaction ID
     if (transactionId) {
-      const flwResult = await verifyFlutterwaveTransaction(transactionId);
+      const flwResult = await verifyFlutterwaveTransaction(transactionId, 50);
       if (!flwResult.success || flwResult.status !== "successful") {
         return NextResponse.json(
           {
             success: false,
             status: flwResult.status || "failed",
-            error: flwResult.error || "Payment was not successful.",
+            error: flwResult.error || "Payment was not verified as successful on Flutterwave.",
           },
           { status: 400 }
         );
@@ -226,6 +235,7 @@ export async function POST(request: NextRequest) {
       const amount = flwResult.amount;
       const matchedPack =
         CREDIT_PACKS.find((p) => p.priceNgn === amount) ||
+        (packIdParam ? CREDIT_PACKS.find((p) => p.id === packIdParam) : undefined) ||
         (amount >= 1000 ? CREDIT_PACKS[2] : amount >= 500 ? CREDIT_PACKS[1] : CREDIT_PACKS[0]);
 
       const effectiveUserId = (flwResult as any).meta?.userId || userId;
@@ -242,6 +252,7 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json({
         success: creditResult.success,
+        status: "successful",
         newBalance: creditResult.newBalance,
         creditsAdded: creditResult.creditsAdded,
         alreadyProcessed: creditResult.alreadyProcessed,
@@ -249,32 +260,51 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // Direct reference verification (tx_ref)
-    const packId =
-      packIdParam ||
-      (txRef?.includes("pack_140")
-        ? "pack_140"
-        : txRef?.includes("pack_60")
-        ? "pack_60"
-        : "pack_10");
+    // 3. Server-to-Server Verification by Reference (tx_ref)
+    // CRITICAL: NEVER credit without server confirmation from Flutterwave
+    if (txRef) {
+      const flwResult = await verifyFlutterwaveByReference(txRef, 50);
+      if (!flwResult.success || flwResult.status !== "successful") {
+        return NextResponse.json(
+          {
+            success: false,
+            status: flwResult.status || "failed",
+            error: flwResult.error || "Payment reference could not be verified on Flutterwave.",
+          },
+          { status: 400 }
+        );
+      }
 
-    const matchedPack = CREDIT_PACKS.find((p) => p.id === packId) || CREDIT_PACKS[1];
-    const creditResult = await addCredits({
-      userId,
-      packId: matchedPack.id,
-      amountPaid: matchedPack.priceNgn,
-      txRef: txRef || `tx_ref_${Date.now()}`,
-      paymentType: "Card/Transfer",
-      customerEmail: user?.email,
-    });
+      const amount = flwResult.amount;
+      const matchedPack =
+        CREDIT_PACKS.find((p) => p.priceNgn === amount) ||
+        (packIdParam ? CREDIT_PACKS.find((p) => p.id === packIdParam) : undefined) ||
+        (amount >= 1000 ? CREDIT_PACKS[2] : amount >= 500 ? CREDIT_PACKS[1] : CREDIT_PACKS[0]);
 
-    return NextResponse.json({
-      success: creditResult.success,
-      newBalance: creditResult.newBalance,
-      creditsAdded: creditResult.creditsAdded,
-      alreadyProcessed: creditResult.alreadyProcessed,
-      error: creditResult.error,
-    });
+      const effectiveUserId = (flwResult as any).meta?.userId || userId;
+      const creditResult = await addCredits({
+        userId: effectiveUserId,
+        packId: matchedPack.id,
+        amountPaid: amount,
+        txRef,
+        paymentType: flwResult.paymentType || "Card/Transfer",
+        customerEmail: flwResult.customer?.email || user?.email,
+      });
+
+      return NextResponse.json({
+        success: creditResult.success,
+        status: "successful",
+        newBalance: creditResult.newBalance,
+        creditsAdded: creditResult.creditsAdded,
+        alreadyProcessed: creditResult.alreadyProcessed,
+        error: creditResult.error,
+      });
+    }
+
+    return NextResponse.json(
+      { success: false, error: "Unable to verify transaction." },
+      { status: 400 }
+    );
   } catch (error: any) {
     console.error("Credit verification POST error:", error);
     return NextResponse.json(
