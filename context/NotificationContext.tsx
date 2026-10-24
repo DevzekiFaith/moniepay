@@ -88,7 +88,7 @@ const INITIAL_NOTIFICATIONS: MarketNotification[] = [
   {
     id: "notif_03",
     title: "Daily Market Milestone 🎉",
-    message: "Oya celebrate! Your shop don cross ₦340,000 in gross sales today inside Balogun Market!",
+    message: "Oya celebrate! Your shop don cross ₦340,000 in gross sales today for your business!",
     type: "sales_milestone",
     timestamp: "3 hours ago",
     read: true,

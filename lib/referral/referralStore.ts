@@ -201,7 +201,7 @@ export function recordNewReferredTrader(params: {
   phone?: string;
   marketLocation?: string;
 }): { success: boolean; message: string } {
-  const { referralCode, businessName, ownerName, phone = "", marketLocation = "Market Trader" } = params;
+  const { referralCode, businessName, ownerName, phone = "", marketLocation = businessName } = params;
   const validation = validateReferralEligibility({ referralCode, userPhone: phone });
   if (!validation.eligible) {
     return { success: false, message: validation.reason || "Referral code no dey valid." };

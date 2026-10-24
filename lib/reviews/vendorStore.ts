@@ -937,19 +937,19 @@ export function getCurrentUserVendor(user?: {
       activeUser?.businessName === "Mama Chidi Super Provisions" &&
       (!activeUser.marketLocation || activeUser.marketLocation.includes("Balogun")));
 
-  const shopId = activeUser?.id || "mama_chidi";
+  const hasCustomLocation = Boolean(activeUser?.marketLocation?.trim() && !activeUser.marketLocation.toLowerCase().includes("balogun") && activeUser.marketLocation !== "Commercial Market Stall, Nigeria");
+  const shopId = activeUser?.id || (activeUser?.name ? `usr_${activeUser.name.toLowerCase().replace(/\s+/g, "_")}` : "usr_merchant");
   const shopName =
     activeUser?.businessName ||
-    (activeUser?.name ? `${activeUser.name}'s Shop` : "Mama Chidi Super Provisions");
-  const traderName = activeUser?.name || "Mama Chidi";
+    (activeUser?.name ? `${activeUser.name}'s Shop` : "Registered Merchant Stall");
+  const traderName = activeUser?.name || "Registered Merchant";
   const fullAddress =
     activeUser?.marketLocation?.trim() ||
-    (isExplicitDemoMamaChidi
-      ? "Shop 14, Line 3, Main Plaza, Balogun Market, Lagos Island, Lagos"
-      : "Commercial Market Stall, Nigeria");
+    "Commercial Market Stall, Nigeria";
   const avatarUrl = activeUser?.avatarUrl || "/images/traders/mama_chidi.jpg";
 
   const resolved = resolveMarketCoordinates(fullAddress);
+  const displayMarket = hasCustomLocation ? resolved.market : shopName;
   const category = inferCategory(shopName);
   const tags = getCategoryTags(category);
 
@@ -959,28 +959,18 @@ export function getCurrentUserVendor(user?: {
     phone = activeUser.email.trim();
   }
   if (!phone) {
-    if (activeUser?.id === "user_owner_01" || activeUser?.id === "mama_chidi") {
-      phone = "+234 803 123 4567";
-    } else if (activeUser?.id === "user_garba_02" || activeUser?.id === "alhaji_garba") {
-      phone = "+234 802 987 6543";
-    } else if (activeUser?.id === "user_emeka_03" || activeUser?.id === "emeka") {
-      phone = "+234 814 555 7890";
-    } else if (activeUser?.id === "user_blessing_04" || activeUser?.id === "blessing") {
-      phone = "+234 809 333 1122";
-    } else {
-      phone = "+234 800 000 0000";
-    }
+    phone = "+234 800 000 0000";
   }
 
   const cleanDigits = phone.replace(/\D/g, "");
-  const whatsapp = cleanDigits.startsWith("0") ? `234${cleanDigits.slice(1)}` : cleanDigits || "2348031234567";
+  const whatsapp = cleanDigits.startsWith("0") ? `234${cleanDigits.slice(1)}` : cleanDigits || "2348000000000";
 
   const vendorProfile: VendorProfile = {
     id: shopId,
     name: traderName,
     shopName,
     category,
-    market: resolved.market,
+    market: displayMarket,
     fullAddress,
     landmark: resolved.landmark,
     phone,
@@ -1005,39 +995,26 @@ export function getCurrentUserVendor(user?: {
 // ── 3. CLIENT STORE ACCESS METHODS ──────────────────────────────────
 export function getAllVendors(): VendorProfile[] {
   const custom = Object.values(getCustomVendors());
-  const initial = Object.values(INITIAL_VENDORS);
-
   const activeUserVendor = getCurrentUserVendor();
   
-  // Combine custom vendors, active user vendor, and seed vendors, deduplicated by id, shopName, and trader
+  // Combine real registered custom vendors and active user vendor, deduplicated by id and shopName
   const vendorMap = new Map<string, VendorProfile>();
   const seenShopNames = new Set<string>();
   
   // Put active user vendor first
-  vendorMap.set(activeUserVendor.id, activeUserVendor);
-  seenShopNames.add(activeUserVendor.shopName.toLowerCase().trim());
+  if (activeUserVendor) {
+    vendorMap.set(activeUserVendor.id, activeUserVendor);
+    seenShopNames.add(activeUserVendor.shopName.toLowerCase().trim());
+  }
   
-  // Add other custom vendors, preventing duplicates of the logged-in trader or duplicate shop names
+  // Add other real custom registered vendors, preventing duplicates of the logged-in trader
   custom.forEach((v) => {
     const normShop = v.shopName.toLowerCase().trim();
     const isSameAsActive =
-      v.id === activeUserVendor.id ||
+      activeUserVendor &&
+      (v.id === activeUserVendor.id ||
       seenShopNames.has(normShop) ||
-      (v.name.toLowerCase().trim() === activeUserVendor.name.toLowerCase().trim() && activeUserVendor.name !== "Mama Chidi");
-
-    if (!isSameAsActive && !vendorMap.has(v.id)) {
-      seenShopNames.add(normShop);
-      vendorMap.set(v.id, v);
-    }
-  });
-
-  // Add initial demo vendors (if activeUserVendor or custom vendor took over, skip duplicate shop or id)
-  initial.forEach((v) => {
-    const normShop = v.shopName.toLowerCase().trim();
-    const isSameAsActive =
-      v.id === activeUserVendor.id ||
-      seenShopNames.has(normShop) ||
-      (v.name.toLowerCase().trim() === activeUserVendor.name.toLowerCase().trim() && activeUserVendor.name !== "Mama Chidi");
+      (v.name.toLowerCase().trim() === activeUserVendor.name.toLowerCase().trim() && activeUserVendor.name !== "Mama Chidi"));
 
     if (!isSameAsActive && !vendorMap.has(v.id)) {
       seenShopNames.add(normShop);
@@ -1129,17 +1106,16 @@ export function getVendor(
 }
 
 export function getAllReviews(): CustomerReview[] {
-  if (typeof window === "undefined") return SEED_REVIEWS;
+  if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(SEED_REVIEWS));
-      return SEED_REVIEWS;
+      return [];
     }
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : SEED_REVIEWS;
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    return SEED_REVIEWS;
+    return [];
   }
 }
 
@@ -1157,7 +1133,7 @@ export function calculateVendorStats(shopKey: string) {
   const total = reviews.length;
   if (total === 0) {
     return {
-      average: 5.0,
+      average: 0,
       total: 0,
       breakdown: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 },
       topTags: [] as { tag: string; count: number }[],

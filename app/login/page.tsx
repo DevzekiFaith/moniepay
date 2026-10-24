@@ -663,7 +663,7 @@ function LoginContent() {
 
         {/* Minimal Footer Brand Line */}
         <p className="text-[10px] sm:text-[11px] text-slate-400 font-bold text-center tracking-widest uppercase">
-          MONIEPAY • BALOGUN MARKET PORTAL
+          MONIEPAY • MERCHANT BUSINESS PORTAL
         </p>
       </div>
     </motion.div>

@@ -144,7 +144,7 @@ export async function POST(request: NextRequest) {
       planType: isAnnual ? "annual" : "monthly",
       paymentType: "Flutterwave Card (Test)",
       customerEmail: user?.email || "trader@moniepay.app",
-      customerName: user?.name || "Mama Chidi",
+      customerName: user?.name || "Shop Owner",
       rawPayload: { simulated: true, plan: isAnnual ? "annual" : "monthly", timestamp: new Date().toISOString() },
     });
 

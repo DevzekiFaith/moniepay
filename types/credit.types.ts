@@ -14,6 +14,13 @@ export interface CreditPack {
 
 export const CREDIT_PACKS: CreditPack[] = [
   {
+    id: "pack_10",
+    credits: 10,
+    priceNgn: 100,
+    label: "Quick Test",
+    description: "10 credits • Good for 2 full business diagnoses",
+  },
+  {
     id: "pack_15",
     credits: 15,
     priceNgn: 200,
@@ -27,6 +34,14 @@ export const CREDIT_PACKS: CreditPack[] = [
     label: "Market Standard",
     badge: "POPULAR",
     description: "60 credits (20% bonus) • 12 diagnoses or 30 debt recovery notices",
+  },
+  {
+    id: "pack_140",
+    credits: 140,
+    priceNgn: 1000,
+    label: "Pro Trader",
+    badge: "RECOMMENDED",
+    description: "140 credits • Unlocks certified statements & diagnostics",
   },
   {
     id: "pack_150",

@@ -31,7 +31,7 @@ function PaymentContent() {
 
   const rawBank = searchParams?.get("bank") || "Providus Bank";
   const rawAccount = searchParams?.get("account") || "9920192381";
-  const rawName = searchParams?.get("name") || "Mama Chidi Provisions";
+  const rawName = searchParams?.get("name") || "Verified Merchant Store";
   const defaultAmount = searchParams?.get("amount") || "";
 
   const [copied, setCopied] = useState(false);

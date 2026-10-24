@@ -26,7 +26,7 @@ create table if not exists public.businesses (
   currency text default 'NGN',
   daily_sales_target numeric default 50000,
   operating_city text default 'Lagos',
-  market_location text default 'Balogun Market',
+  market_location text,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );

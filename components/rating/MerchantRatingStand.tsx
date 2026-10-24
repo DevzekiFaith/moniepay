@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   ThumbsUp,
   Store,
+  Building2,
   MapPin,
   ExternalLink,
   Copy,
@@ -85,11 +86,11 @@ function SvgBarcode({ code }: { code: string }) {
 export function MerchantRatingStand({
   isOpen,
   onClose,
-  shopName = "Mama Chidi Super Provisions",
-  traderName = "Mama Chidi",
-  marketLocation = "Commercial Trading Hub, Nigeria",
-  shopId = "mama_chidi",
-  avatarUrl = "/images/traders/mama_chidi.jpg",
+  shopName = "My Business Store",
+  traderName = "Shop Owner",
+  marketLocation,
+  shopId = "trader_shop",
+  avatarUrl,
   onOpenRatingForm,
 }: MerchantRatingStandProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string>("");
@@ -204,10 +205,17 @@ export function MerchantRatingStand({
                   <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight truncate mt-0.5">
                     {shopName}
                   </h4>
-                  <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
-                    <MapPin className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
-                    <span className="truncate">{marketLocation}</span>
-                  </div>
+                  {marketLocation ? (
+                    <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
+                      <MapPin className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      <span className="truncate">{marketLocation}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400 font-medium truncate">
+                      <Building2 className="h-3 w-3 text-emerald-600 dark:text-emerald-400 shrink-0" />
+                      <span className="truncate">{shopName}</span>
+                    </div>
+                  )}
                 </div>
               </div>
 

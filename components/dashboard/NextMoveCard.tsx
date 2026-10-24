@@ -35,7 +35,7 @@ export function NextMoveCard({
   metrics,
   debts,
   tradeType = "retail_provisions",
-  businessName = "Mama Chidi Provisions",
+  businessName = "My Business Store",
   businessId,
   onOpenGbeseBook,
   onOpenWithdrawal,

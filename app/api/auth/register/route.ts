@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     const { name, email, password, businessName, marketLocation } = parsed.data;
     const normalizedEmail = email.toLowerCase().trim();
     const finalBusinessName = businessName?.trim() || `${name}'s Business`;
-    const finalLocation = marketLocation?.trim() || "Commercial Retail Shop, Nigeria";
+    const finalLocation = marketLocation?.trim() || undefined;
 
     // 1. Register with Supabase Auth
     try {

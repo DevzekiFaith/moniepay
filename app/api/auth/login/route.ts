@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
           email: "demo@moniepay.app",
           name: "Mama Chidi",
           businessName: "Mama Chidi Super Provisions",
-          marketLocation: "Shop 14, Balogun Market, Lagos",
+          marketLocation: undefined,
         };
 
         const response = NextResponse.json({
@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
         email: normalizedIdentifier,
         name: formattedName,
         businessName: `${formattedName}'s Provisions`,
-        marketLocation: "Balogun Market, Lagos",
+        marketLocation: undefined,
       };
 
       const response = NextResponse.json({

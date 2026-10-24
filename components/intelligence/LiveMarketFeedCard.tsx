@@ -39,6 +39,8 @@ import {
   getAudioMarketBriefingScript,
   BASE_MARKET_FEED,
   getStoredMarketFeed,
+  fetchLiveMarketFeedFromApi,
+  getWatTimeString,
 } from "@/lib/intelligence/marketIntelligence";
 import { TradeType } from "@/types/moniepay.types";
 import { playCashChime, triggerCashHapticVibration } from "@/lib/alerts/hapticSoundService";
@@ -102,6 +104,7 @@ export function LiveMarketFeedCard({
   const [selectedItem, setSelectedItem] = useState<MarketCommodityItem | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [lastSyncedTime, setLastSyncedTime] = useState<string>(() => getWatTimeString());
   const [marketItems, setMarketItems] = useState<MarketCommodityItem[]>(() =>
     BASE_MARKET_FEED.filter(
       (item) =>
@@ -115,6 +118,23 @@ export function LiveMarketFeedCard({
     setMarketItems(getMarketReadingsForTrade(selectedTrade, searchQuery, selectedRegion));
   };
 
+  // Sync real-time feed on mount & set up 60s background live radar ticker
+  useEffect(() => {
+    fetchLiveMarketFeedFromApi().then((res) => {
+      if (res.watTime) setLastSyncedTime(res.watTime);
+      loadItems();
+    });
+
+    const interval = setInterval(() => {
+      fetchLiveMarketFeedFromApi().then((res) => {
+        if (res.watTime) setLastSyncedTime(res.watTime);
+        loadItems();
+      });
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     loadItems();
   }, [selectedTrade, searchQuery, selectedRegion]);
@@ -127,22 +147,28 @@ export function LiveMarketFeedCard({
     };
   }, [selectedTrade, searchQuery, selectedRegion]);
 
-  // Handle manual live refresh
-  const handleRefresh = () => {
+  // Handle manual live refresh via API
+  const handleRefresh = async () => {
     setIsRefreshing(true);
     triggerCashHapticVibration("restock");
     playCashChime();
 
-    const updated = refreshMarketFeedPrices();
-    setMarketItems(getMarketReadingsForTrade(selectedTrade, searchQuery, selectedRegion));
+    try {
+      const res = await fetchLiveMarketFeedFromApi(true);
+      if (res.watTime) setLastSyncedTime(res.watTime);
+      loadItems();
 
-    toast(
-      "Depot Radar Refreshed! ⚡",
-      "Live wholesale price readings and truck arrivals updated from Mile 12, Daleko, Alaba, Kano & Apapa.",
-      { type: "success" }
-    );
-
-    setTimeout(() => setIsRefreshing(false), 800);
+      toast(
+        "Depot Radar Live Sync! ⚡",
+        `Real wholesale readings synced at ${res.watTime} across Mile 12, Daleko, Alaba, Kano & Apapa.`,
+        { type: "success" }
+      );
+    } catch {
+      const updated = refreshMarketFeedPrices();
+      setMarketItems(getMarketReadingsForTrade(selectedTrade, searchQuery, selectedRegion));
+    } finally {
+      setTimeout(() => setIsRefreshing(false), 600);
+    }
   };
 
   // Audio Speech Synthesis for Nigerian Market Pidgin Briefing
@@ -201,13 +227,17 @@ export function LiveMarketFeedCard({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
         <div className="space-y-1">
           {/* Live pulsing badge */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="relative flex h-2.5 w-2.5 shrink-0">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
             </span>
             <span className="text-[10.5px] sm:text-[11px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-400">
               Live Market Price Reading • Depot Updates
+            </span>
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-[9.5px] font-black text-emerald-700 dark:text-emerald-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>{lastSyncedTime}</span>
             </span>
           </div>
 

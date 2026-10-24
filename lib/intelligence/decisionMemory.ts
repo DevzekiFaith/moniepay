@@ -35,7 +35,7 @@ export const SEED_DECISION_MEMORY: DecisionMemoryItem[] = [
     actualOutcome: "Cold drinks sales jump 40% for Thursday afternoon heat",
     status: "PROVEN",
     metricImpactSummary: "+₦18,500 cold drinks gross profit • Zero spoiled drinks",
-    learningLesson: "Thursday afternoon NEPA light dey always cut in Balogun. Pre-buying fuel protects drink margin.",
+    learningLesson: "Thursday afternoon NEPA light dey always cut during peak hours. Pre-buying fuel protects drink margin.",
   },
   {
     id: "mem_03",

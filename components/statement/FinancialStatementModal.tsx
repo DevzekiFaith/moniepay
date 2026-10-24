@@ -56,9 +56,9 @@ interface FinancialStatementModalProps {
 export function FinancialStatementModal({
   isOpen,
   onClose,
-  businessName,
-  traderName = "Mama Chidi",
-  marketLocation = "Shop 14, Balogun Market, Lagos",
+  businessName = "My Business Store",
+  traderName = "Shop Owner",
+  marketLocation = "Commercial Trading Shop, Nigeria",
   metrics,
   transactions,
 }: FinancialStatementModalProps) {
@@ -251,7 +251,7 @@ export function FinancialStatementModal({
       `-------------------------------------------\n` +
       `🏢 *Business:* ${businessName}\n` +
       `👤 *Principal Trader:* ${traderName}\n` +
-      `📍 *Location:* ${marketLocation}\n` +
+      `📍 *Location:* ${marketLocation || businessName}\n` +
       `💰 *Total Recorded Turnover:* ₦${totalSales.toLocaleString()}\n` +
       `📈 *Retained Operating Margin:* ₦${netProfit.toLocaleString()}\n` +
       `🏆 *Solvency Rating:* ${solvencyGrade}\n` +
@@ -418,8 +418,12 @@ export function FinancialStatementModal({
               <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 mt-0.5">{traderName} (Principal)</p>
             </div>
             <div>
-              <span className="text-[9.5px] sm:text-[10px] uppercase font-black text-slate-400">Trading Location</span>
-              <p className="text-xs sm:text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5">{marketLocation}</p>
+              <span className="text-[9.5px] sm:text-[10px] uppercase font-black text-slate-400">
+                {marketLocation ? "Trading Location" : "Business Entity"}
+              </span>
+              <p className="text-xs sm:text-xs font-bold text-slate-800 dark:text-slate-200 mt-0.5">
+                {marketLocation || businessName}
+              </p>
               <span className="inline-block mt-1 text-[10px] sm:text-[10.5px] font-black text-emerald-600 dark:text-emerald-400">
                 ✓ Verified Active Market Merchant
               </span>

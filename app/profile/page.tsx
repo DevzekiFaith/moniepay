@@ -102,19 +102,26 @@ export default function ProfilePage() {
           <div className="rounded-[28px] bg-white dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-xs flex items-center justify-between gap-3">
             <div className="flex items-center gap-3.5 min-w-0">
               <div className="h-12 w-12 rounded-2xl bg-blue-700 text-white font-black text-xl flex items-center justify-center shrink-0 shadow-sm">
-                {(user?.name?.[0] || "M").toUpperCase()}
+                {(user?.name?.[0] || "T").toUpperCase()}
               </div>
               <div className="min-w-0">
                 <h2 className="text-sm sm:text-base font-black text-slate-900 dark:text-white truncate">
-                  {user?.name || "Mama Chidi"}
+                  {user?.name || "Trader Account"}
                 </h2>
                 <p className="text-xs font-bold text-blue-700 dark:text-blue-400 truncate">
-                  {user?.businessName || "Mama Chidi Super Provisions"}
+                  {user?.businessName || "Registered Business Store"}
                 </p>
-                <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
-                  <MapPin className="h-3 w-3 shrink-0" />
-                  <span className="truncate">{user?.marketLocation || (!user || user.id === "user_owner_01" ? "Balogun Market, Lagos" : "Commercial Trading Shop, Nigeria")}</span>
-                </div>
+                {user?.marketLocation && !user.marketLocation.toLowerCase().includes("balogun") ? (
+                  <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{user.marketLocation}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">
+                    <Building2 className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{user?.businessName || "Registered Business Store"}</span>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -105,7 +105,7 @@ export default function VendorReviewsManagementPage() {
     addVendorReply(
       replyingReview.id,
       replyText.trim(),
-      `${vendor?.name || "Mama Chidi"} (Shop Owner)`
+      `${vendor?.name || "Shop Owner"}`
     );
     setIsReplying(false);
     setReplyingReview(null);

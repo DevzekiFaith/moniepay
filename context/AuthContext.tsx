@@ -49,7 +49,7 @@ const DEMO_USER: AuthUser = {
   name: "Mama Chidi",
   email: "demo@moniepay.app",
   businessName: "Mama Chidi Super Provisions",
-  marketLocation: "Shop 14, Balogun Market, Lagos",
+  marketLocation: undefined,
   role: "Shop Owner",
   avatarLetter: "M",
   avatarUrl: "/images/traders/mama_chidi.jpg",
@@ -78,6 +78,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               if (!parsed.avatarUrl) {
                 parsed.avatarUrl = "/images/traders/mama_chidi.jpg";
               }
+              // Clean out stale static Balogun or default locations so users only see registered location
+              if (parsed.marketLocation && (parsed.marketLocation.toLowerCase().includes("balogun") || parsed.marketLocation.includes("Commercial Trading Shop") || parsed.marketLocation.includes("Commercial Market Stall"))) {
+                delete parsed.marketLocation;
+                localStorage.setItem("moniepay_session", JSON.stringify(parsed));
+              }
               activeCachedUser = parsed;
               setUser(parsed);
               setIsLoading(false);
@@ -104,10 +109,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   ? data.business.name
                   : activeCachedUser?.businessName || data.business?.name || `${finalName}'s Store`;
 
-              const finalLocation =
-                (data.business?.market_location && data.business?.market_location !== "Shop 14, Balogun Market, Lagos")
-                  ? data.business.market_location
-                  : activeCachedUser?.marketLocation || data.business?.market_location || "Commercial Trading Shop, Nigeria";
+              const rawLoc = (data.business?.market_location && !data.business.market_location.toLowerCase().includes("balogun") && data.business.market_location !== "Commercial Trading Shop, Nigeria")
+                ? data.business.market_location
+                : activeCachedUser?.marketLocation;
+
+              const finalLocation = rawLoc && !rawLoc.toLowerCase().includes("balogun") && rawLoc !== "Commercial Trading Shop, Nigeria" && rawLoc !== "Commercial Market Stall, Lagos, Nigeria"
+                ? rawLoc
+                : undefined;
 
               const verifiedUser: AuthUser = {
                 id: data.user.id || activeCachedUser?.id || "user_01",
@@ -143,12 +151,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               sbUser.email?.split("@")[0] ||
               "Shop Owner";
 
+            const rawSbLoc = sbUser.user_metadata?.market_location;
+            const cleanSbLoc = rawSbLoc && !rawSbLoc.toLowerCase().includes("balogun") && rawSbLoc !== "Lagos, Nigeria" ? rawSbLoc : undefined;
             const authUser: AuthUser = {
               id: sbUser.id,
               email: sbUser.email || "",
               name: displayName,
               businessName: sbUser.user_metadata?.business_name || activeCachedUser?.businessName || `${displayName}'s Store`,
-              marketLocation: sbUser.user_metadata?.market_location || activeCachedUser?.marketLocation || "Lagos, Nigeria",
+              marketLocation: cleanSbLoc || (activeCachedUser?.marketLocation && !activeCachedUser.marketLocation.toLowerCase().includes("balogun") ? activeCachedUser.marketLocation : undefined),
               role: "Shop Owner",
               avatarLetter: (displayName[0] || "M").toUpperCase(),
               avatarUrl: sbUser.user_metadata?.avatar_url || activeCachedUser?.avatarUrl || "/images/traders/mama_chidi.jpg",
@@ -181,13 +191,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               sbUser.email?.split("@")[0] ||
               "Shop Owner";
 
+            const rawSbLoc = sbUser.user_metadata?.market_location;
+            const cleanSbLoc = rawSbLoc && !rawSbLoc.toLowerCase().includes("balogun") && !rawSbLoc.includes("Commercial Market Stall") ? rawSbLoc : undefined;
             const authUser: AuthUser = {
               id: sbUser.id,
               email: sbUser.email || "",
               phone: sbUser.user_metadata?.phone || (sbUser.email?.match(/^(\+?234|0)[789][01]\d{8}$/) ? sbUser.email : undefined),
               name: displayName,
               businessName: sbUser.user_metadata?.business_name || "My Business",
-              marketLocation: sbUser.user_metadata?.market_location || "Commercial Market Stall, Lagos, Nigeria",
+              marketLocation: cleanSbLoc,
               role: "Shop Owner",
               avatarLetter: (displayName[0] || "M").toUpperCase(),
               avatarUrl: sbUser.user_metadata?.avatar_url || "/images/traders/mama_chidi.jpg",
@@ -240,13 +252,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const data = await res.json().catch(() => ({}));
 
         if (res.ok && data.user) {
+          const rawUserLoc = data.user.marketLocation;
+          const cleanUserLoc = rawUserLoc && !rawUserLoc.toLowerCase().includes("balogun") && !rawUserLoc.includes("Commercial Market Stall") ? rawUserLoc : undefined;
           const authUser: AuthUser = {
             id: data.user.id,
             email: data.user.email,
             phone: data.user.phone || (cleanIdentifier.match(/^(\+?234|0)[789][01]\d{8}$/) ? cleanIdentifier : undefined),
             name: data.user.name || "Business Owner",
             businessName: data.user.businessName || "My Business",
-            marketLocation: data.user.marketLocation || "Commercial Market Stall, Lagos, Nigeria",
+            marketLocation: cleanUserLoc,
             role: "Shop Owner",
             avatarLetter: (data.user.name?.[0] || "M").toUpperCase(),
             lastLoginAt: "Just now",
@@ -352,13 +366,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const data = await res.json().catch(() => ({}));
 
         if (res.ok && data.user) {
+          const regLocation = params.marketLocation?.trim() || data.user.marketLocation;
+          const cleanRegLoc = regLocation && !regLocation.toLowerCase().includes("balogun") && !regLocation.includes("Commercial Market Stall") ? regLocation : undefined;
           const authUser: AuthUser = {
             id: data.user.id,
             email: data.user.email,
             phone: data.user.phone || (params.email.match(/^(\+?234|0)[789][01]\d{8}$/) ? params.email.trim() : undefined),
             name: data.user.name,
             businessName: data.user.businessName,
-            marketLocation: data.user.marketLocation || params.marketLocation?.trim() || "Commercial Market Stall, Lagos, Nigeria",
+            marketLocation: cleanRegLoc,
             role: "Shop Owner",
             avatarLetter: (data.user.name[0] || "M").toUpperCase(),
             avatarUrl: params.avatarUrl || data.user.avatarUrl || "/images/traders/mama_chidi.jpg",
@@ -377,13 +393,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.warn("Offline registration fallback:", networkErr);
         // Resilient offline registration: persist locally so trader can start immediately
         const offlineId = "usr_" + Math.random().toString(36).substring(2, 10);
+        const offlineLocation = params.marketLocation?.trim();
+        const cleanOfflineLoc = offlineLocation && !offlineLocation.toLowerCase().includes("balogun") && !offlineLocation.includes("Commercial Market Stall") ? offlineLocation : undefined;
         const authUser: AuthUser = {
           id: offlineId,
           email: params.email.trim(),
           phone: params.email.match(/^(\+?234|0)[789][01]\d{8}$/) ? params.email.trim() : undefined,
           name: params.name.trim(),
           businessName: params.businessName?.trim() || `${params.name.trim()}'s Store`,
-          marketLocation: params.marketLocation?.trim() || "Commercial Market Stall, Lagos, Nigeria",
+          marketLocation: cleanOfflineLoc,
           role: "Shop Owner",
           avatarLetter: (params.name.trim()[0] || "M").toUpperCase(),
           avatarUrl: params.avatarUrl || "/images/traders/mama_chidi.jpg",

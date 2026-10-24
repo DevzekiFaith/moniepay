@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────────────────────────
 // MoniePay — Default Nigerian Informal Business Baseline
-// Realistic Balogun Market Retail Provisions Business
+// Nigerian Retail Provisions Business Baseline
 // ─────────────────────────────────────────────────────────────────
 
 import type {
@@ -19,7 +19,7 @@ export const DEFAULT_BUSINESS: Business = {
   currency: "NGN",
   daily_sales_target: 120000,
   operating_city: "Lagos",
-  market_location: "Shop 14, Balogun Market",
+  market_location: undefined,
   created_at: new Date(Date.now() - 30 * 86400000).toISOString(),
 };
 

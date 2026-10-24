@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
   WifiOff,
   MapPin,
+  Building2,
   BrainCircuit,
   Store,
   LogOut,
@@ -60,10 +61,12 @@ export function DaylightHeader({
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
 
   const isDemoMamaChidi = !user || user.id === "user_owner_01" || (user.name === "Mama Chidi" && (!user.marketLocation || user.marketLocation.includes("Balogun")));
-  const displayName = user?.name || "Mama Chidi";
+  const displayName = user?.name || "Shop Owner";
   const shopName = user?.businessName || (isDemoMamaChidi ? business.name : `${displayName}'s Store`);
-  const location = user?.marketLocation || (isDemoMamaChidi ? business.market_location || "Shop 14, Balogun Market, Lagos" : "Commercial Trading Shop, Nigeria");
-  const profilePhoto = user?.avatarUrl || "/images/traders/mama_chidi.jpg";
+  // Avoid static location for users: only use location after registration / if explicitly set
+  const rawLoc = user?.marketLocation || (business.market_location && !business.market_location.toLowerCase().includes("balogun") ? business.market_location : null);
+  const registeredLocation = rawLoc && !rawLoc.toLowerCase().includes("balogun") && rawLoc !== "Commercial Trading Shop, Nigeria" ? rawLoc : null;
+  const profilePhoto = user?.avatarUrl || (isDemoMamaChidi ? "/images/traders/mama_chidi.jpg" : undefined);
 
   return (
     <>
@@ -86,16 +89,22 @@ export function DaylightHeader({
                     type="button"
                     onClick={() => setIsLogoutOpen(true)}
                     aria-label="Account profile & Lock Shop"
-                    className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-2xl overflow-hidden border-2 border-sky-300/80 dark:border-sky-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.3)] shrink-0 cursor-pointer active:scale-95 transition-all bg-blue-950"
+                    className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-2xl overflow-hidden border-2 border-sky-300/80 dark:border-sky-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.3)] shrink-0 cursor-pointer active:scale-95 transition-all bg-blue-950 flex items-center justify-center"
                   >
-                    <img
-                      src={profilePhoto}
-                      alt={displayName}
-                      className="h-full w-full object-cover object-center"
-                      onError={(e) => {
-                        e.currentTarget.src = "/images/traders/mama_chidi.jpg";
-                      }}
-                    />
+                    {profilePhoto ? (
+                      <img
+                        src={profilePhoto}
+                        alt={displayName}
+                        className="h-full w-full object-cover object-center"
+                        onError={(e) => {
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      <span className="font-black text-white text-base">
+                        {(displayName[0] || "T").toUpperCase()}
+                      </span>
+                    )}
                     <span className="absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full bg-emerald-400 border-2 border-blue-950 shadow-xs" />
                   </button>
                 </InfoTooltip>
@@ -132,10 +141,17 @@ export function DaylightHeader({
                   {shopName}
                 </h1>
 
-                <div className="flex items-center gap-1 text-[10.5px] sm:text-[11px] text-sky-200/90 font-medium mt-0.5 truncate">
-                  <MapPin className="h-3 w-3 text-sky-300 shrink-0" />
-                  <span className="truncate max-w-[140px] sm:max-w-[220px]">{location}</span>
-                </div>
+                {registeredLocation ? (
+                  <div className="flex items-center gap-1 text-[10.5px] sm:text-[11px] text-sky-200/90 font-medium mt-0.5 truncate">
+                    <MapPin className="h-3 w-3 text-sky-300 shrink-0" />
+                    <span className="truncate max-w-[140px] sm:max-w-[220px]">{registeredLocation}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 text-[10.5px] sm:text-[11px] text-sky-200/90 font-medium mt-0.5 truncate">
+                    <Building2 className="h-3 w-3 text-sky-300 shrink-0" />
+                    <span className="truncate max-w-[140px] sm:max-w-[220px]">{shopName}</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -325,7 +341,7 @@ export function DaylightHeader({
         onClose={() => setIsRatingStandOpen(false)}
         shopName={shopName}
         traderName={displayName}
-        marketLocation={location}
+        marketLocation={registeredLocation || undefined}
         shopId={user?.id || "mama_chidi"}
         avatarUrl={profilePhoto}
       />

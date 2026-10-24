@@ -34,7 +34,7 @@ interface FourQuestionsCardProps {
 export function FourQuestionsCard({
   metrics,
   debts,
-  businessName = "Mama Chidi Super Provisions",
+  businessName = "My Business Store",
   onOpenGbeseBook,
   onOpenWithdrawal,
 }: FourQuestionsCardProps) {

@@ -24,8 +24,8 @@ export function LogoutModal({
   onClose,
   onConfirm,
   userName = "Shop Owner",
-  businessName = "Mama Chidi Super Provisions",
-  avatarUrl = "/images/traders/mama_chidi.jpg",
+  businessName = "My Business Store",
+  avatarUrl,
 }: LogoutModalProps) {
   const [mounted, setMounted] = useState(false);
 

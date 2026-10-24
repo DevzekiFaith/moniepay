@@ -9,14 +9,18 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(new URL("/login", req.url));
   }
 
-  // 2. Allow public routes — login, auth APIs, service worker, manifest, static assets
+  // 2. Allow public routes — login, auth APIs, service worker, manifest, static assets, and public directory/feeds
   const isPublicRoute =
     pathname.startsWith("/login") ||
     pathname.startsWith("/api/auth") ||
     pathname.startsWith("/api/webhooks") ||
-    pathname.startsWith("/api/subscription/webhook") ||
-    pathname.startsWith("/api/subscription/verify") ||
+    pathname.startsWith("/api/subscription") ||
     pathname.startsWith("/api/credits") ||
+    pathname.startsWith("/map") ||
+    pathname.startsWith("/vendors") ||
+    pathname.startsWith("/rate") ||
+    pathname.startsWith("/api/vendors") ||
+    pathname.startsWith("/api/market") ||
     pathname === "/manifest.json" ||
     pathname === "/sw.js" ||
     pathname === "/favicon.ico";
@@ -34,6 +38,10 @@ export function middleware(req: NextRequest) {
 
   // If visiting protected route while not authenticated → redirect to login
   if (!isLoggedIn && !isPublicRoute) {
+    // API routes should never redirect to HTML login page
+    if (pathname.startsWith("/api/")) {
+      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+    }
     // In local development or mobile PWA offline, allow dashboard view if header or cookie bypass
     // But enforce clean redirect if user explicitly navigated to a locked subpath
     const loginUrl = new URL("/login", req.url);
@@ -43,9 +51,12 @@ export function middleware(req: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // If already authenticated and visiting /login or /welcome → redirect directly to dashboard
+  // If already authenticated and visiting /login or /welcome → redirect directly to dashboard (unless viewing intro walkthrough)
   if (isLoggedIn && (pathname.startsWith("/login") || pathname === "/welcome")) {
-    return NextResponse.redirect(new URL("/", req.url));
+    const hasIntroParam = req.nextUrl.searchParams.get("intro") === "1";
+    if (!hasIntroParam) {
+      return NextResponse.redirect(new URL("/", req.url));
+    }
   }
 
   return NextResponse.next();

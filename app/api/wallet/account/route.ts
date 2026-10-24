@@ -4,7 +4,7 @@ import { defaultPaymentProvider } from "@/lib/payment/flutterwaveProvider";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("userId") || "user_default";
-  const businessName = searchParams.get("businessName") || "Mama Chidi Provisions";
+  const businessName = searchParams.get("businessName") || "Verified Merchant Store";
   const email = searchParams.get("email") || "trader@moniepay.ng";
 
   try {

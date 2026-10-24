@@ -1,58 +1,40 @@
 {
   "defaultTrial": {
-    "createdAt": "2026-10-21T12:00:00.000Z",
-    "trialEndsAt": "2027-10-21T12:00:00.000Z",
-    "subscriptionStatus": "active",
-    "updatedAt": "2026-10-21T16:00:00.000Z"
+    "createdAt": "2026-10-20T09:32:27.650Z",
+    "trialEndsAt": "2026-10-27T09:32:27.650Z",
+    "subscriptionStatus": "trialing",
+    "updatedAt": "2026-10-24T09:32:27.654Z"
   },
   "users": {
     "user_owner_01": {
-      "createdAt": "2026-10-21T12:00:00.000Z",
-      "trialEndsAt": "2027-10-21T12:00:00.000Z",
-      "subscriptionStatus": "active",
-      "updatedAt": "2026-10-21T16:00:00.000Z"
-    },
-    "demo@monielite.app": {
-      "createdAt": "2026-10-21T12:00:00.000Z",
-      "trialEndsAt": "2027-10-21T12:00:00.000Z",
-      "subscriptionStatus": "active",
-      "updatedAt": "2026-10-21T16:00:00.000Z"
+      "createdAt": "2026-10-20T09:32:27.650Z",
+      "trialEndsAt": "2026-10-27T09:32:27.650Z",
+      "subscriptionStatus": "trialing",
+      "updatedAt": "2026-10-24T09:32:27.654Z"
     },
     "new_trader_test_99": {
-      "createdAt": "2026-10-21T12:00:00.000Z",
-      "trialEndsAt": "2027-10-21T12:00:00.000Z",
-      "subscriptionStatus": "active",
-      "updatedAt": "2026-10-21T16:00:00.000Z"
+      "createdAt": "2026-10-24T09:32:23.450Z",
+      "trialEndsAt": "2026-10-31T09:32:23.450Z",
+      "subscriptionStatus": "trialing",
+      "updatedAt": "2026-10-24T09:32:23.460Z"
     },
     "existing_trader_test_88": {
-      "createdAt": "2026-10-21T12:00:00.000Z",
-      "trialEndsAt": "2027-10-21T12:00:00.000Z",
-      "subscriptionStatus": "active",
-      "updatedAt": "2026-10-21T16:00:00.000Z"
-    },
-    "usr_7r1uyubl": {
-      "createdAt": "2026-10-21T12:00:00.000Z",
-      "trialEndsAt": "2027-10-21T12:00:00.000Z",
-      "subscriptionStatus": "active",
-      "updatedAt": "2026-10-21T16:00:00.000Z"
+      "createdAt": "2026-10-22T09:32:23.467Z",
+      "trialEndsAt": "2026-10-29T09:32:23.467Z",
+      "subscriptionStatus": "trialing",
+      "updatedAt": "2026-10-24T09:32:23.473Z"
     },
     "cmtole43v000m6cug8rvexc3v": {
       "createdAt": "2026-09-05T16:23:36.523Z",
       "trialEndsAt": "2026-09-12T16:23:36.523Z",
       "subscriptionStatus": "trialing",
-      "updatedAt": "2026-10-21T21:08:41.703Z"
-    },
-    "usr_7bshe87e": {
-      "createdAt": "2026-10-21T12:00:00.000Z",
-      "trialEndsAt": "2027-10-21T12:00:00.000Z",
-      "subscriptionStatus": "active",
-      "updatedAt": "2026-10-21T16:00:00.000Z"
+      "updatedAt": "2026-10-24T09:32:27.814Z"
     },
     "usr_u2umq03j": {
-      "createdAt": "2026-10-21T16:03:47.381Z",
-      "trialEndsAt": "2026-10-28T16:03:47.381Z",
+      "createdAt": "2026-10-23T17:00:33.913Z",
+      "trialEndsAt": "2026-10-30T17:00:33.913Z",
       "subscriptionStatus": "trialing",
-      "updatedAt": "2026-10-21T16:03:47.381Z"
+      "updatedAt": "2026-10-23T17:00:33.916Z"
     }
   }
 }

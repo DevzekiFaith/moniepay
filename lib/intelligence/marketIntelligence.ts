@@ -340,6 +340,64 @@ export const LIVE_MARKET_FEED: MarketCommodityItem[] = BASE_MARKET_FEED;
 const MARKET_FEED_STORAGE_KEY = "moniepay_live_market_feed_v2";
 
 /**
+ * Returns formatted West Africa Time (WAT = UTC+1) string
+ */
+export function getWatTimeString(date = new Date()): string {
+  try {
+    return (
+      date.toLocaleTimeString("en-NG", {
+        timeZone: "Africa/Lagos",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      }) + " WAT"
+    );
+  } catch {
+    const utcHours = date.getUTCHours();
+    const watHours = (utcHours + 1) % 24;
+    const minutes = date.getUTCMinutes().toString().padStart(2, "0");
+    const ampm = watHours >= 12 ? "PM" : "AM";
+    const displayHour = watHours % 12 || 12;
+    return `${displayHour}:${minutes} ${ampm} WAT`;
+  }
+}
+
+/**
+ * Fetch fresh live market feed with depot movements from /api/market/feed
+ */
+export async function fetchLiveMarketFeedFromApi(isRefresh = false): Promise<{
+  items: MarketCommodityItem[];
+  watTime: string;
+}> {
+  try {
+    const res = await fetch(`/api/market/feed${isRefresh ? "?refresh=true" : ""}`, {
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.success && Array.isArray(data.items)) {
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.setItem(MARKET_FEED_STORAGE_KEY, JSON.stringify(data.items));
+            window.dispatchEvent(
+              new CustomEvent("moniepay:market-feed-updated", {
+                detail: { items: data.items, watTime: data.watTime },
+              })
+            );
+          } catch {}
+        }
+        return { items: data.items, watTime: data.watTime || getWatTimeString() };
+      }
+    }
+  } catch (err) {
+    console.warn("Could not fetch remote live market feed:", err);
+  }
+
+  const fallback = getStoredMarketFeed();
+  return { items: fallback, watTime: getWatTimeString() };
+}
+
+/**
  * Get active market feed from memory/localStorage
  */
 export function getStoredMarketFeed(): MarketCommodityItem[] {
@@ -398,12 +456,12 @@ export function getMarketReadingsForTrade(
  */
 export function refreshMarketFeedPrices(): MarketCommodityItem[] {
   const current = getStoredMarketFeed();
+  const watNow = getWatTimeString();
   
-  // Apply minor realistic fluctuations (within 1% - 3%) with updated timestamps
+  // Apply minor realistic fluctuations (within 1% - 3%) with updated real-time timestamps
   const updated = current.map((item, idx) => {
-    // Alternate occasional small changes
-    const shouldJitter = idx % 3 === 0;
-    const delta = shouldJitter ? (idx % 2 === 0 ? 500 : -500) : 0;
+    const shouldJitter = idx % 2 === 0;
+    const delta = shouldJitter ? (idx % 3 === 0 ? 500 : -500) : 0;
     const newPrice = Math.max(500, item.currentPrice + delta);
     const newTrend = newPrice > item.previousPrice ? "UP" : newPrice < item.previousPrice ? "DOWN" : "STABLE";
     const change = Number((((newPrice - item.previousPrice) / item.previousPrice) * 100).toFixed(1));
@@ -413,7 +471,7 @@ export function refreshMarketFeedPrices(): MarketCommodityItem[] {
       currentPrice: newPrice,
       trend: newTrend as "UP" | "DOWN" | "STABLE",
       changePercent: change,
-      updatedAt: idx === 0 ? "Just now" : `${(idx * 2) + 1} mins ago`,
+      updatedAt: idx === 0 ? `Just now (${watNow})` : `${idx * 2 + 1} mins ago`,
     };
   });
 

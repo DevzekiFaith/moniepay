@@ -620,8 +620,8 @@ function InsightsContent() {
         isOpen={isStatementModalOpen}
         onClose={() => setIsStatementModalOpen(false)}
         businessName={businessName}
-        traderName={user?.name || "Mama Chidi"}
-        marketLocation={user?.marketLocation || "Shop 14, Balogun Market, Lagos"}
+        traderName={user?.name || "Shop Owner"}
+        marketLocation={user?.marketLocation && !user.marketLocation.toLowerCase().includes("balogun") ? user.marketLocation : undefined}
         metrics={metrics}
         transactions={activeTxs}
       />

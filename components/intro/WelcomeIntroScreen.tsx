@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Store,
@@ -18,9 +18,18 @@ import {
   Users,
   Gift,
   Share2,
+  Check,
+  Send,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  Volume2,
 } from "lucide-react";
 import { MoniePayMark } from "@/components/ui/MoniePayLogo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { useAuth } from "@/context/AuthContext";
+import { generateUserReferralCode } from "@/lib/referral/referralStore";
+import { getCachedDebts } from "@/lib/offline/offlineQueue";
 
 interface WelcomeIntroScreenProps {
   onComplete: () => void;
@@ -31,6 +40,7 @@ interface SlideData {
   id: string;
   badge: string;
   badgeColor: string;
+  badgeIcon: React.ReactNode;
   title: string;
   highlight: string;
   highlightColor?: string;
@@ -42,13 +52,178 @@ interface SlideData {
 }
 
 export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenProps) {
+  const { user } = useAuth();
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  // Dynamic user-derived identity
+  const traderName = user?.name?.trim() || "Shop Trader";
+  const businessName =
+    user?.businessName?.trim() ||
+    (user?.name ? `${user.name}'s Provisions` : "My Business Store");
+
+  // Dynamic virtual account
+  const bankName = "Providus Bank";
+  const accountNumber = user?.id
+    ? `99${user.id.replace(/\D/g, "").slice(-8).padStart(8, "20192381")}`
+    : "9920192381";
+  const accountTag = user?.businessName
+    ? `MoniePay / ${user.businessName}`
+    : (user?.name ? `MoniePay / ${user.name}` : "MoniePay Virtual Account");
+
+  // Dynamic referral code
+  const referralCode = generateUserReferralCode(
+    user?.businessName,
+    user?.phone || user?.email
+  );
+
+  // Dynamic customer debt simulation
+  const [debtSample, setDebtSample] = useState<{
+    customerName: string;
+    amountFormatted: string;
+    daysText: string;
+  }>({
+    customerName: "Chukwuma O.",
+    amountFormatted: "₦25,000",
+    daysText: "3 days",
+  });
+
+  // Interactive micro-states
+  const [voiceIndex, setVoiceIndex] = useState(0);
+  const [accountCopied, setAccountCopied] = useState(false);
+  const [referralCopied, setReferralCopied] = useState(false);
+  const [reminderSent, setReminderSent] = useState(false);
+
+  // Safe timeout & unmount tracking to prevent memory leaks
+  const isMounted = useRef(true);
+  const timeoutsRef = useRef<NodeJS.Timeout[]>([]);
+
+  const safeSetTimeout = (fn: () => void, delayMs: number) => {
+    const id = setTimeout(() => {
+      if (isMounted.current) fn();
+    }, delayMs);
+    timeoutsRef.current.push(id);
+    return id;
+  };
+
+  useEffect(() => {
+    isMounted.current = true;
+    return () => {
+      isMounted.current = false;
+      timeoutsRef.current.forEach((t) => clearTimeout(t));
+      timeoutsRef.current = [];
+    };
+  }, []);
+
+  // Populate realistic debt sample from real cached merchant records if available
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      const cached = getCachedDebts(user?.id);
+      const activeDebts = cached.filter(
+        (d) => d.debt_type === "CUSTOMER_CREDIT" && d.status !== "SETTLED" && d.balance_due > 0
+      );
+      if (activeDebts.length > 0) {
+        const top = [...activeDebts].sort((a, b) => b.balance_due - a.balance_due)[0];
+        setDebtSample({
+          customerName: top.person_name || "Customer Account",
+          amountFormatted: `₦${top.balance_due.toLocaleString()}`,
+          daysText: "Pending debt",
+        });
+      }
+    } catch {}
+  }, [user?.id]);
+
+  // Voice recording simulation samples
+  const voiceSamples = [
+    {
+      input: '"I sell 2 carton Indomie ₦18,000"',
+      status: "Voice understood ⚡",
+      type: "Recorded as Sale",
+      amount: "+₦18,000",
+      isSale: true,
+    },
+    {
+      input: '"Sold 3 bags of rice for ₦90,000 cash"',
+      status: "Voice understood ⚡",
+      type: "Recorded as Sale",
+      amount: "+₦90,000",
+      isSale: true,
+    },
+    {
+      input: '"Customer pay ₦35,000 transfer"',
+      status: "Instant record ⚡",
+      type: "Recorded as Sale",
+      amount: "+₦35,000",
+      isSale: true,
+    },
+    {
+      input: '"Bought diesel for generator ₦6,000"',
+      status: "Expense tracked ⛽",
+      type: "Recorded as Expense",
+      amount: "-₦6,000",
+      isSale: false,
+    },
+  ];
+
+  const currentVoice = voiceSamples[voiceIndex];
+
+  const handleNextVoice = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setVoiceIndex((prev) => (prev + 1) % voiceSamples.length);
+  };
+
+  const handleCopyAccount = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(accountNumber);
+    }
+    setAccountCopied(true);
+    safeSetTimeout(() => setAccountCopied(false), 2200);
+  };
+
+  const handleCopyReferral = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (typeof navigator !== "undefined" && navigator.clipboard) {
+      navigator.clipboard.writeText(referralCode);
+    }
+    setReferralCopied(true);
+    safeSetTimeout(() => setReferralCopied(false), 2200);
+  };
+
+  const handleSendReminderPing = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    setReminderSent(true);
+    safeSetTimeout(() => setReminderSent(false), 3000);
+  };
+
+  const handleFinish = () => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("moniepay_seen_intro", "true");
+      } catch {}
+    }
+    onComplete();
+  };
+
+  const handleSkip = () => {
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.setItem("moniepay_seen_intro", "true");
+      } catch {}
+    }
+    if (onSkip) {
+      onSkip();
+    } else {
+      onComplete();
+    }
+  };
 
   const slides: SlideData[] = [
     {
       id: "welcome",
       badge: "Welcome to MoniePay 🇳🇬",
       badgeColor: "bg-blue-50 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+      badgeIcon: <Store className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />,
       title: "Your Sharp-Sharp",
       highlight: "Shop Intelligence Partner",
       highlightColor: "text-[#1d4ed8] dark:text-blue-400",
@@ -76,13 +251,15 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             initial={{ scale: 0.8, y: 15, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="relative z-10 p-5 rounded-[28px] bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(29,78,216,0.18)] dark:shadow-2xl flex flex-col items-center text-center space-y-2"
+            className="relative z-10 p-5 rounded-[28px] bg-white/90 dark:bg-slate-800/90 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(29,78,216,0.18)] dark:shadow-2xl flex flex-col items-center text-center space-y-2 max-w-[260px]"
           >
             <div className="h-16 w-16 rounded-2xl bg-[#1d4ed8] text-white flex items-center justify-center shadow-md">
               <Store className="h-8 w-8 text-white" />
             </div>
-            <div>
-              <p className="text-xs font-black text-slate-900 dark:text-white">MoniePay Trader OS</p>
+            <div className="w-full">
+              <p className="text-xs font-black text-slate-900 dark:text-white truncate">
+                {user?.businessName || "MoniePay Trader OS"}
+              </p>
               <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-300 flex items-center gap-1 justify-center mt-0.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                 100% Offline Ready
@@ -105,7 +282,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             </div>
           </motion.div>
 
-          {/* Floating Pill Right: Free Core Ledger */}
+          {/* Floating Pill Right: 7-Day Free Trial */}
           <motion.div
             animate={{ y: [6, -5, 6], rotate: [2, -2, 2] }}
             transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
@@ -115,8 +292,8 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
               <ShieldCheck className="h-3.5 w-3.5" />
             </div>
             <div>
-              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Free Core Ledger</p>
-              <p className="text-xs font-black text-blue-800 dark:text-blue-300">0 Subscription</p>
+              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Free Test-Run</p>
+              <p className="text-xs font-black text-blue-800 dark:text-blue-300">7 Days Free</p>
             </div>
           </motion.div>
         </div>
@@ -126,6 +303,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
       id: "recording",
       badge: "Fast Record • 2 Seconds 🎙️",
       badgeColor: "bg-amber-50 dark:bg-amber-950/80 text-amber-900 dark:text-amber-300 border-amber-200 dark:border-amber-800",
+      badgeIcon: <Mic className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />,
       title: "Talk Am or Type Am",
       highlight: "Sharp-Sharp Recording",
       highlightColor: "text-amber-600 dark:text-amber-400",
@@ -161,10 +339,12 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="relative z-10 w-64 p-4 rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(217,119,6,0.18)] dark:shadow-2xl space-y-3"
+            className="relative z-10 w-64 p-4 rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(217,119,6,0.18)] dark:shadow-2xl space-y-3 cursor-pointer select-none"
+            onClick={handleNextVoice}
+            title="Click to try another recording sample"
           >
             {/* Sim Voice Input Bar */}
-            <div className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/80 border border-amber-200/80 dark:border-amber-800">
+            <div className="flex items-center gap-2.5 p-2.5 rounded-2xl bg-amber-50/90 dark:bg-amber-950/80 border border-amber-200/80 dark:border-amber-800 transition-all hover:bg-amber-100/80 dark:hover:bg-amber-900/60">
               <motion.div
                 animate={{ scale: [1, 1.2, 1] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
@@ -174,19 +354,23 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
               </motion.div>
               <div className="min-w-0 flex-1">
                 <p className="text-[10.5px] font-black text-amber-950 dark:text-amber-100 truncate">
-                  "I sell 2 carton Indomie ₦18,000"
+                  {currentVoice.input}
                 </p>
-                <p className="text-[9.5px] font-bold text-amber-700 dark:text-amber-300">Voice understood ⚡</p>
+                <p className="text-[9.5px] font-bold text-amber-700 dark:text-amber-300">
+                  {currentVoice.status} • Tap to switch
+                </p>
               </div>
             </div>
 
             {/* Instant Receipt Generated Tag */}
             <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 flex items-center justify-between">
               <div className="flex items-center gap-1.5">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-[10.5px] font-black text-slate-800 dark:text-slate-100">Recorded as Sale</span>
+                <CheckCircle2 className={`h-3.5 w-3.5 ${currentVoice.isSale ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`} />
+                <span className="text-[10.5px] font-black text-slate-800 dark:text-slate-100">{currentVoice.type}</span>
               </div>
-              <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300">+₦18,000</span>
+              <span className={`text-[11px] font-black ${currentVoice.isSale ? "text-emerald-700 dark:text-emerald-300" : "text-amber-700 dark:text-amber-300"}`}>
+                {currentVoice.amount}
+              </span>
             </div>
           </motion.div>
         </div>
@@ -196,6 +380,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
       id: "wallet",
       badge: "Auto-Record Payments • QR & Transfer ⚡",
       badgeColor: "bg-cyan-50 dark:bg-cyan-950/80 text-cyan-900 dark:text-cyan-300 border-cyan-200 dark:border-cyan-800",
+      badgeIcon: <Wallet className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />,
       title: "Direct Shop Wallet",
       highlight: "Auto-Records Every Transfer",
       highlightColor: "text-cyan-600 dark:text-cyan-400",
@@ -264,19 +449,31 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
             className="relative z-10 w-[270px] sm:w-72 p-3.5 rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(8,145,178,0.18)] dark:shadow-2xl space-y-2.5"
           >
-            {/* Merchant Dedicated Virtual Account Bar */}
-            <div className="flex items-center justify-between p-2 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10">
-              <div className="flex items-center gap-2">
-                <div className="h-7 w-7 rounded-xl bg-cyan-600 text-white flex items-center justify-center font-black text-[10px]">
+            {/* Merchant Dedicated Virtual Account Bar (Dynamic & Clickable to Copy) */}
+            <div
+              onClick={handleCopyAccount}
+              className="flex items-center justify-between p-2 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 cursor-pointer hover:border-cyan-400/80 transition-all select-none group"
+              title="Click to copy account number"
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="h-7 w-7 rounded-xl bg-cyan-600 text-white flex items-center justify-center font-black text-[10px] shrink-0">
                   <Building2 className="h-3.5 w-3.5" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-black text-slate-900 dark:text-white">Providus Bank • 9920192841</p>
-                  <p className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400">MoniePay / Mama Chidi</p>
+                <div className="min-w-0">
+                  <p className="text-[10px] font-black text-slate-900 dark:text-white truncate">
+                    {bankName} • {accountNumber}
+                  </p>
+                  <p className="text-[9px] font-bold text-cyan-600 dark:text-cyan-400 truncate">
+                    {accountTag}
+                  </p>
                 </div>
               </div>
-              <span className="px-1.5 py-0.5 rounded-md bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 text-[9px] font-black">
-                Active
+              <span className={`px-1.5 py-0.5 rounded-md text-[9px] font-black shrink-0 transition-all ${
+                accountCopied
+                  ? "bg-emerald-500 text-white shadow-xs"
+                  : "bg-cyan-100 dark:bg-cyan-950 text-cyan-800 dark:text-cyan-300 group-hover:bg-cyan-200"
+              }`}>
+                {accountCopied ? "Copied! ✓" : "Active"}
               </span>
             </div>
 
@@ -288,20 +485,20 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
               className="p-2.5 rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-950/80 dark:to-teal-950/80 border border-emerald-300/80 dark:border-emerald-700/80 shadow-xs"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5">
-                  <div className="h-5 w-5 rounded-full bg-emerald-500 text-white flex items-center justify-center">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <div className="h-5 w-5 rounded-full bg-emerald-500 text-white flex items-center justify-center shrink-0">
                     <ArrowDownLeft className="h-3 w-3" />
                   </div>
-                  <div>
-                    <p className="text-[10.5px] font-black text-emerald-950 dark:text-emerald-100">
+                  <div className="min-w-0">
+                    <p className="text-[10.5px] font-black text-emerald-950 dark:text-emerald-100 truncate">
                       +₦20,000 Transfer In
                     </p>
-                    <p className="text-[9px] font-semibold text-emerald-700 dark:text-emerald-300">
-                      From: Chidinma O. (Providus)
+                    <p className="text-[9px] font-semibold text-emerald-700 dark:text-emerald-300 truncate">
+                      From: Verified Customer (Bank App)
                     </p>
                   </div>
                 </div>
-                <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300">+₦20,000</span>
+                <span className="text-[11px] font-black text-emerald-700 dark:text-emerald-300 shrink-0">+₦20,000</span>
               </div>
             </motion.div>
 
@@ -323,6 +520,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
       id: "gbese",
       badge: "Zero Wahala Recovery 💬",
       badgeColor: "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
+      badgeIcon: <MessageSquare className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />,
       title: "Collect Your Money",
       highlight: "Without Fight or Quarrel",
       highlightColor: "text-emerald-600 dark:text-emerald-400",
@@ -342,23 +540,27 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
           >
             {/* WhatsApp Header Mock */}
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-2">
-              <div className="flex items-center gap-2">
-                <div className="h-7 w-7 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-[10px]">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="h-7 w-7 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black text-[10px] shrink-0">
                   WA
                 </div>
-                <div>
-                  <p className="text-[11px] font-black text-slate-900 dark:text-white">Alhaji Garba</p>
-                  <p className="text-[9.5px] font-bold text-emerald-600 dark:text-emerald-300">Owing ₦25,000 (3 days)</p>
+                <div className="min-w-0">
+                  <p className="text-[11px] font-black text-slate-900 dark:text-white truncate">
+                    {debtSample.customerName}
+                  </p>
+                  <p className="text-[9.5px] font-bold text-emerald-600 dark:text-emerald-300 truncate">
+                    Owing {debtSample.amountFormatted} ({debtSample.daysText})
+                  </p>
                 </div>
               </div>
-              <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9px] font-black">
+              <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9px] font-black shrink-0">
                 Gbese Sheet
               </span>
             </div>
 
-            {/* Simulated Message Bubble */}
+            {/* Simulated Message Bubble (Dynamically references the merchant's business name) */}
             <div className="p-2.5 rounded-2xl bg-emerald-50/90 dark:bg-emerald-950/80 border border-emerald-200 dark:border-emerald-800 text-emerald-950 dark:text-emerald-100 text-[10.5px] leading-relaxed font-medium">
-              Good day Alhaji! Friendly reminder on your balance of <span className="font-black text-emerald-900 dark:text-emerald-200 underline decoration-emerald-400/50">₦25,000</span> for the goods. Thank you for your patronage! 🙏
+              Good day! Friendly reminder from <strong className="font-black text-emerald-900 dark:text-emerald-200">{businessName}</strong> on your balance of <span className="font-black text-emerald-900 dark:text-emerald-200 underline decoration-emerald-400/50">{debtSample.amountFormatted}</span> for the goods. Thank you for your patronage! 🙏
             </div>
 
             {/* Quick Action Button */}
@@ -367,9 +569,27 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
                 <Clock className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                 1-Tap WhatsApp Ping
               </span>
-              <span className="text-[10.5px] font-black text-emerald-700 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950 border border-emerald-200/80 dark:border-emerald-800 px-2 py-0.5 rounded-lg">
-                Sent 🚀
-              </span>
+              <button
+                type="button"
+                onClick={handleSendReminderPing}
+                className={`text-[10.5px] font-black border px-2.5 py-0.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                  reminderSent
+                    ? "bg-emerald-600 text-white border-emerald-600"
+                    : "text-emerald-700 dark:text-emerald-300 bg-emerald-100/80 dark:bg-emerald-950 border-emerald-200/80 dark:border-emerald-800 hover:bg-emerald-200 dark:hover:bg-emerald-900"
+                }`}
+              >
+                {reminderSent ? (
+                  <>
+                    <Check className="h-3 w-3" />
+                    Sent! 🚀
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-3 w-3" />
+                    Send Ping
+                  </>
+                )}
+              </button>
             </div>
           </motion.div>
         </div>
@@ -379,6 +599,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
       id: "pulse",
       badge: "Real Shop Intelligence 📈",
       badgeColor: "bg-indigo-50 dark:bg-indigo-950/80 text-indigo-900 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800",
+      badgeIcon: <TrendingUp className="h-3.5 w-3.5 text-indigo-600 dark:text-indigo-400" />,
       title: "Know Wetin to Do Next",
       highlight: "Daily Pulse & Decisions",
       highlightColor: "text-indigo-600 dark:text-indigo-400",
@@ -413,7 +634,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
 
             <div className="p-2 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200/80 dark:border-white/10 flex items-center gap-2 text-[10.5px] font-bold text-slate-700 dark:text-slate-200">
               <Zap className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400 shrink-0" />
-              <span>Restock Sugar: <strong className="text-amber-600 dark:text-amber-300 font-black">Price drops by ₦1,200 tomorrow!</strong></span>
+              <span>Restock Staples: <strong className="text-amber-600 dark:text-amber-300 font-black">Depot price alert updated daily!</strong></span>
             </div>
           </motion.div>
         </div>
@@ -421,13 +642,14 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
     },
     {
       id: "referral",
-      badge: "Call Shop Neighbor • Win Free Credits 🤝",
+      badge: "Community Rewards • Free Days 🤝",
       badgeColor: "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
-      title: "Call Market Neighbor",
-      highlight: "Una Two Win +25 Free Credits",
+      badgeIcon: <Users className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />,
+      title: "Invite Shop Neighbors",
+      highlight: "Earn +14 Days Free MoniePay Plus",
       highlightColor: "text-emerald-600 dark:text-emerald-400",
       description:
-        "Give your neighbor your shop code. As dem record market for 7 active days, una two go immediately get +25 Free Insight Credits to diagnose your shop and collect gbese!",
+        "Share your invite code with shop neighbors. When they record for 7 active days, you both unlock +14 days of free MoniePay Plus!",
       icon: <Users className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />,
       themeColor: "#059669",
       gradient: "from-emerald-800 via-emerald-600 to-teal-500",
@@ -437,21 +659,21 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
           <motion.div
             animate={{ scale: [1, 1.25, 1], opacity: [0.35, 0.1, 0.35] }}
             transition={{ duration: 3.5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute h-40 w-40 sm:h-52 sm:w-52 rounded-full border-2 border-emerald-400/40 bg-emerald-100/20 dark:bg-emerald-900/20"
+            className="absolute h-44 w-44 sm:h-52 sm:w-52 rounded-full border-2 border-emerald-400/40 bg-emerald-100/20 dark:bg-emerald-900/20"
           />
 
           {/* Floating WhatsApp Pill Left */}
           <motion.div
             animate={{ y: [-4, 5, -4], rotate: [-2, 2, -2] }}
             transition={{ duration: 3.8, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute left-0 sm:-left-1 top-1 sm:top-2 z-20 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-emerald-200 dark:border-emerald-800 shadow-md flex items-center gap-1.5 sm:gap-2"
+            className="absolute -left-2 sm:left-1 top-2 z-20 px-3 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-emerald-200 dark:border-emerald-800 shadow-lg flex items-center gap-2"
           >
-            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-black text-[9px] sm:text-[10px] shrink-0">
+            <div className="h-7 w-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center font-black text-[10px]">
               WA
             </div>
             <div>
-              <p className="text-[8.5px] sm:text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">WhatsApp</p>
-              <p className="text-[10px] sm:text-[11px] font-black text-emerald-700 dark:text-emerald-300 whitespace-nowrap">Invite Don Go 🚀</p>
+              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">1-Tap WhatsApp</p>
+              <p className="text-[11px] font-black text-emerald-700 dark:text-emerald-300">Invite Code Ready</p>
             </div>
           </motion.div>
 
@@ -459,39 +681,83 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
           <motion.div
             animate={{ y: [5, -5, 5], rotate: [2, -2, 2] }}
             transition={{ duration: 4.2, repeat: Infinity, ease: "easeInOut", delay: 0.4 }}
-            className="absolute right-0 sm:-right-1 bottom-0 sm:bottom-1 z-20 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-xl sm:rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-amber-200 dark:border-amber-800 shadow-md flex items-center gap-1.5"
+            className="absolute -right-2 sm:right-1 bottom-1 z-20 px-3 py-1.5 rounded-2xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-md border border-amber-200 dark:border-amber-800 shadow-lg flex items-center gap-1.5"
           >
-            <div className="h-6 w-6 sm:h-7 sm:w-7 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 flex items-center justify-center shrink-0">
-              <Gift className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <div className="h-7 w-7 rounded-lg bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300 flex items-center justify-center">
+              <Gift className="h-4 w-4" />
             </div>
             <div>
-              <p className="text-[8.5px] sm:text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Bonus Credits</p>
-              <p className="text-[11px] sm:text-xs font-black text-amber-800 dark:text-amber-300 whitespace-nowrap">+25 Credits Free</p>
+              <p className="text-[9px] font-bold text-slate-500 dark:text-slate-400 uppercase">Bonus Days</p>
+              <p className="text-xs font-black text-amber-800 dark:text-amber-300">+14 Days Free</p>
             </div>
           </motion.div>
 
-          {/* Central 3D Referral Card */}
+          {/* Central 3D Referral Card (Dynamic Code) */}
           <motion.div
             initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ type: "spring", stiffness: 350, damping: 25 }}
-            className="relative z-10 w-full max-w-[250px] sm:max-w-[280px] p-3 sm:p-4 rounded-2xl sm:rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(5,150,105,0.18)] dark:shadow-2xl space-y-2 sm:space-y-2.5"
+            className="relative z-10 w-72 p-4 rounded-3xl bg-white/95 dark:bg-slate-800/95 backdrop-blur-xl border border-white/80 dark:border-white/10 shadow-[0_16px_40px_rgba(5,150,105,0.18)] dark:shadow-2xl space-y-2.5"
           >
-            <div className="flex items-center justify-between gap-1">
-              <span className="text-[11px] sm:text-xs font-black text-slate-900 dark:text-white truncate">Shop Neighbor Code</span>
-              <span className="px-1.5 sm:px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9px] sm:text-[10px] font-black shrink-0 whitespace-nowrap">
-                Una Two Win 🎁
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-black text-slate-900 dark:text-white">Shop Neighbor Referral</span>
+              <span className="px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[10px] font-black">
+                Win-Win 🎁
               </span>
             </div>
 
-            <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/80 border border-emerald-100 dark:border-emerald-800 space-y-1">
-              <p className="text-[11px] sm:text-xs font-black text-emerald-950 dark:text-emerald-100">Your Code: MONIE-SHOP-24</p>
-              <p className="text-[9.5px] sm:text-[10px] text-emerald-700 dark:text-emerald-300 font-medium leading-tight">Una two dey enjoy +25 free credits once dem record for 7 days</p>
+            {/* Dynamic Code Display with Click to Copy */}
+            <div
+              onClick={handleCopyReferral}
+              className="p-2.5 rounded-2xl bg-emerald-50/80 dark:bg-emerald-950/80 border border-emerald-100 dark:border-emerald-800 space-y-1 cursor-pointer hover:border-emerald-400 transition-all group select-none"
+              title="Click to copy your invite code"
+            >
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-black text-emerald-950 dark:text-emerald-100 tracking-wider">
+                  Your Code: {referralCode}
+                </p>
+                <span className={`text-[9.5px] font-black px-1.5 py-0.5 rounded transition-all ${
+                  referralCopied ? "bg-emerald-600 text-white" : "bg-emerald-200/80 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200"
+                }`}>
+                  {referralCopied ? "Copied! ✓" : "Copy"}
+                </span>
+              </div>
+              <p className="text-[10px] text-emerald-700 dark:text-emerald-300 font-medium">
+                Both of you get +14 days free when they record for 7 days
+              </p>
             </div>
 
-            <div className="flex items-center justify-between text-[9.5px] sm:text-[10px] font-bold text-slate-500 pt-0.5">
-              <span>Zero long talk</span>
-              <span className="text-emerald-700 dark:text-emerald-400 font-black">Sharp Activation ✓</span>
+            <div className="flex items-center gap-1.5 pt-0.5">
+              <button
+                type="button"
+                onClick={handleCopyReferral}
+                className={`flex-1 py-1.5 px-2 rounded-xl text-[10.5px] font-black border transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                  referralCopied
+                    ? "bg-emerald-600 text-white border-emerald-600 shadow-xs"
+                    : "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-200 border-emerald-300 dark:border-emerald-800 hover:bg-emerald-200"
+                }`}
+              >
+                {referralCopied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                <span>{referralCopied ? "Code Copied! ✓" : "Copy Code"}</span>
+              </button>
+
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(
+                  `Join me on MoniePay! Use my shop invite code ${referralCode} to get 14 days of free MoniePay Plus: https://moniepay.app/login?ref=${referralCode}`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="py-1.5 px-3 rounded-xl text-[10.5px] font-black bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs transition-all flex items-center justify-center gap-1 cursor-pointer"
+              >
+                <Share2 className="h-3 w-3" />
+                <span>WhatsApp</span>
+              </a>
+            </div>
+
+            <div className="flex items-center justify-between text-[10px] font-bold text-slate-500 pt-0.5">
+              <span>Zero wahala sharing</span>
+              <span className="text-emerald-700 dark:text-emerald-400 font-black">Instant Activation ✓</span>
             </div>
           </motion.div>
         </div>
@@ -505,7 +771,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
     if (currentSlide < slides.length - 1) {
       setCurrentSlide((prev) => prev + 1);
     } else {
-      onComplete();
+      handleFinish();
     }
   };
 
@@ -514,6 +780,32 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
       setCurrentSlide((prev) => prev - 1);
     }
   };
+
+  // Keyboard Navigation with leak-free cleanup
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't intercept if user is typing in an input
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+        return;
+      }
+
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        handleNext();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        handlePrev();
+      } else if (e.key === "Escape") {
+        e.preventDefault();
+        handleSkip();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [currentSlide, slides.length]);
 
   return (
     <div className="min-h-screen relative flex flex-col items-center justify-between p-4 sm:p-6 overflow-hidden bg-[#edf3fb] dark:bg-slate-950 text-slate-900 dark:text-slate-100 selection:bg-blue-500/20 selection:text-blue-950 dark:selection:text-white transition-colors">
@@ -535,7 +827,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
           <ThemeToggle />
           <button
             type="button"
-            onClick={onSkip || onComplete}
+            onClick={handleSkip}
             className="px-3.5 py-1.5 rounded-xl bg-white/70 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-800 text-slate-600 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white text-xs font-black border border-white/80 dark:border-white/10 shadow-2xs backdrop-blur-md active:scale-95 transition-all cursor-pointer"
           >
             Skip Intro &rarr;
@@ -543,7 +835,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
         </div>
       </header>
 
-      {/* ── MAIN ANIMATED SLIDE CARD CONTAINER ── */}
+      {/* ── MAIN ANIMATED SLIDE CARD CONTAINER WITH SWIPE SUPPORT ── */}
       <main className="relative w-full max-w-md my-auto py-4 z-10">
         <AnimatePresence mode="wait">
           <motion.div
@@ -552,14 +844,24 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             animate={{ opacity: 1, x: 0, scale: 1 }}
             exit={{ opacity: 0, x: -35, scale: 0.96 }}
             transition={{ type: "spring", stiffness: 360, damping: 28 }}
-            className="clay-card p-5 sm:p-7 space-y-4 text-center relative overflow-hidden bg-white/90 dark:bg-slate-900/90 border border-white/80 dark:border-white/10 shadow-2xl"
+            drag="x"
+            dragConstraints={{ left: 0, right: 0 }}
+            dragElastic={0.2}
+            onDragEnd={(_, info) => {
+              if (info.offset.x < -45 || info.velocity.x < -250) {
+                handleNext();
+              } else if (info.offset.x > 45 || info.velocity.x > 250) {
+                handlePrev();
+              }
+            }}
+            className="clay-card p-5 sm:p-7 space-y-4 text-center relative overflow-hidden bg-white/90 dark:bg-slate-900/90 border border-white/80 dark:border-white/10 shadow-2xl touch-pan-y"
           >
-            {/* Top Micro Tag */}
+            {/* Top Micro Tag with dynamic slide-specific icon */}
             <div className="flex justify-center">
               <span
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black border shadow-2xs ${current.badgeColor}`}
               >
-                <Store className="h-3.5 w-3.5" />
+                {current.badgeIcon}
                 <span>{current.badge}</span>
               </span>
             </div>
@@ -594,11 +896,10 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
                 type="button"
                 onClick={() => setCurrentSlide(idx)}
                 aria-label={`Go to slide ${idx + 1}`}
-                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
-                  isActive
-                    ? "w-8 bg-[#1d4ed8] dark:bg-blue-500 shadow-[0_0_10px_rgba(29,78,216,0.5)]"
-                    : "w-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 dark:hover:bg-slate-600"
-                }`}
+                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${isActive
+                  ? "w-8 bg-[#1d4ed8] dark:bg-blue-500 shadow-[0_0_10px_rgba(29,78,216,0.5)]"
+                  : "w-2.5 bg-slate-300 dark:bg-slate-700 hover:bg-slate-400 dark:hover:bg-slate-600"
+                  }`}
               />
             );
           })}
@@ -610,9 +911,10 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             <button
               type="button"
               onClick={handlePrev}
-              className="px-4 py-3.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-200 text-xs font-black shadow-2xs active:scale-95 transition-all cursor-pointer"
+              className="px-4 py-3.5 rounded-2xl bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 border border-slate-200/90 dark:border-white/10 text-slate-700 dark:text-slate-200 text-xs font-black shadow-2xs active:scale-95 transition-all cursor-pointer flex items-center gap-1"
             >
-              Back
+              <ChevronLeft className="h-4 w-4" />
+              <span>Back</span>
             </button>
           )}
 

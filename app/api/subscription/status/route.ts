@@ -6,8 +6,10 @@ export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url);
+    const queryUserId = searchParams.get("userId");
     const user = await getSessionUser();
-    const userId = user?.id || "user_owner_01";
+    const userId = queryUserId || user?.id || "user_owner_01";
 
     const subscription = await getUserSubscription(userId);
 
@@ -17,7 +19,7 @@ export async function GET(request: NextRequest) {
       user: {
         id: userId,
         email: user?.email || "demo@moniepay.app",
-        name: user?.name || "Mama Chidi",
+        name: user?.name || "Shop Owner",
       },
     });
   } catch (error: any) {

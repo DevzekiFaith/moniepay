@@ -183,7 +183,7 @@ export async function getSessionUser(): Promise<{
             email: "demo@moniepay.app",
             name: "Mama Chidi",
             businessName: "Mama Chidi Super Provisions",
-            marketLocation: "Shop 14, Balogun Market, Lagos",
+            marketLocation: undefined,
           };
         }
 

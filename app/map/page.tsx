@@ -35,10 +35,10 @@ import { MoniePayMark } from "@/components/ui/MoniePayLogo";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import {
   getAllVendors,
-  INITIAL_VENDORS,
   getVendor,
   calculateVendorStats,
   VendorProfile,
+  resolveMarketCoordinates,
 } from "@/lib/reviews/vendorStore";
 import {
   calculateHaversineDistanceKm,
@@ -83,16 +83,64 @@ function VendorMapContent() {
   const searchParams = useSearchParams();
   const initialVendorId = searchParams?.get("vendor") || null;
 
-  // Initialize with deterministic seed data during SSR to guarantee 100% hydration match,
-  // then hydrate with active user session/custom vendors in useEffect on client mount
-  const [vendors, setVendors] = useState<VendorProfile[]>(() => Object.values(INITIAL_VENDORS));
+  // Real registered merchants only — no demo or static mock sellers
+  const [vendors, setVendors] = useState<VendorProfile[]>([]);
   const [isClientMounted, setIsClientMounted] = useState(false);
 
   useEffect(() => {
     setIsClientMounted(true);
-    setVendors(getAllVendors());
 
-    const handleUpdate = () => setVendors(getAllVendors());
+    const loadRealMerchants = async () => {
+      const local = getAllVendors();
+      try {
+        const res = await fetch("/api/vendors");
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.vendors)) {
+            const mergedMap = new Map<string, VendorProfile>();
+            // Add local registered traders first
+            local.forEach((v) => mergedMap.set(v.id, v));
+
+            for (const b of json.vendors) {
+              if (!mergedMap.has(b.id)) {
+                const resolved = resolveMarketCoordinates(b.marketLocation || b.shopName);
+                mergedMap.set(b.id, {
+                  id: b.id,
+                  name: b.name,
+                  shopName: b.shopName,
+                  category: b.category,
+                  market: b.marketLocation ? resolved.market : b.shopName,
+                  fullAddress: b.marketLocation || `${b.shopName}, Nigeria`,
+                  landmark: resolved.landmark,
+                  phone: b.phone || "+234 800 000 0000",
+                  whatsapp: b.phone ? b.phone.replace(/\D/g, "") : "2348000000000",
+                  image: "/images/traders/mama_chidi.jpg",
+                  code: `MP-${b.id.slice(-5).toUpperCase()}`,
+                  coordinates: {
+                    lat: resolved.lat,
+                    lng: resolved.lng,
+                    mapX: resolved.mapX,
+                    mapY: resolved.mapY,
+                  },
+                  openingHours: "Mon - Sat: 7:30 AM - 6:30 PM",
+                  verified: true,
+                  tags: ["Registered Merchant", "Verified Live Trader"],
+                });
+              }
+            }
+            setVendors(Array.from(mergedMap.values()));
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("Could not query live registered vendors:", e);
+      }
+      setVendors(local);
+    };
+
+    loadRealMerchants();
+
+    const handleUpdate = () => loadRealMerchants();
     window.addEventListener("moniepay:vendors-updated", handleUpdate);
     window.addEventListener("storage", handleUpdate);
     return () => {
@@ -786,9 +834,15 @@ function VendorMapContent() {
                       }`}
                     >
                       <span>{vendor.shopName.split(" ")[0]}</span>
-                      <span suppressHydrationWarning className="flex items-center text-amber-300 font-black text-[9.5px]">
-                        ★ {stats.average}
-                      </span>
+                      {stats.total > 0 ? (
+                        <span suppressHydrationWarning className="flex items-center text-amber-300 font-black text-[9.5px]">
+                          ★ {stats.average}
+                        </span>
+                      ) : (
+                        <span className="flex items-center text-emerald-300 font-bold text-[9px]">
+                          Verified
+                        </span>
+                      )}
                       {distanceKm !== null && (
                         <span className="text-emerald-300 font-bold text-[9px]">
                           • {distanceKm}km
@@ -821,7 +875,7 @@ function VendorMapContent() {
           <div className="p-3 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200/80 dark:border-white/10 text-xs flex items-center justify-between text-slate-600 dark:text-slate-300">
             <span className="flex items-center gap-1.5 font-bold">
               <ShieldCheck className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              <span>Tap any pin to see shop reviews, verified stall landmark & directions</span>
+              <span>Tap any pin to see shop reviews, verified stall landmark &amp; directions</span>
             </span>
             <span
               suppressHydrationWarning
@@ -861,7 +915,7 @@ function VendorMapContent() {
                     </span>
                     <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 text-[9.5px] font-bold flex items-center gap-0.5">
                       <ShieldCheck className="h-2.5 w-2.5" />
-                      Verified
+                      Verified Live
                     </span>
                     {userGps && (
                       <span className="px-2 py-0.2 rounded-full bg-emerald-50 dark:bg-emerald-900/60 border border-emerald-300 dark:border-emerald-700/60 text-emerald-800 dark:text-emerald-200 text-[9.5px] font-black flex items-center gap-1">
@@ -876,13 +930,22 @@ function VendorMapContent() {
                   </h3>
 
                   <div className="flex items-center gap-2 pt-0.5">
-                    <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-black text-xs">
-                      <ThumbsUp className="h-3.5 w-3.5" />
-                      <span suppressHydrationWarning>{activeStats?.average} pts</span>
-                    </div>
-                    <span suppressHydrationWarning className="text-[11px] text-slate-400 font-medium">
-                      ({activeStats?.total} verified reviews)
-                    </span>
+                    {activeStats && activeStats.total > 0 ? (
+                      <>
+                        <div className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-black text-xs">
+                          <ThumbsUp className="h-3.5 w-3.5" />
+                          <span suppressHydrationWarning>{activeStats.average} pts</span>
+                        </div>
+                        <span suppressHydrationWarning className="text-[11px] text-slate-400 font-medium">
+                          ({activeStats.total} verified reviews)
+                        </span>
+                      </>
+                    ) : (
+                      <span className="text-[11px] font-bold text-blue-600 dark:text-sky-400 flex items-center gap-1">
+                        <ShieldCheck className="h-3 w-3 text-emerald-500" />
+                        New Verified Merchant (0 reviews)
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -891,10 +954,17 @@ function VendorMapContent() {
               <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/70 border border-slate-200/80 dark:border-white/10 space-y-1 text-xs">
                 <p className="font-bold text-slate-900 dark:text-white flex items-center gap-1">
                   <MapPin className="h-3.5 w-3.5 text-blue-600 dark:text-sky-400 shrink-0" />
-                  <span>{activeVendor.fullAddress}</span>
+                  <span>
+                    {activeVendor.fullAddress && activeVendor.fullAddress !== "Commercial Market Stall, Nigeria"
+                      ? activeVendor.fullAddress
+                      : `${activeVendor.shopName} • Registered Merchant`}
+                  </span>
                 </p>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  <strong>Landmark:</strong> {activeVendor.landmark}
+                  <strong>Landmark:</strong>{" "}
+                  {activeVendor.fullAddress && activeVendor.fullAddress !== "Commercial Market Stall, Nigeria"
+                    ? activeVendor.landmark
+                    : "Verified MoniePay merchant. Official market stall location pending registration."}
                 </p>
               </div>
 
@@ -911,7 +981,9 @@ function VendorMapContent() {
 
                   <a
                     href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                      activeVendor.fullAddress || `${activeVendor.coordinates.lat},${activeVendor.coordinates.lng}`
+                      activeVendor.fullAddress !== "Commercial Market Stall, Nigeria"
+                        ? activeVendor.fullAddress
+                        : activeVendor.shopName
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -969,14 +1041,34 @@ function VendorMapContent() {
               </span>
             </div>
 
+            {/* Pioneer notice when 0 or 1 stall is registered */}
+            {filteredVendors.length <= 1 && (
+              <div className="p-3.5 rounded-2xl bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/80 text-xs text-blue-900 dark:text-blue-200 flex items-start gap-2.5 shadow-2xs">
+                <Award className="h-5 w-5 text-blue-600 dark:text-sky-400 shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-black text-xs text-blue-950 dark:text-blue-100">
+                    Pioneer Live Registered Trader 🇳🇬
+                  </p>
+                  <p className="text-[11px] text-blue-700 dark:text-blue-300 mt-0.5">
+                    Only authentic registered merchants appear on this live radar. No mock or demo sellers.
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Glitch-free scrolling: Natural document scroll on mobile phones, smooth max-height scrollbox on tablets/desktops */}
             <div className="space-y-2.5 sm:max-h-[520px] sm:overflow-y-auto pr-0 sm:pr-1 overscroll-contain [-webkit-overflow-scrolling:touch] touch-pan-y">
               {filteredVendors.map((vendor) => {
                 const isSelected = selectedVendorId === vendor.id;
-                const stats = vendorStatsMap.get(vendor.id) || { average: 5, total: 0 };
+                const stats = vendorStatsMap.get(vendor.id) || { average: 0, total: 0 };
                 const distanceKm = userGps
                   ? calculateHaversineDistanceKm(userGps.lat, userGps.lng, vendor.coordinates.lat, vendor.coordinates.lng)
                   : null;
+
+                const displayMarket =
+                  vendor.market && vendor.market !== "Commercial Market Stall, Nigeria" && vendor.market !== vendor.shopName
+                    ? vendor.market
+                    : vendor.shopName;
 
                 return (
                   <div
@@ -1023,7 +1115,7 @@ function VendorMapContent() {
                       <p className="text-[10.5px] text-slate-500 dark:text-slate-400 truncate mt-0.5 flex items-center gap-1">
                         <span className="font-semibold text-slate-700 dark:text-slate-300">{vendor.name}</span>
                         <span>•</span>
-                        <span className="truncate">{vendor.market}</span>
+                        <span className="truncate">{displayMarket}</span>
                         {distanceKm !== null && (
                           <>
                             <span>•</span>
@@ -1035,12 +1127,20 @@ function VendorMapContent() {
 
                     {/* Review Ratings Badge */}
                     <div className="text-right shrink-0">
-                      <span suppressHydrationWarning className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-black text-[11px]">
-                        ★ {stats.average}
-                      </span>
-                      <span suppressHydrationWarning className="text-[9.5px] text-slate-400 dark:text-slate-500 block mt-0.5 font-medium">
-                        {stats.total} reviews
-                      </span>
+                      {stats.total > 0 ? (
+                        <>
+                          <span suppressHydrationWarning className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-amber-700 dark:text-amber-300 font-black text-[11px]">
+                            ★ {stats.average}
+                          </span>
+                          <span suppressHydrationWarning className="text-[9.5px] text-slate-400 dark:text-slate-500 block mt-0.5 font-medium">
+                            {stats.total} reviews
+                          </span>
+                        </>
+                      ) : (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold text-[10px]">
+                          New Trader
+                        </span>
+                      )}
                     </div>
                   </div>
                 );

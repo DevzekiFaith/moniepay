@@ -49,7 +49,7 @@ export function ReceiveMoneyModal({
     setMounted(true);
   }, []);
 
-  const businessName = user?.businessName || (user?.name ? `${user.name} Provisions` : "Mama Chidi Provisions");
+  const businessName = user?.businessName || (user?.name ? `${user.name}'s Shop` : "Commercial Merchant");
   const bankName = "Providus Bank";
   // Deterministic or user-assigned dedicated payment account
   const accountNumber = user?.id ? `99${user.id.replace(/\D/g, "").slice(-8).padStart(8, "20192381")}` : "9920192381";

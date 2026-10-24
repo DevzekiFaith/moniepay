@@ -34,13 +34,14 @@ export async function getUserCreditBalance(userId: string): Promise<{
   }
 
   try {
+    const isGenericDefaultUser = !userId || userId === "user_owner_01";
     let user = await (prisma.user as any).findFirst({
       where: {
         OR: [
-          { id: userId },
-          { email: userId },
-          { email: "demo@monielite.app" },
-          { email: "demo@moniepay.app" },
+          ...(userId ? [{ id: userId }, { email: userId }] : []),
+          ...(isGenericDefaultUser
+            ? [{ email: "demo@monielite.app" }, { email: "demo@moniepay.app" }]
+            : []),
         ],
       },
       include: {
@@ -51,7 +52,7 @@ export async function getUserCreditBalance(userId: string): Promise<{
       },
     });
 
-    if (!user) {
+    if (!user && isGenericDefaultUser) {
       user = await (prisma.user as any).findFirst({
         include: {
           creditTransactions: {
@@ -161,35 +162,38 @@ export async function addCredits(params: {
     }
 
     // 2. Fetch or locate user
+    const isGenericDefaultUser = !userId || userId === "user_owner_01";
     let user = await (prisma.user as any).findFirst({
       where: {
         OR: [
-          { id: userId },
-          { email: customerEmail || userId },
-          { email: "demo@monielite.app" },
-          { email: "demo@moniepay.app" },
+          ...(userId ? [{ id: userId }, { email: userId }] : []),
+          ...(customerEmail ? [{ email: customerEmail }] : []),
+          ...(isGenericDefaultUser
+            ? [{ email: "demo@monielite.app" }, { email: "demo@moniepay.app" }]
+            : []),
         ],
       },
     });
 
-    if (!user) {
-      user = await (prisma.user as any).findFirst();
-    }
-
-    if (!user) {
+    if (!user && !isGenericDefaultUser) {
       try {
-        const effectiveId = userId || `usr_${Date.now()}`;
+        const effectiveId = userId;
         user = await (prisma.user as any).create({
           data: {
             id: effectiveId,
             email: customerEmail || `${effectiveId}@monielite.app`,
             name: "Shop Owner",
             creditBalance: 0,
+            passwordHash: "secure_placeholder_hash",
           },
         });
       } catch (createErr) {
-        console.warn("Could not auto-create user on credit purchase:", createErr);
+        console.warn("Could not auto-create isolated user on credit purchase:", createErr);
       }
+    }
+
+    if (!user && isGenericDefaultUser) {
+      user = await (prisma.user as any).findFirst();
     }
 
     if (!user) {
@@ -274,36 +278,38 @@ export async function deductCredits(params: {
     }
 
     // 2. Fetch user and verify balance with resilient fallback
+    const isGenericDefaultUser = !userId || userId === "user_owner_01";
     let user = await (prisma.user as any).findFirst({
       where: {
         OR: [
-          { id: userId },
-          { email: userId },
+          ...(userId ? [{ id: userId }, { email: userId }] : []),
           ...(userEmail ? [{ email: userEmail }] : []),
-          { email: "demo@monielite.app" },
-          { email: "demo@moniepay.app" },
+          ...(isGenericDefaultUser
+            ? [{ email: "demo@monielite.app" }, { email: "demo@moniepay.app" }]
+            : []),
         ],
       },
     });
 
-    if (!user) {
-      user = await (prisma.user as any).findFirst();
-    }
-
-    if (!user) {
+    if (!user && !isGenericDefaultUser) {
       try {
-        const effectiveId = userId || `usr_${Date.now()}`;
+        const effectiveId = userId;
         user = await (prisma.user as any).create({
           data: {
             id: effectiveId,
             email: userEmail || (userId?.includes("@") ? userId : `${effectiveId}@monielite.app`),
             name: "Shop Owner",
             creditBalance: WELCOME_BONUS_CREDITS,
+            passwordHash: "secure_placeholder_hash",
           },
         });
       } catch (createErr) {
         console.warn("Could not auto-create user in deductCredits:", createErr);
       }
+    }
+
+    if (!user && isGenericDefaultUser) {
+      user = await (prisma.user as any).findFirst();
     }
 
     if (!user) {

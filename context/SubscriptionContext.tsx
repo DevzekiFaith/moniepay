@@ -83,8 +83,10 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
         } catch {}
       }
 
-      const res = await fetch("/api/subscription/status", { cache: "no-store" });
-      if (res.ok) {
+      const url = user?.id ? `/api/subscription/status?userId=${encodeURIComponent(user.id)}` : "/api/subscription/status";
+      const res = await fetch(url, { cache: "no-store" });
+      const contentType = res.headers.get("content-type") || "";
+      if (res.ok && contentType.includes("application/json")) {
         const data = await res.json();
         if (data?.success && data?.subscription) {
           setSubscription(data.subscription);
@@ -106,7 +108,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
     // Default to 7-day trial if offline/cached
     setSubscription((prev) => prev || DEFAULT_SUBSCRIPTION);
     setIsLoading(false);
-  }, []);
+  }, [user?.id]);
 
   useEffect(() => {
     refreshSubscription();
@@ -139,7 +141,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           }),
         });
 
-        const data = await res.json();
+        const contentType = res.headers.get("content-type") || "";
+        const data = contentType.includes("application/json") ? await res.json() : null;
         if (data?.success && data?.paymentLink) {
           return { success: true, paymentLink: data.paymentLink as string };
         }
@@ -161,7 +164,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           { cache: "no-store" }
         );
 
-        const data = await res.json();
+        const contentType = res.headers.get("content-type") || "";
+        const data = contentType.includes("application/json") ? await res.json() : null;
         if (data?.success && data?.subscription) {
           setSubscription(data.subscription);
           if (typeof window !== "undefined") {
@@ -216,7 +220,8 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userId: user?.id, action }),
         });
-        const data = await res.json();
+        const contentType = res.headers.get("content-type") || "";
+        const data = contentType.includes("application/json") ? await res.json() : null;
         if (data?.success && data?.subscription) {
           setSubscription(data.subscription);
           if (typeof window !== "undefined") {

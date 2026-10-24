@@ -105,7 +105,9 @@ export default function MoniePayDashboard() {
         id: currentBizId,
         owner_id: user.id || prev.owner_id,
         name: user.businessName || (user.name ? `${user.name} Provisions` : prev.name),
-        market_location: user.marketLocation || prev.market_location,
+        market_location: user.marketLocation && !user.marketLocation.toLowerCase().includes("balogun")
+          ? user.marketLocation
+          : (prev.market_location && !prev.market_location.toLowerCase().includes("balogun") ? prev.market_location : undefined),
       }));
     }
   }, [user, currentBizId]);
@@ -897,8 +899,8 @@ export default function MoniePayDashboard() {
         isOpen={isStatementOpen}
         onClose={() => setIsStatementOpen(false)}
         businessName={business.name}
-        traderName={user?.name || "Mama Chidi"}
-        marketLocation={business.market_location || "Shop 14, Balogun Market, Lagos"}
+        traderName={user?.name || "Shop Owner"}
+        marketLocation={user?.marketLocation && !user.marketLocation.toLowerCase().includes("balogun") ? user.marketLocation : (business.market_location && !business.market_location.toLowerCase().includes("balogun") ? business.market_location : undefined)}
         metrics={metrics}
         transactions={transactions}
       />

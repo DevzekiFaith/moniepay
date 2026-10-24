@@ -36,7 +36,10 @@ export async function GET(request: NextRequest) {
     }
 
     const finalBusinessName = businessName || `${user.name || "My"}'s Business`;
-    const finalLocation = marketLocation || "Commercial Retail Shop, Nigeria";
+    const finalLocation =
+      marketLocation && !marketLocation.toLowerCase().includes("balogun") && marketLocation !== "Commercial Retail Shop, Nigeria"
+        ? marketLocation
+        : undefined;
 
     return NextResponse.json({
       authenticated: true,
