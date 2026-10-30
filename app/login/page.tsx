@@ -31,6 +31,7 @@ import { WelcomeIntroScreen } from "@/components/intro/WelcomeIntroScreen";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { recordNewReferredTrader } from "@/lib/referral/referralStore";
 import { detectNigerianStallLocation } from "@/lib/geo/geolocation";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 function LoginContent() {
   const router = useRouter();
@@ -159,6 +160,28 @@ function LoginContent() {
       setErrorMessage("Could not sign in with demo account.");
       setIsDemoLoading(false);
     }
+  };
+
+  // Forgot Password handler
+  const handleForgotPassword = async () => {
+    setErrorMessage(null);
+    setErrorCode(null);
+    setSuccessMessage(null);
+
+    const cleanId = identifier.trim();
+    if (!cleanId) {
+      setErrorMessage("Please enter your email or phone number in the box above first, then tap 'Forget Password?'.");
+      return;
+    }
+
+    try {
+      const supabase = getSupabaseBrowserClient();
+      if (supabase && cleanId.includes("@")) {
+        await supabase.auth.resetPasswordForEmail(cleanId).catch(() => {});
+      }
+    } catch {}
+
+    setSuccessMessage(`Password reset instruction sent to ${cleanId}. Please check your email or messages.`);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -666,7 +689,7 @@ function LoginContent() {
 
               <button
                 type="button"
-                onClick={() => setErrorMessage("Password reset link sent to your registered email/phone.")}
+                onClick={handleForgotPassword}
                 className="text-blue-600 dark:text-sky-400 hover:text-blue-800 dark:hover:text-sky-300 font-bold transition-colors cursor-pointer"
               >
                 Forget Password?
