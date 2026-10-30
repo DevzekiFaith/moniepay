@@ -5,7 +5,7 @@
 // 100% Mobile Fluid • Zero Overflow • Single Green Theme
 // ─────────────────────────────────────────────────────────────────
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
   ArrowDownLeft,
@@ -17,6 +17,8 @@ import {
   CheckCircle2,
   Plus,
   ChevronRight,
+  Share2,
+  Check,
 } from "lucide-react";
 import type { BusinessTransaction } from "@/types/moniepay.types";
 import { formatTransactionDate } from "@/lib/utils";
@@ -30,6 +32,46 @@ export function RecentActivityList({
   transactions,
   onOpenRecordModal,
 }: RecentActivityListProps) {
+  const [copiedTxId, setCopiedTxId] = useState<string | null>(null);
+
+  const handleShareReceipt = (e: React.MouseEvent, tx: BusinessTransaction) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    const isPositive = tx.type === "SALE" || tx.type === "DEBT_COLLECTION";
+    const paymentLabel =
+      tx.payment_method === "CASH"
+        ? "Cash (Hand-to-Hand)"
+        : tx.payment_method === "TRANSFER"
+        ? "Bank Transfer"
+        : tx.payment_method === "CREDIT"
+        ? "Gbese / Book Credit"
+        : "POS";
+
+    const dateStr = formatTransactionDate(tx.transaction_date);
+    const formattedAmount = `₦${Number(tx.amount).toLocaleString()}`;
+    const desc = tx.description || tx.category || "Goods Purchased";
+
+    const receiptText =
+      `🧾 *OFFICIAL SALE RECEIPT - MONIEPAY*\n` +
+      `━━━━━━━━━━━━━━━━━━━\n` +
+      `*Transaction:* ${isPositive ? "Sale Record" : "Shop Payment"}\n` +
+      `*Item:* ${desc}\n` +
+      `*Amount:* *${formattedAmount}*\n` +
+      `*Payment Method:* ${paymentLabel}\n` +
+      `*Date:* ${dateStr}\n` +
+      `*Status:* Confirmed & Saved in Ledger ✓\n` +
+      `━━━━━━━━━━━━━━━━━━━\n` +
+      `Thank you for your patronage! 🙏`;
+
+    const key = tx.id || tx.client_tx_id || "tx";
+    setCopiedTxId(key);
+    setTimeout(() => setCopiedTxId(null), 2500);
+
+    const waUrl = `https://wa.me/?text=${encodeURIComponent(receiptText)}`;
+    window.open(waUrl, "_blank");
+  };
+
   if (transactions.length === 0) {
     return (
       <div className="rounded-[24px] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-white/10 p-6 sm:p-10 text-center shadow-xs">
@@ -128,6 +170,26 @@ export function RecentActivityList({
                   )}
                 </div>
               </div>
+
+              {/* 1-Tap WhatsApp Receipt Share */}
+              <button
+                type="button"
+                onClick={(e) => handleShareReceipt(e, tx)}
+                className="p-1.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/80 dark:hover:bg-emerald-900 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800 transition-all active:scale-95 cursor-pointer flex items-center gap-1 shadow-2xs shrink-0"
+                title="Send instant WhatsApp receipt to customer"
+              >
+                {copiedTxId === (tx.id || tx.client_tx_id) ? (
+                  <>
+                    <Check className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-[9px] font-black hidden xs:inline">Sent!</span>
+                  </>
+                ) : (
+                  <>
+                    <Share2 className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                    <span className="text-[9px] font-black hidden xs:inline">Receipt</span>
+                  </>
+                )}
+              </button>
 
               <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-slate-300 dark:text-slate-600 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all shrink-0" />
             </div>

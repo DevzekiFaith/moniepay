@@ -14,6 +14,7 @@ interface LogoutModalProps {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
+  onLockShop?: () => void;
   userName?: string;
   businessName?: string;
   avatarUrl?: string;
@@ -23,6 +24,7 @@ export function LogoutModal({
   isOpen,
   onClose,
   onConfirm,
+  onLockShop,
   userName = "Shop Owner",
   businessName = "My Business Store",
   avatarUrl,
@@ -97,23 +99,38 @@ export function LogoutModal({
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-6 flex flex-col sm:flex-row items-center gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="w-full sm:flex-1 py-3 px-4 rounded-2xl clay-btn-secondary text-slate-700 dark:text-slate-200 font-bold text-xs active:scale-95 transition-all order-2 sm:order-1 cursor-pointer"
-            >
-              Cancel
-            </button>
+          <div className="mt-5 space-y-2">
+            {onLockShop && (
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  onLockShop();
+                }}
+                className="w-full py-3 px-4 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <span>🔒 Lock Shop Screen (Quick PIN)</span>
+              </button>
+            )}
 
-            <button
-              type="button"
-              onClick={onConfirm}
-              className="w-full sm:flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-extrabold text-xs shadow-[0_8px_20px_rgba(244,63,94,0.3)] active:scale-95 transition-all flex items-center justify-center gap-1.5 order-1 sm:order-2 cursor-pointer border-t border-white/30"
-            >
-              <LogOut className="h-3.5 w-3.5" />
-              <span>Sign Out</span>
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 py-3 px-4 rounded-2xl clay-btn-secondary text-slate-700 dark:text-slate-200 font-bold text-xs active:scale-95 transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={onConfirm}
+                className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white font-extrabold text-xs shadow-md active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                <span>Full Sign Out</span>
+              </button>
+            </div>
           </div>
         </motion.div>
       </div>

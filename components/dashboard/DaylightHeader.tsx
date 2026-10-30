@@ -30,6 +30,9 @@ import { CreditBalancePill } from "@/components/credits/CreditBalancePill";
 import { triggerInstallPrompt } from "@/components/pwa/InstallAppBanner";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { OwnerPinModal } from "@/components/security/OwnerPinModal";
+import { getPendingQueue } from "@/lib/offline/offlineQueue";
+import { Lock } from "lucide-react";
 
 interface DaylightHeaderProps {
   business: Business;
@@ -59,6 +62,28 @@ export function DaylightHeader({
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isRatingStandOpen, setIsRatingStandOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+
+  // Live offline pending queue watcher
+  React.useEffect(() => {
+    const updateQueue = () => {
+      try {
+        setPendingCount(getPendingQueue().length);
+      } catch {}
+    };
+    updateQueue();
+    window.addEventListener("moniepay:transaction-recorded", updateQueue);
+    window.addEventListener("moniepay:sync-completed", updateQueue);
+    window.addEventListener("online", updateQueue);
+    window.addEventListener("offline", updateQueue);
+    return () => {
+      window.removeEventListener("moniepay:transaction-recorded", updateQueue);
+      window.removeEventListener("moniepay:sync-completed", updateQueue);
+      window.removeEventListener("online", updateQueue);
+      window.removeEventListener("offline", updateQueue);
+    };
+  }, []);
 
   const isDemoMamaChidi = !user || user.id === "user_owner_01" || (user.name === "Mama Chidi" && (!user.marketLocation || user.marketLocation.includes("Balogun")));
   const displayName = user?.name || "Shop Owner";
@@ -109,27 +134,48 @@ export function DaylightHeader({
                   </button>
                 </InfoTooltip>
 
-                {/* Docked Sync status pill under photo */}
+                {/* Docked Sync status pill with live offline pending count */}
                 <button
                   type="button"
                   onClick={onManualSync}
-                  className="mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-white/15 dark:bg-white/10 hover:bg-white/25 border border-white/20 text-[9px] sm:text-[9.5px] font-black text-sky-100 hover:text-white cursor-pointer active:scale-95 transition-all shadow-2xs backdrop-blur-md whitespace-nowrap"
-                  title={isOnline ? "All records backed up to cloud. Click to force sync." : "Device offline. Records safely stored locally and will sync once network is restored."}
+                  className={`mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full border text-[9px] sm:text-[9.5px] font-black cursor-pointer active:scale-95 transition-all shadow-2xs backdrop-blur-md whitespace-nowrap ${
+                    isSyncing
+                      ? "bg-amber-400/20 text-amber-200 border-amber-300/40"
+                      : pendingCount > 0
+                      ? isOnline
+                        ? "bg-amber-500/25 text-amber-100 border-amber-300/60 hover:bg-amber-500/35"
+                        : "bg-rose-500/25 text-rose-100 border-rose-300/60"
+                      : isOnline
+                      ? "bg-white/15 dark:bg-white/10 text-sky-100 hover:text-white border-white/20 hover:bg-white/25"
+                      : "bg-amber-950/40 text-amber-200 border-amber-400/30"
+                  }`}
+                  title={
+                    pendingCount > 0
+                      ? `${pendingCount} recorded transactions waiting to sync to cloud. Click to sync now.`
+                      : isOnline
+                      ? "All records backed up to cloud. Click to force sync."
+                      : "Device offline. Records safely stored locally on phone and will sync automatically once network is restored."
+                  }
                 >
                   {isSyncing ? (
                     <>
                       <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-ping" />
                       <span>Syncing…</span>
                     </>
+                  ) : pendingCount > 0 ? (
+                    <>
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      <span>{isOnline ? `${pendingCount} Pending Sync` : `Offline (${pendingCount})`}</span>
+                    </>
                   ) : isOnline ? (
                     <>
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                       <span>Backed Up ✓</span>
                     </>
                   ) : (
                     <>
                       <WifiOff className="h-2.5 w-2.5 text-amber-300" />
-                      <span className="text-amber-200">Offline</span>
+                      <span className="text-amber-200">Offline Safe</span>
                     </>
                   )}
                 </button>
@@ -238,6 +284,18 @@ export function DaylightHeader({
                         <span>Install App on Phone</span>
                       </button>
 
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsMoreMenuOpen(false);
+                          setIsPinModalOpen(true);
+                        }}
+                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors text-left cursor-pointer"
+                      >
+                        <Lock className="h-4 w-4 text-blue-500 shrink-0" />
+                        <span>Lock Shop Screen (PIN)</span>
+                      </button>
+
                       {onOpenInvite && (
                         <button
                           type="button"
@@ -330,6 +388,18 @@ export function DaylightHeader({
         isOpen={isLogoutOpen}
         onClose={() => setIsLogoutOpen(false)}
         onConfirm={logout}
+        onLockShop={() => setIsPinModalOpen(true)}
+        userName={displayName}
+        businessName={shopName}
+        avatarUrl={profilePhoto}
+      />
+
+      {/* 4-Digit Owner Security PIN Quick Unlock Modal */}
+      <OwnerPinModal
+        isOpen={isPinModalOpen}
+        onClose={() => setIsPinModalOpen(false)}
+        onSuccess={() => setIsPinModalOpen(false)}
+        userId={user?.id}
         userName={displayName}
         businessName={shopName}
         avatarUrl={profilePhoto}

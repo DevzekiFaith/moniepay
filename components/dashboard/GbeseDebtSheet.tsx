@@ -81,6 +81,7 @@ export function GbeseDebtSheet({
   const { sendDebtReminderNotification, toast } = useNotifications();
   const { balance, useCreditsAction, openPurchaseModal } = useCredits();
   const [tab, setTab] = useState<"CUSTOMERS" | "SUPPLIERS">("CUSTOMERS");
+  const [reminderTone, setReminderTone] = useState<"POLITE" | "FIRM">("POLITE");
   const [settlingId, setSettlingId] = useState<string | null>(null);
   const [remindedDebtIds, setRemindedDebtIds] = useState<Record<string, boolean>>({});
   const [officialNoticesDispatched, setOfficialNoticesDispatched] = useState<Record<string, boolean>>({});
@@ -225,14 +226,20 @@ export function GbeseDebtSheet({
         })
       : "soon";
 
-    let messageText = `Good day ${debt.person_name}, hope work dey go well. Abeg kindly remember your balance of ${formattedAmount} with ${businessName} due on ${dueDateStr}. We need am for fresh market restock. Thank you well-well and God bless your hustle!`;
+    let messageText = "";
 
-    if (dueInfo.status === "OVERDUE") {
-      messageText = `Good day ${debt.person_name}, hope hustle dey go smooth. Gentle reminder say your balance of ${formattedAmount} with ${businessName} don pass the agreed due date (${dueDateStr}). Abeg help us pay so we fit restock goods. Thank you and God bless!`;
-    } else if (dueInfo.status === "TODAY") {
-      messageText = `Good day ${debt.person_name}! Quick reminder say your balance of ${formattedAmount} with ${businessName} is due today (${dueDateStr}). Thank you well-well and God bless your market!`;
-    } else if (dueInfo.status === "WARNING_4_DAYS") {
-      messageText = `Good day ${debt.person_name}! Just a friendly heads-up from ${businessName} say your balance of ${formattedAmount} will be due in ${dueInfo.days} days on ${dueDateStr}. Thank you for your custom and God bless!`;
+    if (reminderTone === "FIRM") {
+      messageText = `*PAYMENT NOTICE - ${businessName.toUpperCase()}*\n\nHello ${debt.person_name},\nThis is an urgent notice regarding your outstanding balance of *${formattedAmount}* which is due on ${dueDateStr}.\n\nPlease arrange immediate payment into our shop account today so your credit line stays open. Thank you.`;
+    } else {
+      messageText = `Good day ${debt.person_name}, hope work dey go well. Abeg kindly remember your balance of ${formattedAmount} with ${businessName} due on ${dueDateStr}. We need am for fresh market restock. Thank you well-well and God bless your hustle! 🙏`;
+
+      if (dueInfo.status === "OVERDUE") {
+        messageText = `Good day ${debt.person_name}, hope hustle dey go smooth. Gentle reminder say your balance of ${formattedAmount} with ${businessName} don pass the agreed due date (${dueDateStr}). Abeg help us pay so we fit restock goods. Thank you and God bless! 🙏`;
+      } else if (dueInfo.status === "TODAY") {
+        messageText = `Good day ${debt.person_name}! Quick reminder say your balance of ${formattedAmount} with ${businessName} is due today (${dueDateStr}). Thank you well-well and God bless your market! 🙏`;
+      } else if (dueInfo.status === "WARNING_4_DAYS") {
+        messageText = `Good day ${debt.person_name}! Just a friendly heads-up from ${businessName} say your balance of ${formattedAmount} will be due in ${dueInfo.days} days on ${dueDateStr}. Thank you for your custom and God bless! 🙏`;
+      }
     }
 
     const msg = encodeURIComponent(messageText);
@@ -506,6 +513,41 @@ export function GbeseDebtSheet({
             >
               Alert All
             </button>
+          </div>
+        )}
+
+        {/* WhatsApp Reminder Tone Selector (for Customers) */}
+        {tab === "CUSTOMERS" && customerDebts.length > 0 && (
+          <div className="mt-2.5 px-3 py-1.5 rounded-2xl bg-amber-50/80 dark:bg-amber-950/40 border border-amber-200/60 dark:border-amber-800/60 flex items-center justify-between gap-2 shrink-0">
+            <span className="text-[10.5px] font-bold text-amber-900 dark:text-amber-200 flex items-center gap-1 shrink-0">
+              <span>WhatsApp Tone:</span>
+            </span>
+
+            <div className="flex items-center gap-1 text-[10.5px] font-black">
+              <button
+                type="button"
+                onClick={() => setReminderTone("POLITE")}
+                className={`px-2.5 py-1 rounded-xl transition-all cursor-pointer ${
+                  reminderTone === "POLITE"
+                    ? "bg-amber-500 text-white shadow-xs"
+                    : "text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+                }`}
+              >
+                😊 Gentle / Polite
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setReminderTone("FIRM")}
+                className={`px-2.5 py-1 rounded-xl transition-all cursor-pointer ${
+                  reminderTone === "FIRM"
+                    ? "bg-rose-600 text-white shadow-xs"
+                    : "text-amber-800 dark:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+                }`}
+              >
+                ⚡ Firm / Urgent Due
+              </button>
+            </div>
           </div>
         )}
 

@@ -1,0 +1,24 @@
+{
+  "users": {
+    "mindvestc@gmail.com": {
+      "id": "usr_u2umq03j",
+      "email": "mindvestc@gmail.com",
+      "name": "Shop Owner",
+      "businessName": "Shop Owner's Business",
+      "passwordHash": "secure_placeholder_hash",
+      "createdAt": "2026-10-24T10:14:39.972Z",
+      "lastLoginAt": "2026-10-24T11:10:28.414Z"
+    },
+    "lifebuildinnovators@gmail.com": {
+      "id": "d19e8e26-6b4c-435d-ac38-4eae9379d5fe",
+      "email": "lifebuildinnovators@gmail.com",
+      "name": "Emeka",
+      "businessName": "Emybuy",
+      "marketLocation": "ogbete market, Enugu",
+      "avatarUrl": "/images/traders/mama_chidi.jpg",
+      "passwordHash": "$2b$10$ATEIqD61lcZjp4sTkTD9UuH8iWLfyOrX3/b2DaUg9xvi.XU4l3iJu",
+      "createdAt": "2026-10-30T18:08:07.986Z",
+      "lastLoginAt": "2026-10-30T18:08:58.785Z"
+    }
+  }
+}
