@@ -40,13 +40,21 @@ export function middleware(req: NextRequest) {
   if (!isLoggedIn && !isPublicRoute) {
     // API routes should never redirect to HTML login page
     if (pathname.startsWith("/api/")) {
-      return NextResponse.json({ success: false, error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        {
+          success: false,
+          code: "UNAUTHENTICATED",
+          error: "Please sign in to your account first to continue.",
+        },
+        { status: 401 }
+      );
     }
     // In local development or mobile PWA offline, allow dashboard view if header or cookie bypass
     // But enforce clean redirect if user explicitly navigated to a locked subpath
     const loginUrl = new URL("/login", req.url);
     if (pathname !== "/") {
       loginUrl.searchParams.set("callbackUrl", pathname);
+      loginUrl.searchParams.set("authError", "unauthenticated");
     }
     return NextResponse.redirect(loginUrl);
   }

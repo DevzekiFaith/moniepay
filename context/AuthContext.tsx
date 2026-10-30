@@ -36,10 +36,52 @@ interface AuthContextType {
   user: AuthUser | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (email: string, pass: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, pass: string) => Promise<{ success: boolean; error?: string; code?: string }>;
   loginDemo: (personaKey?: "mama_chidi" | "alhaji_garba" | "emeka" | "blessing") => Promise<{ success: boolean }>;
-  registerShop: (params: RegisterParams) => Promise<{ success: boolean; error?: string }>;
+  registerShop: (params: RegisterParams) => Promise<{ success: boolean; error?: string; code?: string }>;
   logout: () => Promise<void>;
+}
+
+interface KnownClientUser extends AuthUser {
+  passKey?: string;
+}
+
+const KNOWN_USERS_STORAGE_KEY = "moniepay_known_users";
+
+function encodePassKey(pass: string): string {
+  try {
+    return typeof window !== "undefined" ? window.btoa(unescape(encodeURIComponent(pass))) : pass;
+  } catch {
+    return pass;
+  }
+}
+
+function getKnownClientUsers(): Record<string, KnownClientUser> {
+  if (typeof window === "undefined") return {};
+  try {
+    const raw = localStorage.getItem(KNOWN_USERS_STORAGE_KEY);
+    if (!raw) return {};
+    const parsed = JSON.parse(raw);
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function saveKnownClientUser(user: AuthUser, pass?: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    const store = getKnownClientUsers();
+    const emailKey = user.email?.trim().toLowerCase();
+    const phoneKey = user.phone?.trim().toLowerCase();
+    const entry: KnownClientUser = {
+      ...user,
+      passKey: pass ? encodePassKey(pass) : (emailKey && store[emailKey]?.passKey) || undefined,
+    };
+    if (emailKey) store[emailKey] = entry;
+    if (phoneKey) store[phoneKey] = entry;
+    localStorage.setItem(KNOWN_USERS_STORAGE_KEY, JSON.stringify(store));
+  } catch {}
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -231,11 +273,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  // 2. High-Performance Login
+  // 2. High-Performance Login (Strict check: only grant access if user has signed in / registered previously)
   const login = useCallback(
-    async (email: string, pass: string): Promise<{ success: boolean; error?: string }> => {
+    async (email: string, pass: string): Promise<{ success: boolean; error?: string; code?: string }> => {
       setIsLoading(true);
       const cleanIdentifier = email.trim();
+      const normalizedKey = cleanIdentifier.toLowerCase();
 
       try {
         const controller = new AbortController();
@@ -253,33 +296,117 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (res.ok && data.user) {
           const rawUserLoc = data.user.marketLocation;
-          const cleanUserLoc = rawUserLoc && !rawUserLoc.toLowerCase().includes("balogun") && !rawUserLoc.includes("Commercial Market Stall") ? rawUserLoc : undefined;
+          const cleanUserLoc =
+            rawUserLoc &&
+            !rawUserLoc.toLowerCase().includes("balogun") &&
+            !rawUserLoc.includes("Commercial Market Stall")
+              ? rawUserLoc
+              : undefined;
           const authUser: AuthUser = {
             id: data.user.id,
             email: data.user.email,
-            phone: data.user.phone || (cleanIdentifier.match(/^(\+?234|0)[789][01]\d{8}$/) ? cleanIdentifier : undefined),
+            phone:
+              data.user.phone ||
+              (cleanIdentifier.match(/^(\+?234|0)[789][01]\d{8}$/) ? cleanIdentifier : undefined),
             name: data.user.name || "Business Owner",
             businessName: data.user.businessName || "My Business",
             marketLocation: cleanUserLoc,
             role: "Shop Owner",
             avatarLetter: (data.user.name?.[0] || "M").toUpperCase(),
+            avatarUrl: data.user.avatarUrl || "/images/traders/mama_chidi.jpg",
             lastLoginAt: "Just now",
           };
 
           setUser(authUser);
           localStorage.setItem("moniepay_session", JSON.stringify(authUser));
+          saveKnownClientUser(authUser, pass);
           setIsLoading(false);
           return { success: true };
         }
 
+        // Check client-side known users registry if user previously signed in on this device
+        const knownUsers = getKnownClientUsers();
+        const knownUser = knownUsers[normalizedKey];
+        if (knownUser && data.code === "USER_NOT_REGISTERED") {
+          if (!knownUser.passKey || knownUser.passKey === encodePassKey(pass)) {
+            const restoredUser: AuthUser = {
+              id: knownUser.id,
+              email: knownUser.email,
+              phone: knownUser.phone,
+              name: knownUser.name,
+              businessName: knownUser.businessName,
+              marketLocation: knownUser.marketLocation,
+              role: knownUser.role || "Shop Owner",
+              avatarLetter: knownUser.avatarLetter || (knownUser.name[0] || "M").toUpperCase(),
+              avatarUrl: knownUser.avatarUrl || "/images/traders/mama_chidi.jpg",
+              lastLoginAt: "Just now",
+            };
+            setUser(restoredUser);
+            localStorage.setItem("moniepay_session", JSON.stringify(restoredUser));
+            setIsLoading(false);
+            return { success: true };
+          }
+          setIsLoading(false);
+          return {
+            success: false,
+            code: "INVALID_PASSWORD",
+            error: "Wrong password. Please check your password and try again.",
+          };
+        }
+
         setIsLoading(false);
-        return { success: false, error: data.error || "Invalid login credentials." };
+        return {
+          success: false,
+          code: data.code || "AUTH_ERROR",
+          error:
+            data.error ||
+            "We couldn't find an account with this email or phone number. If you are new here, please tap 'Register New Shop' to create your account first.",
+        };
       } catch (err: any) {
+        // Offline fallback: only grant access if the user has signed in previously on this device
+        const knownUsers = getKnownClientUsers();
+        const knownUser = knownUsers[normalizedKey];
+        if (knownUser) {
+          if (!knownUser.passKey || knownUser.passKey === encodePassKey(pass)) {
+            const restoredUser: AuthUser = {
+              id: knownUser.id,
+              email: knownUser.email,
+              phone: knownUser.phone,
+              name: knownUser.name,
+              businessName: knownUser.businessName,
+              marketLocation: knownUser.marketLocation,
+              role: knownUser.role || "Shop Owner",
+              avatarLetter: knownUser.avatarLetter || (knownUser.name[0] || "M").toUpperCase(),
+              avatarUrl: knownUser.avatarUrl || "/images/traders/mama_chidi.jpg",
+              lastLoginAt: "Offline verified",
+            };
+            setUser(restoredUser);
+            localStorage.setItem("moniepay_session", JSON.stringify(restoredUser));
+            setIsLoading(false);
+            return { success: true };
+          }
+          setIsLoading(false);
+          return {
+            success: false,
+            code: "INVALID_PASSWORD",
+            error: "Wrong password. Please check your password and try again.",
+          };
+        }
+
         setIsLoading(false);
         if (err.name === "AbortError") {
-          return { success: false, error: "Network timed out. Please check your connection." };
+          return {
+            success: false,
+            code: "NETWORK_TIMEOUT",
+            error: "Your internet connection is slow and you haven't signed in on this device before. Please check your internet and try again.",
+          };
         }
-        return { success: false, error: "Authentication service unavailable. Please retry." };
+        return {
+          success: false,
+          code: "USER_NOT_REGISTERED",
+          error:
+            "You haven't signed in on this device before. Please tap 'Register New Shop' to create an account, or check your internet connection.",
+        };
       }
     },
     []
@@ -331,12 +458,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Always hydrate client-side immediately
     setUser(selectedDemo);
     localStorage.setItem("moniepay_session", JSON.stringify(selectedDemo));
+    saveKnownClientUser(selectedDemo, "MoneyMatters2024!");
 
     try {
       fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: "demo@monielite.app", password: "MoneyMatters2024!" }),
+        body: JSON.stringify({ email: selectedDemo.email, password: "MoneyMatters2024!" }),
         keepalive: true,
       }).catch(() => {});
     } catch {}
@@ -347,7 +475,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // 4. Shop Registration
   const registerShop = useCallback(
-    async (params: RegisterParams): Promise<{ success: boolean; error?: string }> => {
+    async (params: RegisterParams): Promise<{ success: boolean; error?: string; code?: string }> => {
       setIsLoading(true);
       try {
         const res = await fetch("/api/auth/register", {
@@ -383,12 +511,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
           setUser(authUser);
           localStorage.setItem("moniepay_session", JSON.stringify(authUser));
+          saveKnownClientUser(authUser, params.pass);
           setIsLoading(false);
           return { success: true };
         }
 
         setIsLoading(false);
-        return { success: false, error: data.error || "Failed to register shop account." };
+        return {
+          success: false,
+          code: data.code,
+          error: data.error || "Failed to register shop account.",
+        };
       } catch (networkErr) {
         console.warn("Offline registration fallback:", networkErr);
         // Resilient offline registration: persist locally so trader can start immediately
@@ -410,6 +543,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         setUser(authUser);
         localStorage.setItem("moniepay_session", JSON.stringify(authUser));
+        saveKnownClientUser(authUser, params.pass);
         setIsLoading(false);
         return { success: true };
       }

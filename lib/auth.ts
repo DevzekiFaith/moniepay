@@ -7,11 +7,12 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getSupabaseServerClient } from "@/lib/supabase/client";
+import { verifyUserSignIn } from "@/lib/data/userAccountStore";
 import { z } from "zod";
 
 const loginSchema = z.object({
-  email: z.string().email(),
-  password: z.string().min(6),
+  email: z.string().min(3),
+  password: z.string().min(4),
 });
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -27,26 +28,30 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (!parsed.success) return null;
 
         const { email, password } = parsed.data;
+        const normalizedEmail = email.trim().toLowerCase();
 
-        // Verify with Supabase Auth
+        // 1. Verify with Supabase Auth
         const supabase = (await createSupabaseServerClient()) || getSupabaseServerClient();
-        if (supabase) {
+        if (supabase && normalizedEmail.includes("@")) {
           const { data, error } = await supabase.auth.signInWithPassword({
-            email: email.toLowerCase(),
+            email: normalizedEmail,
             password,
           });
 
           if (!error && data?.user) {
             return {
               id: data.user.id,
-              email: data.user.email || email,
-              name: data.user.user_metadata?.full_name || email.split("@")[0],
+              email: data.user.email || normalizedEmail,
+              name: data.user.user_metadata?.full_name || normalizedEmail.split("@")[0],
             };
           }
         }
 
-        // Development fallback credential check
-        if (email.toLowerCase() === "demo@monielite.app" && password === "MoneyMatters2024!") {
+        // 2. Development fallback credential check
+        if (
+          (normalizedEmail === "demo@monielite.app" || normalizedEmail === "demo@moniepay.app") &&
+          password === "MoneyMatters2024!"
+        ) {
           return {
             id: "user_owner_01",
             email: "demo@monielite.app",
@@ -54,7 +59,17 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           };
         }
 
-        return null;
+        // 3. Verify against registered / previously signed-in users
+        const verification = await verifyUserSignIn(normalizedEmail, password);
+        if (verification.status === "SUCCESS") {
+          return {
+            id: verification.user.id,
+            email: verification.user.email,
+            name: verification.user.name,
+          };
+        }
+
+        throw new Error(verification.message);
       },
     }),
   ],

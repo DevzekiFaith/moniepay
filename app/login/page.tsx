@@ -86,12 +86,14 @@ function LoginContent() {
   const [isDemoLoading, setIsDemoLoading] = useState(false);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [errorCode, setErrorCode] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Auto-detect Nigerian stall location via GPS
   const handleAutoDetectLocation = async () => {
     setIsDetectingLocation(true);
     setErrorMessage(null);
+    setErrorCode(null);
     try {
       const detected = await detectNigerianStallLocation();
       setMarketLocation(detected.formattedLocation);
@@ -107,17 +109,24 @@ function LoginContent() {
   // Auto-redirect if already authenticated
   useEffect(() => {
     if (isAuthenticated && !authLoading) {
-      router.replace("/");
+      const callbackUrl = searchParams?.get("callbackUrl") || "/";
+      router.replace(callbackUrl);
     }
-  }, [isAuthenticated, authLoading, router]);
+  }, [isAuthenticated, authLoading, router, searchParams]);
 
-  // Handle ?register=1 and ?ref=CODE
+  // Handle ?register=1, ?ref=CODE, and unauthenticated redirect message
   useEffect(() => {
     if (searchParams?.get("register") === "1") setMode("register");
     const refParam = searchParams?.get("ref");
     if (refParam) {
       setReferralCode(refParam.toUpperCase());
       setMode("register");
+    }
+    if (searchParams?.get("authError") === "unauthenticated") {
+      setErrorMessage(
+        "Please sign in to your account first so we can open your shop."
+      );
+      setErrorCode("UNAUTHENTICATED");
     }
   }, [searchParams]);
 
@@ -155,23 +164,29 @@ function LoginContent() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
+    setErrorCode(null);
     setSuccessMessage(null);
     setIsSubmitting(true);
 
     if (mode === "signin") {
       if (!identifier || !password) {
-        setErrorMessage("Please enter your email/phone and password.");
+        setErrorMessage("Please enter both your email or phone number and your password.");
         setIsSubmitting(false);
         return;
       }
 
       const res = await login(identifier, password);
       if (!res.success) {
-        setErrorMessage(res.error || "Incorrect credentials. Please try again.");
+        setErrorCode(res.code || null);
+        setErrorMessage(
+          res.error ||
+            "We couldn't find an account with this email or phone number. If you are new here, please tap 'Register New Shop' to create your account first."
+        );
         setIsSubmitting(false);
       } else {
         setSuccessMessage("Signed in! Loading your shop…");
-        setTimeout(() => router.replace("/"), 400);
+        const callbackUrl = searchParams?.get("callbackUrl") || "/";
+        setTimeout(() => router.replace(callbackUrl), 400);
       }
     } else {
       // REGISTER
@@ -202,6 +217,7 @@ function LoginContent() {
       });
 
       if (!res.success) {
+        setErrorCode(res.code || null);
         setErrorMessage(res.error || "Registration failed. Please try another email/phone.");
         setIsSubmitting(false);
       } else {
@@ -218,7 +234,8 @@ function LoginContent() {
           } catch {}
         }
         setSuccessMessage("Shop registered! Activating your decision intelligence…");
-        setTimeout(() => router.replace("/"), 600);
+        const callbackUrl = searchParams?.get("callbackUrl") || "/";
+        setTimeout(() => router.replace(callbackUrl), 600);
       }
     }
   };
@@ -428,10 +445,25 @@ function LoginContent() {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="flex items-center gap-2 p-3 rounded-2xl bg-rose-50/90 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold"
+                className="flex flex-col gap-2 p-3 rounded-2xl bg-rose-50/90 dark:bg-rose-950/80 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold"
               >
-                <AlertCircle className="h-4 w-4 shrink-0" />
-                <span>{errorMessage}</span>
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+                  <span>{errorMessage}</span>
+                </div>
+                {mode === "signin" && errorCode === "USER_NOT_REGISTERED" && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setErrorMessage(null);
+                      setErrorCode(null);
+                      setMode("register");
+                    }}
+                    className="self-start ml-6 px-3 py-1 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-[11px] font-black transition-all cursor-pointer"
+                  >
+                    Register New Shop Now →
+                  </button>
+                )}
               </motion.div>
             )}
             {successMessage && (

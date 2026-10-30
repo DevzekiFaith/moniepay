@@ -1,15 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getSupabaseServerClient } from "@/lib/supabase/client";
+import { findRegisteredUser, saveRegisteredUser } from "@/lib/data/userAccountStore";
 import { z } from "zod";
-// v2 — robust body parsing, offline provisioning fallback
 
 const registerSchema = z.object({
   name: z.string().min(2).max(100),
-  email: z.string().email(),
-  password: z.string().min(6).max(128),
+  email: z.string().min(3).max(120),
+  password: z.string().min(4).max(128),
   businessName: z.string().min(2).max(120).optional(),
   marketLocation: z.string().min(2).max(120).optional(),
+  avatarUrl: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -24,20 +25,33 @@ export async function POST(request: NextRequest) {
 
     if (!parsed.success) {
       return NextResponse.json(
-        { error: "Please provide a valid name, email, and password (at least 6 characters)." },
+        { error: "Please provide a valid name, email or phone number, and password (at least 4 characters)." },
         { status: 400 }
       );
     }
 
-    const { name, email, password, businessName, marketLocation } = parsed.data;
+    const { name, email, password, businessName, marketLocation, avatarUrl } = parsed.data;
     const normalizedEmail = email.toLowerCase().trim();
+    const isPhone = /^(\+?234|0)[789][01]\d{8}$/.test(normalizedEmail);
     const finalBusinessName = businessName?.trim() || `${name}'s Business`;
     const finalLocation = marketLocation?.trim() || undefined;
 
-    // 1. Register with Supabase Auth
+    // Check if user is already registered locally/in Prisma
+    const existingLocal = await findRegisteredUser(normalizedEmail);
+    if (existingLocal) {
+      return NextResponse.json(
+        {
+          error: "You already have an account with this email or phone number. Please tap 'Enter Shop' to sign in.",
+          code: "USER_ALREADY_EXISTS",
+        },
+        { status: 409 }
+      );
+    }
+
+    // 1. Register with Supabase Auth (when email is an email address and Supabase is configured)
     try {
       const supabase = (await createSupabaseServerClient()) || getSupabaseServerClient();
-      if (supabase) {
+      if (supabase && normalizedEmail.includes("@")) {
         const { data, error } = await supabase.auth.signUp({
           email: normalizedEmail,
           password,
@@ -46,6 +60,7 @@ export async function POST(request: NextRequest) {
               full_name: name,
               business_name: finalBusinessName,
               market_location: finalLocation,
+              avatar_url: avatarUrl,
             },
           },
         });
@@ -62,7 +77,6 @@ export async function POST(request: NextRequest) {
             (error as any).status === 502;
 
           if (!isNetworkError) {
-            // Legitimate Supabase validation/account error (e.g. user already registered)
             return NextResponse.json({ error: errMsg }, { status: 400 });
           }
           console.warn("Supabase unreachable, falling back to local shop provisioning:", errMsg);
@@ -75,7 +89,7 @@ export async function POST(request: NextRequest) {
               id: userId,
               full_name: name,
               role: "OWNER",
-              phone: "",
+              phone: isPhone ? normalizedEmail : "",
             });
 
             await supabase.from("businesses").insert({
@@ -89,31 +103,37 @@ export async function POST(request: NextRequest) {
             console.warn("Profile/business row bootstrap notice:", dbErr);
           }
 
+          await saveRegisteredUser({
+            id: userId,
+            email: normalizedEmail,
+            phone: isPhone ? normalizedEmail : undefined,
+            name,
+            businessName: finalBusinessName,
+            marketLocation: finalLocation,
+            avatarUrl,
+            password,
+          });
+
+          const userPayload = {
+            id: userId,
+            email: normalizedEmail,
+            phone: isPhone ? normalizedEmail : undefined,
+            name,
+            businessName: finalBusinessName,
+            marketLocation: finalLocation,
+            avatarUrl,
+          };
+
           const response = NextResponse.json(
             {
               success: true,
-              user: {
-                id: userId,
-                email: normalizedEmail,
-                name,
-                businessName: finalBusinessName,
-                marketLocation: finalLocation,
-              },
+              user: userPayload,
             },
             { status: 201 }
           );
 
-          const sessionToken = Buffer.from(
-            JSON.stringify({
-              id: userId,
-              email: normalizedEmail,
-              name,
-              businessName: finalBusinessName,
-              marketLocation: finalLocation,
-            })
-          ).toString("base64");
+          const sessionToken = Buffer.from(JSON.stringify(userPayload)).toString("base64");
 
-          // Set secure session cookie
           response.cookies.set("moniepay_session", sessionToken, {
             path: "/",
             httpOnly: true,
@@ -129,14 +149,27 @@ export async function POST(request: NextRequest) {
       console.warn("Supabase registration attempt:", sbErr);
     }
 
-    // 2. High-Grade Local Offline / Development Provisioning
+    // 2. Local / Prisma Persistent Account Registration
     const generatedId = "usr_" + Math.random().toString(36).substring(2, 10);
-    const localUser = {
+    const savedAccount = await saveRegisteredUser({
       id: generatedId,
       email: normalizedEmail,
+      phone: isPhone ? normalizedEmail : undefined,
       name,
       businessName: finalBusinessName,
       marketLocation: finalLocation,
+      avatarUrl,
+      password,
+    });
+
+    const localUser = {
+      id: savedAccount.id,
+      email: savedAccount.email,
+      phone: savedAccount.phone,
+      name: savedAccount.name,
+      businessName: savedAccount.businessName,
+      marketLocation: savedAccount.marketLocation,
+      avatarUrl: savedAccount.avatarUrl,
     };
 
     const response = NextResponse.json(
