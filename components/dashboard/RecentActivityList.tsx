@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import type { BusinessTransaction } from "@/types/moniepay.types";
 import { formatTransactionDate } from "@/lib/utils";
+import { getActiveStaffSession } from "@/lib/staff/staffDeviceService";
 
 interface RecentActivityListProps {
   transactions: BusinessTransaction[];
@@ -51,6 +52,8 @@ export function RecentActivityList({
     const dateStr = formatTransactionDate(tx.transaction_date);
     const formattedAmount = `₦${Number(tx.amount).toLocaleString()}`;
     const desc = tx.description || tx.category || "Goods Purchased";
+    const staff = getActiveStaffSession();
+    const staffAttribution = staff ? `*Attendant:* ${staff.staffName} (${staff.staffRole})\n` : "";
 
     const receiptText =
       `🧾 *OFFICIAL SALE RECEIPT - MONIEPAY*\n` +
@@ -59,6 +62,7 @@ export function RecentActivityList({
       `*Item:* ${desc}\n` +
       `*Amount:* *${formattedAmount}*\n` +
       `*Payment Method:* ${paymentLabel}\n` +
+      staffAttribution +
       `*Date:* ${dateStr}\n` +
       `*Status:* Confirmed & Saved in Ledger ✓\n` +
       `━━━━━━━━━━━━━━━━━━━\n` +

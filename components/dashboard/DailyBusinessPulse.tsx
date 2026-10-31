@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { ArrowDownLeft, ArrowUpRight, Wallet, Users, Activity } from "lucide-react";
 import type { DeterministicMetrics } from "@/types/moniepay.types";
 import { InfoTooltip } from "@/components/ui/tooltip";
+import { useAuth } from "@/context/AuthContext";
 
 interface DailyBusinessPulseProps {
   metrics: DeterministicMetrics;
@@ -26,6 +27,9 @@ export function DailyBusinessPulse({
   onOpenSales,
   onOpenCosts,
 }: DailyBusinessPulseProps) {
+  const { user } = useAuth();
+  const isStaff = user?.isStaff || user?.role === "STAFF";
+
   return (
     <section className="space-y-2.5">
       {/* Section Header with Business Position Pill */}
@@ -116,10 +120,10 @@ export function DailyBusinessPulse({
             </div>
             <div className="mt-2.5 min-w-0">
               <span className="text-base sm:text-xl md:text-2xl font-black text-blue-950 dark:text-blue-100 leading-tight tracking-tight truncate block font-mono">
-                ₦{metrics.liquidCash.toLocaleString()}
+                {isStaff ? "₦ ••••••••" : `₦${metrics.liquidCash.toLocaleString()}`}
               </span>
               <p className="text-[10px] sm:text-[10.5px] font-bold text-blue-600 dark:text-blue-400 mt-0.5 truncate">
-                Safe Chop Moni: ₦{metrics.safeWithdrawalAmount.toLocaleString()}
+                {isStaff ? "🛡️ Oga Private Capital" : `Safe Chop Moni: ₦${metrics.safeWithdrawalAmount.toLocaleString()}`}
               </p>
             </div>
           </motion.div>

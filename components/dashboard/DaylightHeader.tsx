@@ -32,6 +32,7 @@ import { InfoTooltip } from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { getPendingQueue } from "@/lib/offline/offlineQueue";
 import { lockShop, getAutoLockMinutes } from "@/lib/security/ownerPinService";
+import { AddStaffDeviceModal } from "@/components/staff/AddStaffDeviceModal";
 import { Lock } from "lucide-react";
 
 interface DaylightHeaderProps {
@@ -62,6 +63,7 @@ export function DaylightHeader({
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isRatingStandOpen, setIsRatingStandOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
 
   // Live offline pending queue watcher
@@ -310,6 +312,23 @@ export function DaylightHeader({
                         </div>
                       </button>
 
+                      {!user?.isStaff && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setIsMoreMenuOpen(false);
+                            setIsStaffModalOpen(true);
+                          }}
+                          className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors text-left cursor-pointer"
+                        >
+                          <Users className="h-4 w-4 text-indigo-500 shrink-0" />
+                          <div>
+                            <span>Add Staff Device (QR)</span>
+                            <span className="block text-[10px] text-slate-400 font-normal">Pair sales boy / cashier</span>
+                          </div>
+                        </button>
+                      )}
+
                       {onOpenInvite && (
                         <button
                           type="button"
@@ -356,16 +375,23 @@ export function DaylightHeader({
           {/* ── ROW 2: INFORMAL GREETING & STATUS ── */}
           <div className="pt-0.5 flex items-center justify-between gap-2">
             <div className="min-w-0">
-              <span className="text-xs sm:text-[13px] font-extrabold text-sky-200 tracking-tight">
-                How far, {displayName.split(" ")[0]} 👋
+              <span className="text-xs sm:text-[13px] font-extrabold text-sky-200 tracking-tight flex items-center gap-1.5">
+                <span>How far, {displayName.split(" ")[0]} 👋</span>
+                {user?.isStaff && (
+                  <span className="bg-amber-400/25 text-amber-100 border border-amber-300/50 text-[9px] px-1.5 py-0.2 rounded-full font-black uppercase tracking-wider">
+                    Staff Terminal 🛡️
+                  </span>
+                )}
               </span>
               <p className="text-[10.5px] sm:text-xs text-sky-100/90 font-medium truncate">
-                Your market sales & shop records dey set sharp-sharp.
+                {user?.isStaff
+                  ? `Operating as ${user.staffRole || "Sales Cashier"}. Record sales & customer receipts.`
+                  : "Your market sales & shop records dey set sharp-sharp."}
               </p>
             </div>
 
             <span className="hidden xs:inline-flex items-center gap-1 text-[10.5px] sm:text-[11px] font-bold text-sky-200/90 shrink-0 bg-white/10 dark:bg-white/5 px-2 py-0.5 rounded-full border border-white/10">
-              100% Offline • No Wahala ⚡
+              {user?.isStaff ? "Sales & Receipts Mode 🧾" : "100% Offline • No Wahala ⚡"}
             </span>
           </div>
 
@@ -420,6 +446,15 @@ export function DaylightHeader({
         marketLocation={registeredLocation || undefined}
         shopId={user?.id || "mama_chidi"}
         avatarUrl={profilePhoto}
+      />
+
+      {/* Multi-Device Staff Pairing QR & 6-Digit Code Modal */}
+      <AddStaffDeviceModal
+        isOpen={isStaffModalOpen}
+        onClose={() => setIsStaffModalOpen(false)}
+        ownerId={user?.id}
+        businessName={shopName}
+        traderName={displayName}
       />
     </>
   );

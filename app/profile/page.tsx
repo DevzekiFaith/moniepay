@@ -26,11 +26,14 @@ import {
   Coins,
   KeyRound,
   X,
+  Users,
+  QrCode,
 } from "lucide-react";
 import { useCredits } from "@/context/CreditContext";
 import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
 import { ReferralDashboardBanner } from "@/components/dashboard/ReferralDashboardBanner";
 import { InviteShopModal } from "@/components/referral/InviteShopModal";
+import { AddStaffDeviceModal } from "@/components/staff/AddStaffDeviceModal";
 import {
   hasOwnerPin,
   setOwnerPin,
@@ -47,6 +50,7 @@ export default function ProfilePage() {
   const { balance, openPurchaseModal } = useCredits();
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isInviteOpen, setIsInviteOpen] = useState(false);
+  const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
   const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [newPin, setNewPin] = useState("");
   const [confirmNewPin, setConfirmNewPin] = useState("");
@@ -259,6 +263,37 @@ export default function ProfilePage() {
             </div>
           </div>
 
+          {/* Multi-Device Staff & Apprentice Protection Card */}
+          <div className="rounded-[28px] bg-white dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-start sm:items-center gap-3">
+              <div className="h-10 w-10 rounded-2xl bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 flex items-center justify-center shrink-0 border border-indigo-200 dark:border-indigo-800">
+                <Users className="h-5 w-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                    Staff &amp; Multi-Device Protection
+                  </h3>
+                  <span className="text-[9.5px] font-black px-2 py-0.5 rounded-full bg-indigo-100 dark:bg-indigo-950 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-800">
+                    6-Digit Code &amp; QR
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                  Connect sales boys and apprentices with a QR code. They can record sales on their phone, but will never see your profit or bank balance.
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsStaffModalOpen(true)}
+              className="px-3.5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs cursor-pointer active:scale-95 transition-all shadow-xs flex items-center justify-center gap-1.5 shrink-0"
+            >
+              <QrCode className="h-3.5 w-3.5" />
+              <span>Add Staff Device</span>
+            </button>
+          </div>
+
           {/* Insight Credits Balance Card */}
           <div className="rounded-[28px] bg-gradient-to-br from-amber-500/10 via-amber-400/5 to-transparent border border-amber-200 dark:border-amber-900/60 p-4 sm:p-5 shadow-xs flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
@@ -453,6 +488,15 @@ export default function ProfilePage() {
           </div>
         </div>
       )}
+
+      {/* Multi-Device Staff Pairing QR & 6-Digit Code Modal */}
+      <AddStaffDeviceModal
+        isOpen={isStaffModalOpen}
+        onClose={() => setIsStaffModalOpen(false)}
+        ownerId={user?.id}
+        businessName={user?.businessName || user?.name || "My Business Store"}
+        traderName={user?.name || "Shop Owner"}
+      />
     </div>
   );
 }

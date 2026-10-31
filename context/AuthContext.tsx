@@ -9,6 +9,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getActiveStaffSession, clearStaffSession } from "@/lib/staff/staffDeviceService";
 
 export interface AuthUser {
   id: string;
@@ -21,6 +22,10 @@ export interface AuthUser {
   avatarLetter: string;
   avatarUrl?: string;
   lastLoginAt: string;
+  isStaff?: boolean;
+  staffName?: string;
+  staffRole?: string;
+  shopCode?: string;
 }
 
 interface RegisterParams {
@@ -109,6 +114,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const initSession = async () => {
       try {
+        // 0. Check Staff Active Session (Apprentice / Cashier Mode)
+        const staffSession = getActiveStaffSession();
+        if (staffSession && isMounted) {
+          const staffUser: AuthUser = {
+            id: staffSession.staffId,
+            name: staffSession.staffName,
+            email: `staff@${staffSession.shopCode.toLowerCase()}.moniepay.local`,
+            businessName: staffSession.businessName,
+            marketLocation: staffSession.marketLocation,
+            role: "STAFF",
+            avatarLetter: (staffSession.staffName[0] || "S").toUpperCase(),
+            avatarUrl: "/images/traders/mama_chidi.jpg",
+            lastLoginAt: `Connected via ${staffSession.shopCode}`,
+            isStaff: true,
+            staffName: staffSession.staffName,
+            staffRole: staffSession.staffRole,
+            shopCode: staffSession.shopCode,
+          };
+          setUser(staffUser);
+          setIsLoading(false);
+          return;
+        }
+
         let activeCachedUser: AuthUser | null = null;
 
         // A. Check local fast-cache first for instant rendering
@@ -571,6 +599,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
 
     // C. Clear authentication storage while PRESERVING offline transaction queue
+    clearStaffSession();
     setUser(null);
     localStorage.removeItem("moniepay_session");
     localStorage.removeItem("ajo_session");

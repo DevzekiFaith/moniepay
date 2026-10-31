@@ -7,6 +7,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import {
   Store,
@@ -24,6 +25,7 @@ import {
   Camera,
   Gift,
   Compass,
+  Users,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -713,6 +715,16 @@ function LoginContent() {
                 </>
               )}
             </button>
+            {/* Staff / Apprentice Device Join Gateway */}
+            <div className="pt-2 border-t border-slate-200/60 dark:border-white/10 text-center">
+              <Link
+                href="/staff/join"
+                className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-2xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 hover:text-blue-700 dark:text-slate-300 dark:hover:text-white font-extrabold text-xs transition-all border border-slate-200/80 dark:border-slate-700 shadow-2xs"
+              >
+                <Users className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                <span>I am a Staff / Sales Boy → Join with Shop Code</span>
+              </Link>
+            </div>
           </form>
         </motion.div>
 
