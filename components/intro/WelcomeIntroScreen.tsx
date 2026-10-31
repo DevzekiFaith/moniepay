@@ -20,7 +20,6 @@ import {
   Share2,
   Check,
   Send,
-  Sparkles,
   ChevronLeft,
   ChevronRight,
   Volume2,

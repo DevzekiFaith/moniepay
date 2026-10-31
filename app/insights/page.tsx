@@ -21,7 +21,6 @@ import {
   CheckCircle2,
   ChevronRight,
   Compass,
-  Sparkles,
   PieChart,
   ArrowDownRight,
   ArrowUpRight,

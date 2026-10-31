@@ -2,11 +2,12 @@
 
 // ─────────────────────────────────────────────────────────────────
 // Monie AI Brand Logo System — Unified Geometric Intelligence Emblem
-// Electric Blue & Indigo Gradient Squircle with geometric Neural Diamond
+// Electric Blue & Indigo Gradient Squircle with BrainCircuit Intelligence Emblem (Zero Sparkles)
 // Strictly adheres to MoniePay's brand color system (no variant colors)
 // ─────────────────────────────────────────────────────────────────
 
 import React from "react";
+import { BrainCircuit } from "lucide-react";
 
 interface MonieAiLogoProps {
   size?: number;
@@ -17,9 +18,11 @@ interface MonieAiLogoProps {
 
 /**
  * Signature Geometric Monie AI Emblem
- * Electric Blue & Indigo Gradient Squircle with sharp Neural Diamond glyph
+ * Electric Blue & Indigo Gradient Squircle with BrainCircuit Intelligence Icon (Zero Sparkles)
  */
 export function MonieAiEmblem({ size = 36 }: { size?: number }) {
+  const iconSize = Math.max(16, Math.round(size * 0.58));
+
   return (
     <div
       style={{
@@ -50,31 +53,12 @@ export function MonieAiEmblem({ size = 36 }: { size?: number }) {
         }}
       />
 
-      {/* Geometric Neural Spark / Diamond Intelligence Glyph */}
-      <svg
-        width={Math.round(size * 0.58)}
-        height={Math.round(size * 0.58)}
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        style={{ position: "relative", zIndex: 1 }}
-      >
-        {/* Central Luminous Diamond */}
-        <path
-          d="M12 2L14.8 9.2L22 12L14.8 14.8L12 22L9.2 14.8L2 12L9.2 9.2L12 2Z"
-          fill="#FFFFFF"
-          stroke="#FFFFFF"
-          strokeWidth="1.2"
-          strokeLinejoin="round"
-        />
-        {/* Core Precision Diamond Hole */}
-        <path
-          d="M12 8L13.5 10.5L16 12L13.5 13.5L12 16L10.5 13.5L8 12L10.5 10.5L12 8Z"
-          fill="#2563EB"
-        />
-        {/* Corner Precision Spark Nodes */}
-        <circle cx="12" cy="12" r="1.5" fill="#FFFFFF" />
-      </svg>
+      {/* Clean Neural BrainCircuit Intelligence Icon - Zero Sparkles */}
+      <BrainCircuit
+        size={iconSize}
+        className="text-white relative z-10 drop-shadow-xs"
+        strokeWidth={2.2}
+      />
     </div>
   );
 }
