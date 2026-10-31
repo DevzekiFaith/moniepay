@@ -30,8 +30,8 @@ import { CreditBalancePill } from "@/components/credits/CreditBalancePill";
 import { triggerInstallPrompt } from "@/components/pwa/InstallAppBanner";
 import { InfoTooltip } from "@/components/ui/tooltip";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { OwnerPinModal } from "@/components/security/OwnerPinModal";
 import { getPendingQueue } from "@/lib/offline/offlineQueue";
+import { lockShop, getAutoLockMinutes } from "@/lib/security/ownerPinService";
 import { Lock } from "lucide-react";
 
 interface DaylightHeaderProps {
@@ -62,7 +62,6 @@ export function DaylightHeader({
   const [isLogoutOpen, setIsLogoutOpen] = useState(false);
   const [isRatingStandOpen, setIsRatingStandOpen] = useState(false);
   const [isMoreMenuOpen, setIsMoreMenuOpen] = useState(false);
-  const [isPinModalOpen, setIsPinModalOpen] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
 
   // Live offline pending queue watcher
@@ -221,7 +220,19 @@ export function DaylightHeader({
                 <SubscriptionStatusPill />
               </div>
 
-              {/* 5. More Actions Dropdown (Organizes secondary links cleanly) */}
+              {/* 5. 1-Tap Quick Screen Lock (Instant Anti-Theft) */}
+              <InfoTooltip content="Lock Shop Screen Now (4-Digit PIN)">
+                <button
+                  type="button"
+                  onClick={() => lockShop()}
+                  aria-label="Lock Stall Screen"
+                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
+                >
+                  <Lock className="h-3.5 w-3.5" />
+                </button>
+              </InfoTooltip>
+
+              {/* 6. More Actions Dropdown (Organizes secondary links cleanly) */}
               <div className="relative">
                 <button
                   type="button"
@@ -288,12 +299,15 @@ export function DaylightHeader({
                         type="button"
                         onClick={() => {
                           setIsMoreMenuOpen(false);
-                          setIsPinModalOpen(true);
+                          lockShop();
                         }}
                         className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors text-left cursor-pointer"
                       >
                         <Lock className="h-4 w-4 text-blue-500 shrink-0" />
-                        <span>Lock Shop Screen (PIN)</span>
+                        <div>
+                          <span>Lock Shop Screen (PIN)</span>
+                          <span className="block text-[10px] text-slate-400 font-normal">Auto-locks after 2m idle</span>
+                        </div>
                       </button>
 
                       {onOpenInvite && (
@@ -388,18 +402,10 @@ export function DaylightHeader({
         isOpen={isLogoutOpen}
         onClose={() => setIsLogoutOpen(false)}
         onConfirm={logout}
-        onLockShop={() => setIsPinModalOpen(true)}
-        userName={displayName}
-        businessName={shopName}
-        avatarUrl={profilePhoto}
-      />
-
-      {/* 4-Digit Owner Security PIN Quick Unlock Modal */}
-      <OwnerPinModal
-        isOpen={isPinModalOpen}
-        onClose={() => setIsPinModalOpen(false)}
-        onSuccess={() => setIsPinModalOpen(false)}
-        userId={user?.id}
+        onLockShop={() => {
+          setIsLogoutOpen(false);
+          lockShop();
+        }}
         userName={displayName}
         businessName={shopName}
         avatarUrl={profilePhoto}

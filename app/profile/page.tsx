@@ -31,7 +31,15 @@ import { useCredits } from "@/context/CreditContext";
 import { SubscriptionBannerCard } from "@/components/dashboard/SubscriptionBannerCard";
 import { ReferralDashboardBanner } from "@/components/dashboard/ReferralDashboardBanner";
 import { InviteShopModal } from "@/components/referral/InviteShopModal";
-import { hasOwnerPin, setOwnerPin, getOwnerPin } from "@/lib/security/ownerPinService";
+import {
+  hasOwnerPin,
+  setOwnerPin,
+  getOwnerPin,
+  getAutoLockMinutes,
+  setAutoLockMinutes,
+  lockShop,
+  AUTO_LOCK_OPTIONS,
+} from "@/lib/security/ownerPinService";
 
 export default function ProfilePage() {
   const { notify } = useNotification();
@@ -43,6 +51,19 @@ export default function ProfilePage() {
   const [newPin, setNewPin] = useState("");
   const [confirmNewPin, setConfirmNewPin] = useState("");
   const [pinModalError, setPinModalError] = useState<string | null>(null);
+  const [autoLockMins, setLocalAutoLockMins] = useState<number>(() => getAutoLockMinutes(user?.id));
+
+  const handleUpdateAutoLock = (mins: number) => {
+    setLocalAutoLockMins(mins);
+    setAutoLockMinutes(mins, user?.id);
+    notify(
+      mins > 0 ? "Auto-Lock Timer Updated ⏱️" : "Auto-Lock Disabled ⚠️",
+      mins > 0
+        ? `Shop screen will lock automatically after ${mins} minute(s) of inactivity.`
+        : "Screen will stay unlocked until you tap 'Lock Stall Screen Now'.",
+      { type: "success" }
+    );
+  };
 
   // Settings
   const [currency, setCurrency] = useState("NGN (₦)");
@@ -154,42 +175,88 @@ export default function ProfilePage() {
           </div>
 
           {/* Oga Secret PIN Security Card */}
-          <div className="rounded-[28px] bg-white dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-start sm:items-center gap-3">
-              <div className="h-10 w-10 rounded-2xl bg-blue-500/15 text-blue-700 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800">
-                <KeyRound className="h-5 w-5" />
-              </div>
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
-                    Oga Secret PIN Security
-                  </h3>
-                  <span className={`text-[9.5px] font-black px-2 py-0.5 rounded-full ${
-                    isPinActive
-                      ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
-                      : "bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
-                  }`}>
-                    {isPinActive ? "PIN Active ✓" : "Default PIN (1234)"}
-                  </span>
+          <div className="rounded-[28px] bg-white dark:bg-slate-900/80 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-xs space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="flex items-start sm:items-center gap-3">
+                <div className="h-10 w-10 rounded-2xl bg-blue-500/15 text-blue-700 dark:text-blue-400 flex items-center justify-center shrink-0 border border-blue-200 dark:border-blue-800">
+                  <KeyRound className="h-5 w-5" />
                 </div>
-                <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                  4-digit security code wey dey lock your profit, turnover, and certified bank statements so apprentice or sales boy no go fit view am.
-                </p>
+                <div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <h3 className="text-xs sm:text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white">
+                      Oga Secret PIN Security & Anti-Theft
+                    </h3>
+                    <span className={`text-[9.5px] font-black px-2 py-0.5 rounded-full ${
+                      isPinActive
+                        ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-800 dark:text-emerald-300 border border-emerald-300 dark:border-emerald-800"
+                        : "bg-amber-100 dark:bg-amber-950 text-amber-900 dark:text-amber-300 border border-amber-300 dark:border-amber-800"
+                    }`}>
+                      {isPinActive ? "PIN Active ✓" : "Default PIN (1234)"}
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                    4-digit security code wey dey lock your profit, turnover, and stall screen so apprentice or sales boy no go fit peep.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-start sm:self-auto">
+                <button
+                  type="button"
+                  onClick={() => lockShop()}
+                  className="px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-blue-50 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 hover:text-blue-700 dark:text-slate-200 font-extrabold text-xs cursor-pointer active:scale-95 transition-all flex items-center gap-1.5 border border-slate-200 dark:border-slate-700"
+                  title="Lock stall screen immediately with 4-digit PIN"
+                >
+                  <Lock className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                  <span>Lock Screen Now</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPinModalError(null);
+                    setNewPin("");
+                    setConfirmNewPin("");
+                    setIsPinModalOpen(true);
+                  }}
+                  className="px-3.5 py-2 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-black text-xs cursor-pointer active:scale-95 transition-all shadow-xs"
+                >
+                  {isPinActive ? "Change PIN" : "Set Custom PIN"}
+                </button>
               </div>
             </div>
 
-            <button
-              type="button"
-              onClick={() => {
-                setPinModalError(null);
-                setNewPin("");
-                setConfirmNewPin("");
-                setIsPinModalOpen(true);
-              }}
-              className="px-4 py-2 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-black text-xs cursor-pointer active:scale-95 transition-all shadow-xs shrink-0 self-start sm:self-auto"
-            >
-              {isPinActive ? "Change Oga PIN" : "Set 4-Digit PIN"}
-            </button>
+            {/* Auto-Lock Inactivity Timer Selector */}
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div>
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300 block">
+                  ⏱️ Auto-Lock Timer on Idle
+                </span>
+                <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                  Automatically lock screen when you step away from your stall
+                </span>
+              </div>
+
+              <div className="flex items-center gap-1.5 flex-wrap">
+                {AUTO_LOCK_OPTIONS.map((opt) => {
+                  const isSelected = autoLockMins === opt.value;
+                  return (
+                    <button
+                      key={opt.value}
+                      type="button"
+                      onClick={() => handleUpdateAutoLock(opt.value)}
+                      className={`px-2.5 py-1 rounded-xl text-[11px] font-black cursor-pointer transition-all active:scale-95 border ${
+                        isSelected
+                          ? "bg-blue-600 text-white border-blue-600 shadow-xs"
+                          : "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700"
+                      }`}
+                    >
+                      {opt.value === 0 ? "Off" : `${opt.value}m`}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           {/* Insight Credits Balance Card */}

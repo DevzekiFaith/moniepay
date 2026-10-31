@@ -27,24 +27,28 @@ import {
 
 interface OwnerPinModalProps {
   isOpen: boolean;
-  onClose: () => void;
+  onClose?: () => void;
   onSuccess: () => void;
+  onSignOut?: () => void;
   userId?: string;
   userName?: string;
   businessName?: string;
   avatarUrl?: string;
   mode?: "UNLOCK" | "SET_NEW_PIN";
+  isStrictLock?: boolean;
 }
 
 export function OwnerPinModal({
   isOpen,
   onClose,
   onSuccess,
+  onSignOut,
   userId,
   userName = "Shop Owner",
   businessName = "My Business Store",
   avatarUrl = "/images/traders/mama_chidi.jpg",
   mode: initialMode = "UNLOCK",
+  isStrictLock = false,
 }: OwnerPinModalProps) {
   const [mounted, setMounted] = useState(false);
   const [mode, setMode] = useState<"UNLOCK" | "SET_NEW_PIN">(initialMode);
@@ -154,8 +158,12 @@ export function OwnerPinModal({
   return createPortal(
     <AnimatePresence>
       <div
-        className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto"
-        onClick={onClose}
+        className="fixed inset-0 z-[9999] flex items-center justify-center p-3 sm:p-4 bg-slate-950/85 backdrop-blur-md overflow-y-auto"
+        onClick={() => {
+          if (!isStrictLock && onClose) {
+            onClose();
+          }
+        }}
       >
         <motion.div
           initial={{ opacity: 0, scale: 0.94, y: 15 }}
@@ -165,14 +173,16 @@ export function OwnerPinModal({
           className="relative w-full max-w-sm rounded-[32px] bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-white/10 shadow-2xl p-5 sm:p-7 text-slate-800 dark:text-slate-100 select-none overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
-          {/* Close button */}
-          <button
-            type="button"
-            onClick={onClose}
-            className="absolute top-4 right-4 p-2 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          {/* Close button (only when not in strict lock screen mode) */}
+          {!isStrictLock && onClose && (
+            <button
+              type="button"
+              onClick={onClose}
+              className="absolute top-4 right-4 p-2 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-900 dark:hover:text-white transition-all cursor-pointer"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
 
           {/* Header & Avatar */}
           <div className="flex flex-col items-center text-center space-y-2 pt-1">
@@ -189,8 +199,9 @@ export function OwnerPinModal({
             </div>
 
             <div>
-              <p className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-wider">
-                {mode === "UNLOCK" ? "Shop Locked" : "Owner Security PIN"}
+              <p className="text-xs font-black text-blue-700 dark:text-blue-400 uppercase tracking-wider flex items-center justify-center gap-1">
+                <Lock className="h-3 w-3" />
+                <span>{mode === "UNLOCK" ? (isStrictLock ? "Shop Locked (Anti-Theft Active)" : "Shop Screen Locked") : "Owner Security PIN"}</span>
               </p>
               <h3 className="text-base sm:text-lg font-black text-slate-900 dark:text-white">
                 {businessName}
@@ -297,12 +308,24 @@ export function OwnerPinModal({
             </button>
           </div>
 
-          {/* Footer Helper Note */}
-          <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center font-medium mt-4">
-            {mode === "UNLOCK"
-              ? "Default PIN is 1234. You can change it anytime with 'Change PIN'."
-              : "Keep this PIN secret. It locks your shop records from prying eyes."}
-          </p>
+          {/* Footer Helper Note & Forgot PIN Sign-Out */}
+          <div className="mt-4 text-center space-y-1.5">
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+              {mode === "UNLOCK"
+                ? "Default PIN is 1234. Tap 'Change PIN' to set your personal secret code."
+                : "Keep this PIN secret. It locks your shop records from prying eyes."}
+            </p>
+
+            {onSignOut && (
+              <button
+                type="button"
+                onClick={onSignOut}
+                className="text-[10px] text-rose-500 hover:text-rose-700 dark:text-rose-400 font-bold underline transition-colors cursor-pointer"
+              >
+                Forget PIN? Sign Out to Account Login
+              </button>
+            )}
+          </div>
         </motion.div>
       </div>
     </AnimatePresence>,

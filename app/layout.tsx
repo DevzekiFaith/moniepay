@@ -12,6 +12,7 @@ import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { InstallAppBanner } from "@/components/pwa/InstallAppBanner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { SpeedInsights } from "@vercel/speed-insights/next";
+import { AutoLockGuard } from "@/components/security/AutoLockGuard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -202,7 +203,9 @@ export default function RootLayout({
               <SubscriptionProvider>
                 <CreditProvider>
                   <TooltipProvider delayDuration={150}>
-                    {children}
+                    <AutoLockGuard>
+                      {children}
+                    </AutoLockGuard>
                     <CreditPurchaseModal />
                     <UpgradeModal />
                     <InstallAppBanner />
