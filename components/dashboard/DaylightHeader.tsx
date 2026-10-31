@@ -105,147 +105,151 @@ export function DaylightHeader({
 
         <div className="relative z-10 mx-auto w-full max-w-4xl space-y-3">
           {/* ── ROW 1: TOP MAIN NAV BAR (Shop Identity on Left • Clean Action Hub on Right) ── */}
-          <div className="flex items-center justify-between gap-2">
-            {/* Left: Merchant Profile & Identity (Avatar + Docked Sync Pill, Shop Name & Location) */}
-            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
-              {/* Avatar + Docked Sync Status Chip */}
-              <div className="flex flex-col items-center shrink-0">
-                <InfoTooltip content="Your shop profile & lock shop">
-                  <button
-                    type="button"
-                    onClick={() => setIsLogoutOpen(true)}
-                    aria-label="Account profile & Lock Shop"
-                    className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-2xl overflow-hidden border-2 border-sky-300/80 dark:border-sky-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.3)] shrink-0 cursor-pointer active:scale-95 transition-all bg-blue-950 flex items-center justify-center"
-                  >
-                    {profilePhoto ? (
-                      <img
-                        src={profilePhoto}
-                        alt={displayName}
-                        className="h-full w-full object-cover object-center"
-                        onError={(e) => {
-                          e.currentTarget.style.display = "none";
-                        }}
-                      />
-                    ) : (
-                      <span className="font-black text-white text-base">
-                        {(displayName[0] || "T").toUpperCase()}
-                      </span>
-                    )}
-                    <span className="absolute bottom-0.5 right-0.5 h-2 w-2 rounded-full bg-emerald-400 border-2 border-blue-950 shadow-xs" />
-                  </button>
-                </InfoTooltip>
-
-                {/* Docked Sync status pill with live offline pending count */}
+          <div className="flex items-center justify-between gap-2.5">
+            {/* Left: Merchant Profile & Identity (Avatar, Shop Name, Location + Inline Sync Pill) */}
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+              {/* Profile Avatar Button */}
+              <InfoTooltip content="Your shop profile & lock shop">
                 <button
                   type="button"
-                  onClick={onManualSync}
-                  className={`mt-1 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full border text-[9px] sm:text-[9.5px] font-black cursor-pointer active:scale-95 transition-all shadow-2xs backdrop-blur-md whitespace-nowrap ${
-                    isSyncing
-                      ? "bg-amber-400/20 text-amber-200 border-amber-300/40"
-                      : pendingCount > 0
-                      ? isOnline
-                        ? "bg-amber-500/25 text-amber-100 border-amber-300/60 hover:bg-amber-500/35"
-                        : "bg-rose-500/25 text-rose-100 border-rose-300/60"
-                      : isOnline
-                      ? "bg-white/15 dark:bg-white/10 text-sky-100 hover:text-white border-white/20 hover:bg-white/25"
-                      : "bg-amber-950/40 text-amber-200 border-amber-400/30"
-                  }`}
-                  title={
-                    pendingCount > 0
-                      ? `${pendingCount} recorded transactions waiting to sync to cloud. Click to sync now.`
-                      : isOnline
-                      ? "All records backed up to cloud. Click to force sync."
-                      : "Device offline. Records safely stored locally on phone and will sync automatically once network is restored."
-                  }
+                  onClick={() => setIsLogoutOpen(true)}
+                  aria-label="Account profile & Lock Shop"
+                  className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-2xl overflow-hidden border-2 border-sky-300/80 dark:border-sky-400/60 shadow-[0_4px_16px_rgba(0,0,0,0.3)] shrink-0 cursor-pointer active:scale-95 transition-all bg-blue-950 flex items-center justify-center"
                 >
-                  {isSyncing ? (
-                    <>
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-ping" />
-                      <span>Syncing…</span>
-                    </>
-                  ) : pendingCount > 0 ? (
-                    <>
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
-                      <span>{isOnline ? `${pendingCount} Pending Sync` : `Offline (${pendingCount})`}</span>
-                    </>
-                  ) : isOnline ? (
-                    <>
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      <span>Backed Up ✓</span>
-                    </>
+                  {profilePhoto ? (
+                    <img
+                      src={profilePhoto}
+                      alt={displayName}
+                      className="h-full w-full object-cover object-center"
+                      onError={(e) => {
+                        e.currentTarget.style.display = "none";
+                      }}
+                    />
                   ) : (
-                    <>
-                      <WifiOff className="h-2.5 w-2.5 text-amber-300" />
-                      <span className="text-amber-200">Offline Safe</span>
-                    </>
+                    <span className="font-black text-white text-base">
+                      {(displayName[0] || "T").toUpperCase()}
+                    </span>
                   )}
+                  <span className="absolute bottom-0.5 right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 border-2 border-blue-950 shadow-xs" />
                 </button>
-              </div>
+              </InfoTooltip>
 
-              {/* Shop Name & Location to the right */}
+              {/* Shop Name & Subtitle Row (Location + Sync Pill) */}
               <div className="min-w-0 flex-1">
                 <h1 className="text-xs xs:text-sm sm:text-base font-black text-white truncate tracking-tight leading-tight">
                   {shopName}
                 </h1>
 
-                {registeredLocation ? (
-                  <div className="flex items-center gap-1 text-[10.5px] sm:text-[11px] text-sky-200/90 font-medium mt-0.5 truncate">
-                    <MapPin className="h-3 w-3 text-sky-300 shrink-0" />
-                    <span className="truncate max-w-[140px] sm:max-w-[220px]">{registeredLocation}</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1 text-[10.5px] sm:text-[11px] text-sky-200/90 font-medium mt-0.5 truncate">
-                    <Building2 className="h-3 w-3 text-sky-300 shrink-0" />
-                    <span className="truncate max-w-[140px] sm:max-w-[220px]">{shopName}</span>
-                  </div>
-                )}
+                <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                  {registeredLocation ? (
+                    <div className="flex items-center gap-1 text-[10.5px] sm:text-[11px] text-sky-200/90 font-medium truncate max-w-[130px] sm:max-w-[180px]">
+                      <MapPin className="h-3 w-3 text-sky-300 shrink-0" />
+                      <span className="truncate">{registeredLocation}</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-[10.5px] sm:text-[11px] text-sky-200/90 font-medium truncate max-w-[130px] sm:max-w-[180px]">
+                      <Building2 className="h-3 w-3 text-sky-300 shrink-0" />
+                      <span className="truncate">{shopName}</span>
+                    </div>
+                  )}
+
+                  {/* Inline Sync status badge */}
+                  <button
+                    type="button"
+                    onClick={onManualSync}
+                    className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full border text-[9px] sm:text-[9.5px] font-black cursor-pointer active:scale-95 transition-all shadow-2xs backdrop-blur-md whitespace-nowrap shrink-0 ${
+                      isSyncing
+                        ? "bg-amber-400/20 text-amber-200 border-amber-300/40"
+                        : pendingCount > 0
+                        ? isOnline
+                          ? "bg-amber-500/25 text-amber-100 border-amber-300/60 hover:bg-amber-500/35"
+                          : "bg-rose-500/25 text-rose-100 border-rose-300/60"
+                        : isOnline
+                        ? "bg-white/15 dark:bg-white/10 text-sky-100 hover:text-white border-white/20 hover:bg-white/25"
+                        : "bg-amber-950/40 text-amber-200 border-amber-400/30"
+                    }`}
+                    title={
+                      pendingCount > 0
+                        ? `${pendingCount} recorded transactions waiting to sync to cloud. Click to sync now.`
+                        : isOnline
+                        ? "All records backed up to cloud. Click to force sync."
+                        : "Device offline. Records safely stored locally on phone and will sync automatically once network is restored."
+                    }
+                  >
+                    {isSyncing ? (
+                      <>
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-300 animate-ping" />
+                        <span>Syncing…</span>
+                      </>
+                    ) : pendingCount > 0 ? (
+                      <>
+                        <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+                        <span>{isOnline ? `${pendingCount} Pending` : `Offline (${pendingCount})`}</span>
+                      </>
+                    ) : isOnline ? (
+                      <>
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                        <span>Backed Up ✓</span>
+                      </>
+                    ) : (
+                      <>
+                        <WifiOff className="h-2.5 w-2.5 text-amber-300" />
+                        <span className="text-amber-200">Offline Safe</span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 
-            {/* Right: Streamlined, Uncrowded Action Bar */}
-            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-              {/* 1. Notification Bell */}
-              <NotificationBellDrawer />
-
-              {/* 2. Theme Toggle */}
-              <InfoTooltip content="Switch Daylight or Night Mode">
-                <ThemeToggle size="sm" />
-              </InfoTooltip>
-
-              {/* 3. Insight Credits Balance Pill */}
-              <div className="inline-flex">
+            {/* Right: Unified, Reorganized Action Bar */}
+            <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+              {/* 1. Status & Financial Pills Group */}
+              <div className="flex items-center gap-1 shrink-0">
                 <CreditBalancePill />
+
+                <div className="hidden lg:inline-flex">
+                  <SubscriptionStatusPill />
+                </div>
               </div>
 
-              {/* 4. Pro Status Pill (Visible on md+ screens) */}
-              <div className="hidden md:inline-flex">
-                <SubscriptionStatusPill />
-              </div>
+              {/* Subtle Vertical Divider */}
+              <div className="h-5 w-px bg-white/25 dark:bg-white/15 mx-0.5 hidden xs:block shrink-0" />
 
-              {/* 5. 1-Tap Quick Screen Lock (Instant Anti-Theft) */}
-              <InfoTooltip content="Lock Shop Screen Now (4-Digit PIN)">
-                <button
-                  type="button"
-                  onClick={() => lockShop()}
-                  aria-label="Lock Stall Screen"
-                  className="flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
-                >
-                  <Lock className="h-3.5 w-3.5" />
-                </button>
-              </InfoTooltip>
+              {/* 2. Unified Quick Action Icons Hub (Uniform Dimensions & Glass Styling) */}
+              <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+                {/* Lock Shop Screen (1-Tap Anti-Theft) */}
+                <InfoTooltip content="Lock Shop Screen Now (4-Digit PIN)">
+                  <button
+                    type="button"
+                    onClick={() => lockShop()}
+                    aria-label="Lock Stall Screen"
+                    className="flex items-center justify-center h-8.5 w-8.5 sm:h-9 sm:w-9 rounded-xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs"
+                  >
+                    <Lock className="h-3.5 w-3.5" />
+                  </button>
+                </InfoTooltip>
 
-              {/* 6. More Actions Dropdown (Organizes secondary links cleanly) */}
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
-                  aria-label="More Options"
-                  className={`flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs ${
-                    isMoreMenuOpen ? "bg-white/30 text-white" : ""
-                  }`}
-                >
-                  <MoreVertical className="h-4 w-4" />
-                </button>
+                {/* Notifications Bell */}
+                <NotificationBellDrawer />
+
+                {/* Daylight / Night Market Theme Switcher */}
+                <InfoTooltip content="Switch Daylight or Night Mode">
+                  <ThemeToggle size="sm" className="h-8.5! w-8.5! sm:h-9! sm:w-9! rounded-xl!" />
+                </InfoTooltip>
+
+                {/* More Options Menu */}
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsMoreMenuOpen(!isMoreMenuOpen)}
+                    aria-label="More Options"
+                    className={`flex items-center justify-center h-8.5 w-8.5 sm:h-9 sm:w-9 rounded-xl bg-white/15 dark:bg-white/10 text-white backdrop-blur-md border border-white/20 dark:border-white/10 hover:bg-white/25 active:scale-95 transition-all cursor-pointer shadow-xs ${
+                      isMoreMenuOpen ? "bg-white/30 text-white" : ""
+                    }`}
+                  >
+                    <MoreVertical className="h-4 w-4" />
+                  </button>
 
                 {/* Dropdown Menu Popup */}
                 {isMoreMenuOpen && (
@@ -371,6 +375,7 @@ export function DaylightHeader({
               </div>
             </div>
           </div>
+        </div>
 
           {/* ── ROW 2: INFORMAL GREETING & STATUS ── */}
           <div className="pt-0.5 flex items-center justify-between gap-2">
