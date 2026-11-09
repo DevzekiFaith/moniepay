@@ -443,7 +443,7 @@ export function MonieAiChat() {
                   style={{ display: "flex", alignItems: "center", gap: "8px" }}
                 >
                   <div style={{ flexShrink: 0 }}>
-                    <MonieAiEmblem size={24} />
+                    <LisaEmblem size={24} />
                   </div>
                   <div
                     style={{
