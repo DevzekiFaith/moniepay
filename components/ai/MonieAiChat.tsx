@@ -14,7 +14,7 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react";
-import { LisaEmblem } from "@/components/ui/MonieAiLogo";
+import { LisaEmblem, MonieAiEmblem } from "@/components/ui/MonieAiLogo";
 
 interface Message {
   id: string;
