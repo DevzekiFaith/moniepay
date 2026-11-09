@@ -103,3 +103,4 @@ console.log("   lisapay-logo-square.svg");
 console.log("");
 console.log("ℹ️  For PNG versions, the app will reference these SVGs.");
 console.log("   Update manifest.json and layout.tsx to use .svg paths.");
+
