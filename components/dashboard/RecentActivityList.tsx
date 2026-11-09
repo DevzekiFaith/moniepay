@@ -56,7 +56,7 @@ export function RecentActivityList({
     const staffAttribution = staff ? `*Attendant:* ${staff.staffName} (${staff.staffRole})\n` : "";
 
     const receiptText =
-      `🧾 *OFFICIAL SALE RECEIPT - MONIEPAY*\n` +
+      `🧾 *OFFICIAL SALE RECEIPT - LISAPAY*\n` +
       `━━━━━━━━━━━━━━━━━━━\n` +
       `*Transaction:* ${isPositive ? "Sale Record" : "Shop Payment"}\n` +
       `*Item:* ${desc}\n` +

@@ -1,20 +1,22 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// MoniePay — Official Brand Identity & Logo
+// LisaPay — Official Brand Identity & Logo
 // "Understand your money, no be just to record am."
 // ─────────────────────────────────────────────────────────────────
 
 import React, { useState } from "react";
 
-interface MoniePayLogoProps {
+interface LisaPayLogoProps {
   size?: number;
   variant?: "icon" | "horizontal" | "stacked";
   className?: string;
   showTagline?: boolean;
 }
 
-export function MoniePayMark({ size = 36, className = "" }: { size?: number; className?: string }) {
+export type MoniePayLogoProps = LisaPayLogoProps;
+
+export function LisaPayMark({ size = 36, className = "" }: { size?: number; className?: string }) {
   const [imgError, setImgError] = useState(false);
 
   return (
@@ -24,13 +26,13 @@ export function MoniePayMark({ size = 36, className = "" }: { size?: number; cla
         height: `${size}px`,
         borderRadius: `${Math.round(size * 0.26)}px`,
       }}
-      className={`relative overflow-hidden shadow-md flex items-center justify-center shrink-0 border border-emerald-500/30 dark:border-white/20 bg-[#061129] select-none transition-transform hover:scale-105 active:scale-95 ${className}`}
-      aria-label="MoniePay mark"
+      className={`relative overflow-hidden shadow-md flex items-center justify-center shrink-0 border border-blue-500/30 dark:border-white/20 bg-[#061129] select-none transition-transform hover:scale-105 active:scale-95 ${className}`}
+      aria-label="LisaPay mark"
     >
       {!imgError ? (
         <img
-          src="/moniepay-logo-square.png"
-          alt="MoniePay"
+          src="/lisapay-logo-square.png"
+          alt="LisaPay"
           className="h-full w-full object-cover"
           onError={() => setImgError(true)}
         />
@@ -48,16 +50,16 @@ export function MoniePayMark({ size = 36, className = "" }: { size?: number; cla
             d="M22 34 L30 24 H70 L78 34 L76 39 H24 Z"
             fill="#ffffff"
           />
-          {/* Letter M Pillars */}
+          {/* Letter L Pillar with Shop Foundation */}
           <path
-            d="M25 39 V78 H38 V56 L50 68 L62 56 V78 H75 V39"
+            d="M30 38 V78 H74 V66 H44 V38 H30 Z"
             fill="#ffffff"
           />
           {/* Solid Gold Naira Coin */}
-          <circle cx="50" cy="66" r="13" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
+          <circle cx="62" cy="50" r="13" fill="#f59e0b" stroke="#ffffff" strokeWidth="1.5" />
           <text
-            x="50"
-            y="71.5"
+            x="62"
+            y="55.5"
             textAnchor="middle"
             fill="#78350f"
             fontSize="13"
@@ -72,25 +74,25 @@ export function MoniePayMark({ size = 36, className = "" }: { size?: number; cla
   );
 }
 
-export function MoniePayLogo({
+export function LisaPayLogo({
   size = 36,
   variant = "horizontal",
   className = "",
   showTagline = true,
-}: MoniePayLogoProps) {
+}: LisaPayLogoProps) {
   if (variant === "icon") {
-    return <MoniePayMark size={size} />;
+    return <LisaPayMark size={size} />;
   }
 
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
-      <MoniePayMark size={size} />
+      <LisaPayMark size={size} />
       <div className="flex flex-col">
         <div className="flex items-center gap-1.5">
           <span className="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white leading-tight">
-            MoniePay
+            LisaPay
           </span>
-          <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 border border-emerald-200/80 dark:border-emerald-800">
+          <span className="text-[10px] font-black px-1.5 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-sky-300 border border-blue-200/80 dark:border-blue-800">
             Lite
           </span>
         </div>
@@ -105,9 +107,11 @@ export function MoniePayLogo({
 }
 
 // Backwards compatibility aliases
-export const AjoLogo = MoniePayLogo;
-export const AjoMark = MoniePayMark;
-export const AjoPayLogo = MoniePayLogo;
-export const AjoPayEmblem = MoniePayMark;
+export const MoniePayLogo = LisaPayLogo;
+export const MoniePayMark = LisaPayMark;
+export const AjoLogo = LisaPayLogo;
+export const AjoMark = LisaPayMark;
+export const AjoPayLogo = LisaPayLogo;
+export const AjoPayEmblem = LisaPayMark;
 
-export default MoniePayLogo;
+export default LisaPayLogo;

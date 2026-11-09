@@ -353,7 +353,7 @@ export function InviteShopModal({
                   <Gift className="h-7 w-7 mx-auto text-slate-400" />
                   <p className="font-black text-slate-800 dark:text-slate-200 text-xs">No free days to claim yet</p>
                   <p className="text-slate-500 dark:text-slate-400 max-w-xs mx-auto text-[11px]">
-                    Once your neighbor record market reach 7 days on MoniePay, come press button here make your +14 free days enter your shop account sharp-sharp!
+                    Once your neighbor record market reach 7 days on LisaPay, come press button here make your +14 free days enter your shop account sharp-sharp!
                   </p>
                 </div>
               ) : (
@@ -412,11 +412,11 @@ export function InviteShopModal({
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="h-4 w-4 rounded-full bg-blue-100 dark:bg-blue-900/60 text-blue-700 dark:text-sky-300 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
-                    <span><strong>Make Dem Record Market for 7 Days:</strong> When dem use MoniePay record their daily market sales & expenses for 7 different days...</span>
+                    <span><strong>Make Dem Record Market for 7 Days:</strong> When dem use LisaPay record their daily market sales & expenses for 7 different days...</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="h-4 w-4 rounded-full bg-emerald-100 dark:bg-emerald-900/60 text-emerald-700 dark:text-emerald-300 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
-                    <span><strong>Una Two Go Win +14 Days Free!:</strong> Both you and that your neighbor go get +14 Days free MoniePay Plus access without paying single kobo!</span>
+                    <span><strong>Una Two Go Win +14 Days Free!:</strong> Both you and that your neighbor go get +14 Days free LisaPay Plus access without paying single kobo!</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="h-4 w-4 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-700 dark:text-amber-300 font-black text-[10px] flex items-center justify-center shrink-0 mt-0.5">4</span>
@@ -435,7 +435,7 @@ export function InviteShopModal({
         {/* ── FOOTER ── */}
         <div className="p-3 sm:p-3.5 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-200/80 dark:border-slate-800 text-center text-[11px] text-slate-500 font-medium shrink-0 flex items-center justify-center gap-1.5">
           <Store className="h-3.5 w-3.5 text-[#1d4ed8] dark:text-sky-400" />
-          <span>MoniePay • Understand your money, no be just to record am</span>
+          <span>LisaPay • Understand your money, no be just to record am</span>
         </div>
       </motion.div>
     </div>

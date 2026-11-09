@@ -208,7 +208,7 @@ export function AddStaffDeviceModal({
                   </button>
                 </div>
                 <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                  Staff opens MoniePay → taps <strong>&ldquo;Join as Staff&rdquo;</strong> → enters this code.
+                  Staff opens LisaPay → taps <strong>&ldquo;Join as Staff&rdquo;</strong> → enters this code.
                 </p>
               </div>
 

@@ -311,7 +311,7 @@ export function TellMoniePay({
         <div className="flex items-center gap-2">
           <span className="flex h-2.5 w-2.5 rounded-full bg-blue-600 animate-pulse shadow-xs shadow-blue-500/50 shrink-0" />
           <h2 className="text-xs sm:text-[13px] font-black uppercase tracking-wider text-slate-800 dark:text-white leading-tight">
-            Tell MoniePay Wetin Happen For Shop
+            Tell Lisa Wetin Happen For Shop
           </h2>
         </div>
         <span className="self-start sm:self-auto text-[9.5px] sm:text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-blue-50/90 dark:bg-blue-950/80 text-blue-700 dark:text-sky-300 border border-blue-200/60 dark:border-blue-800 shadow-xs">
@@ -335,7 +335,7 @@ export function TellMoniePay({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-7.5 w-7.5 sm:h-8 sm:w-8 rounded-xl bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white flex items-center justify-center cursor-pointer shadow-md shadow-blue-600/30 border-t border-white/30"
-              title="Record to MoniePay"
+              title="Record to LisaPay"
             >
               <Send className="h-3.5 w-3.5" />
             </motion.button>

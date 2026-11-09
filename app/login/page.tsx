@@ -322,7 +322,7 @@ function LoginContent() {
               <div className="flex items-center gap-2">
                 <ThemeToggle />
                 <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400">
-                  MoniePay v2.0
+                  LisaPay v2.0
                 </span>
               </div>
             </div>
@@ -638,7 +638,7 @@ function LoginContent() {
                   </div>
                   <p className="text-[9.5px] sm:text-[10.5px] text-emerald-700 dark:text-emerald-400 font-bold px-1 flex items-start gap-1.5 leading-snug">
                     <span className="shrink-0 mt-0.5">🤝</span>
-                    <span>Paste code wey fellow trader give you make una two enjoy +14 days free MoniePay Plus!</span>
+                    <span>Paste code wey fellow trader give you make una two enjoy +14 days free LisaPay Plus!</span>
                   </p>
                 </div>
               </div>
@@ -730,7 +730,7 @@ function LoginContent() {
 
         {/* Minimal Footer Brand Line */}
         <p className="text-[10px] sm:text-[11px] text-slate-400 font-bold text-center tracking-widest uppercase">
-          MONIEPAY • MERCHANT BUSINESS PORTAL
+          LISAPAY • MERCHANT BUSINESS PORTAL
         </p>
       </div>
     </motion.div>

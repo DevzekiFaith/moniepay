@@ -1,7 +1,7 @@
 {
-  "name": "MoniePay — Business Decision Intelligence OS",
-  "short_name": "MoniePay",
-  "description": "Business Operating System for Nigeria's Informal and Micro-Business Economy",
+  "name": "LisaPay — Business Decision Intelligence OS",
+  "short_name": "LisaPay",
+  "description": "LisaPay: Business Operating System for Nigeria's Informal and Micro-Business Economy",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#edf3fb",
@@ -9,17 +9,17 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/moniepay-icon-192.png",
+      "src": "/lisapay-icon-192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/moniepay-icon-512.png",
+      "src": "/lisapay-icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     },
     {
-      "src": "/moniepay-logo-square.png",
+      "src": "/lisapay-logo-square.png",
       "sizes": "512x512",
       "type": "image/png"
     }

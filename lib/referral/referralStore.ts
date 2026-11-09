@@ -79,7 +79,7 @@ export function generateUserReferralCode(businessName?: string, phone?: string):
     .replace(/[^0-9]/g, "")
     .slice(-2) || Math.floor(10 + Math.random() * 89).toString();
 
-  const code = `MONIE-${cleanName}-${phoneSuffix}`;
+  const code = `LISA-${cleanName}-${phoneSuffix}`;
   
   if (typeof window !== "undefined") {
     try {
@@ -187,7 +187,7 @@ export function claimReferralReward(traderId: string): { success: boolean; messa
 
   return {
     success: true,
-    message: `Oya congratulations! +${DEFAULT_REFERRAL_CONFIG.subscription_days_bonus} Days free MoniePay Plus don enter your shop account sharp-sharp! Enjoy full shop intelligence.`,
+    message: `Oya congratulations! +${DEFAULT_REFERRAL_CONFIG.subscription_days_bonus} Days free LisaPay Plus don enter your shop account sharp-sharp! Enjoy full shop intelligence.`,
   };
 }
 
@@ -241,10 +241,10 @@ export function generateWhatsAppInviteMessage(referralCode: string, ownerName?: 
 
   return encodeURIComponent(
     `Market greetings! Na ${name} from shop here 👋\n\n` +
-    `I dey use *MoniePay* arrange all my shop daily sales, track who dey owe me gbese, and calculate my true profit so my shop money no go leak again.\n\n` +
+    `I dey use *LisaPay* arrange all my shop daily sales, track who dey owe me gbese, and calculate my true profit so my shop money no go leak again.\n\n` +
     `Make you use my shop code *${referralCode}* register your own shop sharp-sharp! Una two go get *7 Days Full Free Access* plus *+14 Days Bonus*:\n\n` +
     `👉 ${link}\n\n` +
-    `MoniePay: Understand your money, no be just to record am! 🚀`
+    `LisaPay: Understand your money, no be just to record am! 🚀`
   );
 }
 
@@ -260,8 +260,8 @@ export function validateReferralEligibility(params: {
   const { referralCode, userPhone, referrerPhone } = params;
   const cleanCode = (referralCode || "").trim().toUpperCase();
 
-  if (!cleanCode || !cleanCode.startsWith("MONIE-")) {
-    return { eligible: false, reason: "Invalid referral code format. Code must start with MONIE- (e.g. MONIE-MAMA-24)." };
+  if (!cleanCode || (!cleanCode.startsWith("LISA-") && !cleanCode.startsWith("MONIE-"))) {
+    return { eligible: false, reason: "Invalid referral code format. Code must start with LISA- (e.g. LISA-MAMA-24)." };
   }
 
   // Self-referral guard

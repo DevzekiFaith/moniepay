@@ -1,9 +1,9 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// Monie AI — Conversational Money Intelligence Chat Interface
-// Powered by MonieAiLogo & Enhanced Framer Motion Spring Dynamics
-// Strictly adheres to MoniePay's electric blue/indigo color system
+// Lisa — Conversational Shop Money Intelligence Copilot Interface
+// Powered by LisaLogo & Enhanced Framer Motion Spring Dynamics
+// Strictly adheres to LisaPay's electric blue/indigo color system
 // ─────────────────────────────────────────────────────────────────
 
 import { useState, useRef, useEffect } from "react";
@@ -14,7 +14,7 @@ import {
   Loader2,
   RefreshCw,
 } from "lucide-react";
-import { MonieAiEmblem } from "@/components/ui/MonieAiLogo";
+import { LisaEmblem } from "@/components/ui/MonieAiLogo";
 
 interface Message {
   id: string;
@@ -24,10 +24,10 @@ interface Message {
 }
 
 const INITIAL_SUGGESTIONS = [
-  "How much did I spend on food this week?",
-  "Where is most of my money going?",
-  "What was my biggest expense this month?",
-  "What recurring bills do I have coming up?",
+  "How much did I make today?",
+  "Who dey owe me debt this week?",
+  "How much cash is safe to withdraw?",
+  "Which stock is running low?",
   "Am I spending faster than I'm earning?",
 ];
 
@@ -40,7 +40,7 @@ export function MonieAiChat() {
       id: "welcome",
       role: "assistant",
       content:
-        "Hi Alex! I'm **Monie AI**, your personal money intelligence copilot. Ask me anything about your verified spending, balances, or recurring bills.",
+        "Hi! I'm **Lisa**, your personal shop money copilot. Ask me anything about your verified sales, debts, safe cash to withdraw, or restocking.",
       timestamp: new Date(),
     },
   ]);
@@ -227,8 +227,8 @@ export function MonieAiChat() {
             cursor: "pointer",
             padding: 0,
           }}
-          aria-label="Open Monie AI Assistant"
-          title="Talk to Monie AI"
+          aria-label="Open Lisa Assistant"
+          title="Talk to Lisa"
         >
           <AnimatePresence mode="wait">
             {isOpen ? (
@@ -250,7 +250,7 @@ export function MonieAiChat() {
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 style={{ display: "flex", alignItems: "center", justifyContent: "center" }}
               >
-                <MonieAiEmblem size={34} />
+                <LisaEmblem size={34} />
               </motion.div>
             )}
           </AnimatePresence>
@@ -297,7 +297,7 @@ export function MonieAiChat() {
               }}
             >
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <MonieAiEmblem size={32} />
+                <LisaEmblem size={32} />
                 <div>
                   <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                     <h3
@@ -309,7 +309,7 @@ export function MonieAiChat() {
                         margin: 0,
                       }}
                     >
-                      Monie AI
+                      Lisa
                     </h3>
                     <span
                       style={{
@@ -407,7 +407,7 @@ export function MonieAiChat() {
                   >
                     {!isUser && (
                       <div style={{ flexShrink: 0, marginTop: "2px" }}>
-                        <MonieAiEmblem size={24} />
+                        <LisaEmblem size={24} />
                       </div>
                     )}
 
@@ -522,7 +522,7 @@ export function MonieAiChat() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about spending, food, bills…"
+                placeholder="Ask Lisa about sales, food, debts, cash…"
                 disabled={isLoading}
                 style={{
                   flex: 1,

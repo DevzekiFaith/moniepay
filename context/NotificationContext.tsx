@@ -395,7 +395,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
       const res = await Notification.requestPermission();
       setPermission(res);
       if (res === "granted") {
-        new Notification("MoniePay Alerts Enabled", {
+        new Notification("LisaPay Alerts Enabled", {
           body: "You will now receive instant alerts for customer debt payments, price changes, and sales records.",
           icon: "/favicon.ico",
         });

@@ -159,7 +159,7 @@ function CustomerRatingContent() {
           <MoniePayMark size={36} />
           <div>
             <span className="text-sm font-black text-slate-900 dark:text-white group-hover:text-blue-600 transition-colors">
-              MoniePay
+              LisaPay
             </span>
             <span className="text-[10px] font-bold text-blue-600 dark:text-sky-400 block leading-none">
               Verified Trader Review
@@ -441,7 +441,7 @@ function CustomerRatingContent() {
 
       {/* ── FOOTER ── */}
       <footer className="w-full max-w-lg mx-auto text-center pt-4 pb-2 text-[10.5px] text-slate-400 dark:text-slate-500 font-medium">
-        MoniePay Verified Review Network • Built for Nigerian Traders
+        LisaPay Verified Review Network • Built for Nigerian Traders
       </footer>
     </div>
   );

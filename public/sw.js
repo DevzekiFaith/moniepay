@@ -1,16 +1,16 @@
 // ─────────────────────────────────────────────────────────────────
-// MoniePay — Service Worker
+// LisaPay — Service Worker
 // Offline resilience for Nigerian micro-businesses
 // ─────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "moniepay-cache-v2";
+const CACHE_NAME = "lisapay-cache-v2";
 const STATIC_ASSETS = [
   "/",
   "/manifest.json",
   "/favicon.ico",
-  "/moniepay-logo-square.png",
-  "/moniepay-icon-192.png",
-  "/moniepay-icon-512.png"
+  "/lisapay-logo-square.png",
+  "/lisapay-icon-192.png",
+  "/lisapay-icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
@@ -118,10 +118,10 @@ self.addEventListener("push", (event) => {
 
   const options = {
     body: data.body,
-    icon: "/moniepay-icon-192.png",
-    badge: "/moniepay-icon-192.png",
+    icon: "/lisapay-icon-192.png",
+    badge: "/lisapay-icon-192.png",
     vibrate: [200, 100, 200, 100, 350],
-    tag: "moniepay-cash-entry",
+    tag: "lisapay-cash-entry",
     renotify: true,
     data: {
       url: data.url || "/directory",

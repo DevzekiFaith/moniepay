@@ -168,7 +168,7 @@ export function MerchantRatingStand({
               <div>
                 <h3 className="text-sm font-black tracking-tight leading-none text-white">Customer Rating Stand</h3>
                 <p className="text-[10.5px] text-emerald-200 font-semibold mt-0.5">
-                  Verified MoniePay Merchant Badge
+                  Verified LisaPay Merchant Badge
                 </p>
               </div>
             </div>
@@ -200,7 +200,7 @@ export function MerchantRatingStand({
                     <span className="px-1.5 py-0.5 rounded-md bg-emerald-100/80 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300 text-[9px] font-black uppercase tracking-wider">
                       Verified Shop
                     </span>
-                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">• MoniePay ID</span>
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-semibold">• LisaPay ID</span>
                   </div>
                   <h4 className="text-sm sm:text-base font-black text-slate-900 dark:text-white leading-tight truncate mt-0.5">
                     {shopName}

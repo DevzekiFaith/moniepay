@@ -256,7 +256,7 @@ export function FinancialStatementModal({
 
   // 6. Copy WhatsApp Summary for Loan Officer
   const handleCopyWhatsAppBrief = () => {
-    const brief = `*MONIEPAY CERTIFIED TURNOVER & SOLVENCY STATEMENT*\n` +
+    const brief = `*LISAPAY CERTIFIED TURNOVER & SOLVENCY STATEMENT*\n` +
       `-------------------------------------------\n` +
       `🏢 *Business:* ${businessName}\n` +
       `👤 *Principal Trader:* ${traderName}\n` +
@@ -267,7 +267,7 @@ export function FinancialStatementModal({
       `🛡️ *Statement ID:* ${verificationCode}\n` +
       `🔑 *Bank Verification Access Key:* ${bankAccessKey}\n` +
       `-------------------------------------------\n` +
-      `✅ *Verification Guarantee:* Certified immutable deterministic ledger records powered by MoniePay Trader OS (Lagos, Nigeria).`;
+      `✅ *Verification Guarantee:* Certified immutable deterministic ledger records powered by LisaPay Trader OS (Lagos, Nigeria).`;
 
     navigator.clipboard.writeText(brief);
     setCopiedSummary(true);
@@ -386,7 +386,7 @@ export function FinancialStatementModal({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-base sm:text-lg font-black tracking-tight text-blue-700 dark:text-blue-400">
-                  MONIEPAY
+                  LISAPAY
                 </span>
                 <span className="text-[9.5px] sm:text-[10px] font-black uppercase px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300">
                   Certified Document
@@ -644,7 +644,7 @@ export function FinancialStatementModal({
                   </div>
                   <div>
                     <span className="text-[10px] font-black uppercase text-emerald-600 dark:text-emerald-400 block">
-                      Official MoniePay Seal ✓
+                      Official LisaPay Seal ✓
                     </span>
                     <p className="text-[10.5px] font-mono font-bold text-slate-500">
                       Hash: SHA256:{verificationCode}
@@ -666,7 +666,7 @@ export function FinancialStatementModal({
 
           {/* Footer Notice */}
           <div className="text-center text-[10px] text-slate-400 dark:text-slate-500 pt-2 border-t border-slate-100 dark:border-slate-800 print:text-slate-600">
-            Certified by MoniePay Technologies • Lagos, Nigeria • Verified SME Operating System
+            Certified by LisaPay Technologies • Lagos, Nigeria • Verified SME Operating System
           </div>
         </div>
       </div>

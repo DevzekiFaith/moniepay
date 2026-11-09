@@ -405,7 +405,7 @@ function VendorMapContent() {
             <Link href="/" className="flex items-center gap-2 group cursor-pointer shrink-0">
               <MoniePayMark size={32} />
               <div>
-                <span className="text-sm font-black text-slate-900 dark:text-white">MoniePay</span>
+                <span className="text-sm font-black text-slate-900 dark:text-white">LisaPay</span>
                 <span className="text-[10px] font-bold text-blue-600 dark:text-sky-400 block leading-none">Vendor Map</span>
               </div>
             </Link>

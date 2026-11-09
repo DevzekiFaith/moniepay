@@ -1340,8 +1340,8 @@ export function getVendorShareLinks(vendorId: string, customOrigin?: string) {
   const profileUrl = `${baseUrl}/vendors/${encodeURIComponent(vendor.id)}?${queryStr}`;
   const mapUrl = `${baseUrl}/map?vendor=${encodeURIComponent(vendor.id)}`;
 
-  const whatsappReviewMessage = `Hello! Thank you for buying from *${vendor.shopName}* (${vendor.market}). 🙏\n\nPlease tap here to leave us a quick review on MoniePay:\n${reviewUrl}`;
-  const whatsappProfileMessage = `Check out *${vendor.shopName}* on MoniePay:\n📍 ${vendor.fullAddress}\n⭐ See verified reviews & get directions:\n${profileUrl}`;
+  const whatsappReviewMessage = `Hello! Thank you for buying from *${vendor.shopName}* (${vendor.market}). 🙏\n\nPlease tap here to leave us a quick review on LisaPay:\n${reviewUrl}`;
+  const whatsappProfileMessage = `Check out *${vendor.shopName}* on LisaPay:\n📍 ${vendor.fullAddress}\n⭐ See verified reviews & get directions:\n${profileUrl}`;
 
   const whatsappReviewLink = `https://wa.me/?text=${encodeURIComponent(whatsappReviewMessage)}`;
   const whatsappProfileLink = `https://wa.me/?text=${encodeURIComponent(whatsappProfileMessage)}`;

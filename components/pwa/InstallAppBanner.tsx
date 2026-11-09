@@ -114,7 +114,7 @@ export function InstallAppBanner() {
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
                     <p className="text-xs font-black text-slate-900 dark:text-white leading-tight truncate">
-                      Put MoniePay For Phone
+                      Put LisaPay For Phone
                     </p>
                     <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-md bg-emerald-100 dark:bg-emerald-950/80 text-emerald-800 dark:text-emerald-300">
                       No Data Needed
@@ -171,7 +171,7 @@ export function InstallAppBanner() {
                       <span>Original Trader App</span>
                     </div>
                     <h3 className="font-black text-slate-900 dark:text-white text-base sm:text-lg leading-tight">
-                      Put MoniePay For Your Phone
+                      Put LisaPay For Your Phone
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
                       No need to open browser every time. 1-tap, market start!
@@ -242,7 +242,7 @@ export function InstallAppBanner() {
                     className="w-full py-3.5 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-600/30 active:scale-98 transition-all cursor-pointer"
                   >
                     <Smartphone className="h-4 w-4" />
-                    <span>Put MoniePay For My Phone (1-Tap)</span>
+                    <span>Put LisaPay For My Phone (1-Tap)</span>
                     <ArrowRight className="h-4 w-4" />
                   </button>
                   <p className="text-[11px] text-center text-slate-400 font-medium">
@@ -277,7 +277,7 @@ export function InstallAppBanner() {
                       3
                     </span>
                     <p className="font-medium text-slate-700 dark:text-slate-300">
-                      Press <strong>Add</strong> for top right. MoniePay icon go appear for your screen immediately!
+                      Press <strong>Add</strong> for top right. LisaPay icon go appear for your screen immediately!
                     </p>
                   </div>
                 </div>

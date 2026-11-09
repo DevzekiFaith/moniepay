@@ -1,26 +1,28 @@
 "use client";
 
 // ─────────────────────────────────────────────────────────────────
-// Monie AI Brand Logo System — Unified Geometric Intelligence Emblem
+// Lisa AI Brand Logo System — Unified Geometric Intelligence Emblem
 // Electric Blue & Indigo Gradient Squircle with BrainCircuit Intelligence Emblem (Zero Sparkles)
-// Strictly adheres to MoniePay's brand color system (no variant colors)
+// Strictly adheres to LisaPay's brand color system
 // ─────────────────────────────────────────────────────────────────
 
 import React from "react";
 import { BrainCircuit } from "lucide-react";
 
-interface MonieAiLogoProps {
+export interface LisaLogoProps {
   size?: number;
   showTagline?: boolean;
   taglineText?: string;
   className?: string;
 }
 
+export type MonieAiLogoProps = LisaLogoProps;
+
 /**
- * Signature Geometric Monie AI Emblem
+ * Signature Geometric Lisa Emblem
  * Electric Blue & Indigo Gradient Squircle with BrainCircuit Intelligence Icon (Zero Sparkles)
  */
-export function MonieAiEmblem({ size = 36 }: { size?: number }) {
+export function LisaEmblem({ size = 36 }: { size?: number }) {
   const iconSize = Math.max(16, Math.round(size * 0.58));
 
   return (
@@ -64,14 +66,14 @@ export function MonieAiEmblem({ size = 36 }: { size?: number }) {
 }
 
 /**
- * Full Monie AI Logo with Typography
+ * Full Lisa Logo with Typography
  */
-export function MonieAiLogo({
+export function LisaAiLogo({
   size = 36,
   showTagline = true,
-  taglineText = "Financial Intelligence Copilot",
+  taglineText = "Shop Money Intelligence Copilot",
   className = "",
-}: MonieAiLogoProps) {
+}: LisaLogoProps) {
   const fontSize = Math.round(size * 0.46);
   const taglineSize = Math.max(9.5, Math.round(size * 0.26));
 
@@ -85,7 +87,7 @@ export function MonieAiLogo({
         userSelect: "none",
       }}
     >
-      <MonieAiEmblem size={size} />
+      <LisaEmblem size={size} />
 
       <div style={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <div style={{ display: "flex", alignItems: "baseline", gap: "5px" }}>
@@ -98,7 +100,7 @@ export function MonieAiLogo({
               lineHeight: 1.1,
             }}
           >
-            Monie
+            Lisa
           </span>
           <span
             style={{
@@ -133,3 +135,10 @@ export function MonieAiLogo({
     </div>
   );
 }
+
+// Backwards compatibility aliases
+export const LisaLogo = LisaAiLogo;
+export const MonieAiLogo = LisaAiLogo;
+export const MonieAiEmblem = LisaEmblem;
+
+export default LisaAiLogo;

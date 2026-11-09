@@ -579,7 +579,7 @@ export default function VendorReviewsManagementPage() {
               </div>
 
               <div className="p-3 rounded-2xl bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-700/80 text-amber-900 dark:text-amber-100 text-xs">
-                Shops no fit delete review directly. Reported reviews dey go <strong>MoniePay Admin Queue</strong> make we check am sharp-sharp.
+                Shops no fit delete review directly. Reported reviews dey go <strong>LisaPay Admin Queue</strong> make we check am sharp-sharp.
               </div>
 
               <form onSubmit={handleSendReport} className="space-y-3 text-xs">

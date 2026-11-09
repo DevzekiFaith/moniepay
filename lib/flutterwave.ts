@@ -68,14 +68,14 @@ export async function initializeFlutterwaveCheckout(params: InitPaymentParams) {
     customizations: {
       title: planTitle,
       description: planDesc,
-      logo: "https://moniepay.app/images/logo.png",
+      logo: "https://lisapay.app/lisapay-icon-512.png",
     },
     meta: {
       userId,
-      plan: isAnnual ? "MONIEPAY_PLUS_ANNUAL" : "MONIEPAY_PLUS_MONTHLY",
+      plan: isAnnual ? "LISAPAY_PLUS_ANNUAL" : "LISAPAY_PLUS_MONTHLY",
       planType: isAnnual ? "annual" : "monthly",
       duration_days: durationDays,
-      appName: "MoniePay",
+      appName: "LisaPay",
     },
   };
 

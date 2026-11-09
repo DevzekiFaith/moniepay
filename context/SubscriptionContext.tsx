@@ -171,7 +171,7 @@ export function SubscriptionProvider({ children }: { children: React.ReactNode }
           if (typeof window !== "undefined") {
             localStorage.setItem("moniepay_subscription", JSON.stringify(data.subscription));
           }
-          toast("Subscription Activated! 🎉", "Welcome to MoniePay Plus. All features unlocked!", {
+          toast("Subscription Activated! 🎉", "Welcome to LisaPay Plus. All features unlocked!", {
             type: "success",
           });
           return { success: true, message: data.message };

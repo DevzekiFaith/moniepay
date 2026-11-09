@@ -353,7 +353,7 @@ export function DaylightHeader({
                         className="flex items-center gap-2.5 px-3 py-2 rounded-xl hover:bg-black/5 dark:hover:bg-white/10 text-slate-800 dark:text-slate-200 hover:text-slate-950 dark:hover:text-white font-bold transition-colors"
                       >
                         <ShieldCheck className="h-4 w-4 text-blue-500 shrink-0" />
-                        <span>MoniePay Plus Pass</span>
+                        <span>LisaPay Plus Pass</span>
                       </Link>
 
                       <div className="pt-1 border-t border-black/10 dark:border-white/10">

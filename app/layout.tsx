@@ -31,37 +31,38 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://moniepay.app"),
+  metadataBase: new URL("https://lisapay.app"),
   title: {
-    default: "MoniePay — Nigeria's Nationwide Trader OS & Live Wholesale Radar",
-    template: "%s | MoniePay",
+    default: "LisaPay — Nigeria's Nationwide Trader OS & Live Wholesale Radar",
+    template: "%s | LisaPay",
   },
   description:
     "Nigeria's nationwide business operating system for informal traders, shops, and wholesale merchants across all 36 States and FCT. 100% offline-ready cash drawer bookkeeping, daily profit tracking, verified stall trust ratings, and live national wholesale depot pricing.",
-  applicationName: "MoniePay Trader OS",
-  authors: [{ name: "MoniePay Technologies Nigeria", url: "https://moniepay.app" }],
-  creator: "MoniePay Technologies Nigeria",
-  publisher: "MoniePay OS",
+  applicationName: "LisaPay Trader OS",
+  authors: [{ name: "LisaPay Technologies Nigeria", url: "https://lisapay.app" }],
+  creator: "LisaPay Technologies Nigeria",
+  publisher: "LisaPay OS",
   category: "finance",
   referrer: "origin-when-cross-origin",
   manifest: "/manifest.json",
   icons: {
     icon: [
-      { url: "/moniepay-logo-square.png", sizes: "any" },
-      { url: "/moniepay-icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/moniepay-icon-512.png", sizes: "512x512", type: "image/png" },
+      { url: "/lisapay-logo-square.png", sizes: "any" },
+      { url: "/lisapay-icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/lisapay-icon-512.png", sizes: "512x512", type: "image/png" },
     ],
     apple: [
-      { url: "/moniepay-logo-square.png", sizes: "180x180", type: "image/png" },
+      { url: "/lisapay-logo-square.png", sizes: "180x180", type: "image/png" },
     ],
   },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "MoniePay",
+    title: "LisaPay",
   },
   keywords: [
-    "MoniePay",
+    "LisaPay",
+    "Lisa AI Shop Copilot",
     "Trader OS Nigeria",
     "Nigeria Business Decision Intelligence",
     "Shop Bookkeeping App Nigeria",
@@ -82,7 +83,7 @@ export const metadata: Metadata = {
     "Informal Micro Business Nigeria",
   ],
   alternates: {
-    canonical: "https://moniepay.app",
+    canonical: "https://lisapay.app",
   },
   robots: {
     index: true,
@@ -98,28 +99,28 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_NG",
-    url: "https://moniepay.app",
-    siteName: "MoniePay",
-    title: "MoniePay — Nigeria's Nationwide Trader OS & Live Wholesale Radar",
+    url: "https://lisapay.app",
+    siteName: "LisaPay",
+    title: "LisaPay — Nigeria's Nationwide Trader OS & Live Wholesale Radar",
     description:
       "Know what is happening in your shop. Know what to do next. Operating system for traders across all 36 Nigerian States and FCT.",
     images: [
       {
-        url: "/moniepay-icon-512.png",
+        url: "/lisapay-icon-512.png",
         width: 512,
         height: 512,
-        alt: "MoniePay — Trader OS for All 36 States in Nigeria",
+        alt: "LisaPay — Trader OS for All 36 States in Nigeria",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "MoniePay — Nigeria's Nationwide Trader OS",
+    title: "LisaPay — Nigeria's Nationwide Trader OS",
     description:
       "Operating system for traders across all 36 Nigerian States and FCT. 100% Offline Ready.",
-    site: "@MoniePayHQ",
-    creator: "@MoniePayHQ",
-    images: ["/moniepay-icon-512.png"],
+    site: "@LisaPayHQ",
+    creator: "@LisaPayHQ",
+    images: ["/lisapay-icon-512.png"],
   },
   other: {
     "geo.region": "NG",
@@ -137,8 +138,8 @@ const JSON_LD_SCHEMA = {
   "@graph": [
     {
       "@type": "SoftwareApplication",
-      "@id": "https://moniepay.app/#app",
-      name: "MoniePay Trader OS",
+      "@id": "https://lisapay.app/#app",
+      name: "LisaPay Trader OS",
       applicationCategory: "BusinessApplication",
       operatingSystem: "All modern web browsers, Android, iOS, Windows, macOS",
       offers: {
@@ -151,10 +152,10 @@ const JSON_LD_SCHEMA = {
     },
     {
       "@type": "FinancialService",
-      "@id": "https://moniepay.app/#organization",
-      name: "MoniePay Technologies Nigeria",
-      url: "https://moniepay.app",
-      logo: "https://moniepay.app/moniepay-icon-512.png",
+      "@id": "https://lisapay.app/#organization",
+      name: "LisaPay Technologies Nigeria",
+      url: "https://lisapay.app",
+      logo: "https://lisapay.app/lisapay-icon-512.png",
       description:
         "Operating system and wholesale trade decision intelligence for Nigerian merchants.",
       areaServed: {

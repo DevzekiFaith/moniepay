@@ -66,8 +66,8 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
     ? `99${user.id.replace(/\D/g, "").slice(-8).padStart(8, "20192381")}`
     : "9920192381";
   const accountTag = user?.businessName
-    ? `MoniePay / ${user.businessName}`
-    : (user?.name ? `MoniePay / ${user.name}` : "MoniePay Virtual Account");
+    ? `LisaPay / ${user.businessName}`
+    : (user?.name ? `LisaPay / ${user.name}` : "LisaPay Virtual Account");
 
   // Dynamic referral code
   const referralCode = generateUserReferralCode(
@@ -220,7 +220,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
   const slides: SlideData[] = [
     {
       id: "welcome",
-      badge: "Welcome to MoniePay 🇳🇬",
+      badge: "Welcome to LisaPay 🇳🇬",
       badgeColor: "bg-blue-50 dark:bg-blue-950/80 text-blue-800 dark:text-blue-300 border-blue-200 dark:border-blue-800",
       badgeIcon: <Store className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />,
       title: "Your Sharp-Sharp",
@@ -257,7 +257,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
             </div>
             <div className="w-full">
               <p className="text-xs font-black text-slate-900 dark:text-white truncate">
-                {user?.businessName || "MoniePay Trader OS"}
+                {user?.businessName || "LisaPay Trader OS"}
               </p>
               <p className="text-[11px] font-bold text-emerald-600 dark:text-emerald-300 flex items-center gap-1 justify-center mt-0.5">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -307,7 +307,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
       highlight: "Sharp-Sharp Recording",
       highlightColor: "text-amber-600 dark:text-amber-400",
       description:
-        "No stopping your market flow. Press mic or type fast: 'Sold 3 bags of rice for ₦90k' — MoniePay updates your cash drawer instantly.",
+        "No stopping your market flow. Press mic or type fast: 'Sold 3 bags of rice for ₦90k' — LisaPay updates your cash drawer instantly.",
       icon: <Zap className="h-7 w-7 text-amber-600 dark:text-amber-400" />,
       themeColor: "#d97706",
       gradient: "from-amber-700 via-amber-600 to-yellow-500",
@@ -384,7 +384,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
       highlight: "Auto-Records Every Transfer",
       highlightColor: "text-cyan-600 dark:text-cyan-400",
       description:
-        "Customer transfer or scan QR, MoniePay go record the sale sharp-sharp—zero typing!",
+        "Customer transfer or scan QR, LisaPay go record the sale sharp-sharp—zero typing!",
       icon: <Wallet className="h-7 w-7 text-cyan-600 dark:text-cyan-400" />,
       themeColor: "#0891b2",
       gradient: "from-cyan-800 via-cyan-600 to-blue-500",
@@ -645,10 +645,10 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
       badgeColor: "bg-emerald-50 dark:bg-emerald-950/80 text-emerald-900 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
       badgeIcon: <Users className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />,
       title: "Invite Shop Neighbors",
-      highlight: "Earn +14 Days Free MoniePay Plus",
+      highlight: "Earn +14 Days Free LisaPay Plus",
       highlightColor: "text-emerald-600 dark:text-emerald-400",
       description:
-        "Share your invite code with shop neighbors. When they record for 7 active days, you both unlock +14 days of free MoniePay Plus!",
+        "Share your invite code with shop neighbors. When they record for 7 active days, you both unlock +14 days of free LisaPay Plus!",
       icon: <Users className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />,
       themeColor: "#059669",
       gradient: "from-emerald-800 via-emerald-600 to-teal-500",
@@ -742,7 +742,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
 
               <a
                 href={`https://wa.me/?text=${encodeURIComponent(
-                  `Join me on MoniePay! Use my shop invite code ${referralCode} to get 14 days of free MoniePay Plus: https://moniepay.app/login?ref=${referralCode}`
+                  `Join me on LisaPay! Use my shop invite code ${referralCode} to get 14 days of free LisaPay Plus: https://lisapay.app/login?ref=${referralCode}`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -817,7 +817,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
         <div className="flex items-center gap-2.5">
           <MoniePayMark size={36} />
           <div>
-            <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white">MoniePay</span>
+            <span className="text-sm font-black tracking-tight text-slate-900 dark:text-white">LisaPay</span>
             <span className="text-[10px] font-bold text-blue-600 dark:text-sky-400 block leading-none">Trader Intro</span>
           </div>
         </div>
@@ -931,7 +931,7 @@ export function WelcomeIntroScreen({ onComplete, onSkip }: WelcomeIntroScreenPro
 
         {/* Quick Footer Security Note */}
         <p className="text-[10px] text-center font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">
-          MoniePay • 100% Offline Capable • Built for Nigerian Traders
+          LisaPay • 100% Offline Capable • Built for Nigerian Traders
         </p>
       </footer>
     </div>

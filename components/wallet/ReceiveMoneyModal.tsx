@@ -53,7 +53,7 @@ export function ReceiveMoneyModal({
   const bankName = "Providus Bank";
   // Deterministic or user-assigned dedicated payment account
   const accountNumber = user?.id ? `99${user.id.replace(/\D/g, "").slice(-8).padStart(8, "20192381")}` : "9920192381";
-  const accountName = `MoniePay / ${businessName}`;
+  const accountName = `LisaPay / ${businessName}`;
 
   // Generate QR Code data URL (encodes valid public payment URL)
   useEffect(() => {
@@ -219,7 +219,7 @@ export function ReceiveMoneyModal({
 
             <div className="p-2.5 bg-white rounded-2xl border-2 border-slate-300 shadow-md">
               {qrDataUrl ? (
-                <img src={qrDataUrl} alt="MoniePay Shop Payment QR Code" className="h-44 w-44 object-contain" />
+                <img src={qrDataUrl} alt="LisaPay Shop Payment QR Code" className="h-44 w-44 object-contain" />
               ) : (
                 <div className="h-44 w-44 flex items-center justify-center text-xs text-slate-400">
                   Loading QR Code...
@@ -255,7 +255,7 @@ export function ReceiveMoneyModal({
                 Automatic Recording • Zero Manual Typing
               </p>
               <p className="text-emerald-800 dark:text-emerald-300 text-[11px] font-medium mt-0.5 leading-relaxed">
-                When a customer makes a transfer to this account, MoniePay instantly records the sale in your ledger.
+                When a customer makes a transfer to this account, LisaPay instantly records the sale in your ledger.
               </p>
             </div>
           </div>

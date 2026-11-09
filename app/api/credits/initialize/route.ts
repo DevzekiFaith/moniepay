@@ -59,16 +59,16 @@ export async function POST(request: NextRequest) {
         phonenumber: phone,
       },
       customizations: {
-        title: `MoniePay — ${pack.credits} Insight Credits`,
+        title: `LisaPay — ${pack.credits} Insight Credits`,
         description: `${pack.label} (${pack.description})`,
-        logo: "https://moniepay.app/images/logo.png",
+        logo: "https://lisapay.app/lisapay-icon-512.png",
       },
       meta: {
         userId,
         packId: pack.id,
         credits: pack.credits,
         type: "INSIGHT_CREDITS",
-        appName: "MoniePay",
+        appName: "LisaPay",
       },
     };
 

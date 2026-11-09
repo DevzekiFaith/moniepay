@@ -198,7 +198,7 @@ export default function TransactionDetailPage() {
     const marketType = getMarketTypeTitle(transaction.type, transaction.payment_method);
     const paymentMethodStr = getMarketPaymentMethod(transaction.payment_method);
 
-    const receiptText = `*MONIEPAY SHOP PAYMENT SLIP*
+    const receiptText = `*LISAPAY SHOP PAYMENT SLIP*
 ━━━━━━━━━━━━━━━━━━━━━
 *${shopName}*
 ${shopLocation}
@@ -214,7 +214,7 @@ _${nairaWords}_
 ━━━━━━━━━━━━━━━━━━━━━
 *Status: Record Don Save Safe & Reconciled ✓*
 _Thank you for your business & God bless your hustle!_
-_Powered by MoniePay_`;
+_Powered by LisaPay_`;
 
     const url = `https://wa.me/?text=${encodeURIComponent(receiptText)}`;
     window.open(url, "_blank");
@@ -367,18 +367,18 @@ _Powered by MoniePay_`;
 
       ctx.fillStyle = "#94a3b8";
       ctx.font = "500 11px system-ui, -apple-system, sans-serif";
-      ctx.fillText("MoniePay • Nigeria's Market OS • God bless your hustle!", width / 2, 745);
+      ctx.fillText("LisaPay • Nigeria's Market OS • God bless your hustle!", width / 2, 745);
 
       // Trigger Instant Image Download
       const dataUrl = canvas.toDataURL("image/png");
       const link = document.createElement("a");
-      link.download = `MoniePay_Slip_${ref}.png`;
+      link.download = `LisaPay_Slip_${ref}.png`;
       link.href = dataUrl;
       link.click();
 
       toast(
         "Receipt Downloaded",
-        `Receipt image #MoniePay_Slip_${ref}.png saved to your device.`,
+        `Receipt image #LisaPay_Slip_${ref}.png saved to your device.`,
         { type: "success" }
       );
     } catch (err) {
@@ -495,8 +495,8 @@ _Powered by MoniePay_`;
                     <div className="inline-flex items-center justify-center gap-2 mb-2">
                       <div className="h-12 w-12 rounded-2xl overflow-hidden shadow-xs border border-white/80 dark:border-white/20 bg-blue-950 flex items-center justify-center">
                         <img
-                          src="/moniepay-logo-square.png"
-                          alt="MoniePay"
+                          src="/lisapay-logo-square.png"
+                          alt="LisaPay"
                           className="h-full w-full object-cover"
                         />
                       </div>
@@ -631,7 +631,7 @@ _Powered by MoniePay_`;
                       You sure say you wan remove this transaction record from your shop ledger?
                     </p>
                     <p className="text-[11px] text-rose-700">
-                      If you delete am, MoniePay go remove am from today sales/expenses and recalculate your drawer money.
+                      If you delete am, LisaPay go remove am from today sales/expenses and recalculate your drawer money.
                     </p>
                     <div className="flex items-center gap-2 pt-1">
                       <button

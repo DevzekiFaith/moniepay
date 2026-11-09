@@ -144,10 +144,10 @@ export async function sendHandsOffSystemAlert(
           if (registration && registration.showNotification) {
             await registration.showNotification(title, {
               body,
-              icon: "/moniepay-icon-192.png",
-              badge: "/moniepay-icon-192.png",
+              icon: "/lisapay-icon-192.png",
+              badge: "/lisapay-icon-192.png",
               vibrate: [200, 100, 200, 100, 350],
-              tag: "moniepay-entry-alert",
+              tag: "lisapay-entry-alert",
               renotify: true,
               data: {
                 url: payload?.url || "/directory",
@@ -165,9 +165,9 @@ export async function sendHandsOffSystemAlert(
       try {
         new Notification(title, {
           body,
-          icon: "/moniepay-icon-192.png",
-          badge: "/moniepay-icon-192.png",
-          tag: "moniepay-entry-alert",
+          icon: "/lisapay-icon-192.png",
+          badge: "/lisapay-icon-192.png",
+          tag: "lisapay-entry-alert",
         });
       } catch {}
     }

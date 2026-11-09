@@ -131,7 +131,7 @@ export function formatWhatsAppStaffInvite(shopCode: string, businessName: string
   const origin = typeof window !== "undefined" ? window.location.origin : "https://moniepay.app";
   const link = `${origin}/staff/join?code=${encodeURIComponent(shopCode)}&shop=${encodeURIComponent(businessName)}`;
 
-  return `*${businessName}* has invited you to connect your phone as a Staff/Cashier on MoniePay!
+  return `*${businessName}* has invited you to connect your phone as a Staff/Cashier on LisaPay!
 
 🔑 *Shop Code:* \`${shopCode}\`
 📲 *Instant Join Link:* ${link}

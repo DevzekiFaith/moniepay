@@ -191,7 +191,7 @@ export function UpgradeModal() {
               <div className="p-3 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-800/80 flex items-start gap-2.5">
                 <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-sky-400 shrink-0 mt-0.5" />
                 <p className="text-[11.5px] sm:text-xs font-semibold text-blue-950 dark:text-sky-200 leading-relaxed">
-                  {modalReason || "MoniePay Core Ledger is 100% Free Forever. Upgrade to Staff & Multi-Attendant Mode for multi-device sync, employee logins, and anti-theft controls."}
+                  {modalReason || "LisaPay Core Ledger is 100% Free Forever. Upgrade to Staff & Multi-Attendant Mode for multi-device sync, employee logins, and anti-theft controls."}
                 </p>
               </div>
 

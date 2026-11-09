@@ -103,7 +103,7 @@ export function MoniePayBusinessWalletView({
             <div>
               <div className="flex items-center gap-2">
                 <h3 className="text-sm font-black text-white tracking-tight uppercase">
-                  MoniePay Business Wallet
+                  LisaPay Business Wallet
                 </h3>
                 <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-emerald-500 text-slate-950 text-[10px] font-black tracking-wide">
                   <span className="h-1.5 w-1.5 rounded-full bg-slate-950 animate-pulse" />

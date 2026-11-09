@@ -29,7 +29,7 @@ export default function WelcomePage() {
         <div className="max-w-5xl mx-auto flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
             <MoniePayMark size={32} />
-            <span className="text-base font-black tracking-tight text-slate-900 dark:text-white">MoniePay</span>
+            <span className="text-base font-black tracking-tight text-slate-900 dark:text-white">LisaPay</span>
           </Link>
           <div className="flex items-center gap-3">
             <ThemeToggle />
@@ -54,12 +54,12 @@ export default function WelcomePage() {
         {/* Big Headline */}
         <h1 className="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight leading-[1.15]">
           You run your shop. <br />
-          <span className="text-emerald-700 dark:text-emerald-400">MoniePay does the thinking.</span>
+          <span className="text-emerald-700 dark:text-emerald-400">LisaPay does the thinking.</span>
         </h1>
 
         {/* Subtitle */}
         <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 font-medium max-w-xl mx-auto leading-relaxed">
-          Tell MoniePay what happened in plain words. Get instant answers on safe chop money, restocking funds, customer debt collection, and profit margins.
+          Tell Lisa what happened in plain words. Get instant answers on safe chop money, restocking funds, customer debt collection, and profit margins.
         </p>
 
         {/* CTA Buttons */}
@@ -68,7 +68,7 @@ export default function WelcomePage() {
             href="/login"
             className="w-full sm:w-auto px-7 py-3.5 rounded-2xl bg-emerald-700 hover:bg-emerald-600 text-white font-black text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer active:scale-95 transition-all shadow-lg shadow-emerald-900/20"
           >
-            <span>Start Using MoniePay</span>
+            <span>Start Using LisaPay</span>
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
@@ -79,7 +79,7 @@ export default function WelcomePage() {
             <div className="h-9 w-9 rounded-xl bg-emerald-50 dark:bg-emerald-950/80 text-emerald-700 dark:text-emerald-300 flex items-center justify-center">
               <Zap className="h-5 w-5" />
             </div>
-            <h3 className="text-sm font-black text-slate-900 dark:text-white">Tell MoniePay</h3>
+            <h3 className="text-sm font-black text-slate-900 dark:text-white">Tell Lisa</h3>
             <p className="text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">
               Type or speak “Sold 45k” or “Bought stock 20k”. No bookkeeping software to learn.
             </p>
@@ -109,7 +109,7 @@ export default function WelcomePage() {
 
       {/* Footer */}
       <footer className="w-full border-t border-slate-200/80 dark:border-white/10 py-6 px-4 text-center text-xs text-slate-400 dark:text-slate-500 font-medium">
-        MoniePay • Built for Nigeria's Informal Economy
+        LisaPay • Built for Nigeria's Informal Economy
       </footer>
     </div>
   );
