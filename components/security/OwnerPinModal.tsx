@@ -225,14 +225,11 @@ export function OwnerPinModal({
                   key={idx}
                   animate={{
                     scale: isFilled ? 1.15 : 1,
-                    backgroundColor: isFilled
-                      ? "rgba(37, 99, 235, 1)"
-                      : "rgba(37, 99, 235, 0)",
                   }}
-                  className={`h-4 w-4 rounded-full border-2 transition-colors ${
+                  className={`h-4 w-4 rounded-full border-2 transition-all duration-200 ${
                     isFilled
                       ? "border-blue-600 bg-blue-600 shadow-[0_0_10px_rgba(37,99,235,0.4)]"
-                      : "border-slate-300 dark:border-slate-600"
+                      : "border-slate-300 dark:border-slate-600 bg-transparent"
                   }`}
                 />
               );
